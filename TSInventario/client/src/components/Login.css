@@ -1,0 +1,53 @@
+.login-box {
+    width: 360px;
+    margin: 7% auto;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+:root {
+    /* Notificaciones */
+    --notification-background: #313e2c;
+    --notification-primary: #aaec8a;
+    --notification-error-background: #4a2c2c;
+    --notification-error-primary: #f28b82;
+}
+
+.notification__icon {
+   height: 26px;
+   width: 26px;
+   margin-right: 4px;
+}
+
+.notification__progress {
+   position: absolute;
+   left: 4px;
+   bottom: 4px;
+   width: calc(100% - 8px);
+   height: 3px;
+   transform: scaleX(0);
+   transform-origin: left;
+   background: linear-gradient(to right, var(--notification-background), var(--notification-primary));
+   border-radius: inherit;
+   animation: progress 2.5s 0.3s linear;
+}
+
+@keyframes fade-in {
+   5% {
+       opacity: 1;
+       visibility: visible;
+       transform: translateY(0);
+   }
+   95% {
+       opacity: 1;
+       transform: translateY(0);
+   }
+}
+
+@keyframes progress {
+   to {
+       transform: scaleX(1);
+   }
+}

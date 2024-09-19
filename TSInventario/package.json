@@ -1,0 +1,16 @@
+{
+  "name": "sistema_inventario",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+   "start": "react-scripts start",
+   "electron": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "electron": "^32.1.1"
+  }
+}
