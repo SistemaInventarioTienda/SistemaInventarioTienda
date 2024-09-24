@@ -3,7 +3,7 @@ Proyecto del curso de ingeniería en sistemas que vamos a desarrollar en 3 semes
 
 ## Índice
 1. [Descripción](#descripcion)
-2. [Instalación](#instalacion)
+2. [Instalación](#instalación)
 3. [Uso](#uso)
 4. [Contribuidores](#contribuidores)
 
@@ -14,13 +14,44 @@ El proyecto tiene como objetivo optimizar el manejo de inventario de una tienda 
 ## Instalación
 Guía paso a paso sobre cómo instalar el proyecto.
 ### Instalación de dependencias del proyecto
+#### Front-end
+Ejecuta uno a uno estos comandos para poder instalar las dependencias del Front-end:
+
+Antes de empezar, abrir una nueva terminal. 
 ```bash
-print("Ejemplo de como tener ")
+Ctrl + Shift + `
 ```
+Ejecutar estos comandos estando en SISTEMAINVENTARIOTIENDA
+```bash
+cd TSInventario/client
+npm i
+```
+- Nota: No cerrar la terminal, se va a usar más adelante.
+
+#### Back-end
+Ejecuta uno a uno estos comandos para poder instalar las dependencias del Back-end:
+Antes de empezar, abrir una nueva terminal. 
+```bash
+Ctrl + Shift + `
+```
+Ejecutar estos comandos estando en SISTEMAINVENTARIOTIENDA
+```bash
+cd TSInventario
+npm i
+```
+- Nota: No cerrar la terminal, se va a usar más adelante.
 
 ## Uso
-Proporciona ejemplos y instrucciones sobre cómo utilizar el proyecto.
-
+Para poder ejecutar el proyecto se deben ejecutar los siguientes comandos:
+- Nota: ejecutar en la terminal correspondiente
+#### Front-end
+```bash
+npm start
+```
+#### Back-end
+```bash
+npm run electron
+```
 ## Contribuidores
 <h1>
 <p>
