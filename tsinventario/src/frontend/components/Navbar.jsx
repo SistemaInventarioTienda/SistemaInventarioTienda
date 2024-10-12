@@ -4,8 +4,10 @@ import { ButtonLink } from "./ui/ButtonLink";
 
 export function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
-  console.log(isAuthenticated, user)
 
+  if (!isAuthenticated) {
+    return null;
+  }
   return (
     <nav className="bg-zinc-700 my-3 flex justify-between py-5 px-10 rounded-lg">
       <ul className="flex gap-x-2">
@@ -13,6 +15,14 @@ export function Navbar() {
           <>
             <li>
               Welcome {user.username}
+            </li>
+            <li>
+              <Link
+                to="/register"
+                className="bg-zinc-500 py-2 rounded-md mt-4 inline-block"
+              >
+                Registrar Usuarios
+              </Link>
             </li>
             <li>
               <Link to="/" onClick={() => logout()}>

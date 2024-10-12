@@ -22,7 +22,8 @@ function Register() {
   };
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/tasks");
+    document.title = "Registro usuario";
+    // if (isAuthenticated) navigate("/");
   }, [isAuthenticated]);
 
   return (

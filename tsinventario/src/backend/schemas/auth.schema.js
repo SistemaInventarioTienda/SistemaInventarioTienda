@@ -1,26 +1,76 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-  username: z.string({
-    required_error: "Username is required",
+  DSC_NOMBREUSUARIO: z.string({
+    required_error: "El nombre de usuario es obligatorio.",
   }),
-  email: z
+  DSC_CONTRASENIA: z
     .string({
-      required_error: "Email is required",
-    })
-    .email({
-      message: "Email is not valid",
-    }),
-  password: z
-    .string({
-      required_error: "Password is required",
+      required_error: "La contraseña es obligatoria.",
     })
     .min(6, {
-      message: "Password must be at least 6 characters",
+      message: "La contraseña debe tener al menos 6 caracteres.",
     }),
+  DSC_CORREO: z
+    .string({
+      required_error: "El correo es obligatorio.",
+    })
+    .email({
+      message: "El correo no es válido.",
+    }),
+  DSC_TELEFONO: z
+    .string()
+    .optional()
+    .refine((val) => val === undefined || val.length === 8, {
+      message: "El teléfono debe tener 8 caracteres",
+    }),
+  ID_ROL: z.number().optional(),
+  DSC_CEDULA: z
+    .string()
+    .optional()
+    .refine((val) => val === undefined || val.length <= 15, {
+      message: "La cédula no puede tener más de 15 caracteres",
+    }),
+  DSC_NOMBRE: z
+    .string({
+      required_error: "El nombre es obligatorio.",
+    })
+    .max(50, {
+      message: "El nombre no puede tener más de 50 caracteres.",
+    }),
+  DSC_APELLIDOUNO: z
+    .string({
+      required_error: "El primer apellido es obligatorio.",
+    })
+    .max(50, {
+      message: "El primer apellido no puede tener más de 50 caracteres.",
+    }),
+  DSC_APELLIDODOS: z
+    .string({
+      required_error: "El segundo apellido es obligatorio.",
+    })
+    .max(50, {
+      message: "El segundo apellido no puede tener más de 50 caracteres.",
+    }),
+  FEC_CREADOEN: z.date({
+    required_error: "La fecha de creación es obligatoria.",
+  }).optional(),
+  ESTADO: z
+    .number({
+      required_error: "El estado es obligatorio.",
+    })
+    .optional(),
 });
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  DSC_NOMBREUSUARIO: z.string({
+    required_error: "El nombre de usuario es obligatorio.",
+  }),
+  DSC_CONTRASENIA: z
+    .string({
+      required_error: "La contraseña es obligatoria.",
+    })
+    .min(6, {
+      message: "La contraseña debe tener al menos 6 caracteres.",
+    }),
 });

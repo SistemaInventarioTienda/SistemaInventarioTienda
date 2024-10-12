@@ -1,3 +1,6 @@
+// Esto es solo un ejemplo de como se pueden implementar los componentes
+// La idea es que se cree una carpeta por cada vista para más ordenado
+// Y se llamen los componentes que están en ui
 import { useTasks } from "../../context/tasksContext";
 import { Button, ButtonLink, Card } from "../ui";
 
