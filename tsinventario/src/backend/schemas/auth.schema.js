@@ -3,6 +3,8 @@ import { z } from "zod";
 export const registerSchema = z.object({
   DSC_NOMBREUSUARIO: z.string({
     required_error: "El nombre de usuario es obligatorio.",
+  }).min(3, {
+    message: "El nombre de usuario debe tener minimo 3 caracteres.",
   }),
   DSC_CONTRASENIA: z
     .string({
@@ -35,6 +37,9 @@ export const registerSchema = z.object({
     .string({
       required_error: "El nombre es obligatorio.",
     })
+    .min(3, {
+      message: "El nombre debe tener más de 3 caracteres.",
+    })
     .max(50, {
       message: "El nombre no puede tener más de 50 caracteres.",
     }),
@@ -42,12 +47,18 @@ export const registerSchema = z.object({
     .string({
       required_error: "El primer apellido es obligatorio.",
     })
+    .min(3, {
+      message: "El primer apellido debe tener más de 3 caracteres.",
+    })
     .max(50, {
       message: "El primer apellido no puede tener más de 50 caracteres.",
     }),
   DSC_APELLIDODOS: z
     .string({
       required_error: "El segundo apellido es obligatorio.",
+    })
+    .min(3, {
+      message: "El segundo apellido debe tener más de 3 caracteres.",
     })
     .max(50, {
       message: "El segundo apellido no puede tener más de 50 caracteres.",

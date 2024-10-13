@@ -10,13 +10,10 @@ import { loginSchema, registerSchema } from "../schemas/auth.schema.js";
 
 const router = Router();
 
-router.post("/register", validateSchema(registerSchema), register);
+// Parte de autenticación de los usuarios del sistema
+router.post("/register", validateSchema(registerSchema), register); //Agregar la verificación del token
 router.post("/login", validateSchema(loginSchema), login);
-router.get("/verify", verifyToken);
+router.get("/verify", verifyToken); //Creo que se debe quitar
 router.post("/logout", verifyToken, logout);
-
-router.get("/", (req, res) => {
-  res.send("¡Hola! La API está funcionando correctamente.");
-});
 
 export default router;
