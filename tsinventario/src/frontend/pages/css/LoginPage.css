@@ -21,16 +21,19 @@
 #paswordField {
     border-top-right-radius: 16px;
     border-bottom-right-radius: 16px;
-    border-color: var(--primary-custom) !important;
+    border-color: #05004E;
+    height: 40px;
 }
 
 #paswordField {
-    color: var(--primary-custom);
+    color: #05004E;
+    height: 40px;
 }
 
 .input-group-text {
     background-color: var(--primary-custom);
     color: var(--secondary-custom);
+    border-color: #05004E;
 }
 
 .is-invalid {

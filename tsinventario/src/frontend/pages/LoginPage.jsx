@@ -30,7 +30,7 @@ export function LoginPage() {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="h-[calc(100vh-100px)] flex items-center justify-center bg-secondary-custom border-custom">
+    <div className="h-[calc(200vh-200px)] flex items-center justify-center bg-secondary-custom border-custom">
       <Card className="login-card shadow-lg">
         <div className="card-body p-5">
           <div className="text-center mb-4">

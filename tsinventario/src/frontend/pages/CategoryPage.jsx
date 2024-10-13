@@ -1,26 +1,26 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import PageLayout from "../components/PageLayout";
 
-function HomePage() {
+function CategoryPage() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated} = useAuth();
 
   useEffect(() => {
     document.title = "Inicio";
     if (!isAuthenticated) {
-      navigate("/login");
+      navigate("/category");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
   return (
     <PageLayout
-      title="Inicio"
-      description="Esta es la página de inicio"
+      title="Categorias"
+      description="Lista de categorias del sistema"
     >
     </PageLayout>
   );
 }
 
-export default HomePage;
+export default CategoryPage;

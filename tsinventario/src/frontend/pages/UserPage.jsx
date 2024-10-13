@@ -1,26 +1,26 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import PageLayout from "../components/PageLayout";
 
-function HomePage() {
+function UserPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     document.title = "Inicio";
     if (!isAuthenticated) {
-      navigate("/login");
+      navigate("/user");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
   return (
     <PageLayout
-      title="Inicio"
-      description="Esta es la página de inicio"
+      title="Usuarios"
+      description="Esta es la página de usuarios"
     >
     </PageLayout>
   );
 }
 
-export default HomePage;
+export default UserPage;

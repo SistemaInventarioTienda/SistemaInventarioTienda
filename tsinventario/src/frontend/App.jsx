@@ -1,30 +1,68 @@
+import React, { useEffect } from 'react';
 import './App.css';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Navbar } from "./components/Navbar";
-import { AuthProvider } from "./context/authContext";
+import Navbar from "./components/Navbar";
+import Sidebar from './components/Sidebar';
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/authContext";
 import { ProtectedRoute } from "./routes";
-
 import HomePage from "./pages/HomePage";
-import RegisterPage from "./pages/RegisterPage";
+import UserPage from "./pages/UserPage";
+import CategoryPage from "./pages/CategoryPage";
 import { LoginPage } from "./pages/LoginPage";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <main className="container content-container mx-auto px-10 md:px-0">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/profile" element={<h1>Profile</h1>} />
-            </Route>
-          </Routes>
-        </main>
+        <AppContent />
       </BrowserRouter>
     </AuthProvider>
+  );
+}
+
+function AppContent() {
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (location.pathname !== '/login' && isAuthenticated) {
+      document.body.classList.remove('login-page');
+    } else {
+      document.body.classList.add('login-page');
+    }
+  }, [location, isAuthenticated]);
+
+  return (
+    <div className="app-wrapper">
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/*" element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="user" element={<UserPage />} />
+            <Route path="category" element={<CategoryPage />} />
+          </Route>
+        </Route>
+      </Routes>
+    </div>
+  );
+}
+
+function Layout() {
+  return (
+    <div className="layout">
+      <Sidebar />
+      <div className="main-content">
+        <Navbar />
+        <main className="content">
+          <Routes>
+            <Route index element={<HomePage />} />
+            <Route path="user" element={<UserPage />} />
+            <Route path="category" element={<CategoryPage />} />
+          </Routes>
+        </main>
+      </div>
+    </div>
   );
 }
 
