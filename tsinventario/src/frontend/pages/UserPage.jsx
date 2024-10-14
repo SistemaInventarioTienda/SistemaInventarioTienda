@@ -8,7 +8,7 @@ import { getUsers, updateUser } from "../api/user";
 import { Button, Input, Select } from "../components/ui";
 import ModalComponent from "../components/Modal";
 import { UserPlus } from "lucide-react";
-import "./css/UserPage.css";
+import "./css/Page.css";
 
 export default function UserPage() {
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ export default function UserPage() {
           const response = await getUsers(currentPage, itemsPerPage);
           const transformedUsers = response.users.map(user => ({
             ...user,
-          }));
+          })) || [];
           setData(transformedUsers);
           setFilteredData(transformedUsers);
           setTotalPages(response.totalPages);
@@ -160,17 +160,17 @@ export default function UserPage() {
 
   return (
     <PageLayout>
-      <div className="user-page-header">
+      <div className="page-header">
         <div>
           <h1>Usuarios</h1>
           <p>Gestión de usuarios del sistema</p>
         </div>
-        <Button className="add-user-btn" onClick={handleAddUser}>
+        <Button className="add-btn" onClick={handleAddUser}>
           <UserPlus size={20} />
           Agregar Usuario
         </Button>
       </div>
-      <div className="user-page-controls">
+      <div className="page-controls">
         <Input
           type="text"
           className="search-input"

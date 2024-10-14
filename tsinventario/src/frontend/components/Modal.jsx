@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Input, Button, Select, Alert } from "./ui";
-import { ChevronRight, UserPlus } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import "./css/modal.css";
 
 const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages }) => {
@@ -8,7 +8,7 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({ ...data, estado: data.estado ?? "" });
+      setFormData({ ...data, estado: 1 });
     }
   }, [isOpen, data]);
 
@@ -19,7 +19,7 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
   const isAddMode = mode === "add";
 
   const estadoOptions = [
-    { value: "", label: "Seleccione el estado del usuario" }, 
+    { value: "", label: "Seleccione el estado" },
     { value: 1, label: "Activo" },
     { value: 2, label: "Inactivo" },
   ];
@@ -99,7 +99,7 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
     const estadoValue = parseInt(formData.estado, 10);
 
     if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
-      setErrorMessages(["Por favor, seleccione un estado válido para el usuario."]);
+      setErrorMessages(["Por favor, seleccione un estado válido."]);
       return;
     }
 
@@ -141,7 +141,7 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
               <div className="form-grid">
                 {fields.map((field) => {
                   if ((isEditMode || isViewMode) && (field.name === "contrasena" || field.name === "confirmarContrasena")) return null;
-                  if (isAddMode && field.name === "estado") return null;
+
                   return (
                     <div className="form-group" key={field.name}>
                       <label htmlFor={field.name}>{field.label}</label>
@@ -153,9 +153,9 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
               <div className="modal-footer">
                 <Button type="button" onClick={onClose} className="close-btn">Cancelar</Button>
                 {!isViewMode && (
-                  <Button type="submit" className="add-user-btn">
-                    <UserPlus size={20} />
-                    {isAddMode ? "Agregar Usuario" : "Guardar Cambios"}
+                  <Button type="submit" className="add-btn">
+                    <Plus size={20} />
+                    {isAddMode ? "Agregar nuevo" : "Guardar Cambios"}
                   </Button>
                 )}
               </div>

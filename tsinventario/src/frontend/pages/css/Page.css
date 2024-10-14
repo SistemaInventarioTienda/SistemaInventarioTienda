@@ -1,24 +1,24 @@
-.user-page-header {
+.page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
 }
 
-.user-page-header h1 {
+.page-header h1 {
     font-size: 24px;
     font-weight: 600;
     color: var(--color-primary) !important;
     margin: 0;
 }
 
-.user-page-header p {
+.page-header p {
     font-size: 14px;
     color: #6B7280;
     margin: 4px 0 0;
 }
 
-.add-user-btn {
+.add-btn {
     background-color: var(--color-primary) !important;
     color: #FFFFFF;
     border: none;
@@ -31,7 +31,7 @@
     font-weight: 500;
 }
 
-.user-page-controls {
+.page-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;

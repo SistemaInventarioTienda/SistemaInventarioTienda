@@ -96,21 +96,29 @@ const Table = ({ columns, data, actions }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {columns.map((column, colIndex) => (
-                                <td key={colIndex}>
-                                    {column.field === "ESTADO" ? (
-                                        <StatusPill status={row[column.field]} />
-                                    ) : column.field === "actions" ? (
-                                        <ActionsCell actions={actions} rowData={row} />
-                                    ) : (
-                                        row[column.field]
-                                    )}
-                                </td>
-                            ))}
+                    {data && data.length > 0 ? (
+                        data.map((row, rowIndex) => (
+                            <tr key={rowIndex}>
+                                {columns.map((column, colIndex) => (
+                                    <td key={colIndex}>
+                                        {column.field === "ESTADO" ? (
+                                            <StatusPill status={row[column.field]} />
+                                        ) : column.field === "actions" ? (
+                                            <ActionsCell actions={actions} rowData={row} />
+                                        ) : (
+                                            row[column.field]
+                                        )}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={columns.length} className="no-data-message">
+                                No hay registros disponibles
+                            </td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
         </div>
