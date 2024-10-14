@@ -23,6 +23,7 @@ const StatusPill = ({ status }) => {
 const ActionsCell = ({ actions, rowData }) => {
     return (
         <div className="actions-cell">
+            <input type="hidden" value={rowData.ID_CATEGORIA} />
             {actions.grantPermissions && (
                 <Button
                     className="btn me-3 p-0"
@@ -79,6 +80,7 @@ const ActionsCell = ({ actions, rowData }) => {
                     <Trash size={20} color="#FFFFFF" />
                 </Button>
             )}
+
         </div>
     );
 };

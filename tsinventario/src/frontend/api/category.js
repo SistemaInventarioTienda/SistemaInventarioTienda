@@ -23,12 +23,24 @@ export const saveCategory = async (categoryData) => {
 };
 
 // Eliminar una categoría (si es necesario agregar esta funcionalidad)
-export const deleteCategory = async (id) => {
+export const deleteCategory = async (DSC_NOMBRE) => {
     try {
-        const response = await axios.delete(`/category/deleteCategory`, { data: { id } });
+        console.log('Deleting category', DSC_NOMBRE);
+        const response = await axios.put(`/category/disableCategory`, { DSC_NOMBRE });
         return response.data;
     } catch (error) {
         console.error('Error deleting category:', error.message);
+        throw error;
+    }
+};
+
+// Actualizar una categoría
+export const updateCategory = async (categoryData) => {
+    try {
+        const response = await axios.put(`/category/updateCategory`, categoryData);
+        return response.data;
+    } catch (error) {
+        console.error('Error updating category:', error.message);
         throw error;
     }
 };

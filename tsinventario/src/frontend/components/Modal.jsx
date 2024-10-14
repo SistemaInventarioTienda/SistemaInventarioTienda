@@ -8,6 +8,7 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
 
   useEffect(() => {
     if (isOpen) {
+      console.log(data);
       setFormData({ ...data, estado: 1 });
     }
   }, [isOpen, data]);
@@ -129,6 +130,7 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
             </Button>
           </div>
           <div className="offcanvas-body">
+            
             {errorMessages.length > 0 && (
               <Alert
                 type="warning"

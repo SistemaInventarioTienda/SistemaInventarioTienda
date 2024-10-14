@@ -4,8 +4,9 @@ import { useAuth } from "../context/authContext";
 import PageLayout from "../components/PageLayout";
 import Table from "../components/ui/Table";
 import Pagination from "../components/ui/Pagination";
-import { getAllCategories, saveCategory } from "../api/category";
+import { getAllCategories, saveCategory, updateCategory, deleteCategory } from "../api/category";
 import { Button, Input, Select } from "../components/ui";
+import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ModalComponent from "../components/Modal";
 import { Tag } from "lucide-react";
 import "./css/Page.css";
@@ -17,6 +18,8 @@ export default function CategoryPage() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [modalData, setModalData] = useState(null);
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -100,7 +103,35 @@ export default function CategoryPage() {
 
   // Funciones para gestionar acciones en la tabla
   const handleEditCategory = (category) => openModal("edit", category);
-  const handleDeleteCategory = (category) => openModal("delete", category);
+
+  const confirmDelete = (category) => {
+    setModalData(category);
+    setModalOpen(false);
+    setConfirmationModalOpen(true);
+  };
+
+  const handleDeleteCategory = (category) => {
+    confirmDelete(category);
+  };
+
+  const handleDelete = async (category) => {
+    try {
+      await deleteCategory(category.DSC_NOMBRE);
+      setSuccessMessage("Eliminado exitosamente");
+      await fetchCategories();
+      
+      setTimeout(() => {
+        setModalOpen(false); 
+        setSuccessMessage("");
+      }, 2000);
+      
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Error desconocido al eliminar la categoría.";
+      setErrorMessages([errorMessage]);
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
+  };
 
   const handleAddCategory = () => openModal("add");
 
@@ -108,9 +139,11 @@ export default function CategoryPage() {
     setModalMode(mode);
     setModalData(category ? mapCategoryFields(category) : null);
     setModalOpen(true);
+    setConfirmationModalOpen(false);
   };
 
   const mapCategoryFields = (category) => ({
+    id: category.ID_CATEGORIA,
     nombre: category.DSC_NOMBRE,
     estado: category.ESTADO === "ACTIVO" ? 1 : 2,
   });
@@ -135,7 +168,26 @@ export default function CategoryPage() {
         const errorMessage = error.response?.data?.message || "Error desconocido al agregar la categoría.";
         setErrorMessages([errorMessage]);
         setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 5000);
+        setTimeout(() => setShowAlert(false), 3000);
+      }
+    }
+    if (modalMode === "edit") {
+      const categoryPayload = {
+        ID_CATEGORIA: categoryData.id,
+        DSC_NOMBRE: categoryData.nombre,
+        ESTADO: categoryData.estado,
+      };
+
+      try {
+        console.log('data', categoryData);
+        await updateCategory(categoryPayload);
+        await fetchCategories();
+        setModalOpen(false);
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || "Error desconocido al agregar la categoría.";
+        setErrorMessages([errorMessage]);
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
       }
     }
   };
@@ -184,6 +236,15 @@ export default function CategoryPage() {
         sortOrder={sortOrder}
       />
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+
+      <ModalConfirmation
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setConfirmationModalOpen(false)}
+        onDelete={() => handleDelete(modalData)}
+        entityName={modalData?.DSC_NOMBRE}
+        errorMessages={errorMessages}
+        successMessage={successMessage}
+      />
 
       <ModalComponent
         isOpen={isModalOpen}
