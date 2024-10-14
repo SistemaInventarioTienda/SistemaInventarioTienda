@@ -21,7 +21,7 @@ export const saveCategory = async (DSC_NOMBRE,ESTADO) => {
             FEC_CREADOEN: new Date(),
             ESTADO
         });
-        return newCategory[0]>0?true:false;
+        return newCategory !== null;
     } catch (error) {
         throw new Error(error.message);
     }
