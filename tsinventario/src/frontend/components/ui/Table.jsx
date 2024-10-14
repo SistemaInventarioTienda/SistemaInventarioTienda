@@ -1,9 +1,8 @@
 import React from "react";
 import { Button } from "./Button";
-import { Eye, SquarePen, Trash, KeyRound } from "lucide-react";
+import { Eye, SquarePen, Trash, KeyRound, ChevronDown, ChevronUp } from "lucide-react";
 import "../css/table.css";
 
-// Define un objeto para los estados
 const STATUS_MAP = {
     1: "Activo",
     2: "Inactivo"
@@ -84,14 +83,33 @@ const ActionsCell = ({ actions, rowData }) => {
     );
 };
 
-const Table = ({ columns, data, actions }) => {
+const Table = ({ columns, data, actions, onSort, sortField, sortOrder }) => {
     return (
         <div className="table-container">
             <table className="custom-table">
                 <thead>
                     <tr>
                         {columns.map((column, index) => (
-                            <th key={index}>{column.label}</th>
+                            <th
+                                key={index}
+                                onClick={column.field === "actions" ? null : () => onSort(column.field)}
+                                style={column.field === "actions" ? { cursor: "default" } : { cursor: "pointer" }}
+                            >
+                                {column.label}
+                                {column.field !== "actions" && (
+                                    <>
+                                        {sortField === column.field ? (
+                                            sortOrder === "asc" ? (
+                                                <ChevronUp className="chevron-icon" />
+                                            ) : (
+                                                <ChevronDown className="chevron-icon" />
+                                            )
+                                        ) : (
+                                            <ChevronDown className="chevron-icon" />
+                                        )}
+                                    </>
+                                )}
+                            </th>
                         ))}
                     </tr>
                 </thead>

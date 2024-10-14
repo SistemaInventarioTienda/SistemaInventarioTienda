@@ -3,7 +3,7 @@ import { Input, Button, Select, Alert } from "./ui";
 import { ChevronRight, Plus } from "lucide-react";
 import "./css/modal.css";
 
-const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages }) => {
+const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName }) => {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
       <div className="offcanvas offcanvas-end show" tabIndex="-1">
         <div className="modal-data-container">
           <div className="offcanvas-header">
-            <h2>{isAddMode ? "Agregar Usuario" : isEditMode ? "Editar Usuario" : "Detalles del Usuario"}</h2>
+            <h2>{isAddMode ? `Agregar ${entityName}` : isEditMode ? `Editar ${entityName}` : `Detalles de ${entityName}`}</h2>
             <Button
               onClick={onClose}
               className="btn me-3 p-0"
@@ -131,36 +131,35 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
           <div className="offcanvas-body">
             {errorMessages.length > 0 && (
               <Alert
-                type="error"
+                type="warning"
                 message={errorMessages}
                 duration={5000}
-                onClose={() => setErrorMessages([])}
               />
             )}
-            <form onSubmit={handleSubmit}>
-              <div className="form-grid">
-                {fields.map((field) => {
-                  if ((isEditMode || isViewMode) && (field.name === "contrasena" || field.name === "confirmarContrasena")) return null;
-
-                  return (
-                    <div className="form-group" key={field.name}>
-                      <label htmlFor={field.name}>{field.label}</label>
-                      {renderInput(field)}
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="modal-footer">
-                <Button type="button" onClick={onClose} className="close-btn">Cancelar</Button>
-                {!isViewMode && (
-                  <Button type="submit" className="add-btn">
-                    <Plus size={20} />
-                    {isAddMode ? "Agregar nuevo" : "Guardar Cambios"}
-                  </Button>
-                )}
-              </div>
-            </form>
           </div>
+          <form onSubmit={handleSubmit}>
+            <div className="form-grid">
+              {fields.map((field) => {
+                if ((isEditMode || isViewMode) && (field.name === "contrasena" || field.name === "confirmarContrasena")) return null;
+
+                return (
+                  <div className="form-group" key={field.name}>
+                    <label htmlFor={field.name}>{field.label}</label>
+                    {renderInput(field)}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="modal-footer">
+              <Button type="button" onClick={onClose} className="close-btn">Cancelar</Button>
+              {!isViewMode && (
+                <Button type="submit" className="add-btn">
+                  <Plus size={20} />
+                  {isAddMode ? "Agregar nuevo" : "Guardar Cambios"}
+                </Button>
+              )}
+            </div>
+          </form>
         </div>
       </div>
     </div>

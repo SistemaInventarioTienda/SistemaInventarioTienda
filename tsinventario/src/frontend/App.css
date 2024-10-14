@@ -155,3 +155,58 @@ body.login-page .app-wrapper {
 .page-content .card {
   flex: 1;
 }
+
+/* Alert.css */
+
+.alert {
+  padding: 10px 15px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-family: Poppins, Regular ;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+.message-list {
+  margin: 0;
+}
+
+.message {
+  margin: 0;
+}
+
+/* Estilos para diferentes tipos de alerta */
+.error {
+  background-color: #F44336;
+  border: 1px solid #F44336;
+  color: #FFFFFF;
+}
+
+.warning {
+  background-color: #F9CB32;
+  border: 1px solid #F9CB32;
+  color: #FFFFFF;
+}
+
+.info {
+  background-color: #007AFF;
+  border: 1px solid #007AFF;
+  color: #007AFF;
+}
+
+.success {
+  background-color: #4CAF50;
+  border: 1px solid #4CAF50;
+  color: #FFFFFF;
+}
+
+.alert-demo {
+  background-color: #FFFFFF;
+  padding: 20px;
+  color: #FFFFFF;
+}

@@ -8,14 +8,6 @@
     border-radius: 16px;
 }
 
-.alert {
-    background-color: #F06C5D;
-    color: #F8F9FA;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 16px;
-}
-
 /* Bordes de los inputs y botón mostrar/ocultar */
 .form-control,
 #paswordField {

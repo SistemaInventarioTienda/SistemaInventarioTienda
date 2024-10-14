@@ -17,7 +17,7 @@
 .custom-table th,
 .custom-table td {
     font-family: sans-serif;
-    padding: 12px 16px;
+    padding: 12px 0.5cap;
     text-align: center;
     vertical-align: middle;
     border-bottom: 1px solid var(--color-primary, #05004E);
@@ -35,6 +35,19 @@
 
 .custom-table tr:hover td {
     background-color: rgb(207, 211, 207);
+}
+
+th {
+    cursor: pointer;
+}
+
+.chevron-icon {
+    margin-left: 0px;
+    transition: transform 0.2s;
+}
+
+th:hover .chevron-icon {
+    transform: scale(1.1);
 }
 
 .status-pill {

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../context/authContext';
 import { loginSchema } from '../schemas/auth';
-import { Card, Button, Input } from '../components/ui';
+import { Card, Button, Input, Alert } from '../components/ui';
 import { ShoppingBag, User, Lock, Eye, EyeOff } from 'lucide-react';
 import './css/LoginPage.css';
 
@@ -100,7 +100,12 @@ export function LoginPage() {
             </div>
 
             {loginErrors && loginErrors.map((error, i) => (
-              <div key={i} className="alert alert-custom">{error}</div>
+              <Alert
+                key={i}
+                type="error"
+                message={error}
+                duration={5000}
+              />
             ))}
             <hr></hr>
             <Button

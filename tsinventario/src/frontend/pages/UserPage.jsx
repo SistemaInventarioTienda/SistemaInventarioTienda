@@ -5,7 +5,7 @@ import PageLayout from "../components/PageLayout";
 import Table from "../components/ui/Table";
 import Pagination from "../components/ui/Pagination";
 import { getUsers, updateUser } from "../api/user";
-import { Button, Input, Select } from "../components/ui";
+import { Button, Input, Select, Alert } from "../components/ui";
 import ModalComponent from "../components/Modal";
 import { UserPlus } from "lucide-react";
 import "./css/Page.css";
@@ -26,6 +26,7 @@ export default function UserPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [errorMessages, setErrorMessages] = useState([]);
+  // eslint-disable-next-line
   const [showAlert, setShowAlert] = useState(false);
 
   const columns = [
@@ -74,6 +75,29 @@ export default function UserPage() {
       fetchUsers();
     }
   }, [isAuthenticated, navigate, currentPage, itemsPerPage]);
+
+  // Lógica para ordenar los datos
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
+
+  const sortData = (field) => {
+    if (field === "actions") {
+      return;
+    }
+
+    const newSortOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortField(field);
+    setSortOrder(newSortOrder);
+
+    const sortedData = [...filteredData].sort((a, b) => {
+      if (newSortOrder === 'asc') {
+        return a[field] > b[field] ? 1 : -1;
+      }
+      return a[field] < b[field] ? 1 : -1;
+    });
+
+    setFilteredData(sortedData);
+  };
 
   // Lógica de búsqueda
   useEffect(() => {
@@ -131,7 +155,7 @@ export default function UserPage() {
       };
 
       console.log("Updating user with  payload:", userPayload);
-      
+
       if (!userPayload.DSC_CONTRASENIA) {
         userPayload.DSC_CONTRASENIA = 'adminadmin';
       }
@@ -159,7 +183,15 @@ export default function UserPage() {
   if (error) return <p>Error: {error}</p>;
 
   return (
+
     <PageLayout>
+      <Alert
+        className="'alert-custom error"
+        onClose={() => setErrorMessages([])}
+        sx={{ mb: 2 }}
+      >
+        SOY UNA ALERTA
+      </Alert>
       <div className="page-header">
         <div>
           <h1>Usuarios</h1>
@@ -190,7 +222,14 @@ export default function UserPage() {
           </Select>
         </div>
       </div>
-      <Table columns={columns} data={filteredData} actions={{ grantPermissions: handleGrantPermissionsUser, view: handleViewUser, edit: handleEditUser, delete: handleDeleteUser }} />
+      <Table
+        columns={columns}
+        data={filteredData}
+        actions={{ grantPermissions: handleGrantPermissionsUser, view: handleViewUser, edit: handleEditUser, delete: handleDeleteUser }}
+        onSort={sortData}
+        sortField={sortField}
+        sortOrder={sortOrder}
+      />
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
 
       <ModalComponent
@@ -202,6 +241,7 @@ export default function UserPage() {
         onSubmit={handleSubmit}
         errorMessages={errorMessages}
         setErrorMessages={setErrorMessages}
+        entityName="Usuario"
       />
 
     </PageLayout>

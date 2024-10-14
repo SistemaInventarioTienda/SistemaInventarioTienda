@@ -26,6 +26,7 @@ export default function CategoryPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [errorMessages, setErrorMessages] = useState([]);
+  // eslint-disable-next-line
   const [showAlert, setShowAlert] = useState(false);
 
   const columns = [
@@ -35,7 +36,7 @@ export default function CategoryPage() {
   ];
 
   const categoryFields = [
-    { name: "DSC_NOMBRE", label: "Nombre", type: "text", required: true },
+    { name: "nombre", label: "Nombre", type: "text", required: true },
     { name: "estado", label: "Estado", type: "select", required: true },
   ];
 
@@ -64,6 +65,29 @@ export default function CategoryPage() {
     }
   }, [isAuthenticated, navigate, currentPage, itemsPerPage]);
 
+  // Lógica para ordenar los datos
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
+
+  const sortData = (field) => {
+    if (field === "actions") {
+      return;
+    }
+
+    const newSortOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortField(field);
+    setSortOrder(newSortOrder);
+
+    const sortedData = [...filteredData].sort((a, b) => {
+      if (newSortOrder === 'asc') {
+        return a[field] > b[field] ? 1 : -1;
+      }
+      return a[field] < b[field] ? 1 : -1;
+    });
+
+    setFilteredData(sortedData);
+  };
+
   // Lógica de búsqueda
   useEffect(() => {
     const filtered = searchTerm.trim()
@@ -75,7 +99,6 @@ export default function CategoryPage() {
   const handlePageChange = (page) => setCurrentPage(page);
 
   // Funciones para gestionar acciones en la tabla
-  const handleViewCategory = (category) => openModal("view", category);
   const handleEditCategory = (category) => openModal("edit", category);
   const handleDeleteCategory = (category) => openModal("delete", category);
 
@@ -95,7 +118,7 @@ export default function CategoryPage() {
   const handleSubmit = async (categoryData) => {
     if (modalMode === "add") {
       const categoryPayload = {
-        DSC_NOMBRE: categoryData.DSC_NOMBRE,
+        DSC_NOMBRE: categoryData.nombre,
         ESTADO: categoryData.estado,
       };
 
@@ -152,7 +175,14 @@ export default function CategoryPage() {
           </Select>
         </div>
       </div>
-      <Table columns={columns} data={filteredData} actions={{ view: handleViewCategory, edit: handleEditCategory, delete: handleDeleteCategory }} /> {/* Cambié las acciones */}
+      <Table
+        columns={columns}
+        data={filteredData}
+        actions={{ edit: handleEditCategory, delete: handleDeleteCategory }}
+        onSort={sortData}
+        sortField={sortField}
+        sortOrder={sortOrder}
+      />
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
 
       <ModalComponent
@@ -164,6 +194,7 @@ export default function CategoryPage() {
         onSubmit={handleSubmit}
         errorMessages={errorMessages}
         setErrorMessages={setErrorMessages}
+        entityName="Categoría"
       />
     </PageLayout>
   );
