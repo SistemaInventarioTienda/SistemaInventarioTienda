@@ -1,5 +1,5 @@
 import Category from "../models/category.model.js";
-import {validateRegisterCat,saveCategory} from    "../logic/category/category.logic.js"
+import {validateRegisterCat,saveCategory,updateCategory} from    "../logic/category/category.logic.js"
 import { encryptData } from "../libs/encryptData.js";
 import { getDateCR } from "../libs/date.js";
 
@@ -41,6 +41,44 @@ export const addCategory = async (req, res) => {
 };
 
 
+//actualizar categoria
+
+export const UpdateCategory = async (req, res) => {
+    try {
+        const {
+            ID_CATEGORIA ,DSC_NOMBRE, ESTADO
+        } = req.body;
+
+        const status = await updateCategory(DSC_NOMBRE,ESTADO,ID_CATEGORIA);
+            
+       return UpdateCategoryResponse(status, res);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
+export const UpdateCategoryResponse = (status, res) => {
+    if (status === true) {
+        return res.status(201).json({
+            message: 'Se ha actualizado con éxito la categoría',
+        });
+    } else if (status === -1) {
+        return res.status(404).json({
+            message: 'Categoría no encontrada',
+        });
+    } else if (status === -2) {
+        return res.status(404).json({
+            message: 'Clave no encontrada',
+        });
+    }else{
+        return res.status(400).json({
+            message: 'El nombre de la categoría ya existe o es inválido',
+        });
+    }
+};
+
+
 
 export const getAllCategories = async (req, res) => {
     try {
@@ -51,7 +89,7 @@ export const getAllCategories = async (req, res) => {
 
         const { count, rows } = await Category.findAndCountAll({
             attributes: {
-                exclude: ['ID_CATEGORIA','FEC_MODIFICADOEN']
+                exclude: ['FEC_MODIFICADOEN']
             },
             limit,
             offset

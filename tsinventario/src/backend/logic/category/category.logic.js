@@ -20,7 +20,27 @@ export const saveCategory = async (DSC_NOMBRE,ESTADO) => {
             FEC_CREADOEN: new Date(),
             ESTADO
         });
-        return newCategory?true:false;
+        return newCategory[0]>0?true:false;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+
+export const updateCategory = async (DSC_NOMBRE,ESTADO,ID_CATEGORIA) => {
+    try {
+
+        if (!await existIDCat(ID_CATEGORIA)){
+            return -2;
+        }
+
+        const newCategory = await Category.update({
+            DSC_NOMBRE,
+            FEC_MODIFICADOEN: new Date(), 
+            ESTADO
+        },
+    { where: { ID_CATEGORIA } }  );
+        return newCategory[0]>0?true:-1;
     } catch (error) {
         throw new Error(error.message);
     }
@@ -37,5 +57,11 @@ async function validateNameCat(name) {
 
 async function existName(name) {
     const nameFound = await Category.findOne({ where: { DSC_NOMBRE: name} }); 
+    return  nameFound?true:false;
+}
+
+
+async function existIDCat(id) {
+    const nameFound = await Category.findOne({ where: { ID_CATEGORIA: id} }); 
     return  nameFound?true:false;
 }
