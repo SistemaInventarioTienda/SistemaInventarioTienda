@@ -71,6 +71,10 @@ export const UpdateCategoryResponse = (status, res) => {
         return res.status(404).json({
             message: 'Clave no encontrada',
         });
+    }else if (status === -3) {
+        return res.status(400).json({
+            message: 'El nombre ya se encuentra registrado',
+        });
     }else{
         return res.status(400).json({
             message: 'El nombre de la categoría ya existe o es inválido',

@@ -1,4 +1,5 @@
 import Category from "../../models/category.model.js";
+import { Op } from 'sequelize';
 
 export const validateRegisterCat = async (DSC_NOMBRE) => {
     try {
@@ -34,6 +35,10 @@ export const updateCategory = async (DSC_NOMBRE,ESTADO,ID_CATEGORIA) => {
             return -2;
         }
 
+        if (await existNameAct(DSC_NOMBRE, ID_CATEGORIA)) {
+            return -3; 
+        }
+
         const newCategory = await Category.update({
             DSC_NOMBRE,
             FEC_MODIFICADOEN: new Date(), 
@@ -61,7 +66,23 @@ async function existName(name) {
 }
 
 
+async function existNameAct(name, idToExclude) {
+    const query = {
+        where: {
+            DSC_NOMBRE: name,
+            ...(idToExclude && { ID_CATEGORIA: { [Op.ne]: idToExclude } }) // Excluir el ID proporcionado si existe
+        }
+    };
+
+    console.log("Consultando si existe el nombre:", name, "excluyendo ID:", idToExclude);
+
+    const nameFound = await Category.findOne(query);
+    console.log("Resultado de la consulta:", nameFound);
+    
+    return nameFound !== null; // Retorna true si se encuentra, false si no
+}
+
 async function existIDCat(id) {
     const nameFound = await Category.findOne({ where: { ID_CATEGORIA: id} }); 
-    return  nameFound?true:false;
+    return  nameFound;
 }
