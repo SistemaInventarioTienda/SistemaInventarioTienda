@@ -1,0 +1,79 @@
+.user-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.user-page-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #05004E;
+    margin: 0;
+}
+
+.user-page-header p {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 4px 0 0;
+}
+
+.add-user-btn {
+    background-color: #05004E;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-page-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.search-input {
+    width: 300px;
+    background-color: #F5F7FA;
+    border: 1px solid #05004E;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 16px;
+    color: #05004E;
+}
+
+.items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.items-per-page label {
+    font-size: 16px;
+    color: var(--color-primary);
+}
+
+.items-per-page select {
+    background-color: #F5F7FA;
+    border: 1px solid #05004E;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 14px;
+    color: #05004E;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.items-per-page select:focus {
+    outline: none;
+    box-shadow: none;
+}

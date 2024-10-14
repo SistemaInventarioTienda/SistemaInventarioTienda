@@ -4,12 +4,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../context/authContext';
 import { loginSchema } from '../schemas/auth';
-import { Card } from '../components/ui';
-import { ShoppingBag, User, Lock, Eye, EyeOff } from 'lucide-react'; // Ojo y ojo tachado para el icono de mostrar/ocultar
-import './css/LoginPage.css'; // Importa el archivo CSS específico para la página de login
+import { Card, Button, Input } from '../components/ui'; // Importa el componente Input
+import { ShoppingBag, User, Lock, Eye, EyeOff } from 'lucide-react';
+import './css/LoginPage.css';
 
 export function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -44,8 +44,17 @@ export function LoginPage() {
                 <span className="input-group-text bg-primary-custom text-secondary-custom">
                   <User size={18} />
                 </span>
-                <input
+                <Input
                   type="text"
+                  style={{
+                    backgroundColor: "#F5F7FA",
+                    borderColor: "#05004E",
+                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                    fontSize: "16px",
+                    fontWeight: "500",
+                    fontFamily: "Poppins, sans-serif",
+                    color: "#05004E",
+                  }}
                   className={`form-control border-custom ${errors.DSC_NOMBREUSUARIO ? 'is-invalid' : ''}`}
                   placeholder="Usuario"
                   {...register('DSC_NOMBREUSUARIO')}
@@ -61,18 +70,28 @@ export function LoginPage() {
                 <span className="input-group-text bg-primary-custom text-secondary-custom">
                   <Lock size={18} />
                 </span>
-                <input
-                  type={showPassword ? 'text' : 'password'} // Cambia el tipo de input entre password y text
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  style={{
+                    backgroundColor: "#F5F7FA",
+                    borderColor: "#05004E",
+                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                    fontSize: "16px",
+                    fontWeight: "500",
+                    fontFamily: "Poppins, sans-serif",
+                    color: "#05004E",
+                  }}
                   className={`form-control border-custom ${errors.DSC_CONTRASENIA ? 'is-invalid' : ''}`}
                   placeholder="Contraseña"
                   {...register('DSC_CONTRASENIA')}
                 />
-                <button id="paswordField"
+                <button
+                  id="paswordField"
                   type="button"
                   className="btn"
-                  onClick={() => setShowPassword(!showPassword)} // Alterna entre mostrar y ocultar
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />} {}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />} { }
                 </button>
               </div>
               {errors.DSC_CONTRASENIA && (
@@ -83,14 +102,13 @@ export function LoginPage() {
             {loginErrors && loginErrors.map((error, i) => (
               <div key={i} className="alert alert-custom">{error}</div>
             ))}
-
-            <button
+            <hr></hr>
+            <Button
               type="submit"
               className="btn btn-primary w-100 border-custom"
             >
               Iniciar Sesión
-            </button>
-
+            </Button>
           </form>
         </div>
       </Card>

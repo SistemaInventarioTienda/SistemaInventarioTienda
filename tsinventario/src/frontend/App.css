@@ -1,5 +1,9 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+* {
+  font-family: "Poppins";
+}
+
 :root {
   --color-primary: #05004E;
   --color-secondary: #F5F7FA;
