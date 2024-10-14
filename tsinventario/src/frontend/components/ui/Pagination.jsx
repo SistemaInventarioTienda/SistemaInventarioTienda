@@ -1,4 +1,3 @@
-// src/components/ui/Pagination.jsx
 import React from "react";
 import "../css/table.css";
 

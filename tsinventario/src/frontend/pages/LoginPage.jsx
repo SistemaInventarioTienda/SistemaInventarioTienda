@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../context/authContext';
 import { loginSchema } from '../schemas/auth';
-import { Card, Button, Input } from '../components/ui'; // Importa el componente Input
+import { Card, Button, Input } from '../components/ui';
 import { ShoppingBag, User, Lock, Eye, EyeOff } from 'lucide-react';
 import './css/LoginPage.css';
 

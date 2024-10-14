@@ -1,5 +1,6 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+
 * {
   font-family: "Poppins";
 }
@@ -53,7 +54,9 @@ body {
   border-color: var(--color-primary);
 }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
   opacity: 0.9;
@@ -89,7 +92,7 @@ body {
   gap: 20px;
   width: 280px;
   height: 100vh;
-  background-color: var(--color-primary);
+  background-color: var(--color-primary) !important;
   color: var(--color-card);
   position: fixed;
   left: 0;
@@ -100,7 +103,8 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 280px; /* Ajusta el margen izquierdo para dar espacio al sidebar */
+  margin-left: 280px;
+  /* Ajusta el margen izquierdo para dar espacio al sidebar */
 }
 
 .navbar {
@@ -126,7 +130,8 @@ body {
   width: 256px;
 }
 
-.sidebar-link:hover, .sidebar-link.active {
+.sidebar-link:hover,
+.sidebar-link.active {
   background-color: var(--color-card);
   color: var(--color-primary);
 }

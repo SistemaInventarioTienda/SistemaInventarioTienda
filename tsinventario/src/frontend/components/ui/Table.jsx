@@ -3,14 +3,23 @@ import { Button } from "./Button";
 import { Eye, SquarePen, Trash, KeyRound } from "lucide-react";
 import "../css/table.css";
 
+// Define un objeto para los estados
+const STATUS_MAP = {
+    1: "Activo",
+    2: "Inactivo"
+};
+
 const StatusPill = ({ status }) => {
-    const isActive = status.toLowerCase() === "activo"
+
+    const statusString = STATUS_MAP[status] || "Desconocido";
+    const isActive = statusString.toLowerCase() === "activo";
+
     return (
-      <span className={`status-pill ${isActive ? "active" : "inactive"}`}>
-        {status}
-      </span>
-    )
-  }
+        <span className={`status-pill ${isActive ? "active" : "inactive"}`}>
+            {statusString}
+        </span>
+    );
+};
 
 const ActionsCell = ({ actions, rowData }) => {
     return (

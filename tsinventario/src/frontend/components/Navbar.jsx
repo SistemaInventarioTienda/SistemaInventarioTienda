@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bell, Settings } from 'lucide-react';
-import { Button } from './ui'; // Importa tu componente Button
+import { Button } from './ui';
 import { useAuth } from "../context/authContext";
 
 const Navbar = () => {

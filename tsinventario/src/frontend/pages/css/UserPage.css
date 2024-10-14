@@ -8,7 +8,7 @@
 .user-page-header h1 {
     font-size: 24px;
     font-weight: 600;
-    color: #05004E;
+    color: var(--color-primary) !important;
     margin: 0;
 }
 
@@ -19,7 +19,7 @@
 }
 
 .add-user-btn {
-    background-color: #05004E;
+    background-color: var(--color-primary) !important;
     color: #FFFFFF;
     border: none;
     border-radius: 8px;
@@ -41,11 +41,11 @@
 .search-input {
     width: 300px;
     background-color: #F5F7FA;
-    border: 1px solid #05004E;
+    border: 1px solid var(--color-primary) !important;
     border-radius: 8px;
     padding: 8px 12px;
     font-size: 16px;
-    color: #05004E;
+    color: var(--color-primary) !important;
 }
 
 .items-per-page {
@@ -61,11 +61,11 @@
 
 .items-per-page select {
     background-color: #F5F7FA;
-    border: 1px solid #05004E;
+    border: 1px solid var(--color-primary) !important;
     border-radius: 8px;
     padding: 4px 8px;
     font-size: 14px;
-    color: #05004E;
+    color: var(--color-primary) !important;
 }
 
 .search-input:focus {
