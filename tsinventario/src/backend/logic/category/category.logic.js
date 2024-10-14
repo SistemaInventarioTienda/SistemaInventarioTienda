@@ -51,7 +51,33 @@ export const updateCategory = async (DSC_NOMBRE,ESTADO,ID_CATEGORIA) => {
     }
 };
 
+export const getCategoryByName = async (DSC_NOMBRE) => {
+    try {
+        const category = await Category.findOne({ where: { DSC_NOMBRE } });
+        return category;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 
+export const disableCategory = async (DSC_NOMBRE) => {
+    try {
+
+        if (!await existName(DSC_NOMBRE)) {
+            return -2; 
+        }
+
+        const newCategory = await Category.update(
+            { ESTADO: 2,
+              FEC_MODIFICADOEN:new Date()
+             }, // Cambia el estado a 0 (desactivado)
+            { where: { DSC_NOMBRE } } // Asegúrate de especificar el `where`
+        );
+        return newCategory[0]>0?true:-1;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 
 async function validateNameCat(name) {
     if (await existName(name))
@@ -70,7 +96,7 @@ async function existNameAct(name, idToExclude) {
     const query = {
         where: {
             DSC_NOMBRE: name,
-            ...(idToExclude && { ID_CATEGORIA: { [Op.ne]: idToExclude } }) // Excluir el ID proporcionado si existe
+            ...(idToExclude && { ID_CATEGORIA: { [Op.ne]: idToExclude } }) 
         }
     };
 
@@ -79,7 +105,7 @@ async function existNameAct(name, idToExclude) {
     const nameFound = await Category.findOne(query);
     console.log("Resultado de la consulta:", nameFound);
     
-    return nameFound !== null; // Retorna true si se encuentra, false si no
+    return nameFound !== null;
 }
 
 async function existIDCat(id) {

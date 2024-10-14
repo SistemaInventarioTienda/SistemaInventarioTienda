@@ -1,5 +1,5 @@
 import Category from "../models/category.model.js";
-import {validateRegisterCat,saveCategory,updateCategory} from    "../logic/category/category.logic.js"
+import {validateRegisterCat,saveCategory,updateCategory,getCategoryByName,disableCategory} from    "../logic/category/category.logic.js"
 import { encryptData } from "../libs/encryptData.js";
 import { getDateCR } from "../libs/date.js";
 
@@ -114,5 +114,50 @@ export const getAllCategories = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
+    }
+};
+
+export const GetCategoryByName = async (req, res) => {
+    try {
+        const { DSC_NOMBRE } = req.body;
+
+        const category = await getCategoryByName(DSC_NOMBRE);
+        
+        if (!category) {
+            return res.status(404).json({ message: 'Categoría no encontrada' });
+        }
+
+        return res.status(200).json({ category });
+    } catch (error) {
+        return res.status(500).json({
+            error: {
+                message: "Ocurrió un error interno en el servidor",
+                details: error.message
+            }
+        });
+    }
+};
+
+
+export const DisableCategory = async (req, res) => {
+    try {
+        const { DSC_NOMBRE } = req.body; // Asumiendo que el nombre se pasa como parámetro de la URL
+
+        const status = await disableCategory(DSC_NOMBRE);
+
+        if (status === -2) {
+            return res.status(404).json({ message: 'Categoría no encontrada' });
+        } else if (status) {
+            return res.status(200).json({ message: 'Categoría desactivada con éxito, puedes volverla a activar luego.' });
+        } else {
+            return res.status(400).json({ message: 'Error al desactivar la categoría' });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            error: {
+                message: "Ocurrió un error interno en el servidor",
+                details: error.message
+            }
+        });
     }
 };
