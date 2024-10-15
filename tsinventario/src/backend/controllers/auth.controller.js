@@ -10,7 +10,7 @@ export const register = async (req, res) => {
   try {
     const {
       DSC_NOMBREUSUARIO, DSC_CORREO, DSC_CONTRASENIA, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
-      DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO
+      DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, CONFIRMARCONTRASENIA
     } = req.body;
 
     const output = await validateRegister(DSC_CORREO, DSC_TELEFONO, DSC_CEDULA, DSC_NOMBREUSUARIO);
@@ -20,6 +20,11 @@ export const register = async (req, res) => {
       })
     }
 
+    if(DSC_CONTRASENIA !== CONFIRMARCONTRASENIA){
+      return res.status(400).json({
+        message: 'Las contraseñas no coinciden.',
+      })
+    }
     // hashing the password
     const passwordHash = await encryptData(DSC_CONTRASENIA, 10);
 
