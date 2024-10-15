@@ -2,6 +2,7 @@ import Category from "../models/category.model.js";
 import {validateRegisterCat,saveCategory,updateCategory,getCategoryByName,disableCategory} from    "../logic/category/category.logic.js"
 import { encryptData } from "../libs/encryptData.js";
 import { getDateCR } from "../libs/date.js";
+import {validateCategoryName} from "../logic/validateFields.logic.js";
 
 
 
@@ -13,6 +14,13 @@ export const addCategory = async (req, res) => {
             DSC_NOMBRE, ESTADO
         } = req.body;
 
+
+        const validateFields = validateCategoryName(req);
+        if(validateFields !== true) {
+            return res.status(400).json({
+                message: validateFields,
+            })
+        }
         
         const output = await validateRegisterCat(DSC_NOMBRE);
         if (output !== true) {
@@ -48,6 +56,13 @@ export const UpdateCategory = async (req, res) => {
         const {
             ID_CATEGORIA ,DSC_NOMBRE, ESTADO
         } = req.body;
+
+        const validateFields = validateCategoryName(req);
+        if(validateFields !== true) {
+            return res.status(400).json({
+                message: validateFields,
+            })
+        }
 
         const status = await updateCategory(DSC_NOMBRE,ESTADO,ID_CATEGORIA);
             

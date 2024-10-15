@@ -75,3 +75,24 @@ export const validateRegisterUser = (req) => {
     return errors.length > 0 ? errors : true;
 };
 
+
+export const validateCategoryName = (req) => {
+    const {
+        DSC_NOMBRE
+    } = req.body;
+
+    // Lista de campos requeridos
+    const fields = [
+        { field: DSC_NOMBRE, name: 'DSC_NOMBRE' }
+    ];
+
+    const errors = [];
+
+    for (const { field, name } of fields) {
+        if (!isNotEmpty(field)) {
+            errors.push(`El campo ${name} es requerido y no puede estar vacío.`);
+        }
+    }
+    return errors.length > 0 ? errors : true;
+};
+

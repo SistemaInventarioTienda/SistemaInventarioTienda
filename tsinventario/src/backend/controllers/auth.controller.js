@@ -43,7 +43,7 @@ export const register = async (req, res) => {
       DSC_CORREO,
       DSC_CONTRASENIA: passwordHash,
       DSC_TELEFONO,
-      ID_ROL,
+      ID_ROL: 1,
       DSC_CEDULA,
       DSC_NOMBRE,
       DSC_APELLIDOUNO,
@@ -81,7 +81,12 @@ export const login = async (req, res) => {
   try {
     const { DSC_NOMBREUSUARIO, DSC_CONTRASENIA } = req.body;
 
-    const userFound = await User.findOne({ where: { DSC_NOMBREUSUARIO: DSC_NOMBREUSUARIO.toLowerCase() } });
+    const userFound = await User.findOne({ 
+      where: {
+          DSC_NOMBREUSUARIO: DSC_NOMBREUSUARIO.toLowerCase(),
+          ESTADO: 1
+        } 
+    });
     if (!userFound)
       return res.status(400).json({
         message: ["El nombre de usuario no existe"],
