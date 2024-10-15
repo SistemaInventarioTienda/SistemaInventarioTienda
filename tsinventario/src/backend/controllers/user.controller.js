@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import { encryptData } from "../libs/encryptData.js";
 import { validateUpdate } from "../logic/user/user.logic.js";
-import { getDateCR } from "../libs/date.js";
+import { validateUpdateUser } from "../logic/validateFields.logic.js";
 
 export const updateUser = async (req, res) => {
     try {
@@ -10,13 +10,19 @@ export const updateUser = async (req, res) => {
             DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO
         } = req.body;
 
-        const user = await User.findOne({ where: { DSC_CEDULA: req.params.id } });
+        const validateFields = validateUpdateUser(req);
+        if(validateFields !== true) {
+            return res.status(400).json({
+                message: validateFields,
+            })
+        }
 
+        const user = await User.findOne({ where: { DSC_CEDULA: req.params.id } });
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado." });
         }
 
-        const output = await validateUpdate();
+        const output = await validateUpdate(req);
         if (output !== true) {
             return res.status(400).json({
                 message: output,
@@ -24,7 +30,13 @@ export const updateUser = async (req, res) => {
         }
 
         // hashing the password
-        const passwordHash = await encryptData(DSC_CONTRASENIA, 10);
+        var passwordHash;
+        if(DSC_CONTRASENIA){
+            passwordHash = await encryptData(DSC_CONTRASENIA, 10);
+        } else {
+            passwordHash = user.DSC_CONTRASENIA;
+        }
+        
 
         await user.update({
             DSC_NOMBREUSUARIO, DSC_CORREO, DSC_CONTRASENIA: passwordHash, DSC_TELEFONO, ID_ROL, DSC_CEDULA,

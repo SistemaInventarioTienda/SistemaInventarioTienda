@@ -5,6 +5,7 @@ import { TOKEN_SECRET } from "../config.js";
 import { createAccessToken } from "../libs/jwt.js";
 import { getDateCR } from '../libs/date.js';
 import { validateRegister } from "../logic/user/user.logic.js";
+import { validateRegisterUser } from "../logic/validateFields.logic.js";
 
 export const register = async (req, res) => {
   try {
@@ -12,6 +13,13 @@ export const register = async (req, res) => {
       DSC_NOMBREUSUARIO, DSC_CORREO, DSC_CONTRASENIA, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
       DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, CONFIRMARCONTRASENIA
     } = req.body;
+
+    const validateFields = validateRegisterUser(req);
+    if(validateFields !== true) {
+        return res.status(400).json({
+            message: validateFields,
+        })
+    }
 
     const output = await validateRegister(DSC_CORREO, DSC_TELEFONO, DSC_CEDULA, DSC_NOMBREUSUARIO);
     if (output !== true) {
@@ -48,16 +56,16 @@ export const register = async (req, res) => {
     const userSaved = await newUser.save();
 
     // create access token
-    const token = await createAccessToken({
-      id: userSaved.DSC_CEDULA,
-      username: userSaved.DSC_NOMBREUSUARIO,
-    });
+    // const token = await createAccessToken({
+    //   id: userSaved.DSC_CEDULA,
+    //   username: userSaved.DSC_NOMBREUSUARIO,
+    // });
 
-    res.cookie("token", token, {
-      httpOnly: process.env.NODE_ENV !== "development",
-      secure: true,
-      sameSite: "none",
-    });
+    // res.cookie("token", token, {
+    //   httpOnly: process.env.NODE_ENV !== "development",
+    //   secure: true,
+    //   sameSite: "none",
+    // });
 
     res.json({
       id: userSaved.ID_USUARIO,
