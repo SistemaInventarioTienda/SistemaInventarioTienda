@@ -9,11 +9,11 @@ import { categorySchema } from "../schemas/category.schema.js";
 const router = Router();
 
 
- router.get("/categories",getAllCategories);
- router.post("/saveCategory",validateSchema(categorySchema),addCategory);
- router.put("/updateCategory",validateSchema(categorySchema),UpdateCategory);
- router.get("/getCategoryByName", GetCategoryByName);
- router.put("/disableCategory",validateSchema(categorySchema), DisableCategory);
+ router.get("/categories", auth, getAllCategories);
+ router.post("/saveCategory",auth, validateSchema(categorySchema),addCategory);
+ router.put("/updateCategory",auth, validateSchema(categorySchema),UpdateCategory);
+ router.get("/getCategoryByName", auth, GetCategoryByName);
+ router.put("/disableCategory",auth, validateSchema(categorySchema), DisableCategory);
 
 
 
