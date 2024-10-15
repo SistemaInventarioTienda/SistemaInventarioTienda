@@ -49,7 +49,7 @@ export default function CategoryPage() {
       const response = await getAllCategories(currentPage, itemsPerPage);
       const transformedCategories = response.category ? response.category.map(category => ({
         ...category,
-      })) : []; 
+      })) : [];
       setData(transformedCategories);
       setFilteredData(transformedCategories);
       setTotalPages(response.totalPages);
@@ -121,7 +121,7 @@ export default function CategoryPage() {
       await fetchCategories();
 
       setTimeout(() => {
-        setModalOpen(false);
+        setConfirmationModalOpen(false);
         setSuccessMessage("");
       }, 2000);
 
