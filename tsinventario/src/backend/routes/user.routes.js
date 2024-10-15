@@ -12,6 +12,6 @@ const router = Router();
 // Parte de administración de usuarios
 router.get("/all_user", getAllUsers);
 router.put("/update_user/:id", validateSchema(registerSchema), updateUser);
-router.delete("/delete_user", auth, deleteUser);
+router.delete("/delete_user/:id", deleteUser);
 
 export default router;

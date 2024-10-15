@@ -18,9 +18,9 @@ export const updateUser = async (req, res) => {
 
         const output = await validateUpdate();
         if (output !== true) {
-          return res.status(400).json({
-            message: output,
-          })
+            return res.status(400).json({
+                message: output,
+            })
         }
 
         // hashing the password
@@ -38,7 +38,30 @@ export const updateUser = async (req, res) => {
 };
 
 export const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findOne({
+            attributes: {
+              exclude: ['DSC_CONTRASENIA', 'FEC_CREADOEN']
+            },
+            where: { DSC_CEDULA: req.params.id }
+          });
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado." });
+        }
 
+        await user.update(
+            {
+                ESTADO: 2
+            },
+            {
+                where: { DSC_CEDULA: req.params.id }
+            }
+        );
+
+        return res.json(user);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 };
 
 export const getAllUsers = async (req, res) => {
