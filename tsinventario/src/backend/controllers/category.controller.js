@@ -101,7 +101,7 @@ export const getAllCategories = async (req, res) => {
 
         if (rows.length === 0) {
             return res.status(204).json({
-                message: "No se encontraron usuarios.",
+                message: "No se encontraron Categorias.",
             });
         }
 
