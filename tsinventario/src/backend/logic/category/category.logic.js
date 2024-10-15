@@ -100,10 +100,7 @@ async function existNameAct(name, idToExclude) {
         }
     };
 
-    console.log("Consultando si existe el nombre:", name, "excluyendo ID:", idToExclude);
-
     const nameFound = await Category.findOne(query);
-    console.log("Resultado de la consulta:", nameFound);
     
     return nameFound !== null;
 }

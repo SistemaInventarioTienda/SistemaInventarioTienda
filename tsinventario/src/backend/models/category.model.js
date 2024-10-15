@@ -26,7 +26,7 @@ ID_CATEGORIA: {
   }
 }, {
   timestamps: false,
-  tableName: 'tsim_cateoria',
+  tableName: 'tsim_categoria',
 });
 
 export default Category;

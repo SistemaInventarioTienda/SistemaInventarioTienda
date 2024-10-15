@@ -8,6 +8,7 @@ SET time_zone = '-06:00';
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+DROP DATABASE IF EXISTS `dbtiendasistemainventario`;
 CREATE DATABASE IF NOT EXISTS `dbtiendasistemainventario` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `dbtiendasistemainventario`;
 
@@ -167,14 +168,16 @@ CREATE TABLE `tsil_usuarioaudi` (
   `FEC_MODIFICADOEN` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS `tsim_cateoria`;
-CREATE TABLE `tsim_cateoria` (
+DROP TABLE IF EXISTS `tsim_categoria`;
+CREATE TABLE `tsim_categoria` (
   `ID_CATEGORIA` int(11) NOT NULL,
   `DSC_NOMBRE` varchar(100) DEFAULT NULL,
   `FEC_CREADOEN` datetime DEFAULT NULL,
   `FEC_MODIFICADOEN` datetime DEFAULT NULL,
   `ESTADO` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `tsim_categoria`(`ID_CATEGORIA`, `DSC_NOMBRE`, `FEC_CREADOEN`, `FEC_MODIFICADOEN`, `ESTADO`) VALUES 
+(1,'Ropa','2024-10-12 17:53:52','2024-10-12 17:53:52',1);
 
 DROP TABLE IF EXISTS `tsim_empresa`;
 CREATE TABLE `tsim_empresa` (
@@ -195,7 +198,8 @@ CREATE TABLE `tsim_estado` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `tsim_estado` (`ID_ESTADO`, `DSC_NOMBRE`, `DSC_PARA`, `FEC_CREADOEN`) VALUES
-(1, 'Activo', 'Lo que sea', '0009-10-24 00:00:00');
+(1, 'Activo', 'Lo que sea', '2024-10-12 17:53:52'),
+(2, 'Inactivo', 'Lo que sea x2', '2024-10-12 17:53:52');
 
 DROP TABLE IF EXISTS `tsim_fechainiciosesion`;
 CREATE TABLE `tsim_fechainiciosesion` (
@@ -425,7 +429,7 @@ ALTER TABLE `tsil_telefonoproveedoraudi`
 ALTER TABLE `tsil_usuarioaudi`
   ADD PRIMARY KEY (`ID_USUARIOAUDI`);
 
-ALTER TABLE `tsim_cateoria`
+ALTER TABLE `tsim_categoria`
   ADD PRIMARY KEY (`ID_CATEGORIA`),
   ADD KEY `ESTADO` (`ESTADO`);
 
@@ -556,7 +560,7 @@ ALTER TABLE `tsil_telefonoproveedoraudi`
 ALTER TABLE `tsil_usuarioaudi`
   MODIFY `ID_USUARIOAUDI` int(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `tsim_cateoria`
+ALTER TABLE `tsim_categoria`
   MODIFY `ID_CATEGORIA` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `tsim_empresa`
@@ -620,8 +624,8 @@ ALTER TABLE `tsit_usuario`
   MODIFY `ID_USUARIO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 
-ALTER TABLE `tsim_cateoria`
-  ADD CONSTRAINT `tsim_cateoria_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+ALTER TABLE `tsim_categoria`
+  ADD CONSTRAINT `tsim_categoria_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
 
 ALTER TABLE `tsim_fechainiciosesion`
   ADD CONSTRAINT `tsim_fechainiciosesion_ibfk_1` FOREIGN KEY (`ID_USUARIO`) REFERENCES `tsit_usuario` (`ID_USUARIO`);
@@ -634,7 +638,7 @@ ALTER TABLE `tsim_rol`
   ADD CONSTRAINT `tsim_rol_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
 
 ALTER TABLE `tsim_subcategoria`
-  ADD CONSTRAINT `tsim_subcategoria_ibfk_1` FOREIGN KEY (`ID_CATEGORIA`) REFERENCES `tsim_cateoria` (`ID_CATEGORIA`),
+  ADD CONSTRAINT `tsim_subcategoria_ibfk_1` FOREIGN KEY (`ID_CATEGORIA`) REFERENCES `tsim_categoria` (`ID_CATEGORIA`),
   ADD CONSTRAINT `tsim_subcategoria_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
 
 ALTER TABLE `tsim_tipoproveedor`
