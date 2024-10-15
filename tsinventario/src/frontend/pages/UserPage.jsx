@@ -187,6 +187,7 @@ export default function UserPage() {
         DSC_NOMBREUSUARIO: userData.nombreUsuario,
         ESTADO: userData.estado,
         DSC_CONTRASENIA: userData.contrasena,
+        CONFIRMARCONTRASENIA: userData.confirmarContrasena,
       };
 
       try{
