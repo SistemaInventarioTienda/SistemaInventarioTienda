@@ -4,7 +4,7 @@ Proyecto del curso de ingeniería en sistemas que vamos a desarrollar en 3 semes
 ## Índice
 1. [Descripción](#descripción)
 2. [Instalación](#instalación)
-3. [Uso](#uso)
+3. [Ejecución](#ejecución)
 4. [Contribuidores](#contribuidores)
 
 ## Descripción
@@ -27,6 +27,14 @@ yarn install
 cd src/backend
 npm install
 cd ../..
+```
+
+## Ejecución
+Para ejecutar el proyecto se debe estar en la carpeta:
+tsinventario
+
+Y se ejecuta el siguiente comando:
+```bash
 yarn electron-dev
 ```
 
