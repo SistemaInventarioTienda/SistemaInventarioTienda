@@ -16,13 +16,6 @@ const ModalConfirmation = ({ isOpen, onClose, onDelete, entityName, errorMessage
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="modalLabel">Eliminar {entityName}</h5>
-            <Button 
-              type="button"
-              className="btn-close"
-              aria-label="Close"
-              onClick={onClose} 
-              data-bs-dismiss="modal">
-            </Button>
           </div>
           <div className="modal-body">
             {errorMessages.length > 0 && (
