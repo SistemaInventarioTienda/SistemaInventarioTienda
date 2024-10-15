@@ -4,9 +4,10 @@ import { useAuth } from "../context/authContext";
 import PageLayout from "../components/PageLayout";
 import Table from "../components/ui/Table";
 import Pagination from "../components/ui/Pagination";
-import { getUsers, updateUser } from "../api/user";
+import { getUsers, updateUser, registerUser, deleteUser } from "../api/user";
 import { Button, Input, Select, Alert } from "../components/ui";
 import ModalComponent from "../components/Modal";
+import ModalConfirmation from "../components/ui/ModalConfirmation";
 import { UserPlus } from "lucide-react";
 import "./css/Page.css";
 
@@ -17,6 +18,8 @@ export default function UserPage() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [modalData, setModalData] = useState(null);
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,25 +56,27 @@ export default function UserPage() {
   ];
 
   // Lógica para obtener usuarios
+  const fetchUsers = async () => {
+    try {
+      const response = await getUsers(currentPage, itemsPerPage);
+      const transformedUsers = response.users.map(user => ({
+        ...user,
+      })) || [];
+      setData(transformedUsers);
+      setFilteredData(transformedUsers);
+      setTotalPages(response.totalPages);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
     } else {
-      const fetchUsers = async () => {
-        try {
-          const response = await getUsers(currentPage, itemsPerPage);
-          const transformedUsers = response.users.map(user => ({
-            ...user,
-          })) || [];
-          setData(transformedUsers);
-          setFilteredData(transformedUsers);
-          setTotalPages(response.totalPages);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
+      
       fetchUsers();
     }
   }, [isAuthenticated, navigate, currentPage, itemsPerPage]);
@@ -113,7 +118,39 @@ export default function UserPage() {
   const handleViewUser = (user) => openModal("view", user);
   const handleEditUser = (user) => openModal("edit", user);
   // eslint-disable-next-line
-  const handleDeleteUser = user => ("delete", user);
+
+  //funcion para comfirmar eliminacion de usuario de la tabla
+  const confirmDelete = (user) =>{
+    setModalData(user);
+    setModalOpen(false);
+    setConfirmationModalOpen(true);
+  };
+
+  const handleDeleteUser = (user) =>{
+    confirmDelete(user);
+    // updateUser(user.id, {ESTADO: "INACTIVO"}).then(() => fetchUsers());
+  };
+
+  const handleDelete = async (user) =>{
+    try{
+      await deleteUser(user.DSC_CEDULA);
+      setSuccessMessage("Usuario eliminado exitosamente");
+      await fetchUsers();
+
+      setConfirmationModalOpen(false);
+      setModalData(null);
+      setTimeout(() =>{
+        //setConfirmationModalOpen(true); //
+        setSuccessMessage("");
+      },2000);
+    } catch(err){
+      const errorMessage = err.message ?.data?.message || "Error desconocido al eliminar al usuario."
+      setErrorMessages([errorMessage]);
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
+  };
+  // const handleDeleteUser = user => ("delete", user);
   // eslint-disable-next-line
   const handleGrantPermissionsUser = user => ("grantPermissions", user);
 
@@ -139,6 +176,36 @@ export default function UserPage() {
   });
 
   const handleSubmit = async (userData) => {
+    if (modalMode === "add") {
+      const userPayload = {
+        DSC_CEDULA: userData.cedula,
+        DSC_NOMBRE: userData.nombre,
+        DSC_APELLIDOUNO: userData.primerApellido,
+        DSC_APELLIDODOS: userData.segundoApellido,
+        DSC_CORREO: userData.correo,
+        DSC_TELEFONO: userData.telefono,
+        DSC_NOMBREUSUARIO: userData.nombreUsuario,
+        ESTADO: userData.estado,
+        DSC_CONTRASENIA: userData.contrasena,
+      };
+
+      try{
+        console.log('data',userData);
+        console.log('payload',userPayload);
+        //funcion para guardar usuario 
+        await registerUser(userPayload);
+        await fetchUsers();
+
+        setModalOpen(false);
+        setErrorMessages([]);
+        console.log("Usuario agregado exitosamente");
+      }catch(e){
+        const errorMessage = e.response?.data?.message || "Error desconocido al agregar el usuario.";
+        setErrorMessages([errorMessage]);
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 5000);
+      }
+    }
     if (modalMode === "edit") {
       console.log("Updating user with data:", userData);
 
@@ -232,6 +299,14 @@ export default function UserPage() {
       />
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
 
+      <ModalConfirmation
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setConfirmationModalOpen(false)}
+        onDelete={() => handleDelete(modalData)}
+        entityName={modalData?.DSC_CEDULA}
+        errorMessages={errorMessages}
+        successMessage={successMessage}
+      />
       <ModalComponent
         isOpen={isModalOpen}
         mode={modalMode}
