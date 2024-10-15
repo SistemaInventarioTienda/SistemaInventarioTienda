@@ -1,0 +1,19 @@
+Icons: Terminado -> ✅, Falta ->❌
+
+
+Cosas por mejorar en las siguientes entregas:
+
+1. Login
+    ❌1.1 Poner un checkbox en la login para recordar usuario y contraseña. 
+        (Para evitar la fatiga de siempre tener que hacerlo)
+
+2. Categoria
+    ❌2.1 Ver la forma que al momento de filtrar si el dato existe, pero está en otra pag lo muestre en la pag 
+           actual.
+    ❌2.2 Si estoy en la pag 2, por ejemplo, y cambio que quiero en lugar de ver 5 registros a 10. 
+        Como solo hay 10 o menos me dice que no hay registros disponibles. Lo que debe hacer es redirigir a la pag 1.
+    ❌2.3 Al eliminar una categoria me deja el modal y no lo cierra.
+    
+3. Usuarios
+    ❌3.1 Ver la forma que al momento de filtrar si el dato existe, pero está en otra pag lo muestre en la pag actual.
+
