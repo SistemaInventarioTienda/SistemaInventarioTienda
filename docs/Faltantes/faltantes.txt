@@ -16,4 +16,5 @@ Cosas por mejorar en las siguientes entregas:
     
 3. Usuarios
     ❌3.1 Ver la forma que al momento de filtrar si el dato existe, pero está en otra pag lo muestre en la pag actual.
+    ❌3.2 Hay un usuario inactivo, y deseo ver su contenido y me dice que esta activo. Debe decir el estado real.
 
