@@ -176,8 +176,17 @@ CREATE TABLE `tsim_categoria` (
   `FEC_MODIFICADOEN` datetime DEFAULT NULL,
   `ESTADO` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `tsim_categoria`(`ID_CATEGORIA`, `DSC_NOMBRE`, `FEC_CREADOEN`, `FEC_MODIFICADOEN`, `ESTADO`) VALUES 
-(1,'Ropa','2024-10-12 17:53:52','2024-10-12 17:53:52',1);
+INSERT INTO `tsim_categoria` (`ID_CATEGORIA`, `DSC_NOMBRE`, `FEC_CREADOEN`, `FEC_MODIFICADOEN`, `ESTADO`) VALUES
+(3, 'Electronica', '2024-10-14 18:15:14', '2024-10-14 18:49:36', 2),
+(4, 'Ropa', '2024-10-14 18:15:23', NULL, 1),
+(5, 'Hogar y oficina', '2024-10-14 18:17:02', '2024-10-14 18:17:22', 1),
+(6, 'Juguetes y juegos', '2024-10-14 18:18:05', '2024-10-14 18:51:34', 1),
+(7, 'Alimentos y bebidas', '2024-10-14 18:18:15', NULL, 1),
+(8, 'Deportes y Aire libre', '2024-10-14 18:18:27', NULL, 1),
+(9, 'Belleza y cuidado personal', '2024-10-14 18:18:54', NULL, 1),
+(10, 'Libros y papelería', '2024-10-14 18:19:09', NULL, 1),
+(11, 'Zapatos y accesorios', '2024-10-14 18:19:21', '2024-10-14 18:20:40', 1),
+(12, 'Salud y bienestar', '2024-10-14 18:19:33', NULL, 1);
 
 DROP TABLE IF EXISTS `tsim_empresa`;
 CREATE TABLE `tsim_empresa` (
