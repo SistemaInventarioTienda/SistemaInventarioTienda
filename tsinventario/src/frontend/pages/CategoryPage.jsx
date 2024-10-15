@@ -47,9 +47,9 @@ export default function CategoryPage() {
   const fetchCategories = async () => {
     try {
       const response = await getAllCategories(currentPage, itemsPerPage);
-      const transformedCategories = response.category.map(category => ({
+      const transformedCategories = response.category ? response.category.map(category => ({
         ...category,
-      }));
+      })) : []; 
       setData(transformedCategories);
       setFilteredData(transformedCategories);
       setTotalPages(response.totalPages);
@@ -119,12 +119,12 @@ export default function CategoryPage() {
       await deleteCategory(category.DSC_NOMBRE);
       setSuccessMessage("Eliminado exitosamente");
       await fetchCategories();
-      
+
       setTimeout(() => {
-        setModalOpen(false); 
+        setModalOpen(false);
         setSuccessMessage("");
       }, 2000);
-      
+
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Error desconocido al eliminar la categoría.";
       setErrorMessages([errorMessage]);
