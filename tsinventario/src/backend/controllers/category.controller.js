@@ -1,6 +1,5 @@
 import Category from "../models/category.model.js";
-import {validateRegisterCat,saveCategory,updateCategory,getCategoryByName,disableCategory} from    "../logic/category/category.logic.js"
-import { encryptData } from "../libs/encryptData.js";
+import {validateRegisterCat,saveCategory,updateCategory,disableCategory} from    "../logic/category/category.logic.js"
 import { getDateCR } from "../libs/date.js";
 import {validateCategoryName} from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';

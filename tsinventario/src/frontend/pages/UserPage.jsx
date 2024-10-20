@@ -73,6 +73,7 @@ export default function UserPage() {
   };
 
   useEffect(() => {
+    document.title = 'Usuarios';
     if (!isAuthenticated) {
       navigate("/login");
     } else {

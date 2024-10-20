@@ -79,7 +79,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { DSC_NOMBREUSUARIO, DSC_CONTRASENIA } = req.body;
+    const { DSC_NOMBREUSUARIO, DSC_CONTRASENIA, REMEMBERME = false } = req.body;
 
     const userFound = await User.findOne({ 
       where: {
@@ -102,7 +102,9 @@ export const login = async (req, res) => {
     const token = await createAccessToken({
       id: userFound.DSC_CEDULA,
       username: userFound.DSC_NOMBREUSUARIO,
-    });
+    }, 
+    REMEMBERME ? '30d' : '1d'
+    );
 
     res.cookie("token", token, {
       httpOnly: process.env.NODE_ENV !== "development",

@@ -12,7 +12,7 @@ import { loginSchema, registerSchema } from "../schemas/auth.schema.js";
 const router = Router();
 
 // Parte de autenticación de los usuarios del sistema
-router.post("/register", auth, validateSchema(registerSchema), register); //Agregar la verificación del token
+router.post("/register", auth, validateSchema(registerSchema), register);
 router.post("/login", validateSchema(loginSchema), login);
 router.get("/verify", verifyToken); //Creo que se debe quitar
 router.post("/logout", verifyToken, logout);

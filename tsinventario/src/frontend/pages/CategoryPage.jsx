@@ -64,6 +64,7 @@ export default function CategoryPage() {
   };
 
   useEffect(() => {
+    document.title = 'Categorias';
     if (!isAuthenticated) {
       navigate("/login");
     } else {
