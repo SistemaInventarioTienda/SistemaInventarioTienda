@@ -3,7 +3,7 @@ import {validateRegisterCat,saveCategory,updateCategory,getCategoryByName,disabl
 import { encryptData } from "../libs/encryptData.js";
 import { getDateCR } from "../libs/date.js";
 import {validateCategoryName} from "../logic/validateFields.logic.js";
-
+import { Op } from 'sequelize';
 
 
 //agregar categoria al sistema
@@ -102,7 +102,7 @@ export const UpdateCategoryResponse = (status, res) => {
 export const getAllCategories = async (req, res) => {
     try {
         // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
-        const { page = 1, pageSize = 2 } = req.query;
+        const { page = 1, pageSize = 5 } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
@@ -111,7 +111,10 @@ export const getAllCategories = async (req, res) => {
                 exclude: ['FEC_MODIFICADOEN']
             },
             limit,
-            offset
+            offset,
+            order: [
+                ['DSC_NOMBRE', 'ASC'],
+            ]
         });
 
         if (rows.length === 0) {
@@ -132,25 +135,40 @@ export const getAllCategories = async (req, res) => {
     }
 };
 
-export const GetCategoryByName = async (req, res) => {
+export const searchCategories = async (req, res) => {
     try {
-        // const { DSC_NOMBRE } = req.body;
-        const { DSC_NOMBRE } = req.query;
+        // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
+        const { page = 1, pageSize = 5, DSC_NOMBRE = '' } = req.query;
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
 
-        const categories = await getCategoryByName(DSC_NOMBRE);
-        
-        if (!categories|| categories.length === 0) {
-            return res.status(404).json({ message: 'Categoría no encontrada' });
+        const { count, rows } = await Category.findAndCountAll({
+            attributes: {
+                exclude: ['FEC_MODIFICADOEN']
+            },
+            limit,
+            offset,
+            order: [
+                ['DSC_NOMBRE', 'ASC'],
+            ],
+            where: { DSC_NOMBRE: { [Op.like]: `%${DSC_NOMBRE}%` } }
+        });
+
+        if (rows.length === 0) {
+            return res.status(204).json({
+                message: "No se encontraron categorias.",
+            });
         }
 
-        return res.status(200).json({ category: categories });
-    } catch (error) {
-        return res.status(500).json({
-            error: {
-                message: "Ocurrió un error interno en el servidor",
-                details: error.message
-            }
+        res.json({
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            category: rows
         });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 };
 

@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import { encryptData } from "../libs/encryptData.js";
 import { validateUpdate } from "../logic/user/user.logic.js";
 import { validateUpdateUser } from "../logic/validateFields.logic.js";
+import { Op } from 'sequelize';
 
 export const updateUser = async (req, res) => {
     try {
@@ -79,7 +80,7 @@ export const deleteUser = async (req, res) => {
 export const getAllUsers = async (req, res) => {
     try {
         // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
-        const { page = 1, pageSize = 2 } = req.query;
+        const { page = 1, pageSize = 5 } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
@@ -88,8 +89,15 @@ export const getAllUsers = async (req, res) => {
                 exclude: ['DSC_CONTRASENIA', 'ID_USUARIO', 'FEC_CREADOEN']
             },
             limit,
-            offset
+            offset,
+            order: [
+                ['DSC_CEDULA', 'ASC'],
+                ['DSC_NOMBRE', 'ASC'],
+                ['DSC_APELLIDOUNO', 'ASC'],
+                ['DSC_APELLIDODOS', 'ASC'],
+            ]
         });
+        
 
         if (rows.length === 0) {
             return res.status(204).json({
@@ -108,3 +116,53 @@ export const getAllUsers = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+export const searchUser = async (req, res) => {
+    try {
+        // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
+        const { page = 1, pageSize = 5, search = '' } = req.query;
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
+
+        const expectedMatch = { [Op.like]: `%${search}%` }; 
+        const { count, rows } = await User.findAndCountAll({
+            attributes: {
+                exclude: ['DSC_CONTRASENIA', 'ID_USUARIO', 'FEC_CREADOEN']
+            },
+            limit,
+            offset,
+            order: [
+                ['DSC_CEDULA', 'ASC'],
+                ['DSC_NOMBRE', 'ASC'],
+                ['DSC_APELLIDOUNO', 'ASC'],
+                ['DSC_APELLIDODOS', 'ASC'],
+            ],
+            where: {
+                [Op.or]: [
+                    { DSC_CEDULA: expectedMatch },
+                    { DSC_NOMBRE: expectedMatch },
+                    { DSC_APELLIDOUNO: expectedMatch },
+                    { DSC_APELLIDODOS: expectedMatch },
+                    { DSC_TELEFONO: expectedMatch },
+                    { DSC_NOMBREUSUARIO: expectedMatch }
+                ]
+            }
+        });
+
+        if (rows.length === 0) {
+            return res.status(204).json({
+                message: "No se encontraron usuarios.",
+            });
+        }
+
+        res.json({
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            users: rows
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}

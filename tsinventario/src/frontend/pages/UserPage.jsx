@@ -279,7 +279,7 @@ export default function UserPage() {
           placeholder="Buscar usuarios..."
         />
         <div className="items-per-page">
-          <label htmlFor="itemsPerPage">Cantidad de registros a mostrar:</label>
+          <label htmlFor="itemsPerPage">Mostrar</label>
           <Select
             value={itemsPerPage}
             onChange={(e) => setItemsPerPage(Number(e.target.value))}
@@ -288,6 +288,7 @@ export default function UserPage() {
             <option value={10}>10</option>
             <option value={15}>15</option>
           </Select>
+          <label htmlFor="itemsPerPage">por página</label>
         </div>
       </div>
       <Table

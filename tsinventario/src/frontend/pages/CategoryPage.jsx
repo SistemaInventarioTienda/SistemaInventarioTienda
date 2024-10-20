@@ -107,7 +107,7 @@ export default function CategoryPage() {
       setLoading(true);
       setSearchError(null); // Limpiamos cualquier mensaje de error de busqueda anterior.
 
-      const response = await searchCategoryByName(searchTerm);
+      const response = await searchCategoryByName(currentPage, itemsPerPage, searchTerm);
       console.log(response);
 
       if (!response.category || response.category.length === 0) {
@@ -275,7 +275,7 @@ export default function CategoryPage() {
         {searchError && <div className="alert alert-warning">{searchError}</div>}  {/* Mostrar la alerta si hay un error */}
 
         <div className="items-per-page">
-          <label htmlFor="itemsPerPage">Cantidad de registros a mostrar:</label>
+          <label htmlFor="itemsPerPage">Mostrar</label>
           <Select
             value={itemsPerPage}
             onChange={(e) => setItemsPerPage(Number(e.target.value))}
@@ -284,6 +284,7 @@ export default function CategoryPage() {
             <option value={10}>10</option>
             <option value={15}>15</option>
           </Select>
+          <label htmlFor="itemsPerPage">por página</label>
         </div>
       </div>
       <Table

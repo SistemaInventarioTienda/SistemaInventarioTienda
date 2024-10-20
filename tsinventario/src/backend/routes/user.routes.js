@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
     updateUser,
     deleteUser,
-    getAllUsers
+    getAllUsers,
+    searchUser
 } from "../controllers/user.controller.js";
 import { auth } from "../middlewares/auth.middleware.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
@@ -13,5 +14,6 @@ const router = Router();
 router.get("/all_user", auth, getAllUsers);
 router.put("/update_user/:id", auth,  validateSchema(updateSchema), updateUser);
 router.delete("/delete_user/:id", auth, deleteUser);
+router.get("/searchUser", auth, searchUser)
 
 export default router;
