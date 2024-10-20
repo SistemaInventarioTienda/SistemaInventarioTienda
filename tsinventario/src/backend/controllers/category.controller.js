@@ -102,10 +102,12 @@ export const UpdateCategoryResponse = (status, res) => {
 export const getAllCategories = async (req, res) => {
     try {
         // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
-        const { page = 1, pageSize = 5 } = req.query;
+        const { page = 1, pageSize = 5, orderByField = 'DSC_NOMBRE', order = 'asc' } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
+        const field = orderByField === 'DSC_NOMBRE' || orderByField === 'ESTADO' ? orderByField : 'DSC_NOMBRE';
+        const shortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
         const { count, rows } = await Category.findAndCountAll({
             attributes: {
                 exclude: ['FEC_MODIFICADOEN']
@@ -113,7 +115,7 @@ export const getAllCategories = async (req, res) => {
             limit,
             offset,
             order: [
-                ['DSC_NOMBRE', 'ASC'],
+                [field, shortOrder],
             ]
         });
 

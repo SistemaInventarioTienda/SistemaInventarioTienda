@@ -1,9 +1,16 @@
 import axios from '../api/axios';
 
-// Obtener todas las categorías
-export const getAllCategories = async (page, pageSize) => {
+/**
+ * Obtiene todas las categorias ordenadas. ASC por defecto.
+ * @param page int Numeró de página
+ * @param pageSize int Tamaño de página
+ * @param orderByField varchar Campo por el cual desea ordenar
+ * @param order varchar ordenar de forma ASC o DESC
+ * @return json Todas las categorias ordenadas (ASC por defecto o DESC)
+ */
+export const getAllCategories = async (page, pageSize, orderByField, order) => {
     try {
-        const response = await axios.get(`/category/categories`, { params: { page, pageSize } });
+        const response = await axios.get(`/category/categories`, { params: { page, pageSize, orderByField, order } });
         return response.data;
     } catch (error) {
         console.error('Error fetching categories:', error.message);
