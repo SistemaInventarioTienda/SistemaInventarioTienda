@@ -44,3 +44,14 @@ export const updateCategory = async (categoryData) => {
         throw error;
     }
 };
+
+// Buscar una categoría por nombre
+export const searchCategoryByName = async (DSC_NOMBRE) => {
+    try {
+        const response = await axios.get(`/category/searchCategory`, { params: { DSC_NOMBRE } });
+        return response.data;
+    } catch (error) {
+        console.error('Error searching category:', error.message);
+        throw error;
+    }
+};

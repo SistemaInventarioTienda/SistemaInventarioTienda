@@ -52,12 +52,19 @@ export const updateCategory = async (DSC_NOMBRE,ESTADO,ID_CATEGORIA) => {
 };
 
 export const getCategoryByName = async (DSC_NOMBRE) => {
-    try {
-        const category = await Category.findOne({ where: { DSC_NOMBRE } });
-        return category;
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    // try {
+    //     const category = await Category.findOne({ where: { DSC_NOMBRE } });
+    //     return category;
+    // } catch (error) {
+    //     throw new Error(error.message);
+    // }
+    return await Category.findAll({
+        where: {
+            DSC_NOMBRE: {
+                [Op.like]: `%${DSC_NOMBRE}%`
+            }
+        }
+    });
 };
 
 export const disableCategory = async (DSC_NOMBRE) => {

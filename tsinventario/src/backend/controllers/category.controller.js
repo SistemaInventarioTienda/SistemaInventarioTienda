@@ -134,15 +134,16 @@ export const getAllCategories = async (req, res) => {
 
 export const GetCategoryByName = async (req, res) => {
     try {
-        const { DSC_NOMBRE } = req.body;
+        // const { DSC_NOMBRE } = req.body;
+        const { DSC_NOMBRE } = req.query;
 
-        const category = await getCategoryByName(DSC_NOMBRE);
+        const categories = await getCategoryByName(DSC_NOMBRE);
         
-        if (!category) {
+        if (!categories|| categories.length === 0) {
             return res.status(404).json({ message: 'Categoría no encontrada' });
         }
 
-        return res.status(200).json({ category });
+        return res.status(200).json({ category: categories });
     } catch (error) {
         return res.status(500).json({
             error: {

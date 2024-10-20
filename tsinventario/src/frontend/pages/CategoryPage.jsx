@@ -4,11 +4,13 @@ import { useAuth } from "../context/authContext";
 import PageLayout from "../components/PageLayout";
 import Table from "../components/ui/Table";
 import Pagination from "../components/ui/Pagination";
-import { getAllCategories, saveCategory, updateCategory, deleteCategory } from "../api/category";
+import { getAllCategories, saveCategory, updateCategory, deleteCategory, searchCategoryByName } from "../api/category";
 import { Button, Input, Select } from "../components/ui";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ModalComponent from "../components/Modal";
 import { Tag } from "lucide-react";
+import { Search } from "lucide-react";
+
 import "./css/Page.css";
 
 export default function CategoryPage() {
@@ -30,6 +32,7 @@ export default function CategoryPage() {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [errorMessages, setErrorMessages] = useState([]);
   // eslint-disable-next-line
+  const [searchError, setSearchError] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
 
   const columns = [
@@ -92,13 +95,46 @@ export default function CategoryPage() {
   };
 
   // Lógica de búsqueda
+  const handleSearch = async () => {
+    if(!searchTerm.trim()){
+      //si no hay terminos de busqueda, cargamos todas las categorias.
+      await fetchCategories();
+      setSearchError(null);//Limpiamos cualquier mensaje de error de busqueda.
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setSearchError(null); // Limpiamos cualquier mensaje de error de busqueda anterior.
+
+      const response = await searchCategoryByName(searchTerm);
+      console.log(response);
+
+      if (!response.category || response.category.length === 0) {
+        setSearchError("No se encontraron resultados para esa categoria.");
+        
+      }else{
+        const transformedCategories = response.category.map(category => ({
+          ...category,
+        }));
+        setFilteredData(transformedCategories);
+        setTotalPages(1);
+      }
+      
+    } catch (err) {
+      setSearchError("No se encontraron resultados para la categoria.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  /*** 
   useEffect(() => {
     const filtered = searchTerm.trim()
       ? data.filter(category => category.DSC_NOMBRE.toLowerCase().includes(searchTerm.toLowerCase()))
       : data;
     setFilteredData(filtered);
   }, [searchTerm, data]);
-
+  */
   const handlePageChange = (page) => setCurrentPage(page);
 
   // Funciones para gestionar acciones en la tabla
@@ -208,13 +244,36 @@ export default function CategoryPage() {
         </Button>
       </div>
       <div className="page-controls">
-        <Input
-          type="text"
-          className="search-input"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Buscar categorías..."
-        />
+        <div className="search-container">
+          <Input
+            type="text"
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              if(e.target.value === ''){
+                fetchCategories();
+                setSearchError(null);//Limpiamos el mensaje de error si el input esta vacio.
+              }else{
+                setSearchError(null);// Limpiamos el error si el usuario vuelve a escribir
+              }
+            }}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch(); // Realiza la busqueda al presionar Enter
+              }
+            }}
+            placeholder="Buscar categorías..."
+          />
+          <Button className="search-btn" onClick={handleSearch}> 
+            <Search size={20}/>
+            Buscar
+          </Button>
+        </div>
+        
+
+        {searchError && <div className="alert alert-warning">{searchError}</div>}  {/* Mostrar la alerta si hay un error */}
+
         <div className="items-per-page">
           <label htmlFor="itemsPerPage">Cantidad de registros a mostrar:</label>
           <Select
