@@ -42,3 +42,13 @@ export const deleteUser = async (id) => {
         throw error;
     }
 };
+
+export const searchUser = async (page, pageSize, search) => {
+    try {
+        const response = await axios.get(`/user/searchUser`, { params: { page, pageSize, search } });
+        return response.data;
+    } catch (error) {
+        console.error('Error searching user:', error.message);
+        throw error;
+    }
+};

@@ -31,3 +31,8 @@
 .is-invalid {
     border-color: #dc3545 !important;
 }
+
+input[type="checkbox"] {
+    border-color: var(--color-primary);
+    background-color: var(--primary-custom);
+}

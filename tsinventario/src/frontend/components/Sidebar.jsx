@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2 } from 'lucide-react';
+import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, ChevronLeft, ChevronRight } from 'lucide-react';
+import './css/sidebar.css';
 
 const Sidebar = () => {
     const { isAuthenticated } = useAuth();
     const location = useLocation();
+    const [collapsed, setCollapsed] = useState(false);
 
     if (!isAuthenticated) {
         return null;
@@ -24,16 +26,19 @@ const Sidebar = () => {
     ];
 
     return (
-        <div className="sidebar bg-primary-custom" style={{ width: '280px', height: '100vh', paddingTop: '20px'}}>
+        <div className={`sidebar ${collapsed ? 'collapsed' : ''}`} >
+            <div className="sidebar-toggle" onClick={() => setCollapsed(!collapsed)}>
+                {collapsed ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
+            </div>
             <ul className="list-unstyled">
                 {menuItems.map((item, index) => (
                     <li key={item.path} style={{ marginBottom: index < menuItems.length - 1 ? '20px' : '0' }}>
-                        <Link 
-                            to={item.path} 
+                        <Link
+                            to={item.path}
                             className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
                         >
                             <item.icon size={24} />
-                            <span>{item.text}</span>
+                            {!collapsed && <span>{item.text}</span>}
                         </Link>
                     </li>
                 ))}

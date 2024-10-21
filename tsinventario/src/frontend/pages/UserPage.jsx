@@ -4,11 +4,11 @@ import { useAuth } from "../context/authContext";
 import PageLayout from "../components/PageLayout";
 import Table from "../components/ui/Table";
 import Pagination from "../components/ui/Pagination";
-import { getUsers, updateUser, registerUser, deleteUser } from "../api/user";
+import { getUsers, updateUser, registerUser, deleteUser, searchUser } from "../api/user";
 import { Button, Input, Select, Alert } from "../components/ui";
 import ModalComponent from "../components/Modal";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Search, User } from "lucide-react";
 import "./css/Page.css";
 
 export default function UserPage() {
@@ -20,6 +20,7 @@ export default function UserPage() {
   const [modalData, setModalData] = useState(null);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  // eslint-disable-next-line
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +30,8 @@ export default function UserPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [errorMessages, setErrorMessages] = useState([]);
+  // eslint-disable-next-line
+  const [searchError, setSearchError] = useState(null);
   // eslint-disable-next-line
   const [showAlert, setShowAlert] = useState(false);
 
@@ -61,6 +64,7 @@ export default function UserPage() {
       const response = await getUsers(currentPage, itemsPerPage);
       const transformedUsers = response.users.map(user => ({
         ...user,
+        ESTADO: user.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
       })) || [];
       setData(transformedUsers);
       setFilteredData(transformedUsers);
@@ -77,7 +81,7 @@ export default function UserPage() {
     if (!isAuthenticated) {
       navigate("/login");
     } else {
-      
+
       fetchUsers();
     }
   }, [isAuthenticated, navigate, currentPage, itemsPerPage]);
@@ -106,12 +110,36 @@ export default function UserPage() {
   };
 
   // Lógica de búsqueda
-  useEffect(() => {
-    const filtered = searchTerm.trim()
-      ? data.filter(user => user.DSC_NOMBRE.toLowerCase().includes(searchTerm.toLowerCase()) || user.DSC_CEDULA.includes(searchTerm))
-      : data;
-    setFilteredData(filtered);
-  }, [searchTerm, data]);
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) {
+      await fetchUsers();
+      setSearchError(null);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setSearchError(null);
+
+      const response = await searchUser(currentPage, itemsPerPage, searchTerm);
+      console.log(response);
+
+      if (!response.users || response.users.length === 0) {
+        setSearchError("No se encontraron resultados para ese criterio.");
+      } else {
+        const transformedUsers = response.users.map(user => ({
+          ...user,
+          ESTADO: user.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
+        }));
+        setFilteredData(transformedUsers);
+        setTotalPages(1);
+      }
+    } catch (err) {
+      setSearchError("No se encontraron resultados para ese criterio.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePageChange = (page) => setCurrentPage(page);
 
@@ -121,31 +149,30 @@ export default function UserPage() {
   // eslint-disable-next-line
 
   //funcion para comfirmar eliminacion de usuario de la tabla
-  const confirmDelete = (user) =>{
+  const confirmDelete = (user) => {
     setModalData(user);
     setModalOpen(false);
     setConfirmationModalOpen(true);
   };
 
-  const handleDeleteUser = (user) =>{
+  const handleDeleteUser = (user) => {
     confirmDelete(user);
-    // updateUser(user.id, {ESTADO: "INACTIVO"}).then(() => fetchUsers());
   };
 
-  const handleDelete = async (user) =>{
-    try{
+  const handleDelete = async (user) => {
+    try {
       await deleteUser(user.DSC_CEDULA);
       setSuccessMessage("Usuario eliminado exitosamente");
       await fetchUsers();
 
       setConfirmationModalOpen(false);
       setModalData(null);
-      setTimeout(() =>{
+      setTimeout(() => {
         //setConfirmationModalOpen(true); //
         setSuccessMessage("");
-      },2000);
-    } catch(err){
-      const errorMessage = err.message ?.data?.message || "Error desconocido al eliminar al usuario."
+      }, 2000);
+    } catch (err) {
+      const errorMessage = err.message?.data?.message || "Error desconocido al eliminar al usuario."
       setErrorMessages([errorMessage]);
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
@@ -172,11 +199,13 @@ export default function UserPage() {
     telefono: user.DSC_TELEFONO,
     nombreUsuario: user.DSC_NOMBREUSUARIO,
     estado: user.ESTADO === "ACTIVO" ? 1 : 2,
+    //estado: user.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
     contrasena: '',
     confirmarContrasena: '',
   });
 
   const handleSubmit = async (userData) => {
+
     if (modalMode === "add") {
       const userPayload = {
         DSC_CEDULA: userData.cedula,
@@ -191,9 +220,9 @@ export default function UserPage() {
         CONFIRMARCONTRASENIA: userData.confirmarContrasena,
       };
 
-      try{
-        console.log('data',userData);
-        console.log('payload',userPayload);
+      try {
+        console.log('data', userData);
+        console.log('payload', userPayload);
         //funcion para guardar usuario 
         await registerUser(userPayload);
         await fetchUsers();
@@ -201,7 +230,7 @@ export default function UserPage() {
         setModalOpen(false);
         setErrorMessages([]);
         console.log("Usuario agregado exitosamente");
-      }catch(e){
+      } catch (e) {
         const errorMessage = e.response?.data?.message || "Error desconocido al agregar el usuario.";
         setErrorMessages([errorMessage]);
         setShowAlert(true);
@@ -224,21 +253,10 @@ export default function UserPage() {
       };
 
       console.log("Updating user with  payload:", userPayload);
-
-      if (!userPayload.DSC_CONTRASENIA) {
-        userPayload.DSC_CONTRASENIA = 'adminadmin';
-      }
-
       try {
-        const updatedUser = await updateUser(userData.cedula, userPayload);
-        const updatedData = data.map((user) =>
-          user.DSC_CEDULA === userData.cedula ? { ...user, ...userPayload } : user
-        );
-        setData(updatedData);
-        setFilteredData(updatedData);
+        await updateUser(userData.cedula, userPayload);
+        await fetchUsers();
         setModalOpen(false);
-        setErrorMessages([]);
-        console.log("User updated successfully:", updatedUser);
       } catch (error) {
         const errorMessage = error.response?.data?.message || "Error desconocido al actualizar el usuario.";
         setErrorMessages([errorMessage]);
@@ -254,31 +272,44 @@ export default function UserPage() {
   return (
 
     <PageLayout>
-      <Alert
-        className="'alert-custom error"
-        onClose={() => setErrorMessages([])}
-        sx={{ mb: 2 }}
-      >
-        SOY UNA ALERTA
-      </Alert>
       <div className="page-header">
         <div>
-          <h1>Usuarios</h1>
+          <h1>usuarios</h1>
           <p>Gestión de usuarios del sistema</p>
         </div>
         <Button className="add-btn" onClick={handleAddUser}>
-          <UserPlus size={20} />
+          <User size={20} />
           Agregar Usuario
         </Button>
       </div>
       <div className="page-controls">
-        <Input
-          type="text"
-          className="search-input"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Buscar usuarios..."
-        />
+        <div className="search-container">
+          <Input
+            type="text"
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              if (e.target.value === '') {
+                fetchUsers();
+                setSearchError(null);
+              } else {
+                setSearchError(null);
+              }
+            }}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
+            placeholder="Buscar usuarios..."
+          />
+          <Button className="search-btn" onClick={handleSearch}>
+            <Search size={20} />
+            Buscar
+          </Button>
+        </div>
+
         <div className="items-per-page">
           <label htmlFor="itemsPerPage">Mostrar</label>
           <Select

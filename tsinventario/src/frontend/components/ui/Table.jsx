@@ -3,19 +3,13 @@ import { Button } from "./Button";
 import { Eye, SquarePen, Trash, KeyRound, ChevronDown, ChevronUp } from "lucide-react";
 import "../css/table.css";
 
-const STATUS_MAP = {
-    1: "Activo",
-    2: "Inactivo"
-};
-
 const StatusPill = ({ status }) => {
 
-    const statusString = STATUS_MAP[status] || "Desconocido";
-    const isActive = statusString.toLowerCase() === "activo";
+    const isActive = status.toLowerCase() === "activo"; // Comprueba si el estado es "ACTIVO"
 
     return (
         <span className={`status-pill ${isActive ? "active" : "inactive"}`}>
-            {statusString}
+            {status}
         </span>
     );
 };
@@ -80,7 +74,6 @@ const ActionsCell = ({ actions, rowData }) => {
                     <Trash size={20} color="#FFFFFF" />
                 </Button>
             )}
-
         </div>
     );
 };
@@ -101,20 +94,22 @@ const Table = ({ columns, data, actions, onSort, sortField, sortOrder }) => {
                                 {column.field !== "actions" && (
                                     <>
                                         {sortField === column.field ? (
-                                            sortOrder === "asc" ? (
+                                            sortOrder === 'asc' ? (
                                                 <ChevronUp className="chevron-icon" />
                                             ) : (
                                                 <ChevronDown className="chevron-icon" />
                                             )
                                         ) : (
-                                            <ChevronDown className="chevron-icon" />
+                                            <ChevronUp className="chevron-icon default-chevron" />
                                         )}
                                     </>
                                 )}
                             </th>
+
                         ))}
                     </tr>
                 </thead>
+
                 <tbody>
                     {data && data.length > 0 ? (
                         data.map((row, rowIndex) => (

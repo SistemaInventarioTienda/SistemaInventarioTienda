@@ -8,9 +8,7 @@ import { getAllCategories, saveCategory, updateCategory, deleteCategory, searchC
 import { Button, Input, Select } from "../components/ui";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ModalComponent from "../components/Modal";
-import { Tag } from "lucide-react";
-import { Search } from "lucide-react";
-
+import { Tag, Search } from "lucide-react";
 import "./css/Page.css";
 
 export default function CategoryPage() {
@@ -22,6 +20,7 @@ export default function CategoryPage() {
   const [modalData, setModalData] = useState(null);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  // eslint-disable-next-line
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +32,7 @@ export default function CategoryPage() {
   const [errorMessages, setErrorMessages] = useState([]);
   // eslint-disable-next-line
   const [searchError, setSearchError] = useState(null);
+  // eslint-disable-next-line
   const [showAlert, setShowAlert] = useState(false);
 
   const columns = [
@@ -52,6 +52,7 @@ export default function CategoryPage() {
       const response = await getAllCategories(currentPage, itemsPerPage);
       const transformedCategories = response.category ? response.category.map(category => ({
         ...category,
+        ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
       })) : [];
       setData(transformedCategories);
       setFilteredData(transformedCategories);
@@ -76,12 +77,17 @@ export default function CategoryPage() {
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
 
+  // Lógica para ordenar los datos
   const sortData = (field) => {
     if (field === "actions") {
       return;
     }
 
-    const newSortOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
+    let newSortOrder = 'asc';
+    if (sortField === field) {
+      newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    }
+
     setSortField(field);
     setSortOrder(newSortOrder);
 
@@ -97,45 +103,39 @@ export default function CategoryPage() {
 
   // Lógica de búsqueda
   const handleSearch = async () => {
-    if(!searchTerm.trim()){
-      //si no hay terminos de busqueda, cargamos todas las categorias.
+    if (!searchTerm.trim()) {
+
       await fetchCategories();
-      setSearchError(null);//Limpiamos cualquier mensaje de error de busqueda.
+      setSearchError(null);
       return;
     }
 
     try {
       setLoading(true);
-      setSearchError(null); // Limpiamos cualquier mensaje de error de busqueda anterior.
+      setSearchError(null);
 
       const response = await searchCategoryByName(currentPage, itemsPerPage, searchTerm);
       console.log(response);
 
       if (!response.category || response.category.length === 0) {
         setSearchError("No se encontraron resultados para esa categoria.");
-        
-      }else{
+
+      } else {
         const transformedCategories = response.category.map(category => ({
           ...category,
+          ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
         }));
         setFilteredData(transformedCategories);
         setTotalPages(1);
       }
-      
+
     } catch (err) {
       setSearchError("No se encontraron resultados para la categoria.");
     } finally {
       setLoading(false);
     }
   };
-  /*** 
-  useEffect(() => {
-    const filtered = searchTerm.trim()
-      ? data.filter(category => category.DSC_NOMBRE.toLowerCase().includes(searchTerm.toLowerCase()))
-      : data;
-    setFilteredData(filtered);
-  }, [searchTerm, data]);
-  */
+
   const handlePageChange = (page) => setCurrentPage(page);
 
   // Funciones para gestionar acciones en la tabla
@@ -183,6 +183,7 @@ export default function CategoryPage() {
     id: category.ID_CATEGORIA,
     nombre: category.DSC_NOMBRE,
     estado: category.ESTADO === "ACTIVO" ? 1 : 2,
+    //estado: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
   });
 
   const handleSubmit = async (categoryData) => {
@@ -209,11 +210,14 @@ export default function CategoryPage() {
       }
     }
     if (modalMode === "edit") {
+      console.log("Updating user with data:", categoryData);
       const categoryPayload = {
         ID_CATEGORIA: categoryData.id,
         DSC_NOMBRE: categoryData.nombre,
         ESTADO: categoryData.estado,
       };
+
+      console.log("Updating category with  payload:", categoryPayload);
 
       try {
         console.log('data', categoryData);
@@ -252,10 +256,10 @@ export default function CategoryPage() {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              if(e.target.value === ''){
+              if (e.target.value === '') {
                 fetchCategories();
                 setSearchError(null);//Limpiamos el mensaje de error si el input esta vacio.
-              }else{
+              } else {
                 setSearchError(null);// Limpiamos el error si el usuario vuelve a escribir
               }
             }}
@@ -266,12 +270,12 @@ export default function CategoryPage() {
             }}
             placeholder="Buscar categorías..."
           />
-          <Button className="search-btn" onClick={handleSearch}> 
-            <Search size={20}/>
+          <Button className="search-btn" onClick={handleSearch}>
+            <Search size={20} />
             Buscar
           </Button>
         </div>
-        
+
 
         {searchError && <div className="alert alert-warning">{searchError}</div>}  {/* Mostrar la alerta si hay un error */}
 

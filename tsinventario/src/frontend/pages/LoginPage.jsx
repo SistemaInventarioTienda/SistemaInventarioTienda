@@ -10,24 +10,50 @@ import './css/LoginPage.css';
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const [rememberMe, setRememberMe] = useState(false);
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: zodResolver(loginSchema),
   });
+
   const { signin, errors: loginErrors, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-
-  const onSubmit = (data) => signin(data);
 
   useEffect(() => {
     document.title = 'Iniciar Sesión';
     if (isAuthenticated) {
       navigate('/');
+    } else {
+      const storedRememberMe = localStorage.getItem('rememberMe') === 'true';
+      setRememberMe(storedRememberMe);
+
+      if (storedRememberMe) {
+        const storedUsername = localStorage.getItem('username');
+        const storedPassword = localStorage.getItem('password');
+
+        if (storedUsername) {
+          setValue('DSC_NOMBREUSUARIO', storedUsername);
+        }
+        if (storedPassword) {
+          setValue('DSC_CONTRASENIA', storedPassword);
+        }
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, setValue]);
+
+  const onSubmit = (data) => {
+    signin({ ...data, REMEMBERME: rememberMe });
+    console.log(rememberMe);
+
+    if (rememberMe) {
+      localStorage.setItem('username', data.DSC_NOMBREUSUARIO);
+      localStorage.setItem('password', data.DSC_CONTRASENIA);
+      localStorage.setItem('rememberMe', 'true');
+    } else {
+      localStorage.removeItem('username');
+      localStorage.removeItem('password');
+      localStorage.setItem('rememberMe', 'false');
+    }
+  };
 
   return (
     <div className="h-[calc(200vh-200px)] flex items-center justify-center bg-secondary-custom border-custom">
@@ -45,6 +71,7 @@ export function LoginPage() {
                   <User size={18} />
                 </span>
                 <Input
+                  id="usernameInput"
                   type="text"
                   style={{
                     backgroundColor: "#F5F7FA",
@@ -71,6 +98,7 @@ export function LoginPage() {
                   <Lock size={18} />
                 </span>
                 <Input
+                  id="passwordInput"
                   type={showPassword ? 'text' : 'password'}
                   style={{
                     backgroundColor: "#F5F7FA",
@@ -85,14 +113,14 @@ export function LoginPage() {
                   placeholder="Contraseña"
                   {...register('DSC_CONTRASENIA')}
                 />
-                <button
+                <Button
                   id="paswordField"
                   type="button"
                   className="btn"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />} { }
-                </button>
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </Button>
               </div>
               {errors.DSC_CONTRASENIA && (
                 <div className="invalid-feedback d-block">{errors.DSC_CONTRASENIA.message}</div>
@@ -105,9 +133,22 @@ export function LoginPage() {
                 type="error"
                 message={error}
                 duration={5000}
+                onClose={() => console.log(`Error ${i} cerrado`)}
               />
             ))}
-            <hr></hr>
+            <hr />
+            <div className="mb-3 form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={() => setRememberMe(!rememberMe)}
+              />
+              <label className="form-check-label" htmlFor="rememberMe">
+                Recordar usuario y contraseña
+              </label>
+            </div>
             <Button
               type="submit"
               className="btn btn-primary w-100 border-custom"

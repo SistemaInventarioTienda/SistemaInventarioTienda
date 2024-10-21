@@ -8,8 +8,8 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
 
   useEffect(() => {
     if (isOpen) {
+      setFormData({ ...data});
       console.log(data);
-      setFormData({ ...data, estado: 1 });
     }
   }, [isOpen, data]);
 
