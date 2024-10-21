@@ -274,7 +274,7 @@ export default function UserPage() {
     <PageLayout>
       <div className="page-header">
         <div>
-          <h1>usuarios</h1>
+          <h1>Usuarios</h1>
           <p>Gestión de usuarios del sistema</p>
         </div>
         <Button className="add-btn" onClick={handleAddUser}>
