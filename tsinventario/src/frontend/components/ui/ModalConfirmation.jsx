@@ -96,7 +96,7 @@ const ModalConfirmation = ({
                 duration={2000}
               />
             )}
-            <p>¿Estás seguro que deseas eliminar esta {entityName}?</p>
+            <p>¿Estás seguro que deseas eliminar: {entityName}?</p>
           </div>
           <div className="modal-footer">
             <Button type="button" className="btn btn-secondary" onClick={onClose} data-bs-dismiss="modal">
