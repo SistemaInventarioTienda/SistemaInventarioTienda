@@ -139,7 +139,7 @@ export const getAllCategories = async (req, res) => {
 export const searchCategories = async (req, res) => {
     try {
         // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
-        const { page = 1, pageSize = 5, DSC_NOMBRE = '' } = req.query;
+        const { page = 1, pageSize = 5, DSC_NOMBRE = '', sortOrder = 'asc' } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
@@ -150,7 +150,7 @@ export const searchCategories = async (req, res) => {
             limit,
             offset,
             order: [
-                ['DSC_NOMBRE', 'ASC'],
+                ['DSC_NOMBRE', sortOrder],
             ],
             where: { DSC_NOMBRE: { [Op.like]: `%${DSC_NOMBRE}%` } }
         });

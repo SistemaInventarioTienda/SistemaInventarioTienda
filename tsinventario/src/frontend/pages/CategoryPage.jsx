@@ -51,7 +51,9 @@ export default function CategoryPage() {
   // Lógica para obtener categorías
   const fetchCategories = async () => {
     try {
-      const response = await getAllCategories(currentPage, itemsPerPage, sortField, sortOrder);
+      const response = (!searchTerm.trim()) ? await getAllCategories(currentPage, itemsPerPage, sortField, sortOrder): 
+      await searchCategoryByName(currentPage, itemsPerPage, searchTerm, sortOrder);
+
       const transformedCategories = response.category ? response.category.map(category => ({
         ...category,
         ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
@@ -90,7 +92,8 @@ export default function CategoryPage() {
     setSortOrder(newSortOrder);
 
     try {
-      const response = await getAllCategories(currentPage, itemsPerPage, field, newSortOrder);
+      const response = (!searchTerm.trim()) ?  await getAllCategories(currentPage, itemsPerPage, field, newSortOrder): 
+                          await searchCategoryByName(currentPage, itemsPerPage, searchTerm, newSortOrder);
       const transformedCategories = response.category ? response.category.map(category => ({
         ...category,
         ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
@@ -132,7 +135,7 @@ export default function CategoryPage() {
       setLoading(true);
       setSearchError(null);
       await setCurrentPage(1);
-      const response = await searchCategoryByName(1, itemsPerPage, searchTerm);
+      const response = await searchCategoryByName(1, itemsPerPage, searchTerm, sortOrder);
       console.log(response);
 
       if (!response.category || response.category.length === 0) {
@@ -143,7 +146,7 @@ export default function CategoryPage() {
           ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
         }));
         setFilteredData(transformedCategories);
-        setTotalPages(1);
+        setTotalPages(response.totalPages);
       }
 
     } catch (err) {
