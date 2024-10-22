@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Input, Button, Select, Alert } from "./ui";
 import { ChevronRight, Plus } from "lucide-react";
+import ModalConfirmation from "../components/ui/ModalConfirmation";
+
 import "./css/modal.css";
 
 const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName }) => {
   const [formData, setFormData] = useState({});
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);  // Estado para el modal de confirmación
 
   useEffect(() => {
     if (isOpen) {
@@ -29,6 +32,25 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
     const { name, value } = e.target;
     const parsedValue = name === "estado" ? parseInt(value, 10) : value;
     setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const estadoValue = parseInt(formData.estado, 10);
+
+    if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
+      setErrorMessages(["Por favor, seleccione un estado válido."]);
+      return;
+    }
+
+    setConfirmationModalOpen(true);  // Mostrar el modal de confirmación
+    // onSubmit({ ...formData, estado: estadoValue });
+  };
+
+  const handleConfirmSubmit = () => {
+    setConfirmationModalOpen(false);  // Cerrar el modal de confirmación
+    onSubmit({ ...formData, estado: parseInt(formData.estado, 10) });  // Enviar los cambios
   };
 
   const renderInput = (field) => {
@@ -94,18 +116,7 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
     },
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const estadoValue = parseInt(formData.estado, 10);
-
-    if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
-      setErrorMessages(["Por favor, seleccione un estado válido."]);
-      return;
-    }
-
-    onSubmit({ ...formData, estado: estadoValue });
-  };
+  
 
   return (
     <div className="modal-overlay">
@@ -164,6 +175,16 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
           </form>
         </div>
       </div>
+      {/* Modal de confirmación */}
+      <ModalConfirmation
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setConfirmationModalOpen(false)}
+        onConfirm={handleConfirmSubmit}  // Confirmar los cambios
+        entityName={entityName}
+        action="guardar los cambios"
+        confirmButtonText="Confirmar"
+        cancelButtonText="Cancelar"
+      />
     </div>
   );
 };

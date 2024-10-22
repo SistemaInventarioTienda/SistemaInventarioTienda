@@ -19,7 +19,8 @@ export default function UserPage() {
   const [modalMode, setModalMode] = useState("add");
   const [modalData, setModalData] = useState(null);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [isUpdateConfirmationOpen, setUpdateConfirmationOpen] = useState(false);
+  // const [successMessage, setSuccessMessage] = useState("");
   // eslint-disable-next-line
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -33,7 +34,9 @@ export default function UserPage() {
   // eslint-disable-next-line
   const [searchError, setSearchError] = useState(null);
   // eslint-disable-next-line
-  const [showAlert, setShowAlert] = useState(false);
+  // const [showAlert, setShowAlert] = useState(false);
+
+  const [alert, setAlert] = useState({ show: false, message: "", type: "" }); // Estado para gestionar la alerta
 
   const columns = [
     { field: "DSC_CEDULA", label: "Cédula" },
@@ -162,24 +165,17 @@ export default function UserPage() {
   const handleDelete = async (user) => {
     try {
       await deleteUser(user.DSC_CEDULA);
-      setSuccessMessage("Usuario eliminado exitosamente");
+      setAlert({ show: true, message: "Usuario Eliminado exitosamente", type: "success" }); // Mostrar alerta de éxito
       await fetchUsers();
-
       setConfirmationModalOpen(false);
-      setModalData(null);
-      setTimeout(() => {
-        //setConfirmationModalOpen(true); //
-        setSuccessMessage("");
-      }, 2000);
+
     } catch (err) {
-      const errorMessage = err.message?.data?.message || "Error desconocido al eliminar al usuario."
-      setErrorMessages([errorMessage]);
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+      const errorMessage = err.message?.data?.message || "Error desconocido al eliminar al usuario.";
+      setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
     }
+   // setConfirmationModalOpen(false); // Cerrar modal de confirmación después de eliminar
   };
-  // const handleDeleteUser = user => ("delete", user);
-  // eslint-disable-next-line
+  
   const handleGrantPermissionsUser = user => ("grantPermissions", user);
 
   const handleAddUser = () => openModal("add");
@@ -206,6 +202,8 @@ export default function UserPage() {
 
   const handleSubmit = async (userData) => {
 
+    let successMessageText = "";
+
     if (modalMode === "add") {
       const userPayload = {
         DSC_CEDULA: userData.cedula,
@@ -221,24 +219,27 @@ export default function UserPage() {
       };
 
       try {
-        console.log('data', userData);
-        console.log('payload', userPayload);
+        // console.log('data', userData);
+        // console.log('payload', userPayload);
         //funcion para guardar usuario 
         await registerUser(userPayload);
+        successMessageText = "Usuario agregado exitosamente";
+        setAlert({ show: true, message: successMessageText, type: "success" }); // Mostrar alerta de éxito
         await fetchUsers();
 
-        setModalOpen(false);
-        setErrorMessages([]);
-        console.log("Usuario agregado exitosamente");
+        // setModalOpen(false);
+        // setErrorMessages([]);
+        // console.log("Usuario agregado exitosamente");
       } catch (e) {
         const errorMessage = e.response?.data?.message || "Error desconocido al agregar el usuario.";
-        setErrorMessages([errorMessage]);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 5000);
+        // setErrorMessages([errorMessage]);
+        // setShowAlert(true);
+        // setTimeout(() => setShowAlert(false), 5000);
+        setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
       }
     }
     if (modalMode === "edit") {
-      console.log("Updating user with data:", userData);
+      // console.log("Updating user with data:", userData);
 
       const userPayload = {
         DSC_CEDULA: userData.cedula,
@@ -252,18 +253,24 @@ export default function UserPage() {
         DSC_CONTRASENIA: userData.contrasena,
       };
 
-      console.log("Updating user with  payload:", userPayload);
+      // console.log("Updating user with  payload:", userPayload);
       try {
         await updateUser(userData.cedula, userPayload);
+        successMessageText = "Usuario actualizado exitosamente";
+        setAlert({ show: true, message: successMessageText, type: "success" }); // Mostrar alerta de éxito
         await fetchUsers();
-        setModalOpen(false);
+        // setModalOpen(false);
       } catch (error) {
         const errorMessage = error.response?.data?.message || "Error desconocido al actualizar el usuario.";
-        setErrorMessages([errorMessage]);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 5000);
+
+        setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
+        // setErrorMessages([errorMessage]);
+        // setShowAlert(true);
+        // setTimeout(() => setShowAlert(false), 5000);
       }
     }
+    setModalOpen(false);
+    setErrorMessages([]);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -282,6 +289,15 @@ export default function UserPage() {
           Agregar Usuario
         </Button>
       </div>
+      {/* Mostramos la alerta dinámica */}
+      {alert.show && (
+        <Alert 
+          type={alert.type} 
+          message={alert.message} 
+          duration={3000} 
+          onClose={() => setAlert({ ...alert, show: false })} 
+        />
+      )}
       <div className="page-controls">
         <div className="search-container">
           <Input
@@ -336,10 +352,13 @@ export default function UserPage() {
       <ModalConfirmation
         isOpen={isConfirmationModalOpen}
         onClose={() => setConfirmationModalOpen(false)}
-        onDelete={() => handleDelete(modalData)}
+        onConfirm={() => handleDelete(modalData)}
         entityName={modalData?.DSC_CEDULA}
+        action= "eliminar"
+        confirmButtonText="Eliminar"
+        cancelButtonText="Cancelar"
         errorMessages={errorMessages}
-        successMessage={successMessage}
+        // successMessage={successMessage}
       />
       <ModalComponent
         isOpen={isModalOpen}
