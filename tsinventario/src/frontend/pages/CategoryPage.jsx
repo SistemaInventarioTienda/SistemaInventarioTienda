@@ -80,27 +80,43 @@ export default function CategoryPage() {
   const [sortOrder, setSortOrder] = useState('asc');
 
   // Lógica para ordenar los datos
-  const sortData = (field) => {
+  const sortData = async (field) => {
     if (field === "actions") {
       return;
     }
 
-    let newSortOrder = 'asc';
-    if (sortField === field) {
-      newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    }
-
     setSortField(field);
+    const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     setSortOrder(newSortOrder);
 
-    const sortedData = [...filteredData].sort((a, b) => {
-      if (newSortOrder === 'asc') {
-        return a[field] > b[field] ? 1 : -1;
-      }
-      return a[field] < b[field] ? 1 : -1;
-    });
+    try {
+      const response = await getAllCategories(currentPage, itemsPerPage, field, newSortOrder);
+      const transformedCategories = response.category ? response.category.map(category => ({
+        ...category,
+        ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
+      })) : [];
+      setData(transformedCategories);
+      setFilteredData(transformedCategories);
+      setTotalPages(response.totalPages);
+    } catch (err) {
+      setError(err.message);
+    }
 
-    setFilteredData(sortedData);
+    // setSortField(field);
+    // let newSortOrder = 'asc';
+    // if (sortField === field) {
+    //   newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    // }
+    // setSortOrder(newSortOrder);
+
+    // const sortedData = [...filteredData].sort((a, b) => {
+    //   if (newSortOrder === 'asc') {
+    //     return a[field] > b[field] ? 1 : -1;
+    //   }
+    //   return a[field] < b[field] ? 1 : -1;
+    // });
+
+    // setFilteredData(sortedData);
   };
 
   // Lógica de búsqueda
@@ -115,13 +131,12 @@ export default function CategoryPage() {
     try {
       setLoading(true);
       setSearchError(null);
-
-      const response = await searchCategoryByName(currentPage, itemsPerPage, searchTerm);
+      await setCurrentPage(1);
+      const response = await searchCategoryByName(1, itemsPerPage, searchTerm);
       console.log(response);
 
       if (!response.category || response.category.length === 0) {
-        setSearchError("No se encontraron resultados para esa categoria.");
-
+        setAlert({ show: true, message: "No se encontraron resultados para esa categoria.", type: "error" });
       } else {
         const transformedCategories = response.category.map(category => ({
           ...category,
@@ -291,7 +306,10 @@ export default function CategoryPage() {
           <label htmlFor="itemsPerPage">Mostrar</label>
           <Select
             value={itemsPerPage}
-            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            onChange={(e) => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
