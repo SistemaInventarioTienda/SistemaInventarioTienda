@@ -1,16 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, AlertTriangle, Info, CheckCircle } from 'lucide-react';
+import '../css/Alert.css';
 
 export function Alert({ type = 'default', message, duration = 3000, onClose }) {
   const [isVisible, setIsVisible] = useState(true);
+  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
+    const fadeOutTime = duration - 1000; // Ajustamos para iniciar el fade-out antes de desaparecer
     const timer = setTimeout(() => {
-      setIsVisible(false);
+      setFadeOut(true); // Inicia la animación de salida
+    }, fadeOutTime);
+
+    const removeTimer = setTimeout(() => {
+      setIsVisible(false); // Remueve la alerta completamente
       if (onClose) onClose();
     }, duration);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(removeTimer);
+    };
   }, [duration, onClose]);
 
   if (!isVisible) return null;
@@ -46,7 +56,7 @@ export function Alert({ type = 'default', message, duration = 3000, onClose }) {
   };
 
   return (
-    <div className={getAlertClass()} role="alert">
+    <div className={`${getAlertClass()} ${fadeOut ? 'fade-out' : ''}`} role="alert">
       <span className="icon">{getIcon()}</span>
       {Array.isArray(message) ? (
         <ul className="message-list">
@@ -57,6 +67,7 @@ export function Alert({ type = 'default', message, duration = 3000, onClose }) {
       ) : (
         <p className="message">{message}</p>
       )}
+      
     </div>
   );
 }

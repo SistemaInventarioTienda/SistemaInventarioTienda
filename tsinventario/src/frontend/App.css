@@ -27,6 +27,21 @@ body {
   text-align: center;
 }
 
+
+.alert-float{
+  position: fixed;
+  top: 20px; /* Distancia desde el borde superior de la ventana */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #28a745; /* Color verde para éxito */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Para que quede por encima de todo */
+  font-size: 16px;
+}
+
 /* Clases de utilidad personalizadas */
 .bg-primary-custom {
   background-color: var(--color-primary) !important;

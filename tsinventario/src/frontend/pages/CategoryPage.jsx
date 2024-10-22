@@ -5,10 +5,11 @@ import PageLayout from "../components/PageLayout";
 import Table from "../components/ui/Table";
 import Pagination from "../components/ui/Pagination";
 import { getAllCategories, saveCategory, updateCategory, deleteCategory, searchCategoryByName } from "../api/category";
-import { Button, Input, Select } from "../components/ui";
+import { Button, Input, Select, Alert } from "../components/ui";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ModalComponent from "../components/Modal";
 import { Tag, Search } from "lucide-react";
+// import { Alert } from "../components/ui";
 import "./css/Page.css";
 
 export default function CategoryPage() {
@@ -19,7 +20,8 @@ export default function CategoryPage() {
   const [modalMode, setModalMode] = useState("add");
   const [modalData, setModalData] = useState(null);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+   const [isUpdateConfirmationOpen, setUpdateConfirmationOpen] = useState(false); // Estado para confirmar la actualización
+  
   // eslint-disable-next-line
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -32,8 +34,8 @@ export default function CategoryPage() {
   const [errorMessages, setErrorMessages] = useState([]);
   // eslint-disable-next-line
   const [searchError, setSearchError] = useState(null);
-  // eslint-disable-next-line
-  const [showAlert, setShowAlert] = useState(false);
+
+  const [alert, setAlert] = useState({ show: false, message: "", type: "" }); // Estado para gestionar la alerta
 
   const columns = [
     { field: "DSC_NOMBRE", label: "Nombre" },
@@ -154,19 +156,12 @@ export default function CategoryPage() {
   const handleDelete = async (category) => {
     try {
       await deleteCategory(category.DSC_NOMBRE);
-      setSuccessMessage("Eliminado exitosamente");
+      setAlert({ show: true, message: "Eliminado exitosamente", type: "success" }); // Mostrar alerta de éxito
       await fetchCategories();
-
-      setTimeout(() => {
-        setConfirmationModalOpen(false);
-        setSuccessMessage("");
-      }, 2000);
 
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Error desconocido al eliminar la categoría.";
-      setErrorMessages([errorMessage]);
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+      setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
     }
   };
 
@@ -183,10 +178,13 @@ export default function CategoryPage() {
     id: category.ID_CATEGORIA,
     nombre: category.DSC_NOMBRE,
     estado: category.ESTADO === "ACTIVO" ? 1 : 2,
-    //estado: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
+    
   });
 
   const handleSubmit = async (categoryData) => {
+
+    let successMessageText = "";
+
     if (modalMode === "add") {
       const categoryPayload = {
         DSC_NOMBRE: categoryData.nombre,
@@ -194,43 +192,44 @@ export default function CategoryPage() {
       };
 
       try {
-        console.log('data', categoryData);
-        console.log('payload', categoryPayload);
         await saveCategory(categoryPayload);
+        successMessageText = "Categoría agregada exitosamente";
+        setAlert({ show: true, message: successMessageText, type: "success" }); // Mostrar alerta de éxito
         await fetchCategories();
-        setModalOpen(false);
-        setErrorMessages([]);
-        console.log("Categoría agregada exitosamente");
+   
 
       } catch (error) {
         const errorMessage = error.response?.data?.message || "Error desconocido al agregar la categoría.";
-        setErrorMessages([errorMessage]);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+        setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
+        
       }
     }
     if (modalMode === "edit") {
-      console.log("Updating user with data:", categoryData);
+      
       const categoryPayload = {
         ID_CATEGORIA: categoryData.id,
         DSC_NOMBRE: categoryData.nombre,
         ESTADO: categoryData.estado,
       };
 
-      console.log("Updating category with  payload:", categoryPayload);
-
       try {
-        console.log('data', categoryData);
+        
         await updateCategory(categoryPayload);
+        successMessageText = "Categoria actualizada exitosamente";
+        setAlert({ show: true, message: successMessageText, type: "success" }); // Mostrar alerta de éxito
+        
         await fetchCategories();
-        setModalOpen(false);
+        
       } catch (error) {
         const errorMessage = error.response?.data?.message || "Error desconocido al agregar la categoría.";
-        setErrorMessages([errorMessage]);
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+        setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
+       
       }
     }
+
+
+    setModalOpen(false);
+    setErrorMessages([]);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -248,6 +247,15 @@ export default function CategoryPage() {
           Agregar Categoría
         </Button>
       </div>
+      {/* Mostramos la alerta dinámica */}
+      {alert.show && (
+        <Alert 
+          type={alert.type} 
+          message={alert.message} 
+          duration={3000} 
+          onClose={() => setAlert({ ...alert, show: false })} 
+        />
+      )}
       <div className="page-controls">
         <div className="search-container">
           <Input
@@ -292,6 +300,8 @@ export default function CategoryPage() {
           <label htmlFor="itemsPerPage">por página</label>
         </div>
       </div>
+
+
       <Table
         columns={columns}
         data={filteredData}
@@ -308,7 +318,7 @@ export default function CategoryPage() {
         onDelete={() => handleDelete(modalData)}
         entityName={modalData?.DSC_NOMBRE}
         errorMessages={errorMessages}
-        successMessage={successMessage}
+    
       />
 
       <ModalComponent
