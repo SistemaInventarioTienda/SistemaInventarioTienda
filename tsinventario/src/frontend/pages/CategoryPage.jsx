@@ -20,7 +20,6 @@ export default function CategoryPage() {
   const [modalMode, setModalMode] = useState("add");
   const [modalData, setModalData] = useState(null);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
-   const [isUpdateConfirmationOpen, setUpdateConfirmationOpen] = useState(false); // Estado para confirmar la actualización
   
   // eslint-disable-next-line
   const [data, setData] = useState([]);
@@ -36,6 +35,7 @@ export default function CategoryPage() {
   const [searchError, setSearchError] = useState(null);
 
   const [alert, setAlert] = useState({ show: false, message: "", type: "" }); // Estado para gestionar la alerta
+
 
   const columns = [
     { field: "DSC_NOMBRE", label: "Nombre" },
@@ -163,6 +163,7 @@ export default function CategoryPage() {
       const errorMessage = error.response?.data?.message || "Error desconocido al eliminar la categoría.";
       setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
     }
+    setConfirmationModalOpen(false);  // Cerrar modal de confirmación después de eliminar
   };
 
   const handleAddCategory = () => openModal("add");
@@ -315,8 +316,11 @@ export default function CategoryPage() {
       <ModalConfirmation
         isOpen={isConfirmationModalOpen}
         onClose={() => setConfirmationModalOpen(false)}
-        onDelete={() => handleDelete(modalData)}
+        onConfirm={() => handleDelete(modalData)}//() => handleDelete(modalData)
         entityName={modalData?.DSC_NOMBRE}
+        action= "eliminar"
+        confirmButtonText="Eliminar"
+        cancelButtonText="Cancelar"
         errorMessages={errorMessages}
     
       />
