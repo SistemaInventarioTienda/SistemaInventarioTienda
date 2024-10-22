@@ -8,6 +8,7 @@ const ModalConfirmation = ({ isOpen, onClose, onDelete, entityName, errorMessage
 
   const handleDelete = async () => {
     await onDelete();
+    onClose();
   };
 
   return (
@@ -32,7 +33,7 @@ const ModalConfirmation = ({ isOpen, onClose, onDelete, entityName, errorMessage
                 duration={2000}
               />
             )}
-            <p>¿Estás seguro que deseas eliminar esta {entityName}?</p>
+            <p>¿Estás seguro que deseas eliminar: {entityName}?</p>
           </div>
           <div className="modal-footer">
             <Button type="button" className="btn btn-secondary" onClick={onClose} data-bs-dismiss="modal">
