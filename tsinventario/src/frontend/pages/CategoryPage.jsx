@@ -51,7 +51,7 @@ export default function CategoryPage() {
   // Lógica para obtener categorías
   const fetchCategories = async () => {
     try {
-      const response = await getAllCategories(currentPage, itemsPerPage);
+      const response = await getAllCategories(currentPage, itemsPerPage, sortField, sortOrder);
       const transformedCategories = response.category ? response.category.map(category => ({
         ...category,
         ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
