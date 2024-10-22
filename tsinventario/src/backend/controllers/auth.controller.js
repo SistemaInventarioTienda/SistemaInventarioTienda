@@ -89,7 +89,7 @@ export const login = async (req, res) => {
     });
     if (!userFound)
       return res.status(400).json({
-        message: ["El nombre de usuario no existe"],
+        message: ["Usuario o contraseña incorrecta."],
       });
 
     const isMatch = await compareData(DSC_CONTRASENIA, userFound.DSC_CONTRASENIA);

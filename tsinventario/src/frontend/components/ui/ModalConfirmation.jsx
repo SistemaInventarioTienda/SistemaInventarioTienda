@@ -8,7 +8,6 @@ const ModalConfirmation = ({ isOpen, onClose, onDelete, entityName, errorMessage
 
   const handleDelete = async () => {
     await onDelete();
-    onClose();
   };
 
   return (
