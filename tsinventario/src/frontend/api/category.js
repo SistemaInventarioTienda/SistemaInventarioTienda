@@ -1,13 +1,5 @@
 import axios from '../api/axios';
 
-/**
- * Obtiene todas las categorias ordenadas. ASC por defecto.
- * @param page int Numeró de página
- * @param pageSize int Tamaño de página
- * @param orderByField varchar Campo por el cual desea ordenar
- * @param order varchar ordenar de forma ASC o DESC
- * @return json Todas las categorias ordenadas (ASC por defecto o DESC)
- */
 export const getAllCategories = async (page, pageSize, orderByField, order) => {
     try {
         const response = await axios.get(`/category/categories`, { params: { page, pageSize, orderByField, order } });
@@ -53,9 +45,9 @@ export const updateCategory = async (categoryData) => {
 };
 
 // Buscar una categoría por nombre
-export const searchCategoryByName = async (page, pageSize, DSC_NOMBRE, sortOrder) => {
+export const searchCategoryByName = async (page, pageSize, DSC_NOMBRE, orderByField, order) => {
     try {
-        const response = await axios.get(`/category/searchCategory`, { params: { page, pageSize, DSC_NOMBRE, sortOrder } });
+        const response = await axios.get(`/category/searchCategory`, { params: { page, pageSize, DSC_NOMBRE, orderByField, order } });
         return response.data;
     } catch (error) {
         console.error('Error searching category:', error.message);

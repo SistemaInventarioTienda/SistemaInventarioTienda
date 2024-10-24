@@ -15,14 +15,16 @@ Cosas por mejorar en las siguientes entregas:
     ✅2.2 Si estoy en la pag 2, por ejemplo, y cambio que quiero en lugar de ver 5 registros a 10. 
         Como solo hay 10 o menos me dice que no hay registros disponibles. Lo que debe hacer es redirigir a la pag 1.
     ✅2.3 Al eliminar una categoria me deja el modal y no lo cierra.
-    ❌2.4 Al agregar y editar una categoria, no muestra notificación si fue exitoso o no.
+    ✅2.4 Al agregar y editar una categoria, no muestra notificación si fue exitoso o no.
     ✅2.5 Que no haga scroll toda la página, si no que sea solo la parte del card.
-    ❌2.6 Al ordenar de forma ASC-DESC se debe ir a traer todo de la BD ordenada según lo deseado.
+    ✅2.6 Al ordenar de forma ASC-DESC se debe ir a traer todo de la BD ordenada según lo deseado.
     
 3. Usuarios
     ✅3.1 Ver la forma que al momento de filtrar si el dato existe, pero está en otra pag lo muestre en la pag actual.
-    ✅43.2 Hay un usuario inactivo, y deseo ver su contenido y me dice que esta activo. Debe decir el estado real.
-
+    ✅3.2 Hay un usuario inactivo, y deseo ver su contenido y me dice que esta activo. Debe decir el estado real.
+    ❌3.3 Un usuario con acceso a este CRUD no se puede autoeliminar ni se puede eliminar el usuario admin
+    ❌3.4 Asignar la parte de permisos, a que CRUD's puede entrar un usuario 
+        (Ojala que ni salga en el sidebar el CRUD que no tiene acceso)
 4. Sidebar:
     ✅4.1 Me debe permitir ocultar el sidebar y solo mostrar los iconos 
         (debe acomodar el card de la página que se está mostrando)

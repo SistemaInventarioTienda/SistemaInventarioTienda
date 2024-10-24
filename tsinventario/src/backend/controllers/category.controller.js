@@ -106,7 +106,7 @@ export const getAllCategories = async (req, res) => {
         const offset = (parseInt(page) - 1) * limit;
 
         const field = orderByField === 'DSC_NOMBRE' || orderByField === 'ESTADO' ? orderByField : 'DSC_NOMBRE';
-        const shortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+        const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
         const { count, rows } = await Category.findAndCountAll({
             attributes: {
                 exclude: ['FEC_MODIFICADOEN']
@@ -114,7 +114,7 @@ export const getAllCategories = async (req, res) => {
             limit,
             offset,
             order: [
-                [field, shortOrder],
+                [field, sortOrder],
             ]
         });
 
@@ -139,10 +139,12 @@ export const getAllCategories = async (req, res) => {
 export const searchCategories = async (req, res) => {
     try {
         // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
-        const { page = 1, pageSize = 5, DSC_NOMBRE = '', sortOrder = 'asc' } = req.query;
+        const { page = 1, pageSize = 5, DSC_NOMBRE = '', orderByField = 'DSC_NOMBRE', order = 'asc' } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
+        const field = (orderByField === 'DSC_NOMBRE' || orderByField === 'ESTADO') ? orderByField : 'DSC_NOMBRE';
+        const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
         const { count, rows } = await Category.findAndCountAll({
             attributes: {
                 exclude: ['FEC_MODIFICADOEN']
@@ -150,7 +152,7 @@ export const searchCategories = async (req, res) => {
             limit,
             offset,
             order: [
-                ['DSC_NOMBRE', sortOrder],
+                [field, sortOrder],
             ],
             where: { DSC_NOMBRE: { [Op.like]: `%${DSC_NOMBRE}%` } }
         });
@@ -166,7 +168,10 @@ export const searchCategories = async (req, res) => {
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            category: rows
+            category: rows, 
+            buscar: DSC_NOMBRE, 
+            campo: orderByField, 
+            orden: order
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });

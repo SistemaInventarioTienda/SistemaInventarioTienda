@@ -1,10 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client'; // Importar createRoot desde react-dom/client
 import App from './frontend/App';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// Seleccionar el contenedor raíz en el DOM
+const rootElement = document.getElementById('root');
+
+// Crear la raíz usando createRoot y renderizar el componente App
+const root = createRoot(rootElement);
+root.render(<App />);

@@ -20,13 +20,13 @@ export default function CategoryPage() {
   const [modalMode, setModalMode] = useState("add");
   const [modalData, setModalData] = useState(null);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  
+
   // eslint-disable-next-line
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -34,8 +34,11 @@ export default function CategoryPage() {
   // eslint-disable-next-line
   const [searchError, setSearchError] = useState(null);
 
-  const [alert, setAlert] = useState({ show: false, message: "", type: "" }); // Estado para gestionar la alerta
+  const [alert, setAlert] = useState({ show: false, message: "", type: "" });
 
+  // Lógica para ordenar los datos
+  const [sortField, setSortField] = useState('DSC_NOMBRE');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   const columns = [
     { field: "DSC_NOMBRE", label: "Nombre" },
@@ -48,112 +51,74 @@ export default function CategoryPage() {
     { name: "estado", label: "Estado", type: "select", required: true },
   ];
 
-  // Lógica para obtener categorías
-  const fetchCategories = async () => {
-    try {
-      const response = (!searchTerm.trim()) ? await getAllCategories(currentPage, itemsPerPage, sortField, sortOrder): 
-      await searchCategoryByName(currentPage, itemsPerPage, searchTerm, sortOrder);
-
-      const transformedCategories = response.category ? response.category.map(category => ({
+  const refreshData = async (data) =>  {
+    try{
+      const transformedCategories = data.category ? data.category.map(category => ({
         ...category,
         ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
       })) : [];
       setData(transformedCategories);
       setFilteredData(transformedCategories);
-      setTotalPages(response.totalPages);
+      setTotalPages(data.totalPages);
     } catch (err) {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  }
+
+  const allCategories = async (field, order, flag) => {
+    if(flag === true){
+      setCurrentPage(1);
+      const response = await getAllCategories(1, itemsPerPage, field, order);
+      refreshData(response);
+    } else {
+      const response = await getAllCategories(currentPage, itemsPerPage, field, order);
+      refreshData(response);
+    }
+  }
+
+  const searchCategory = async (field, order, flag) => {
+    if(flag === true){
+      setCurrentPage(1);
+      const response = await searchCategoryByName(1, itemsPerPage, searchTerm, field, order);
+      refreshData(response);
+    } else {
+      const response = await searchCategoryByName(currentPage, itemsPerPage, searchTerm, field, order);
+      refreshData(response);
+    }
+  }
 
   useEffect(() => {
     document.title = 'Categorias';
     if (!isAuthenticated) {
       navigate("/login");
     } else {
-      fetchCategories();
+      if(!searchTerm.trim()) {
+        allCategories(sortField, sortOrder, false);
+      } else {
+        searchCategory(sortField, sortOrder, false);
+      }
     }
   }, [isAuthenticated, navigate, currentPage, itemsPerPage]);
 
-  // Lógica para ordenar los datos
-  const [sortField, setSortField] = useState(null);
-  const [sortOrder, setSortOrder] = useState('asc');
 
   // Lógica para ordenar los datos
   const sortData = async (field) => {
-    if (field === "actions") {
-      return;
+    if (field === "actions") return;
+  
+    let newOrder = sortOrder;
+    if (field !== sortField) {
+      setSortField(field);
+      newOrder = 'desc';
+    } else {
+      newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     }
-
-    setSortField(field);
-    const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    setSortOrder(newSortOrder);
-
-    try {
-      const response = (!searchTerm.trim()) ?  await getAllCategories(currentPage, itemsPerPage, field, newSortOrder): 
-                          await searchCategoryByName(currentPage, itemsPerPage, searchTerm, newSortOrder);
-      const transformedCategories = response.category ? response.category.map(category => ({
-        ...category,
-        ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
-      })) : [];
-      setData(transformedCategories);
-      setFilteredData(transformedCategories);
-      setTotalPages(response.totalPages);
-    } catch (err) {
-      setError(err.message);
+    setSortOrder(newOrder);
+    if(!searchTerm.trim()){
+      allCategories(field, newOrder, false);
+    } else {
+      searchCategory(field, newOrder, false);
     }
-
-    // setSortField(field);
-    // let newSortOrder = 'asc';
-    // if (sortField === field) {
-    //   newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    // }
-    // setSortOrder(newSortOrder);
-
-    // const sortedData = [...filteredData].sort((a, b) => {
-    //   if (newSortOrder === 'asc') {
-    //     return a[field] > b[field] ? 1 : -1;
-    //   }
-    //   return a[field] < b[field] ? 1 : -1;
-    // });
-
-    // setFilteredData(sortedData);
-  };
-
-  // Lógica de búsqueda
-  const handleSearch = async () => {
-    if (!searchTerm.trim()) {
-
-      await fetchCategories();
-      setSearchError(null);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setSearchError(null);
-      await setCurrentPage(1);
-      const response = await searchCategoryByName(1, itemsPerPage, searchTerm, sortOrder);
-      console.log(response);
-
-      if (!response.category || response.category.length === 0) {
-        setAlert({ show: true, message: "No se encontraron resultados para esa categoria.", type: "error" });
-      } else {
-        const transformedCategories = response.category.map(category => ({
-          ...category,
-          ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
-        }));
-        setFilteredData(transformedCategories);
-        setTotalPages(response.totalPages);
-      }
-
-    } catch (err) {
-      setSearchError("No se encontraron resultados para la categoria.");
-    } finally {
-      setLoading(false);
-    }
+    
   };
 
   const handlePageChange = (page) => setCurrentPage(page);
@@ -175,7 +140,11 @@ export default function CategoryPage() {
     try {
       await deleteCategory(category.DSC_NOMBRE);
       setAlert({ show: true, message: "Eliminado exitosamente", type: "success" }); // Mostrar alerta de éxito
-      await fetchCategories();
+      if(!searchTerm.trim()){
+        allCategories(sortField, sortOrder, false);
+      } else {
+        searchCategory(sortField, sortOrder, false);
+      }
 
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Error desconocido al eliminar la categoría.";
@@ -197,7 +166,7 @@ export default function CategoryPage() {
     id: category.ID_CATEGORIA,
     nombre: category.DSC_NOMBRE,
     estado: category.ESTADO === "ACTIVO" ? 1 : 2,
-    
+
   });
 
   const handleSubmit = async (categoryData) => {
@@ -214,17 +183,21 @@ export default function CategoryPage() {
         await saveCategory(categoryPayload);
         successMessageText = "Categoría agregada exitosamente";
         setAlert({ show: true, message: successMessageText, type: "success" }); // Mostrar alerta de éxito
-        await fetchCategories();
-   
+        if(!searchTerm.trim()){
+          allCategories(sortField, sortOrder, true);
+        } else {
+          searchCategory(sortField, sortOrder, true);
+        }
+
 
       } catch (error) {
         const errorMessage = error.response?.data?.message || "Error desconocido al agregar la categoría.";
         setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
-        
+
       }
     }
     if (modalMode === "edit") {
-      
+
       const categoryPayload = {
         ID_CATEGORIA: categoryData.id,
         DSC_NOMBRE: categoryData.nombre,
@@ -232,17 +205,21 @@ export default function CategoryPage() {
       };
 
       try {
-        
+
         await updateCategory(categoryPayload);
         successMessageText = "Categoria actualizada exitosamente";
         setAlert({ show: true, message: successMessageText, type: "success" }); // Mostrar alerta de éxito
-        
-        await fetchCategories();
-        
+
+        if(!searchTerm.trim()){
+          allCategories(sortField, sortOrder, false);
+        } else {
+          searchCategory(sortField, sortOrder, false);
+        }
+
       } catch (error) {
         const errorMessage = error.response?.data?.message || "Error desconocido al agregar la categoría.";
         setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
-       
+
       }
     }
 
@@ -268,11 +245,11 @@ export default function CategoryPage() {
       </div>
       {/* Mostramos la alerta dinámica */}
       {alert.show && (
-        <Alert 
-          type={alert.type} 
-          message={alert.message} 
-          duration={3000} 
-          onClose={() => setAlert({ ...alert, show: false })} 
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          duration={3000}
+          onClose={() => setAlert({ ...alert, show: false })}
         />
       )}
       <div className="page-controls">
@@ -282,22 +259,33 @@ export default function CategoryPage() {
             className="search-input"
             value={searchTerm}
             onChange={(e) => {
-              setSearchTerm(e.target.value);
-              if (e.target.value === '') {
-                fetchCategories();
-                setSearchError(null);//Limpiamos el mensaje de error si el input esta vacio.
+              if (e.target.value.trim() === '') {
+                setSearchTerm("");
+                allCategories(sortField, sortOrder, true);
               } else {
-                setSearchError(null);// Limpiamos el error si el usuario vuelve a escribir
+                setSearchTerm(e.target.value);
               }
             }}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
-                handleSearch(); // Realiza la busqueda al presionar Enter
+                if (e.target.value.trim() === '') {
+                  setSearchTerm("");
+                  allCategories(sortField, sortOrder, true);
+                } else {
+                  setSearchTerm(e.target.value);
+                  searchCategory(sortField, sortOrder, true);
+                }
               }
             }}
             placeholder="Buscar categorías..."
           />
-          <Button className="search-btn" onClick={handleSearch}>
+          <Button className="search-btn" onClick={async () => {
+            if(!searchTerm.trim()){
+              allCategories(sortField, sortOrder, true);
+            } else {
+              searchCategory(sortField, sortOrder, true);
+            }
+          }}>
             <Search size={20} />
             Buscar
           </Button>
@@ -339,11 +327,11 @@ export default function CategoryPage() {
         onClose={() => setConfirmationModalOpen(false)}
         onConfirm={() => handleDelete(modalData)}//() => handleDelete(modalData)
         entityName={modalData?.DSC_NOMBRE}
-        action= "eliminar"
+        action="eliminar"
         confirmButtonText="Eliminar"
         cancelButtonText="Cancelar"
         errorMessages={errorMessages}
-    
+
       />
 
       <ModalComponent
