@@ -137,6 +137,7 @@ export default function CategoryPage() {
   };
 
   const handleDelete = async (category) => {
+    setAlert({ show: false, message: "", type: "" });
     try {
       await deleteCategory(category.DSC_NOMBRE);
       setAlert({ show: true, message: "Eliminado exitosamente", type: "success" }); // Mostrar alerta de éxito
@@ -170,7 +171,7 @@ export default function CategoryPage() {
   });
 
   const handleSubmit = async (categoryData) => {
-
+    setAlert({ show: false, message: "", type: "" });
     let successMessageText = "";
 
     if (modalMode === "add") {
