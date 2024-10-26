@@ -3,8 +3,8 @@ import { Card } from '../components/ui';
 
 const PageLayout = ({ children, title, description }) => {
   return (
-    <div className="card border-custom">
-      <Card className="card-content">
+    <div className="card border-custom" style={{ overflow: 'hidden' }}>
+      <Card className="card-content" style={{ maxHeight: '100vh', overflow: 'hidden' }}>
         <div className="card-body">
           <h1 
             className="card-title h2 mb-4" 

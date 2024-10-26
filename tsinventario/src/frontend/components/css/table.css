@@ -7,6 +7,12 @@
     background-color: #FFFFFF;
 }
 
+.custom-table thead, .custom-table tbody {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
 .custom-table {
     width: 100%;
     border-collapse: separate;
@@ -126,7 +132,7 @@ th:hover .chevron-icon {
     justify-content: center;
     align-items: center;
     gap: 7px;
-    margin-top: 20px;
+    margin-top: 16px;
 }
 
 .pagination button {
