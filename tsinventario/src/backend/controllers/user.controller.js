@@ -80,10 +80,16 @@ export const deleteUser = async (req, res) => {
 export const getAllUsers = async (req, res) => {
     try {
         // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
-        const { page = 1, pageSize = 5 } = req.query;
+        const { page = 1, pageSize = 5, orderByField = 'DSC_CEDULA', order = 'asc' } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
+        const field = (
+            orderByField === 'DSC_NOMBRE' || orderByField === 'ESTADO' || orderByField === 'DSC_CEDULA' || orderByField === 'DSC_NOMBREUSUARIO' || 
+            orderByField === 'DSC_APELLIDOUNO' || orderByField === 'DSC_APELLIDODOS'
+            ) ? orderByField : 'DSC_CEDULA';
+
+        const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
         const { count, rows } = await User.findAndCountAll({
             attributes: {
                 exclude: ['DSC_CONTRASENIA', 'ID_USUARIO', 'FEC_CREADOEN']
@@ -91,10 +97,7 @@ export const getAllUsers = async (req, res) => {
             limit,
             offset,
             order: [
-                ['DSC_CEDULA', 'ASC'],
-                ['DSC_NOMBRE', 'ASC'],
-                ['DSC_APELLIDOUNO', 'ASC'],
-                ['DSC_APELLIDODOS', 'ASC'],
+                [field, sortOrder],
             ]
         });
         
@@ -120,11 +123,17 @@ export const getAllUsers = async (req, res) => {
 export const searchUser = async (req, res) => {
     try {
         // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
-        const { page = 1, pageSize = 5, search = '' } = req.query;
+        const { page = 1, pageSize = 5, termSearch = '', orderByField = 'DSC_CEDULA', order = 'asc' } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
-        const expectedMatch = { [Op.like]: `%${search}%` }; 
+        const field = (
+            orderByField === 'DSC_NOMBRE' || orderByField === 'ESTADO' || orderByField === 'DSC_CEDULA' || orderByField === 'DSC_NOMBREUSUARIO' || 
+            orderByField === 'DSC_APELLIDOUNO' || orderByField === 'DSC_APELLIDODOS'
+            ) ? orderByField : 'DSC_CEDULA';
+
+        const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+        const expectedMatch = { [Op.like]: `%${termSearch}%` }; 
         const { count, rows } = await User.findAndCountAll({
             attributes: {
                 exclude: ['DSC_CONTRASENIA', 'ID_USUARIO', 'FEC_CREADOEN']
@@ -132,10 +141,7 @@ export const searchUser = async (req, res) => {
             limit,
             offset,
             order: [
-                ['DSC_CEDULA', 'ASC'],
-                ['DSC_NOMBRE', 'ASC'],
-                ['DSC_APELLIDOUNO', 'ASC'],
-                ['DSC_APELLIDODOS', 'ASC'],
+                [field, sortOrder],
             ],
             where: {
                 [Op.or]: [

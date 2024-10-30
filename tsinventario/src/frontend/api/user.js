@@ -12,9 +12,9 @@ export const registerUser = async (userData) => {
   }
 };
 
-export const getUsers = async (page, pageSize) => {
+export const getUsers = async (page, pageSize, orderByField, order) => {
     try {
-        const response = await axios.get(`/user/all_user`, { params: { page, pageSize } });
+        const response = await axios.get(`/user/all_user`, { params: { page, pageSize, orderByField, order } });
         return response.data;
     } catch (error) {
         console.error('Error fetching users:', error.message);
@@ -43,9 +43,9 @@ export const deleteUser = async (id) => {
     }
 };
 
-export const searchUser = async (page, pageSize, search) => {
+export const searchUser = async (page, pageSize, termSearch, orderByField, order) => {
     try {
-        const response = await axios.get(`/user/searchUser`, { params: { page, pageSize, search } });
+        const response = await axios.get(`/user/searchUser`, { params: { page, pageSize, termSearch, orderByField, order } });
         return response.data;
     } catch (error) {
         console.error('Error searching user:', error.message);

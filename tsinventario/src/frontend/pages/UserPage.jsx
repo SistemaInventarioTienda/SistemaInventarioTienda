@@ -26,7 +26,7 @@ export default function UserPage() {
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -35,6 +35,10 @@ export default function UserPage() {
   const [searchError, setSearchError] = useState(null);
   // eslint-disable-next-line
   // const [showAlert, setShowAlert] = useState(false);
+
+    // Lógica para ordenar los datos
+    const [sortField, setSortField] = useState(null);
+    const [sortOrder, setSortOrder] = useState('asc');
 
   const [alert, setAlert] = useState({ show: false, message: "", type: "" }); // Estado para gestionar la alerta
 
@@ -61,6 +65,40 @@ export default function UserPage() {
     { name: "confirmarContrasena", label: "Confirmar Contraseña", type: "password", required: true },
   ];
 
+  const refreshData = async (data) => {
+    try{
+      const transformedUsers = data.users ? data.users.map(user => ({
+        ...user,
+        ESTADO: user.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
+      })) : [];
+      setData(transformedUsers);
+      setFilteredData(transformedUsers);
+      setTotalPages(data.totalPages);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  const allUsers = async (field, order, flag) => {
+    let aux = currentPage;
+    if(flag === true) {
+      aux = 1;
+      setCurrentPage(1);
+    }
+    const response = await getUsers(aux, itemsPerPage, field, order);
+    refreshData(response);
+  }
+
+  const searchUsers = async (field, order, flag) => {
+    let aux = currentPage;
+    if(flag === true) {
+      aux = 1;
+      setCurrentPage(1);
+    }
+    const response = await searchUser(aux, itemsPerPage, searchTerm,  field, order);
+    refreshData(response);
+  }
+
   // Lógica para obtener usuarios
   const fetchUsers = async () => {
     try {
@@ -84,63 +122,29 @@ export default function UserPage() {
     if (!isAuthenticated) {
       navigate("/login");
     } else {
-
-      fetchUsers();
+      if(!searchTerm.trim()) {
+        allUsers(sortField, sortOrder, false);
+      } else {
+        searchUsers(sortField, sortOrder, false);
+      }
     }
   }, [isAuthenticated, navigate, currentPage, itemsPerPage]);
 
-  // Lógica para ordenar los datos
-  const [sortField, setSortField] = useState(null);
-  const [sortOrder, setSortOrder] = useState('asc');
-
   const sortData = (field) => {
-    if (field === "actions") {
-      return;
+    if (field === "actions") return;
+  
+    let newOrder = sortOrder;
+    if (field !== sortField) {
+      setSortField(field);
+      newOrder = 'desc';
+    } else {
+      newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     }
-
-    const newSortOrder = sortField === field && sortOrder === 'asc' ? 'desc' : 'asc';
-    setSortField(field);
-    setSortOrder(newSortOrder);
-
-    const sortedData = [...filteredData].sort((a, b) => {
-      if (newSortOrder === 'asc') {
-        return a[field] > b[field] ? 1 : -1;
-      }
-      return a[field] < b[field] ? 1 : -1;
-    });
-
-    setFilteredData(sortedData);
-  };
-
-  // Lógica de búsqueda
-  const handleSearch = async () => {
-    if (!searchTerm.trim()) {
-      await fetchUsers();
-      setSearchError(null);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setSearchError(null);
-
-      const response = await searchUser(currentPage, itemsPerPage, searchTerm);
-      console.log(response);
-
-      if (!response.users || response.users.length === 0) {
-        setSearchError("No se encontraron resultados para ese criterio.");
-      } else {
-        const transformedUsers = response.users.map(user => ({
-          ...user,
-          ESTADO: user.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
-        }));
-        setFilteredData(transformedUsers);
-        setTotalPages(1);
-      }
-    } catch (err) {
-      setSearchError("No se encontraron resultados para ese criterio.");
-    } finally {
-      setLoading(false);
+    setSortOrder(newOrder);
+    if(!searchTerm.trim()){
+      allUsers(field, newOrder, false);
+    } else {
+      searchUsers(field, newOrder, false);
     }
   };
 
@@ -165,7 +169,7 @@ export default function UserPage() {
   const handleDelete = async (user) => {
     try {
       await deleteUser(user.DSC_CEDULA);
-      setAlert({ show: true, message: "Usuario Eliminado exitosamente", type: "success" }); // Mostrar alerta de éxito
+      setAlert({ show: true, message: "Usuario eliminado exitosamente", type: "success" }); // Mostrar alerta de éxito
       await fetchUsers();
       setConfirmationModalOpen(false);
 
@@ -289,7 +293,6 @@ export default function UserPage() {
           Agregar Usuario
         </Button>
       </div>
-      {/* Mostramos la alerta dinámica */}
       {alert.show && (
         <Alert 
           type={alert.type} 
@@ -305,22 +308,33 @@ export default function UserPage() {
             className="search-input"
             value={searchTerm}
             onChange={(e) => {
-              setSearchTerm(e.target.value);
-              if (e.target.value === '') {
-                fetchUsers();
-                setSearchError(null);
+              if(e.target.value.trim() === '') {
+                setSearchTerm("");
+                allUsers(sortField, sortOrder, true);
               } else {
-                setSearchError(null);
+                setSearchTerm(e.target.value);
               }
             }}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
-                handleSearch();
+                if (e.target.value.trim() === '') {
+                  setSearchTerm("");
+                  allUsers(sortField, sortOrder, true);
+                } else {
+                  setSearchTerm(e.target.value);
+                  searchUsers(sortField, sortOrder, true);
+                }
               }
             }}
             placeholder="Buscar usuarios..."
           />
-          <Button className="search-btn" onClick={handleSearch}>
+          <Button className="search-btn" onClick={ async () => {
+            if(!searchTerm.trim()){
+              allUsers(sortField, sortOrder, true);
+            } else {
+              searchUsers(sortField, sortOrder, true);
+            }
+          }}>
             <Search size={20} />
             Buscar
           </Button>
@@ -330,7 +344,10 @@ export default function UserPage() {
           <label htmlFor="itemsPerPage">Mostrar</label>
           <Select
             value={itemsPerPage}
-            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            onChange={(e) => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
