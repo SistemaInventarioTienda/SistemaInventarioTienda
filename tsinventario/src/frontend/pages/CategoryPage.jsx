@@ -140,7 +140,7 @@ export default function CategoryPage() {
     setAlert({ show: false, message: "", type: "" });
     try {
       await deleteCategory(category.DSC_NOMBRE);
-      setAlert({ show: true, message: "Eliminado exitosamente", type: "success" }); // Mostrar alerta de éxito
+      setAlert({ show: true, message: "Categoria eliminada exitosamente", type: "success" }); // Mostrar alerta de éxito
       if(!searchTerm.trim()){
         allCategories(sortField, sortOrder, false);
       } else {
@@ -244,7 +244,6 @@ export default function CategoryPage() {
           Agregar Categoría
         </Button>
       </div>
-      {/* Mostramos la alerta dinámica */}
       {alert.show && (
         <Alert
           type={alert.type}
