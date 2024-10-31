@@ -7,12 +7,6 @@
     background-color: #FFFFFF;
 }
 
-.custom-table thead, .custom-table tbody {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-}
-
 .custom-table {
     width: 100%;
     border-collapse: separate;

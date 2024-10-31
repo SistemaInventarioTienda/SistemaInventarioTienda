@@ -81,7 +81,7 @@ const ActionsCell = ({ actions, rowData }) => {
 const Table = ({ columns, data, actions, onSort, sortField, sortOrder }) => {
     return (
         <div className="table-container">
-            <table className="custom-table" style={{height: "325px"}}>
+            <table className="custom-table">
                 <thead>
                     <tr>
                         {columns.map((column, index) => (
@@ -109,7 +109,6 @@ const Table = ({ columns, data, actions, onSort, sortField, sortOrder }) => {
                         ))}
                     </tr>
                 </thead>
-                <div className="table-body-scroll" style={ {overflowY: "scroll", height: "325px"} }>
                 <tbody>
                     {data && data.length > 0 ? (
                         data.map((row, rowIndex) => (
@@ -135,7 +134,6 @@ const Table = ({ columns, data, actions, onSort, sortField, sortOrder }) => {
                         </tr>
                     )}
                 </tbody>
-                </div>
             </table>
         </div>
     );

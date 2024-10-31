@@ -16,7 +16,7 @@
 
 .card-body {
     flex-grow: 1;
-    overflow-y: hidden;
+    overflow-y: auto;
     padding: 16px;
     max-height: calc(100vh - 150px); 
 }
