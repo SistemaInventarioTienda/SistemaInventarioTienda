@@ -1,13 +1,14 @@
 import Client from "../models/client.model.js";
+import TelefonoCliente from "../models/telefonoCliente.model.js";
 import { getDateCR } from '../libs/date.js';
 import { Op } from 'sequelize';
 
 export const registerClient = async (req, res) => {
   try {
 
-    const { DSC_CEDULA, DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FOTO } = req.body;
+    const { DSC_CEDULA, DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FOTO, ...telefonos } = req.body;
 
-    // creating the user
+    // Crear el cliente
     const creadoEn = await getDateCR();
     const newClient = new Client({
       DSC_CEDULA: DSC_CEDULA,
@@ -20,8 +21,27 @@ export const registerClient = async (req, res) => {
       DSC_DIRECCION: DSC_DIRECCION
     });
 
-    // saving the user in the database
+    //Guarda el cliente
     const clientSaved = await newClient.save();
+
+    if (clientSaved.ID_CLIENTE) {
+      const telefonosList = Array.from(
+        new Set(
+            Object.keys(telefonos)
+                .filter(key => key.startsWith('DSC_TELEFONO'))
+                .map(key => telefonos[key])
+        )
+    );
+
+      await TelefonoCliente.bulkCreate(
+        telefonosList.map(telefono => ({
+          ID_CLIENTE: clientSaved.ID_CLIENTE,
+          DSC_TELEFONO: telefono,
+          FEC_CREADOEN: creadoEn,
+          ESTADO: 1,
+        }))
+      );
+    }
 
     res.json({
       'status': 200,
@@ -57,43 +77,43 @@ export const registerClient = async (req, res) => {
 
 export const getAllClients = async (req, res) => {
   try {
-      // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
-      const { page = 1, pageSize = 5, orderByField = 'DSC_CEDULA', order = 'asc' } = req.query;
-      const limit = parseInt(pageSize);
-      const offset = (parseInt(page) - 1) * limit;
+    // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
+    const { page = 1, pageSize = 5, orderByField = 'DSC_CEDULA', order = 'asc' } = req.query;
+    const limit = parseInt(pageSize);
+    const offset = (parseInt(page) - 1) * limit;
 
-      const field = (
-          orderByField === 'DSC_NOMBRE' || orderByField === 'ESTADO' || orderByField === 'DSC_CEDULA' || orderByField === 'TELEFONO' || 
-          orderByField === 'DSC_APELLIDOUNO' || orderByField === 'DSC_APELLIDODOS'
-          ) ? orderByField : 'DSC_CEDULA';
+    const field = (
+      orderByField === 'DSC_NOMBRE' || orderByField === 'ESTADO' || orderByField === 'DSC_CEDULA' || orderByField === 'TELEFONO' ||
+      orderByField === 'DSC_APELLIDOUNO' || orderByField === 'DSC_APELLIDODOS'
+    ) ? orderByField : 'DSC_CEDULA';
 
-      const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
-      const { count, rows } = await Client.findAndCountAll({
-          attributes: {
-              exclude: ['FEC_MODIFICADOEN', 'ID_CLIENTE', 'FEC_CREADOEN']
-          },
-          limit,
-          offset,
-          order: [
-              [field, sortOrder],
-          ]
+    const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+    const { count, rows } = await Client.findAndCountAll({
+      attributes: {
+        exclude: ['FEC_MODIFICADOEN', 'ID_CLIENTE', 'FEC_CREADOEN']
+      },
+      limit,
+      offset,
+      order: [
+        [field, sortOrder],
+      ]
+    });
+
+
+    if (rows.length === 0) {
+      return res.status(204).json({
+        message: "No se encontraron clientes.",
       });
-      
+    }
 
-      if (rows.length === 0) {
-          return res.status(204).json({
-              message: "No se encontraron clientes.",
-          });
-      }
-
-      res.json({
-          total: count,
-          totalPages: Math.ceil(count / limit),
-          currentPage: parseInt(page),
-          pageSize: limit,
-          clients: rows
-      });
+    res.json({
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+      pageSize: limit,
+      clients: rows
+    });
   } catch (error) {
-      return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
