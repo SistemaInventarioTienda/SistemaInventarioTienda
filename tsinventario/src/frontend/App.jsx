@@ -2,14 +2,15 @@ import React, { useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './App.css';
-import Navbar from "./components/Navbar";
-import Sidebar from './components/Sidebar';
+import Navbar from "./components/layout/Navbar";
+import Sidebar from './components/layout/Sidebar';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/authContext";
 import { ProtectedRoute } from "./routes";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
 import CategoryPage from "./pages/CategoryPage";
+import ClientPage from "./pages/ClientPage";
 import { LoginPage } from "./pages/LoginPage";
 
 function App() {
@@ -43,6 +44,7 @@ function AppContent() {
             <Route index element={<HomePage />} />
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
+            <Route path="client" element={<ClientPage />} />
           </Route>
         </Route>
       </Routes>
@@ -61,6 +63,7 @@ function Layout() {
             <Route index element={<HomePage />} />
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
+            <Route path="client" element={<ClientPage />} />
           </Routes>
         </main>
       </div>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../../context/authContext';
 import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, ChevronLeft, ChevronRight } from 'lucide-react';
-import './css/sidebar.css';
+import './styles/sidebar.css';
 
 const Sidebar = () => {
     const { isAuthenticated } = useAuth();
@@ -18,11 +18,11 @@ const Sidebar = () => {
         { path: '/user', icon: Users, text: 'Usuarios' },
         { path: '/product', icon: Box, text: 'Productos' },
         { path: '/category', icon: Tag, text: 'Categorías' },
-        { path: '/suppliers', icon: Truck, text: 'Proveedores' },
-        { path: '/clients', icon: UserCheck, text: 'Clientes' },
-        { path: '/sales', icon: ShoppingCart, text: 'Ventas' },
+        { path: '/supplier', icon: Truck, text: 'Proveedores' },
+        { path: '/client', icon: UserCheck, text: 'Clientes' },
+        { path: '/sale', icon: ShoppingCart, text: 'Ventas' },
         { path: '/shopping', icon: FileText, text: 'Compras' },
-        { path: '/reports', icon: BarChart2, text: 'Reportes' },
+        { path: '/report', icon: BarChart2, text: 'Reportes' },
     ];
 
     return (

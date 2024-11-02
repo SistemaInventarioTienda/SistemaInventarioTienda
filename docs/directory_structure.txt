@@ -1,0 +1,124 @@
+|├── .gitignore
+|├── package-lock.json
+|├── package.json
+|├── public
+||   ├── Assets
+||   |   ├── check.svg
+||   |   ├── error.svg
+||   |   ├── image
+||   |   |   ├── clientes
+||   |   |   |   └── default_client.png
+||   |   |   ├── logo.jpg
+||   |   |   └── logo.png
+||   |   ├── security-lock.svg
+||   |   ├── styles
+||   |   |   └── adminlte.css
+||   |   └── user.svg
+||   ├── electron
+||   |   └── electron.js
+||   ├── icono.ico
+||   ├── index.html
+||   ├── manifest.json
+||   └── test.png
+|├── README.md
+|├── src
+||   ├── backend
+||   |   ├── .env
+||   |   ├── .gitignore
+||   |   ├── app.js
+||   |   ├── config.js
+||   |   ├── controllers
+||   |   |   ├── auth.controller.js
+||   |   |   ├── category.controller.js
+||   |   |   ├── client.controller.js
+||   |   |   └── user.controller.js
+||   |   ├── db.js
+||   |   ├── index.js
+||   |   ├── libs
+||   |   |   ├── date.js
+||   |   |   ├── encryptData.js
+||   |   |   └── jwt.js
+||   |   ├── logic
+||   |   |   ├── category
+||   |   |   |   └── category.logic.js
+||   |   |   ├── user
+||   |   |   |   └── user.logic.js
+||   |   |   └── validateFields.logic.js
+||   |   ├── middlewares
+||   |   |   ├── auth.middleware.js
+||   |   |   └── validator.middleware.js
+||   |   ├── models
+||   |   |   ├── category.model.js
+||   |   |   ├── client.model.js
+||   |   |   ├── telefonoCliente.model.js
+||   |   |   └── user.model.js
+||   |   ├── package-lock.json
+||   |   ├── package.json
+||   |   ├── routes
+||   |   |   ├── auth.routes.js
+||   |   |   ├── category.routes.js
+||   |   |   ├── client.routes.js
+||   |   |   └── user.routes.js
+||   |   └── schemas
+||   |       ├── auth.schema.js
+||   |       ├── category.schema.js
+||   |       └── client.schema.js
+||   ├── frontend
+||   |   ├── api
+||   |   |   ├── auth.js
+||   |   |   ├── axios.js
+||   |   |   ├── category.js
+||   |   |   ├── client.js
+||   |   |   └── user.js
+||   |   ├── App.css
+||   |   ├── App.jsx
+||   |   ├── assets
+||   |   |   └── react.svg
+||   |   ├── components
+||   |   |   ├── ContactManager.jsx
+||   |   |   ├── css
+||   |   |   |   ├── Alert.css
+||   |   |   |   ├── modal.css
+||   |   |   |   ├── sidebar.css
+||   |   |   |   ├── table.css
+||   |   |   |   └── userMenu.css
+||   |   |   ├── Modal.jsx
+||   |   |   ├── Navbar.jsx
+||   |   |   ├── PageLayout.jsx
+||   |   |   ├── Sidebar.jsx
+||   |   |   ├── tasks
+||   |   |   |   └── TaskCard.jsx
+||   |   |   └── ui
+||   |   |       ├── Alert.jsx
+||   |   |       ├── Button.jsx
+||   |   |       ├── ButtonLink.jsx
+||   |   |       ├── Card.jsx
+||   |   |       ├── FileInput.jsx
+||   |   |       ├── index.js
+||   |   |       ├── Input.jsx
+||   |   |       ├── Label.jsx
+||   |   |       ├── Message.jsx
+||   |   |       ├── ModalConfirmation.jsx
+||   |   |       ├── Pagination.jsx
+||   |   |       ├── Select.jsx
+||   |   |       ├── Table.jsx
+||   |   |       ├── Textarea.jsx
+||   |   |       └── UserMenu.jsx
+||   |   ├── config.js
+||   |   ├── context
+||   |   |   └── authContext.jsx
+||   |   ├── pages
+||   |   |   ├── CategoryPage.jsx
+||   |   |   ├── ClientPage.jsx
+||   |   |   ├── css
+||   |   |   |   ├── LoginPage.css
+||   |   |   |   └── Page.css
+||   |   |   ├── HomePage.jsx
+||   |   |   ├── LoginPage.jsx
+||   |   |   ├── RegisterPage.jsx
+||   |   |   └── UserPage.jsx
+||   |   ├── routes.jsx
+||   |   └── schemas
+||   |       └── auth.js
+||   └── index.js
+|└── yarn.lock

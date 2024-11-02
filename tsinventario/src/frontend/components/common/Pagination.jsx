@@ -1,5 +1,5 @@
 import React from "react";
-import "../css/table.css";
+import "./styles/table.css";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const getPageNumbers = () => {

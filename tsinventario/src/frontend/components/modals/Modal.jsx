@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Alert } from "./ui";
+import { FileInput, Input, Button, Select, Alert } from "../common";
 import { ChevronRight, Plus } from "lucide-react";
-import ModalConfirmation from "../components/ui/ModalConfirmation";
+import ModalConfirmation from "./ModalConfirmation";
+import ContactManager from "../features/ContactManager";
 
-import "./css/modal.css";
+import "./styles/modal.css";
 
 const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName }) => {
   const [formData, setFormData] = useState({});
-  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);  // Estado para el modal de confirmación
+  const [telefonos, setTelefonos] = useState([]); // Estado para gestionar los teléfonos
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({ ...data});
-      console.log(data);
+      setFormData({ ...data });
+      if (entityName === "Cliente" && data.telefonos) {
+        setTelefonos(data.telefonos); // Cargar los teléfonos si es el módulo de cliente
+      }
     }
-  }, [isOpen, data]);
+  }, [isOpen, data, entityName]);
 
   if (!isOpen) return null;
 
@@ -36,7 +40,6 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const estadoValue = parseInt(formData.estado, 10);
 
     if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
@@ -44,13 +47,17 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
       return;
     }
 
-    setConfirmationModalOpen(true);  // Mostrar el modal de confirmación
-    // onSubmit({ ...formData, estado: estadoValue });
+    setConfirmationModalOpen(true);
   };
 
   const handleConfirmSubmit = () => {
-    setConfirmationModalOpen(false);  // Cerrar el modal de confirmación
-    onSubmit({ ...formData, estado: parseInt(formData.estado, 10) });  // Enviar los cambios
+    setConfirmationModalOpen(false);
+
+    const payload = { ...formData, estado: parseInt(formData.estado, 10) };
+    if (entityName === "Cliente") {
+      payload.telefonos = telefonos;
+    }
+    onSubmit(payload);
   };
 
   const renderInput = (field) => {
@@ -58,39 +65,40 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
 
     if (isViewMode) {
       return field.type === "select" ? (
-        <Select
-          name="estado"
-          value={fieldValue}
-          onChange={handleChange}
-          required={field.required}
-          {...commonStyles}
-          disabled
-        >
+        <Select name="estado" value={fieldValue} onChange={handleChange} required={field.required} {...commonStyles} disabled>
           {estadoOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </Select>
+      ) : field.type === "file" ? (
+        <FileInput
+          type="file"
+          name={field.name}
+          onChange={(e) => setFormData((prevData) => ({ ...prevData, [field.name]: e.target.files[0] }))}
+          required={field.required}
+        />
       ) : (
         <Input readOnly value={fieldValue} {...commonStyles} />
       );
     }
 
     return field.type === "select" ? (
-      <Select
-        name={field.name}
-        value={fieldValue}
-        onChange={handleChange}
-        required={field.required}
-        {...commonStyles}
-      >
+      <Select name={field.name} value={fieldValue} onChange={handleChange} required={field.required} {...commonStyles}>
         {estadoOptions.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
       </Select>
+    ) : field.type === "file" ? (
+      <FileInput
+        type="file"
+        name={field.name}
+        onChange={(e) => setFormData((prevData) => ({ ...prevData, [field.name]: e.target.files[0] }))}
+        required={field.required}
+      />
     ) : (
       <Input
         name={field.name}
@@ -116,8 +124,6 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
     },
   };
 
-  
-
   return (
     <div className="modal-overlay">
       <div className="offcanvas offcanvas-end show" tabIndex="-1">
@@ -141,13 +147,8 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
             </Button>
           </div>
           <div className="offcanvas-body">
-            
             {errorMessages.length > 0 && (
-              <Alert
-                type="warning"
-                message={errorMessages}
-                duration={5000}
-              />
+              <Alert type="warning" message={errorMessages} duration={5000} />
             )}
           </div>
           <form onSubmit={handleSubmit}>
@@ -162,6 +163,15 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
                   </div>
                 );
               })}
+              {entityName === "Cliente" && (
+                <ContactManager
+                  className="form-group"
+                  initialValues={telefonos}
+                  onChange={setTelefonos}
+                  type="phone"
+                  label="Teléfonos"
+                />
+              )}
             </div>
             <div className="modal-footer">
               <Button type="button" onClick={onClose} className="close-btn">Cancelar</Button>
@@ -175,11 +185,10 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
           </form>
         </div>
       </div>
-      {/* Modal de confirmación */}
       <ModalConfirmation
         isOpen={isConfirmationModalOpen}
         onClose={() => setConfirmationModalOpen(false)}
-        onConfirm={handleConfirmSubmit}  // Confirmar los cambios
+        onConfirm={handleConfirmSubmit}
         entityName={entityName}
         action="guardar los cambios"
         confirmButtonText="Confirmar"

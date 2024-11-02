@@ -1,7 +1,11 @@
+// React imports
 import React, { useEffect } from "react";
+// Routing
 import { useNavigate } from "react-router-dom";
+// Context
 import { useAuth } from "../context/authContext";
-import PageLayout from "../components/PageLayout";
+// Layout components
+import PageLayout from "../components/layout/PageLayout";
 
 function HomePage() {
   const navigate = useNavigate();

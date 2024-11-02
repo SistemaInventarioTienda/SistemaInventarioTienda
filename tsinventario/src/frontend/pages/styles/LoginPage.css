@@ -1,0 +1,18 @@
+/* Estilos específicos para la página de inicio de sesión */
+.login-card {
+    min-width: 400px;
+    max-width: 450px;
+    min-height: 500px;
+    max-height: 100vh;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+input[type="checkbox"] {
+    border-color: var(--color-primary);
+    background-color: var(--primary-custom);
+}

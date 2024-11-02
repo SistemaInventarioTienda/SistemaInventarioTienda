@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, UserRoundCogIcon } from 'lucide-react';
-import { Button } from './ui';
-import { useAuth } from "../context/authContext";
-import UserMenu from './ui/UserMenu';
+import { Button } from '../common';
+import { useAuth } from "../../context/authContext";
+import UserMenu from './UserMenu';
 
 const Navbar = () => {
   const { isAuthenticated, user } = useAuth();

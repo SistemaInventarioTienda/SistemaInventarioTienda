@@ -1,15 +1,21 @@
+// React imports
 import React, { useEffect, useState } from "react";
+// Routing
 import { useNavigate } from "react-router-dom";
+// Contexts
 import { useAuth } from "../context/authContext";
-import PageLayout from "../components/PageLayout";
-import Table from "../components/ui/Table";
-import Pagination from "../components/ui/Pagination";
+// Layout components
+import PageLayout from "../components/layout/PageLayout";
+// Common components
+import { Table, Pagination, Button, Input, Select, Alert, } from "../components/common";
+// Modals
+import { ModalComponent, ModalConfirmation } from "../components/modals";
+// Icons
+import { Search, User } from "lucide-react";
+// API calls
 import { getUsers, updateUser, registerUser, deleteUser, searchUser } from "../api/user";
-import { Button, Input, Select, Alert } from "../components/ui";
-import ModalComponent from "../components/Modal";
-import ModalConfirmation from "../components/ui/ModalConfirmation";
-import { UserPlus, Search, User } from "lucide-react";
-import "./css/Page.css";
+// Styles
+import "./styles/Page.css";
 
 export default function UserPage() {
   const navigate = useNavigate();

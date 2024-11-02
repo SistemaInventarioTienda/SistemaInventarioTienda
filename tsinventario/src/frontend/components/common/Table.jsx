@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "./Button";
 import { Eye, SquarePen, Trash, KeyRound, ChevronDown, ChevronUp } from "lucide-react";
-import "../css/table.css";
+import "./styles/table.css";
 
 const StatusPill = ({ status }) => {
 

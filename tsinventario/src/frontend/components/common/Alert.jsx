@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, AlertTriangle, Info, CheckCircle } from 'lucide-react';
-import '../css/Alert.css';
+import './styles/Alert.css';
 
 export function Alert({ type = 'default', message, duration = 3000, onClose }) {
   const [isVisible, setIsVisible] = useState(true);
@@ -67,7 +67,7 @@ export function Alert({ type = 'default', message, duration = 3000, onClose }) {
       ) : (
         <p className="message">{message}</p>
       )}
-      
+
     </div>
   );
 }
