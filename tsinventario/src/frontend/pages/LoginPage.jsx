@@ -98,7 +98,6 @@ export function LoginPage() {
                   <Lock size={18} />
                 </span>
                 <Input
-                  id="passwordInput"
                   type={showPassword ? 'text' : 'password'}
                   style={{
                     backgroundColor: "#F5F7FA",

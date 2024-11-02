@@ -5,7 +5,7 @@ import PageLayout from "../components/PageLayout";
 import Table from "../components/ui/Table";
 import Pagination from "../components/ui/Pagination";
 import { getAllCategories, saveCategory, updateCategory, deleteCategory, searchCategoryByName } from "../api/category";
-import { Button, Input, Select, Alert } from "../components/ui";
+import { Button, InputButton, Select, Alert } from "../components/ui";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ModalComponent from "../components/Modal";
 import { Tag, Search } from "lucide-react";
@@ -51,8 +51,8 @@ export default function CategoryPage() {
     { name: "estado", label: "Estado", type: "select", required: true },
   ];
 
-  const refreshData = async (data) =>  {
-    try{
+  const refreshData = async (data) => {
+    try {
       const transformedCategories = data.category ? data.category.map(category => ({
         ...category,
         ESTADO: category.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
@@ -66,7 +66,7 @@ export default function CategoryPage() {
   }
 
   const allCategories = async (field, order, flag) => {
-    if(flag === true){
+    if (flag === true) {
       setCurrentPage(1);
       const response = await getAllCategories(1, itemsPerPage, field, order);
       refreshData(response);
@@ -77,7 +77,7 @@ export default function CategoryPage() {
   }
 
   const searchCategory = async (field, order, flag) => {
-    if(flag === true){
+    if (flag === true) {
       setCurrentPage(1);
       const response = await searchCategoryByName(1, itemsPerPage, searchTerm, field, order);
       refreshData(response);
@@ -92,7 +92,7 @@ export default function CategoryPage() {
     if (!isAuthenticated) {
       navigate("/login");
     } else {
-      if(!searchTerm.trim()) {
+      if (!searchTerm.trim()) {
         allCategories(sortField, sortOrder, false);
       } else {
         searchCategory(sortField, sortOrder, false);
@@ -104,7 +104,7 @@ export default function CategoryPage() {
   // Lógica para ordenar los datos
   const sortData = async (field) => {
     if (field === "actions") return;
-  
+
     let newOrder = sortOrder;
     if (field !== sortField) {
       setSortField(field);
@@ -113,12 +113,12 @@ export default function CategoryPage() {
       newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     }
     setSortOrder(newOrder);
-    if(!searchTerm.trim()){
+    if (!searchTerm.trim()) {
       allCategories(field, newOrder, false);
     } else {
       searchCategory(field, newOrder, false);
     }
-    
+
   };
 
   const handlePageChange = (page) => setCurrentPage(page);
@@ -141,7 +141,7 @@ export default function CategoryPage() {
     try {
       await deleteCategory(category.DSC_NOMBRE);
       setAlert({ show: true, message: "Categoria eliminada exitosamente", type: "success" }); // Mostrar alerta de éxito
-      if(!searchTerm.trim()){
+      if (!searchTerm.trim()) {
         allCategories(sortField, sortOrder, false);
       } else {
         searchCategory(sortField, sortOrder, false);
@@ -184,7 +184,7 @@ export default function CategoryPage() {
         await saveCategory(categoryPayload);
         successMessageText = "Categoría agregada exitosamente";
         setAlert({ show: true, message: successMessageText, type: "success" }); // Mostrar alerta de éxito
-        if(!searchTerm.trim()){
+        if (!searchTerm.trim()) {
           allCategories(sortField, sortOrder, true);
         } else {
           searchCategory(sortField, sortOrder, true);
@@ -211,7 +211,7 @@ export default function CategoryPage() {
         successMessageText = "Categoria actualizada exitosamente";
         setAlert({ show: true, message: successMessageText, type: "success" }); // Mostrar alerta de éxito
 
-        if(!searchTerm.trim()){
+        if (!searchTerm.trim()) {
           allCategories(sortField, sortOrder, false);
         } else {
           searchCategory(sortField, sortOrder, false);
@@ -254,9 +254,9 @@ export default function CategoryPage() {
       )}
       <div className="page-controls">
         <div className="search-container">
-          <Input
+          <InputButton
             type="text"
-            className="search-input"
+            inputClassName="search-input"
             value={searchTerm}
             onChange={(e) => {
               if (e.target.value.trim() === '') {
@@ -278,19 +278,16 @@ export default function CategoryPage() {
               }
             }}
             placeholder="Buscar categorías..."
+            icon={Search}
+            onButtonClick={async () => {
+              if (!searchTerm.trim()) {
+                allCategories(sortField, sortOrder, true);
+              } else {
+                searchCategory(sortField, sortOrder, true);
+              }
+            }}
           />
-          <Button className="search-btn" onClick={async () => {
-            if(!searchTerm.trim()){
-              allCategories(sortField, sortOrder, true);
-            } else {
-              searchCategory(sortField, sortOrder, true);
-            }
-          }}>
-            <Search size={20} />
-            Buscar
-          </Button>
         </div>
-
 
         {searchError && <div className="alert alert-warning">{searchError}</div>}  {/* Mostrar la alerta si hay un error */}
 

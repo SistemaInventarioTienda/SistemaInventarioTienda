@@ -5,10 +5,10 @@ import PageLayout from "../components/PageLayout";
 import Table from "../components/ui/Table";
 import Pagination from "../components/ui/Pagination";
 import { getUsers, updateUser, registerUser, deleteUser, searchUser } from "../api/user";
-import { Button, Input, Select, Alert } from "../components/ui";
+import { Button, Input, InputButton, Select, Alert } from "../components/ui";
 import ModalComponent from "../components/Modal";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
-import { UserPlus, Search, User } from "lucide-react";
+import { Search, User } from "lucide-react";
 import "./css/Page.css";
 
 export default function UserPage() {
@@ -36,9 +36,9 @@ export default function UserPage() {
   // eslint-disable-next-line
   // const [showAlert, setShowAlert] = useState(false);
 
-    // Lógica para ordenar los datos
-    const [sortField, setSortField] = useState(null);
-    const [sortOrder, setSortOrder] = useState('asc');
+  // Lógica para ordenar los datos
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
 
   const [alert, setAlert] = useState({ show: false, message: "", type: "" }); // Estado para gestionar la alerta
 
@@ -66,7 +66,7 @@ export default function UserPage() {
   ];
 
   const refreshData = async (data) => {
-    try{
+    try {
       const transformedUsers = data.users ? data.users.map(user => ({
         ...user,
         ESTADO: user.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
@@ -81,7 +81,7 @@ export default function UserPage() {
 
   const allUsers = async (field, order, flag) => {
     let aux = currentPage;
-    if(flag === true) {
+    if (flag === true) {
       aux = 1;
       setCurrentPage(1);
     }
@@ -91,11 +91,11 @@ export default function UserPage() {
 
   const searchUsers = async (field, order, flag) => {
     let aux = currentPage;
-    if(flag === true) {
+    if (flag === true) {
       aux = 1;
       setCurrentPage(1);
     }
-    const response = await searchUser(aux, itemsPerPage, searchTerm,  field, order);
+    const response = await searchUser(aux, itemsPerPage, searchTerm, field, order);
     refreshData(response);
   }
 
@@ -122,7 +122,7 @@ export default function UserPage() {
     if (!isAuthenticated) {
       navigate("/login");
     } else {
-      if(!searchTerm.trim()) {
+      if (!searchTerm.trim()) {
         allUsers(sortField, sortOrder, false);
       } else {
         searchUsers(sortField, sortOrder, false);
@@ -132,7 +132,7 @@ export default function UserPage() {
 
   const sortData = (field) => {
     if (field === "actions") return;
-  
+
     let newOrder = sortOrder;
     if (field !== sortField) {
       setSortField(field);
@@ -141,7 +141,7 @@ export default function UserPage() {
       newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     }
     setSortOrder(newOrder);
-    if(!searchTerm.trim()){
+    if (!searchTerm.trim()) {
       allUsers(field, newOrder, false);
     } else {
       searchUsers(field, newOrder, false);
@@ -177,9 +177,9 @@ export default function UserPage() {
       const errorMessage = err.message?.data?.message || "Error desconocido al eliminar al usuario.";
       setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
     }
-   // setConfirmationModalOpen(false); // Cerrar modal de confirmación después de eliminar
+    // setConfirmationModalOpen(false); // Cerrar modal de confirmación después de eliminar
   };
-  
+
   const handleGrantPermissionsUser = user => ("grantPermissions", user);
 
   const handleAddUser = () => openModal("add");
@@ -294,21 +294,21 @@ export default function UserPage() {
         </Button>
       </div>
       {alert.show && (
-        <Alert 
-          type={alert.type} 
-          message={alert.message} 
-          duration={3000} 
-          onClose={() => setAlert({ ...alert, show: false })} 
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          duration={3000}
+          onClose={() => setAlert({ ...alert, show: false })}
         />
       )}
       <div className="page-controls">
         <div className="search-container">
-          <Input
+          <InputButton
             type="text"
-            className="search-input"
+            inputClassName="search-input"
             value={searchTerm}
             onChange={(e) => {
-              if(e.target.value.trim() === '') {
+              if (e.target.value.trim() === '') {
                 setSearchTerm("");
                 allUsers(sortField, sortOrder, true);
               } else {
@@ -327,17 +327,15 @@ export default function UserPage() {
               }
             }}
             placeholder="Buscar usuarios..."
+            icon={Search}
+            onButtonClick={async () => {
+              if (!searchTerm.trim()) {
+                allUsers(sortField, sortOrder, true);
+              } else {
+                searchUsers(sortField, sortOrder, true);
+              }
+            }}
           />
-          <Button className="search-btn" onClick={ async () => {
-            if(!searchTerm.trim()){
-              allUsers(sortField, sortOrder, true);
-            } else {
-              searchUsers(sortField, sortOrder, true);
-            }
-          }}>
-            <Search size={20} />
-            Buscar
-          </Button>
         </div>
 
         <div className="items-per-page">
@@ -371,11 +369,11 @@ export default function UserPage() {
         onClose={() => setConfirmationModalOpen(false)}
         onConfirm={() => handleDelete(modalData)}
         entityName={modalData?.DSC_CEDULA}
-        action= "eliminar"
+        action="eliminar"
         confirmButtonText="Eliminar"
         cancelButtonText="Cancelar"
         errorMessages={errorMessages}
-        // successMessage={successMessage}
+      // successMessage={successMessage}
       />
       <ModalComponent
         isOpen={isModalOpen}

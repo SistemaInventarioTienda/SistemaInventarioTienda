@@ -5,6 +5,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
+    overflow-x: hidden;
 }
 
 .modal-data-container {
@@ -48,6 +49,11 @@
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-top: 1rem;
+}
+
+.full-width-component {
+    grid-column: 1 / -1;
+    width: 100%;
 }
 
 .select-field {

@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from "./context/authContext";
 import { ProtectedRoute } from "./routes";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
+import ClientPage from "./pages/ClientPage";
 import CategoryPage from "./pages/CategoryPage";
 import { LoginPage } from "./pages/LoginPage";
 
@@ -43,6 +44,7 @@ function AppContent() {
             <Route index element={<HomePage />} />
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
+            <Route path="clients" element={<ClientPage />} />
           </Route>
         </Route>
       </Routes>
@@ -61,6 +63,7 @@ function Layout() {
             <Route index element={<HomePage />} />
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
+            <Route path="clients" element={<ClientPage />} />
           </Routes>
         </main>
       </div>

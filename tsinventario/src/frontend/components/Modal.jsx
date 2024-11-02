@@ -2,17 +2,21 @@ import React, { useEffect, useState } from "react";
 import { Input, Button, Select, Alert } from "./ui";
 import { ChevronRight, Plus } from "lucide-react";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
+import ContactList from "./ContactManager";
 
 import "./css/modal.css";
 
-const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName }) => {
+export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName }) {
   const [formData, setFormData] = useState({});
-  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);  // Estado para el modal de confirmación
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [phones, setPhones] = useState(data?.telefonos || []);
+  const [emails, setEmails] = useState(data?.correos || []);
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({ ...data});
-      console.log(data);
+      setFormData({ ...data });
+      setPhones(data?.telefonos || []);
+      setEmails(data?.correos || []);
     }
   }, [isOpen, data]);
 
@@ -44,13 +48,19 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
       return;
     }
 
-    setConfirmationModalOpen(true);  // Mostrar el modal de confirmación
-    // onSubmit({ ...formData, estado: estadoValue });
+    setConfirmationModalOpen(true);
   };
 
   const handleConfirmSubmit = () => {
-    setConfirmationModalOpen(false);  // Cerrar el modal de confirmación
-    onSubmit({ ...formData, estado: parseInt(formData.estado, 10) });  // Enviar los cambios
+    setConfirmationModalOpen(false);
+
+    const submissionData = {
+      ...formData,
+      ...(entityName === "Cliente" && { telefonos: phones }),
+      estado: parseInt(formData.estado, 10),
+    };
+    console.log('submissionData', submissionData);
+    onSubmit(submissionData);
   };
 
   const renderInput = (field) => {
@@ -116,7 +126,8 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
     },
   };
 
-  
+  const showPhones = entityName === 'Cliente' || entityName === 'Productor';
+  const showEmails = entityName === 'Productor';
 
   return (
     <div className="modal-overlay">
@@ -141,7 +152,6 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
             </Button>
           </div>
           <div className="offcanvas-body">
-            
             {errorMessages.length > 0 && (
               <Alert
                 type="warning"
@@ -162,6 +172,26 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
                   </div>
                 );
               })}
+
+              {showPhones && (
+                <div className="full-width-component">
+                  <ContactList
+                    contacts={phones}
+                    onContactsChange={setPhones}
+                    type="phone"
+                  />
+                </div>
+              )}
+              {showEmails && (
+                <div className="form-group full-width-component">
+                  <label>Correos electrónicos</label>
+                  <ContactList
+                    contacts={emails}
+                    onContactsChange={setEmails}
+                    type="email"
+                  />
+                </div>
+              )}
             </div>
             <div className="modal-footer">
               <Button type="button" onClick={onClose} className="close-btn">Cancelar</Button>
@@ -175,11 +205,10 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
           </form>
         </div>
       </div>
-      {/* Modal de confirmación */}
       <ModalConfirmation
         isOpen={isConfirmationModalOpen}
         onClose={() => setConfirmationModalOpen(false)}
-        onConfirm={handleConfirmSubmit}  // Confirmar los cambios
+        onConfirm={handleConfirmSubmit}
         entityName={entityName}
         action="guardar los cambios"
         confirmButtonText="Confirmar"
@@ -187,6 +216,4 @@ const Modal = ({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessag
       />
     </div>
   );
-};
-
-export default Modal;
+}
