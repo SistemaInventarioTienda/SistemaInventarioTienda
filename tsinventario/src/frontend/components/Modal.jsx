@@ -3,7 +3,7 @@ import { Input, Button, Select, Alert } from "./ui";
 import { ChevronRight, Plus } from "lucide-react";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ContactList from "./ContactManager";
-
+import InputFile from "../components/ui/InputFile";
 import "./css/modal.css";
 
 export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName }) {
@@ -33,9 +33,16 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
   ];
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const parsedValue = name === "estado" ? parseInt(value, 10) : value;
-    setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
+    const { name, value, type, files } = e.target;
+
+    // Verifica si el campo es de tipo 'file'
+    if (type === "file" && files.length > 0) {
+      const fileName = files[0].name;
+      setFormData((prevData) => ({ ...prevData, [name]: fileName }));
+    } else {
+      const parsedValue = name === "estado" ? parseInt(value, 10) : value;
+      setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -66,7 +73,16 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
   const renderInput = (field) => {
     const fieldValue = formData[field.name] ?? "";
 
-    if (isViewMode) {
+    if (field.type === "file") {
+      return (
+        <InputFile
+          name={field.name}
+          existingPreview={formData[field.name]}
+          isViewMode={isViewMode} // Pasamos el modo de vista
+          {...commonStyles}
+        />
+      );
+    } else if (isViewMode) {
       return field.type === "select" ? (
         <Select
           name="estado"
@@ -162,15 +178,28 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
           </div>
           <form onSubmit={handleSubmit}>
             <div className="form-grid">
-              {fields.map((field) => {
-                if ((isEditMode || isViewMode) && (field.name === "contrasena" || field.name === "confirmarContrasena")) return null;
 
-                return (
-                  <div className="form-group" key={field.name}>
-                    <label htmlFor={field.name}>{field.label}</label>
-                    {renderInput(field)}
-                  </div>
-                );
+              {fields.map((field) => {
+                if (field.type === "file" && entityName === "Cliente") {
+                  return (
+                    <InputFile
+                      key={field.name}
+                      name={field.name}
+                      label={field.label}
+                      required={field.required}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  );
+                } else {
+                  if ((isEditMode || isViewMode) && (field.name === "contrasena" || field.name === "confirmarContrasena")) return null;
+
+                  return (
+                    <div className="form-group" key={field.name}>
+                      <label htmlFor={field.name}>{field.label}</label>
+                      {renderInput(field)}
+                    </div>
+                  );
+                }
               })}
 
               {showPhones && (
@@ -193,6 +222,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
                 </div>
               )}
             </div>
+
             <div className="modal-footer">
               <Button type="button" onClick={onClose} className="close-btn">Cancelar</Button>
               {!isViewMode && (

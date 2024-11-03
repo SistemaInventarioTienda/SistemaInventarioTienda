@@ -63,7 +63,6 @@ export default function Component({
                     type={type === 'phone' ? 'tel' : 'email'}
                     value={newContact}
                     onChange={(e) => setNewContact(e.target.value)}
-                    required={true}
                     placeholder={`Ingrese el ${type === 'phone' ? 'teléfono' : 'correo'}`}
                     inputClassName="form-control border-custom"
                     inputStyle={{

@@ -1,0 +1,91 @@
+/* Estilos para el botón de archivo */
+.file-btn {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: var(--color-primary) !important;
+    background-color: var(--color-secondary) !important;
+    border: 2px dashed var(--color-primary);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-btn:hover {
+    background-color: var(--color-secondary) !important;
+    opacity: 0.8;
+}
+
+.file-btn svg {
+    width: 40px;
+    height: 40px;
+    color: var(--color-primary);
+}
+
+.file-btn span {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+/* Estilos para el archivo seleccionado */
+.selected-file {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-secondary) !important;
+    border: 1px solid var(--color-primary);
+    border-radius: 16px;
+    margin-top: 20px;
+    padding: 5px 15px;
+}
+
+/* Estilo para el nombre del archivo */
+.selected-file p {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 70%;
+}
+
+/* Estilos para el botón de eliminar */
+.selected-file button {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.selected-file button:hover {
+    background-color: #F44336;
+    color: var(--color-secondary);
+    border-radius: 8px;
+}
+
+.selected-file button svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Estilos para la imagen de vista previa */
+.preview-image {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid var(--color-primary);
+    margin-right: 10px;
+}

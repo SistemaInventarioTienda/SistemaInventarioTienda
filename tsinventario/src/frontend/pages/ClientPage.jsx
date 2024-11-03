@@ -48,8 +48,8 @@ export default function ClientPage() {
         { name: "primerApellido", label: "Primer Apellido", type: "text", required: true },
         { name: "segundoApellido", label: "Segundo Apellido", type: "text" },
         { name: "direccion", label: "Dirección", type: "text", required: true },
-        { name: "fotografia", label: "Fotografía", type: "file", required: true },
         { name: "estado", label: "Estado", type: "select", required: true },
+        { name: "foto", label: "Fotografía", type: "file", required: true },
     ];
 
     const refreshData = async (data) => {
@@ -73,6 +73,7 @@ export default function ClientPage() {
             setCurrentPage(1);
         }
         const response = await getClients(aux, itemsPerPage, field, order);
+        console.log(response);
         refreshData(response);
     }
 
