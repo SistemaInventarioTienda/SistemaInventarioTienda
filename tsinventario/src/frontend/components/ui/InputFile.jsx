@@ -42,7 +42,7 @@ const FileInput = ({ existingPreview, isViewMode }) => {
     };
 
     return (
-        <div>
+        <div className='input-file-'>
             {isViewMode ? (
                 preview ? (
                     <img src={preview} alt="Vista previa" className="preview-image" />

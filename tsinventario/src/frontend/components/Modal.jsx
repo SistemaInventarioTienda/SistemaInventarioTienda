@@ -182,13 +182,15 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
               {fields.map((field) => {
                 if (field.type === "file" && entityName === "Cliente") {
                   return (
-                    <InputFile
-                      key={field.name}
-                      name={field.name}
-                      label={field.label}
-                      required={field.required}
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                    <div className="full-width-component">
+                      <InputFile
+                        key={field.name}
+                        name={field.name}
+                        label={field.label}
+                        required={field.required}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
                   );
                 } else {
                   if ((isEditMode || isViewMode) && (field.name === "contrasena" || field.name === "confirmarContrasena")) return null;
