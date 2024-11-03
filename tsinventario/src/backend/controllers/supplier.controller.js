@@ -1,4 +1,4 @@
-import {Supplier,mailSupplier,supplierDirection,numberSupplier}  from "../models/supplier.model.js";
+import {Supplier,mailSupplier,supplierDirection,numberSupplier,supplierType}  from "../models/supplier.model.js";
 import {validateRegisterSupplier} from    "../logic/supplier/supplier.logic.js"
 import { getDateCR } from "../libs/date.js";
 import {validateSupplierData} from "../logic/validateFields.logic.js";
@@ -35,6 +35,10 @@ export const getAllSuppliers = async (req, res) => {
                 {
                     model: mailSupplier,
                     attributes: ['DSC_CORREO'],
+                },
+                {
+                    model: supplierType,
+                    attributes: ['DSC_NOMBRE']
                 }
             ]
         });
@@ -157,3 +161,13 @@ export const createSupplier = async (req, res) => {
     }
   };
   
+
+  export const getAllSupplierTypes = async (req, res) => {
+    try {
+        const supplierTypes = await supplierType.findAll();
+        res.status(200).json({ type: supplierTypes });
+    } catch (error) {
+        console.error('Error al obtener los tipos de proveedores:', error);
+        res.status(500).json({ message: 'Error desconocido', error });
+    }
+};

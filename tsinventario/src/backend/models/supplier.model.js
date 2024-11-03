@@ -2,6 +2,33 @@ import { DataTypes } from 'sequelize';
 import db from '../db.js';
 
 
+const supplierType = db.define('supplierType', {
+  ID_TIPOPROVEEDOR: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+  },
+  DSC_NOMBRE: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      defaultValue: null
+  },
+  FEC_CREADOEN: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null
+  },
+  ESTADO: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+  }
+}, {
+  tableName: 'tsim_tipoproveedor',
+  timestamps: false // Desactiva createdAt y updatedAt si no los necesitas
+});
+
+
 const supplierDirection = db.define('supplierDirection', {
   ID_DIRECCIONPROVEEDOR: {
     type: DataTypes.INTEGER,
@@ -35,6 +62,10 @@ const Supplier = db.define('Supplier', {
   ID_TIPOPROVEEDOR: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    references: {
+      model: supplierType,
+      key: 'ID_TIPOPROVEEDOR',
+    }
   },
   ID_DIRECCION: {
     type: DataTypes.INTEGER,
@@ -126,6 +157,17 @@ const mailSupplier = db.define('mailSupplier', {
 });
 
 // Relaciones 
+
+Supplier.belongsTo(supplierType, {
+  foreignKey: 'ID_TIPOPROVEEDOR',
+  targetKey: 'ID_TIPOPROVEEDOR'
+});
+
+supplierType.hasMany(Supplier, {
+  foreignKey: 'ID_TIPOPROVEEDOR',
+  sourceKey: 'ID_TIPOPROVEEDOR'
+});
+
 Supplier.hasMany(numberSupplier, { foreignKey: 'ID_PROVEEDOR' });
 numberSupplier.belongsTo(Supplier, { foreignKey: 'ID_PROVEEDOR' });
 
@@ -135,4 +177,4 @@ mailSupplier.belongsTo(Supplier, { foreignKey: 'ID_PROVEEDOR' });
 Supplier.belongsTo(supplierDirection, { foreignKey: 'ID_DIRECCION' });
 supplierDirection.hasMany(Supplier, { foreignKey: 'ID_DIRECCION' });
 
-export { Supplier, numberSupplier, mailSupplier,supplierDirection };
+export { Supplier, numberSupplier, mailSupplier,supplierDirection, supplierType };
