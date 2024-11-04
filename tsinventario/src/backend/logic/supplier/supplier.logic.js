@@ -54,7 +54,7 @@ async function existNameUpdate(name, id) {
     const nameFound = await Supplier.findOne({
         where: {
             DSC_NOMBRE: name,
-            IDENTIFICADOR_PROVEEDOR : { [Op.ne]: id } // Excluir el ID proporcionado
+            IDENTIFICADOR_PROVEEDOR : { [Op.ne]: id }
         }
     });
     return nameFound ? true : false;

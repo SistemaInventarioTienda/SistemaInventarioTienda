@@ -266,3 +266,70 @@ export const selectOneSupplier = async (req, res) => {
       return res.status(500).json({ message: error.message });
   }
 };
+
+
+
+export const searchSupplier = async (req, res) => {
+  try {
+      const { page = 1, pageSize = 5, termSearch = '', orderByField = 'DSC_NOMBRE', order = 'asc' } = req.query;
+      const limit = parseInt(pageSize);
+      const offset = (parseInt(page) - 1) * limit;
+
+      const field = (
+          orderByField === 'DSC_NOMBRE' || orderByField === 'ESTADO' || orderByField === 'ID_TIPOPROVEEDOR' 
+      ) ? orderByField : 'DSC_NOMBRE';
+
+      const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+      const expectedMatch = { [Op.like]: `%${termSearch}%` }; 
+
+      const { count, rows } = await Supplier.findAndCountAll({
+          attributes: {
+              exclude: ['FEC_MODIFICADOEN', 'ID_PROVEEDOR'] 
+          },
+          limit,
+          offset,
+          order: [
+              [field, sortOrder],
+          ],
+          where: {
+              [Op.or]: [
+                  { DSC_NOMBRE: expectedMatch }
+              ]
+          },
+          include: [
+            {
+                model: supplierDirection,
+                attributes: ['DSC_DIRECCIONEXACTA'],
+            },
+            {
+                model: numberSupplier,
+                attributes: ['DSC_TELEFONO'],
+            },
+            {
+                model: mailSupplier,
+                attributes: ['DSC_CORREO'],
+            },
+            {
+                model: supplierType,
+                attributes: ['DSC_NOMBRE']
+            }
+        ]
+      });
+
+      if (rows.length === 0) {
+          return res.status(204).json({
+              message: "No se encontraron proveedores.",
+          });
+      }
+
+      res.json({
+          total: count,
+          totalPages: Math.ceil(count / limit),
+          currentPage: parseInt(page),
+          pageSize: limit,
+          suppliers: rows
+      });
+  } catch (error) {
+      return res.status(500).json({ message: error.message });
+  }
+};
