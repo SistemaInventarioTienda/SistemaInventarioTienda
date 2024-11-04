@@ -116,6 +116,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
         onChange={handleChange}
         required={field.required}
         placeholder={`Ingrese ${field.label.toLowerCase()}`}
+        disabled={mode === 'edit'  && field.name === 'cedula'}
         {...commonStyles}
       />
     );

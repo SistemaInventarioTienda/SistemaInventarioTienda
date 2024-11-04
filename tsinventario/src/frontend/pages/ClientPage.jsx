@@ -57,6 +57,9 @@ export default function ClientPage() {
             const transformedClients = data.clients ? data.clients.map(client => ({
                 ...client,
                 ESTADO: client.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
+                DSC_TELEFONO: client.TelefonoClientes && client.TelefonoClientes.length > 0
+                    ? client.TelefonoClientes[0].DSC_TELEFONO
+                    : "No Disponible"
             })) : [];
             setData(transformedClients);
             setFilteredData(transformedClients);
@@ -73,7 +76,6 @@ export default function ClientPage() {
             setCurrentPage(1);
         }
         const response = await getClients(aux, itemsPerPage, field, order);
-        console.log(response);
         refreshData(response);
     }
 
@@ -93,6 +95,9 @@ export default function ClientPage() {
             const transformedClients = response.clients.map(client => ({
                 ...client,
                 ESTADO: client.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
+                DSC_TELEFONO: client.TelefonoClientes && client.TelefonoClientes.length > 0
+                    ? client.TelefonoClientes[0].DSC_TELEFONO
+                    : "No Disponible"
             })) || [];
             setData(transformedClients);
             setFilteredData(transformedClients);
@@ -195,7 +200,7 @@ export default function ClientPage() {
             URL_FOTO: clientData.foto,
             ESTADO: clientData.estado,
         };
-        
+
         console.log('URL_FOTO', clientData.foto);
         // Agregar teléfonos al payload
         clientData.telefonos.forEach((telefono, index) => {

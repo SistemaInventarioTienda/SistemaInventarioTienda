@@ -17,6 +17,7 @@ export const getClients = async (page, pageSize, orderByField, order) => {
         const response = await axios.get('/client/all_clients', {
             params: { page, pageSize, orderByField, order }
         });
+        console.log(response);
         return response.data;
     } catch (error) {
         console.error('Error obteniendo los clientes:', error.message);
@@ -49,7 +50,7 @@ export const deleteClient = async (id) => {
 // Función para buscar un cliente
 export const searchClient = async (page, pageSize, termSearch, orderByField, order) => {
     try {
-        const response = await axios.get('/client/searchClient', {
+        const response = await axios.get('/client/search_client', {
             params: { page, pageSize, termSearch, orderByField, order }
         });
         return response.data;

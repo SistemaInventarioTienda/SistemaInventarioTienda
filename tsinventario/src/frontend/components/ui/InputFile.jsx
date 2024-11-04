@@ -54,6 +54,7 @@ const InputFile = ({ value, mode, entity }) => {
 
     return (
         <div className="input-file-container">
+            <label>Fotografía</label>
             {preview ? (
                 <div className="selected-file">
                     <img
