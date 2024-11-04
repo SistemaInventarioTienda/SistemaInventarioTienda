@@ -105,10 +105,14 @@ export const createSupplier = async (req, res) => {
   
       const formattedDate = date.toString().replace(/[:-]/g, '').slice(0, 14);
       const IDENTIFICADOR_PROVEEDOR = `SUP-${formattedDate}-${uuidv4().slice(0, 8)}`;
+      const CTA_BANCARIA = `CTA-${uuidv4().slice(0, 8)}`;
+      const DSC_VENTA='vende zapatos';
       const supplier = await Supplier.create({
         IDENTIFICADOR_PROVEEDOR,
         DSC_NOMBRE,
         ID_TIPOPROVEEDOR,
+        DSC_VENTA,
+        CTA_BANCARIA,
         ID_DIRECCION: direction.ID_DIRECCIONPROVEEDOR,
         ESTADO,
         FEC_CREADOEN: date,

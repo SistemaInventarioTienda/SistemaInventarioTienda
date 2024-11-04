@@ -72,6 +72,15 @@ const Supplier = db.define('Supplier', {
       key: 'ID_TIPOPROVEEDOR',
     }
   },
+  DSC_VENTA: {
+    type: DataTypes.STRING(500),
+    allowNull: false,
+    unique: true,
+  },
+  CTA_BANCARIA: {
+    type: DataTypes.STRING(500),
+    allowNull: false,
+  },
   ID_DIRECCION: {
     type: DataTypes.INTEGER,
     allowNull: true,
