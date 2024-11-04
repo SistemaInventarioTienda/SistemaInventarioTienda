@@ -9,7 +9,7 @@ const router = Router();
 router.post("/register", auth, validateSchema(registerSchema), registerClient);
 router.get("/all_clients", auth, getAllClients);
 router.get("/search_client", auth, searchClient);
-router.put("/update_client/:id", validateSchema(updateSchema), updateClient);
+router.put("/update_client/:id", auth, validateSchema(updateSchema), updateClient);
 router.delete("/delete_client/:id", auth, deleteClient);
 
 export default router;
