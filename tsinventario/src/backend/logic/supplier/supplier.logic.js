@@ -13,10 +13,31 @@ export const validateRegisterSupplier = async (DSC_NOMBRE) => {
     }
 };
 
+export const validateRegisterSupplierUpdate = async (DSC_NOMBRE,ID_PROVEEDOR) => {
+    try {
+        const output = await validateNameSupplierUpdate(DSC_NOMBRE,ID_PROVEEDOR);
+        if (output !== false) {
+            return output;
+        }
+        return true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+
 
 
 async function validateNameSupplier(name) {
     if (await existName(name))
+        return ["El nombre del proveedor ya se encuentra en uso."];
+
+    return false;
+}
+
+
+async function validateNameSupplierUpdate(name,id) {
+    if (await existNameUpdate(name,id))
         return ["El nombre del proveedor ya se encuentra en uso."];
 
     return false;
@@ -27,4 +48,15 @@ async function existName(name) {
     return  nameFound?true:false;
 }
 
+
+
+async function existNameUpdate(name, id) {
+    const nameFound = await Supplier.findOne({
+        where: {
+            DSC_NOMBRE: name,
+            ID_PROVEEDOR: { [Op.ne]: id } // Excluir el ID proporcionado
+        }
+    });
+    return nameFound ? true : false;
+}
 

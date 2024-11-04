@@ -1,7 +1,7 @@
 import {Supplier,mailSupplier,supplierDirection,numberSupplier,supplierType}  from "../models/supplier.model.js";
-import {validateRegisterSupplier} from    "../logic/supplier/supplier.logic.js"
+import {validateRegisterSupplier,validateRegisterSupplierUpdate} from    "../logic/supplier/supplier.logic.js"
 import { getDateCR } from "../libs/date.js";
-import {validateSupplierData} from "../logic/validateFields.logic.js";
+import {validateSupplierData,validateSupplierDataUpdate} from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
 
 
@@ -170,4 +170,95 @@ export const createSupplier = async (req, res) => {
         console.error('Error al obtener los tipos de proveedores:', error);
         res.status(500).json({ message: 'Error desconocido', error });
     }
+};
+
+
+export const updatedSupplier = async (req, res) => {
+  const { ID_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO } = req.body;
+
+  try {
+      const date = await getDateCR(); 
+      
+      const validateFields = validateSupplierDataUpdate(req);
+      if (validateFields !== true) {
+          return res.status(400).json({
+              message: validateFields,
+          });
+      }
+
+      const suplierName = await validateRegisterSupplierUpdate(DSC_NOMBRE, ID_PROVEEDOR);
+      if (suplierName !== true) {
+          return res.status(400).json({
+              message: suplierName,
+          });
+      }
+
+      await supplierDirection.update(
+        { DSC_DIRECCIONEXACTA },
+        { where: { ID_DIRECCIONPROVEEDOR: req.body.ID_DIRECCION } }
+      );
+
+
+      await Supplier.update(
+        {
+          DSC_NOMBRE,
+          ID_TIPOPROVEEDOR,
+          ESTADO,
+          FEC_MODIFICADOEN: date,
+        },
+        { where: { ID_PROVEEDOR } }
+      );
+
+      res.status(200).json({
+        message: 'Proveedor actualizado correctamente'
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al actualizar el proveedor', error });
+  }
+};
+
+
+export const selectOneSupplier = async (req, res) => {
+  const { DSC_NOMBRE } = req.body; 
+
+  try {
+    if (!DSC_NOMBRE || !DSC_NOMBRE.trim()) {
+      return res.status(400).json({
+          message: "El nombre del proveedor es requerido."
+      });
+  }
+
+      const supplier = await Supplier.findOne({
+          where: { DSC_NOMBRE: DSC_NOMBRE },
+          attributes: { exclude: ['FEC_MODIFICADOEN'] },
+          include: [
+              {
+                  model: supplierDirection,
+                  attributes: ['DSC_DIRECCIONEXACTA'],
+              },
+              {
+                  model: numberSupplier,
+                  attributes: ['DSC_TELEFONO'],
+              },
+              {
+                  model: mailSupplier,
+                  attributes: ['DSC_CORREO'],
+              },
+              {
+                  model: supplierType,
+                  attributes: ['DSC_NOMBRE']
+              }
+          ]
+      });
+
+      if (!supplier) {
+          return res.status(404).json({
+              message: "Proveedor no encontrado."
+          });
+      }
+      res.json({Supplier: supplier});
+  } catch (error) {
+      return res.status(500).json({ message: error.message });
+  }
 };

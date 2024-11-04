@@ -148,6 +148,35 @@ export const validateSupplierData = (req) => {
 };
 
 
+export const validateSupplierDataUpdate = (req) => {
+    const {
+        DSC_DIRECCIONEXACTA,
+        DSC_NOMBRE,
+        ID_TIPOPROVEEDOR,
+        ESTADO
+    } = req.body;
+
+    // Lista de campos requeridos
+    const fields = [
+        { field: DSC_DIRECCIONEXACTA, name: 'DSC_DIRECCIONEXACTA' },
+        { field: DSC_NOMBRE, name: 'DSC_NOMBRE' },
+        { field: ID_TIPOPROVEEDOR, name: 'TIPO_PROVEEDOR' },
+        { field: ESTADO, name: 'ESTADO' }
+    ];
+
+    const errors = [];
+
+    for (const { field, name } of fields) {
+        if (!isNotEmpty(field)) {
+            errors.push(`El campo ${name} es requerido y no puede estar vacío.`);
+        }
+    }
+
+    return errors.length > 0 ? errors : true;
+};
+
+
+
 const isValidEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);

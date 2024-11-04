@@ -1,8 +1,8 @@
 import { Router } from "express";
-import {getAllSuppliers,createSupplier,deleteSupplier,getAllSupplierTypes} from "../controllers/supplier.controller.js";
+import {getAllSuppliers,createSupplier,deleteSupplier,getAllSupplierTypes,updatedSupplier,selectOneSupplier} from "../controllers/supplier.controller.js";
 import { auth } from "../middlewares/auth.middleware.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
-import { updateSchema } from "../schemas/auth.schema.js";
+import { supplierDirectionSchema,supplierSchema } from "../schemas/supplier.schema.js";
 
 const router = Router();
 
@@ -10,6 +10,8 @@ const router = Router();
  router.post("/saveSupplier",  createSupplier);
  router.put("/deleteSupplier",deleteSupplier);
  router.get("/supplierTypes",getAllSupplierTypes);
+ router.put("/updateSupplier",validateSchema(supplierDirectionSchema), updatedSupplier);
+ router.get("/selectSupplier",selectOneSupplier);
 
 
 
