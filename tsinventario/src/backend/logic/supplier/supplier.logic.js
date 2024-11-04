@@ -1,4 +1,4 @@
-import {Supplier} from "../../models/supplier.model.js";
+import {mailSupplier, numberSupplier, Supplier} from "../../models/supplier.model.js";
 import { Op } from 'sequelize';
 
 export const validateRegisterSupplier = async (DSC_NOMBRE) => {
@@ -16,6 +16,32 @@ export const validateRegisterSupplier = async (DSC_NOMBRE) => {
 export const validateRegisterSupplierUpdate = async (DSC_NOMBRE,IDENTIFICADOR_PROVEEDOR) => {
     try {
         const output = await validateNameSupplierUpdate(DSC_NOMBRE,IDENTIFICADOR_PROVEEDOR);
+        if (output !== false) {
+            return output;
+        }
+        return true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+
+export const validateRegisterPhones = async (phones) => {
+    try {
+        const output = await validatePhonesSupplier(phones);
+        if (output !== false) {
+            return output;
+        }
+        return true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+
+export const validateRegisterEmails = async (emails) => {
+    try {
+        const output = await validateEmailsSupplier(emails);
         if (output !== false) {
             return output;
         }
@@ -60,3 +86,35 @@ async function existNameUpdate(name, id) {
     return nameFound ? true : false;
 }
 
+async function validatePhonesSupplier(phones) {
+    const existingPhones = await numberSupplier.findAll({
+        where: {
+            DSC_TELEFONO: { [Op.in]: phones },
+        },
+        attributes: ['DSC_TELEFONO']
+    });
+
+    if (existingPhones.length > 0) {
+        const existingNumbers = existingPhones.map(phone => phone.DSC_TELEFONO);
+        return [`Hay números de teléfono en uso: ${existingNumbers.join(', ')}.`];
+    }
+
+    return false;  
+}
+
+
+async function validateEmailsSupplier(emails) {
+    const existingEmails = await mailSupplier.findAll({
+        where: {
+            DSC_CORREO: { [Op.in]: emails },
+        },
+        attributes: ['DSC_CORREO']
+    });
+
+    if (existingEmails.length > 0) {
+        const existingEmailsList = existingEmails.map(email => email.DSC_CORREO);
+        return [`Hay correos en uso: ${existingEmailsList.join(', ')}.`];
+    }
+
+    return false;  
+}

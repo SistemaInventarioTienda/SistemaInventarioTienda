@@ -1,5 +1,5 @@
 import {Supplier,mailSupplier,supplierDirection,numberSupplier,supplierType}  from "../models/supplier.model.js";
-import {validateRegisterSupplier,validateRegisterSupplierUpdate} from    "../logic/supplier/supplier.logic.js"
+import {validateRegisterSupplier,validateRegisterSupplierUpdate,validateRegisterEmails,validateRegisterPhones} from    "../logic/supplier/supplier.logic.js"
 import { getDateCR } from "../libs/date.js";
 import {validateSupplierData,validateSupplierDataUpdate} from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
@@ -84,6 +84,21 @@ export const createSupplier = async (req, res) => {
         }
 
 
+        const numberValidation = await validateRegisterPhones(phones);
+        if (numberValidation !== true) {
+            return res.status(400).json({
+                message: numberValidation,
+            });
+        }
+  
+        const emailValidation = await validateRegisterEmails(emails);
+        if (emailValidation !== true) {
+            return res.status(400).json({
+                message: emailValidation,
+            });
+        }
+  
+
       const direction = await supplierDirection.create({
         DSC_DIRECCIONEXACTA,
       });
@@ -99,7 +114,6 @@ export const createSupplier = async (req, res) => {
         FEC_CREADOEN: date,
       });
   
-   //faltar validacion de numero y correo,para que no se repitan....
       if (phones && Array.isArray(phones) && phones.length > 0) {
         const phoneRecords = phones.map(phone => ({
           ID_PROVEEDOR: supplier.ID_PROVEEDOR,
