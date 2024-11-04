@@ -178,7 +178,7 @@ export default function ClientPage() {
         primerApellido: client.DSC_APELLIDOUNO,
         segundoApellido: client.DSC_APELLIDODOS,
         direccion: client.DSC_DIRECCION,
-        foto: client.URL_FOTO,
+        foto: process.env.PUBLIC_URL + '/Assets/image/clientes/' + client.URL_FOTO,
         estado: client.ESTADO === "ACTIVO" ? 1 : 2,
         telefonos: client.telefonos || [],
     });
@@ -195,7 +195,8 @@ export default function ClientPage() {
             URL_FOTO: clientData.foto,
             ESTADO: clientData.estado,
         };
-
+        
+        console.log('URL_FOTO', clientData.foto);
         // Agregar teléfonos al payload
         clientData.telefonos.forEach((telefono, index) => {
             clientPayload[`DSC_TELEFONO${index + 1}`] = telefono;

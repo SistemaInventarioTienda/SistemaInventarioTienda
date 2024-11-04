@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { Plus, Trash } from 'lucide-react'
-import { Alert } from '../components/ui'
+import { useState } from 'react';
+import { Plus, Trash } from 'lucide-react';
+import { Alert } from '../components/ui';
 import { Button, InputButton } from '../components/ui';
 import "./css/contactManager.css";
 
@@ -48,7 +48,8 @@ export default function Component({
 
     return (
         <div className="contacts-container">
-            <label>Telefonos</label>
+            <label>{type === 'phone' ? 'Teléfonos' : 'Correos Electrónicos'}</label>
+            
             {alert.show && (
                 <Alert
                     type="warning"

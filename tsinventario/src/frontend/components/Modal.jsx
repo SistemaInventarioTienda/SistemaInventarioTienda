@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Input, Button, Select, Alert } from "./ui";
 import { ChevronRight, Plus } from "lucide-react";
 import ModalConfirmation from "../components/ui/ModalConfirmation";
-import ContactList from "./ContactManager";
+import ContactManager from "./ContactManager";
 import InputFile from "../components/ui/InputFile";
 import "./css/modal.css";
 
@@ -73,16 +73,8 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
   const renderInput = (field) => {
     const fieldValue = formData[field.name] ?? "";
 
-    if (field.type === "file") {
-      return (
-        <InputFile
-          name={field.name}
-          existingPreview={formData[field.name]}
-          isViewMode={isViewMode} // Pasamos el modo de vista
-          {...commonStyles}
-        />
-      );
-    } else if (isViewMode) {
+    if (isViewMode) {
+
       return field.type === "select" ? (
         <Select
           name="estado"
@@ -142,8 +134,9 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
     },
   };
 
-  const showPhones = entityName === 'Cliente' || entityName === 'Productor';
-  const showEmails = entityName === 'Productor';
+  const showPhones = entityName === 'Cliente' || entityName === 'Proveedor';
+  const showEmails = entityName === 'Proveedor';
+  const showContactManager = !((isEditMode || isViewMode) && entityName === "Cliente");
 
   return (
     <div className="modal-overlay">
@@ -180,43 +173,51 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
             <div className="form-grid">
 
               {fields.map((field) => {
+                // Caso especial para modo 'add' y tipo de archivo para "Cliente"
                 if (field.type === "file" && entityName === "Cliente") {
                   return (
-                    <div className="full-width-component">
+                    <div className="full-width-component" key={field.name}>
                       <InputFile
-                        key={field.name}
                         name={field.name}
                         label={field.label}
                         required={field.required}
                         onClick={(e) => e.stopPropagation()}
+                        mode={mode}
+                        entity={entityName}
+                        value={formData.foto}
                       />
                     </div>
                   );
-                } else {
-                  if ((isEditMode || isViewMode) && (field.name === "contrasena" || field.name === "confirmarContrasena")) return null;
-
-                  return (
-                    <div className="form-group" key={field.name}>
-                      <label htmlFor={field.name}>{field.label}</label>
-                      {renderInput(field)}
-                    </div>
-                  );
                 }
+
+                // Ocultar los campos de contraseña en modo de edición o vista
+                if ((isEditMode || isViewMode) && (field.name === "contrasena" || field.name === "confirmarContrasena")) {
+                  return null;
+                }
+
+                // Renderizar el resto de los campos
+                return (
+                  <div className="form-group" key={field.name}>
+                    <label htmlFor={field.name}>{field.label}</label>
+                    {renderInput(field)}
+                  </div>
+                );
               })}
 
-              {showPhones && (
+              {/* Mostrar ContactManager solo si se cumple la condición */}
+              {showPhones && showContactManager && (
                 <div className="full-width-component">
-                  <ContactList
+                  <ContactManager
                     contacts={phones}
                     onContactsChange={setPhones}
                     type="phone"
                   />
                 </div>
               )}
-              {showEmails && (
+              {showEmails && showContactManager && (
                 <div className="form-group full-width-component">
                   <label>Correos electrónicos</label>
-                  <ContactList
+                  <ContactManager
                     contacts={emails}
                     onContactsChange={setEmails}
                     type="email"
