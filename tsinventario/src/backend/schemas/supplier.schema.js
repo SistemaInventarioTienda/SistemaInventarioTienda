@@ -2,6 +2,12 @@ import { z } from "zod";
 
 // Schema para Supplier
 export const supplierSchema = z.object({
+  IDENTIFICADOR_PROVEEDOR: z
+  .string({
+    required_error: "El identificador del proveedor es obligatorio.",
+  })
+  .min(1, { message: "El identificador del proveedor no puede estar vacío." })
+  .optional(),
   DSC_NOMBRE: z
     .string({
       required_error: "El nombre del proveedor es obligatorio.",

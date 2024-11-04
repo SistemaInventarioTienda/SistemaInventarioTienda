@@ -13,9 +13,9 @@ export const validateRegisterSupplier = async (DSC_NOMBRE) => {
     }
 };
 
-export const validateRegisterSupplierUpdate = async (DSC_NOMBRE,ID_PROVEEDOR) => {
+export const validateRegisterSupplierUpdate = async (DSC_NOMBRE,IDENTIFICADOR_PROVEEDOR) => {
     try {
-        const output = await validateNameSupplierUpdate(DSC_NOMBRE,ID_PROVEEDOR);
+        const output = await validateNameSupplierUpdate(DSC_NOMBRE,IDENTIFICADOR_PROVEEDOR);
         if (output !== false) {
             return output;
         }
@@ -54,7 +54,7 @@ async function existNameUpdate(name, id) {
     const nameFound = await Supplier.findOne({
         where: {
             DSC_NOMBRE: name,
-            ID_PROVEEDOR: { [Op.ne]: id } // Excluir el ID proporcionado
+            IDENTIFICADOR_PROVEEDOR : { [Op.ne]: id } // Excluir el ID proporcionado
         }
     });
     return nameFound ? true : false;

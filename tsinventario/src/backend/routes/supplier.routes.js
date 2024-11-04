@@ -6,7 +6,7 @@ import { supplierDirectionSchema,supplierSchema } from "../schemas/supplier.sche
 
 const router = Router();
 
- router.get("/suppliers",getAllSuppliers);
+ router.get("/suppliers",validateSchema(supplierDirectionSchema),validateSchema(supplierSchema),getAllSuppliers);
  router.post("/saveSupplier",  createSupplier);
  router.put("/deleteSupplier",deleteSupplier);
  router.get("/supplierTypes",getAllSupplierTypes);

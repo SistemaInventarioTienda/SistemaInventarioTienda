@@ -3,6 +3,7 @@ import {validateRegisterSupplier,validateRegisterSupplierUpdate} from    "../log
 import { getDateCR } from "../libs/date.js";
 import {validateSupplierData,validateSupplierDataUpdate} from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -87,8 +88,10 @@ export const createSupplier = async (req, res) => {
         DSC_DIRECCIONEXACTA,
       });
   
-
+      const formattedDate = date.toString().replace(/[:-]/g, '').slice(0, 14);
+      const IDENTIFICADOR_PROVEEDOR = `SUP-${formattedDate}-${uuidv4().slice(0, 8)}`;
       const supplier = await Supplier.create({
+        IDENTIFICADOR_PROVEEDOR,
         DSC_NOMBRE,
         ID_TIPOPROVEEDOR,
         ID_DIRECCION: direction.ID_DIRECCIONPROVEEDOR,
@@ -128,13 +131,13 @@ export const createSupplier = async (req, res) => {
   
 
   export const deleteSupplier = async (req, res) => {
-    const { DSC_NOMBRE } = req.body;
+    const { IDENTIFICADOR_PROVEEDOR } = req.body;
   //se elimina por nombre de proveedor, es unico..
     try {
     
       const supplier = await Supplier.findOne({
         where: {
-          DSC_NOMBRE,
+          IDENTIFICADOR_PROVEEDOR,
           ESTADO: 1,
         },
       });
@@ -147,6 +150,7 @@ export const createSupplier = async (req, res) => {
       }
   
       supplier.ESTADO = 2;
+      supplier.FEC_MODIFICADOEN = await getDateCR(); 
       await supplier.save();
   
       res.status(200).json({
@@ -174,7 +178,7 @@ export const createSupplier = async (req, res) => {
 
 
 export const updatedSupplier = async (req, res) => {
-  const { ID_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO } = req.body;
+  const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO } = req.body;
 
   try {
       const date = await getDateCR(); 
@@ -186,7 +190,7 @@ export const updatedSupplier = async (req, res) => {
           });
       }
 
-      const suplierName = await validateRegisterSupplierUpdate(DSC_NOMBRE, ID_PROVEEDOR);
+      const suplierName = await validateRegisterSupplierUpdate(DSC_NOMBRE, IDENTIFICADOR_PROVEEDOR);
       if (suplierName !== true) {
           return res.status(400).json({
               message: suplierName,
@@ -206,7 +210,7 @@ export const updatedSupplier = async (req, res) => {
           ESTADO,
           FEC_MODIFICADOEN: date,
         },
-        { where: { ID_PROVEEDOR } }
+        { where: { IDENTIFICADOR_PROVEEDOR } }
       );
 
       res.status(200).json({
@@ -220,17 +224,17 @@ export const updatedSupplier = async (req, res) => {
 
 
 export const selectOneSupplier = async (req, res) => {
-  const { DSC_NOMBRE } = req.body; 
+  const { IDENTIFICADOR_PROVEEDOR } = req.body; 
 
   try {
-    if (!DSC_NOMBRE || !DSC_NOMBRE.trim()) {
+    if (!IDENTIFICADOR_PROVEEDOR || !IDENTIFICADOR_PROVEEDOR.trim()) {
       return res.status(400).json({
           message: "El nombre del proveedor es requerido."
       });
   }
 
       const supplier = await Supplier.findOne({
-          where: { DSC_NOMBRE: DSC_NOMBRE },
+          where: { IDENTIFICADOR_PROVEEDOR: IDENTIFICADOR_PROVEEDOR },
           attributes: { exclude: ['FEC_MODIFICADOEN'] },
           include: [
               {

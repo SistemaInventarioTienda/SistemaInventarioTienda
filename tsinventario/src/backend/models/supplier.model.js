@@ -54,6 +54,11 @@ const Supplier = db.define('Supplier', {
     primaryKey: true,
     autoIncrement: true,
   },
+  IDENTIFICADOR_PROVEEDOR: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    defaultValue: null
+  },
   DSC_NOMBRE: {
     type: DataTypes.STRING(255), // 
     allowNull: true,
