@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import db from '../db.js';
 import Client from './client.model.js';
 
-const TelefonoCliente = db.define('TelefonoCliente', {
+const phoneClient = db.define('TelefonoCliente', {
     ID_TELEFONOCLIENTE: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -38,7 +38,7 @@ const TelefonoCliente = db.define('TelefonoCliente', {
     tableName: 'tsit_telefonocliente',
 });
 
-Client.hasMany(TelefonoCliente, { foreignKey: 'ID_CLIENTE' });
-TelefonoCliente.belongsTo(Client, { foreignKey: 'ID_CLIENTE' });
+Client.hasMany(phoneClient, { foreignKey: 'ID_CLIENTE' });
+phoneClient.belongsTo(Client, { foreignKey: 'ID_CLIENTE' });
 
-export default TelefonoCliente;
+export default phoneClient;
