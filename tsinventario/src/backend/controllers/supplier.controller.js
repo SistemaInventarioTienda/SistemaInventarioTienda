@@ -150,7 +150,6 @@ export const createSupplier = async (req, res) => {
 
   export const deleteSupplier = async (req, res) => {
     const { IDENTIFICADOR_PROVEEDOR } = req.body;
-  //se elimina por nombre de proveedor, es unico..
     try {
     
       const supplier = await Supplier.findOne({
