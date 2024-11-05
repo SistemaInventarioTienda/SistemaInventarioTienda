@@ -136,7 +136,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
           <option value="">Seleccione el tipo</option>
           {localSupplierTypes.length > 0 ? (
             localSupplierTypes.map((type) => (
-              <option key={type.ID_TIPOPROVEEDOR} value={type.DSC_NOMBRE}>
+              <option key={type.ID_TIPOPROVEEDOR} value={type.ID_TIPOPROVEEDOR}>
                 {type.DSC_NOMBRE}
               </option>
             ))

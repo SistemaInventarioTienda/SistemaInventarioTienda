@@ -6,13 +6,13 @@ import { supplierDirectionSchema,supplierSchema } from "../schemas/supplier.sche
 
 const router = Router();
 
- router.get("/suppliers",getAllSuppliers);
- router.post("/saveSupplier",validateSchema(supplierDirectionSchema),validateSchema(supplierSchema),  createSupplier);
- router.put("/deleteSupplier",deleteSupplier);
- router.get("/supplierTypes",getAllSupplierTypes);
- router.put("/updateSupplier",validateSchema(supplierDirectionSchema), updatedSupplier);
- router.get("/selectSupplier",selectOneSupplier);
- router.get("/searchSupplier", searchSupplier);
+ router.get("/suppliers",auth,getAllSuppliers);
+ router.post("/saveSupplier",auth,validateSchema(supplierDirectionSchema),validateSchema(supplierSchema),  createSupplier);
+ router.put("/deleteSupplier",auth,deleteSupplier);
+ router.get("/supplierTypes",auth,getAllSupplierTypes);
+ router.put("/updateSupplier",auth,validateSchema(supplierDirectionSchema), updatedSupplier);
+ router.get("/selectSupplier",auth,selectOneSupplier);
+ router.get("/searchSupplier",auth, searchSupplier);
 
 
 
