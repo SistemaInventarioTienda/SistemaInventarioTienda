@@ -10,6 +10,7 @@ import { ProtectedRoute } from "./routes";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
 import ClientPage from "./pages/ClientPage";
+import SupplierPage from './pages/SupplierPage';
 import CategoryPage from "./pages/CategoryPage";
 import { LoginPage } from "./pages/LoginPage";
 
@@ -45,6 +46,7 @@ function AppContent() {
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
             <Route path="clients" element={<ClientPage />} />
+            <Route path="suppliers" element={<SupplierPage />} />
           </Route>
         </Route>
       </Routes>
@@ -64,6 +66,7 @@ function Layout() {
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
             <Route path="clients" element={<ClientPage />} />
+            <Route path="suppliers" element={<SupplierPage />} />
           </Routes>
         </main>
       </div>

@@ -324,7 +324,7 @@ export default function CategoryPage() {
         onClose={() => setConfirmationModalOpen(false)}
         onConfirm={() => handleDelete(modalData)}//() => handleDelete(modalData)
         entityName={modalData?.DSC_NOMBRE}
-        action="eliminar"
+        action={'delete'}
         confirmButtonText="Eliminar"
         cancelButtonText="Cancelar"
         errorMessages={errorMessages}
