@@ -3,10 +3,38 @@ import phoneClient from "../models/phoneClient.model.js";
 import { getDateCR } from '../libs/date.js';
 import { Op } from 'sequelize';
 
+function isNotEmpty(value) {
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+
+  } else if (typeof value === 'number') {
+    return !isNaN(value);
+  }
+  return false;
+}
+
 export const registerClient = async (req, res) => {
   try {
 
     const { DSC_CEDULA, DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FOTO, ...telefonos } = req.body;
+
+    if (!isNotEmpty(DSC_CEDULA)) {
+      return res.status(400).json({
+        message: "La cedula no es valida",
+      })
+    } else if(!isNotEmpty(DSC_NOMBRE)){
+      return res.status(400).json({
+        message: "El nombre no es valida",
+      })
+    }else if(!isNotEmpty(DSC_APELLIDOUNO)){
+      return res.status(400).json({
+        message: "El primer apellido no es valida",
+      })
+    }else if(!isNotEmpty(DSC_APELLIDODOS)){
+      return res.status(400).json({
+        message: "El segundo apellido no es valida",
+      })
+    }
 
     // Crear el cliente
     const creadoEn = await getDateCR();
@@ -138,7 +166,7 @@ export const deleteClient = async (req, res) => {
     const modificadoEN = await getDateCR();
     await client.update(
       {
-        ESTADO: 2, 
+        ESTADO: 2,
         FEC_MODIFICADOEN: modificadoEN
       },
       {
@@ -153,12 +181,12 @@ export const deleteClient = async (req, res) => {
 }
 
 export const updateClient = async (req, res) => {
-  try{
+  try {
     const { DSC_CEDULA, DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FOTO, ...telefonos } = req.body;
 
     const modificadoEN = await getDateCR();
-    const client = await Client.findOne({where: {DSC_CEDULA: req.params.id}});
-    if(!client) {
+    const client = await Client.findOne({ where: { DSC_CEDULA: req.params.id } });
+    if (!client) {
       return res.status(404).json({ message: "Cliente no encontrado." });
     }
 
