@@ -43,21 +43,42 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
 
     if (entityName === 'Usuario' || entityName === 'Cliente') {
       if (name === 'cedula' && value.length === 9) {
-        const { nombre, segundoNombre, apellidoUno, apellidoDos } = await getPersonById(value);
+        try {
+          setFormData((prevData) => ({
+            ...prevData,
+            nombre: "Cargando...",
+            primerApellido: "Cargando...",
+            segundoApellido: "Cargando...",
+          }));
+          const { nombre, segundoNombre, apellidoUno, apellidoDos } = await getPersonById(value);
 
-        const newName = (segundoNombre.length >= 0) ? (nombre + " " + segundoNombre) : nombre;
+          const newName = (segundoNombre.length >= 0) ? (nombre + " " + segundoNombre) : nombre;
 
+          setFormData((prevData) => ({
+            ...prevData,
+            nombre: newName,
+            primerApellido: apellidoUno,
+            segundoApellido: apellidoDos,
+          }));
+        } catch (error) {
+          setFormData((prevData) => ({
+            ...prevData,
+            nombre: "",
+            primerApellido: "",
+            segundoApellido: "",
+          }));
+        }
+
+
+      } else if (name === 'cedula' && value.length !== 9) {
         setFormData((prevData) => ({
           ...prevData,
-          nombre: newName,
-          primerApellido: apellidoUno,
-          segundoApellido: apellidoDos,
+          nombre: "",
+          primerApellido: "",
+          segundoApellido: "",
         }));
-
-
       }
     }
-
     // Verifica si el campo es de tipo 'file'
     if (type === "file" && files.length > 0) {
       const fileName = files[0].name;
@@ -190,7 +211,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
         onChange={handleChange}
         required={field.required}
         placeholder={`Ingrese ${field.label.toLowerCase()}`}
-        disabled={(mode === 'edit' && field.name === 'cedula') || field.name === 'nombre' || field.name === 'primerApellido' || field.name === 'segundoApellido'}
+        disabled={(mode === 'edit' && field.name === 'cedula') || field.name === 'primerApellido' || field.name === 'segundoApellido'}
         {...commonStyles}
       />
     );
