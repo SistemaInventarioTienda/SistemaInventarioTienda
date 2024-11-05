@@ -5,7 +5,7 @@ import '../css/InputFile.css';
 
 const DEFAULT_IMAGE_URL = process.env.PUBLIC_URL + '/Assets/image/clientes/default_client.png';
 
-const InputFile = ({ value, mode, entity }) => {
+const InputFile = ({ value, mode, entity, onFileSelect }) => {
     const inputRef = useRef();
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(mode === 'add' ? null : value || DEFAULT_IMAGE_URL);
@@ -29,6 +29,10 @@ const InputFile = ({ value, mode, entity }) => {
                 reader.readAsDataURL(file);
             } else {
                 setPreview(DEFAULT_IMAGE_URL);
+            }
+            // Llamamos a la función onFileSelect con el archivo seleccionado
+            if (onFileSelect) {
+                onFileSelect(file);
             }
         }
     };

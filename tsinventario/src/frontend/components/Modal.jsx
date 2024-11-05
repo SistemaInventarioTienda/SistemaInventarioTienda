@@ -45,6 +45,10 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
     }
   };
 
+  const handleFileSelect = (file) => {
+    setFormData((prevData) => ({ ...prevData, foto: file }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -66,7 +70,6 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
       ...(entityName === "Cliente" && { telefonos: phones }),
       estado: parseInt(formData.estado, 10),
     };
-    console.log('submissionData', submissionData);
     onSubmit(submissionData);
   };
 
@@ -186,6 +189,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
                         mode={mode}
                         entity={entityName}
                         value={formData.foto}
+                        onFileSelect={handleFileSelect}
                       />
                     </div>
                   );

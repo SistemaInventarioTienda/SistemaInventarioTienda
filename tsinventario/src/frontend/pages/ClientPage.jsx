@@ -201,7 +201,7 @@ export default function ClientPage() {
             ESTADO: clientData.estado,
         };
 
-        console.log('URL_FOTO', clientData.foto);
+        console.log(clientPayload);
         // Agregar teléfonos al payload
         clientData.telefonos.forEach((telefono, index) => {
             clientPayload[`DSC_TELEFONO${index + 1}`] = telefono;
