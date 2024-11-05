@@ -6,19 +6,23 @@ import ContactManager from "./ContactManager";
 import InputFile from "../components/ui/InputFile";
 import "./css/modal.css";
 
-export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName }) {
+export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName, supplierTypes, }) {
   const [formData, setFormData] = useState({});
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [phones, setPhones] = useState(data?.telefonos || []);
   const [emails, setEmails] = useState(data?.correos || []);
+  const [localSupplierTypes, setLocalSupplierTypes] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
+      setLocalSupplierTypes(supplierTypes);
       setFormData({ ...data });
       setPhones(data?.telefonos || []);
       setEmails(data?.correos || []);
+      console.log("telefonos cargados:", data?.telefonos);
+      console.log("correos cargados:", data?.correos);
     }
-  }, [isOpen, data]);
+  }, [isOpen, data, supplierTypes]);
 
   if (!isOpen) return null;
 
@@ -68,6 +72,8 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
     const submissionData = {
       ...formData,
       ...(entityName === "Cliente" && { telefonos: phones }),
+      ...(entityName === "Proveedor" && { telefonos: phones }),
+      ...(entityName === "Proveedor" && { correos: emails }),
       estado: parseInt(formData.estado, 10),
     };
     onSubmit(submissionData);
@@ -77,6 +83,26 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
     const fieldValue = formData[field.name] ?? "";
 
     if (isViewMode) {
+      if (field.name === "tipoProveedor" && field.type === "select") {
+        return (
+          <Select
+            name="tipoProveedor"
+            value={fieldValue}
+            onChange={handleChange}
+            required={field.required}
+            {...commonStyles}
+            disabled
+          >
+            <option value="">Seleccione el tipo de proveedor</option>
+            {Array.isArray(supplierTypes) &&
+              supplierTypes.map((type) => (
+                <option key={type.ID_TIPOPROVEEDOR} value={type.DSC_NOMBRE}>
+                  {type.DSC_NOMBRE}
+                </option>
+              ))}
+          </Select>
+        );
+      }
 
       return field.type === "select" ? (
         <Select
@@ -95,6 +121,29 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
         </Select>
       ) : (
         <Input readOnly value={fieldValue} {...commonStyles} />
+      );
+    }
+
+    if (field.name === "tipoProveedor" && field.type === "select") {
+      return (
+        <Select
+          name="tipoProveedor"
+          value={fieldValue}
+          onChange={handleChange}
+          required={field.required}
+          {...commonStyles}
+        >
+          <option value="">Seleccione el tipo</option>
+          {localSupplierTypes.length > 0 ? (
+            localSupplierTypes.map((type) => (
+              <option key={type.ID_TIPOPROVEEDOR} value={type.DSC_NOMBRE}>
+                {type.DSC_NOMBRE}
+              </option>
+            ))
+          ) : (
+            <option disabled>Cargando tipos de proveedores...</option>
+          )}
+        </Select>
       );
     }
 
@@ -225,6 +274,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
                     contacts={emails}
                     onContactsChange={setEmails}
                     type="email"
+                    mode={mode}
                   />
                 </div>
               )}
@@ -242,12 +292,13 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
           </form>
         </div>
       </div>
+      {/* Modal de confirmación */}
       <ModalConfirmation
         isOpen={isConfirmationModalOpen}
         onClose={() => setConfirmationModalOpen(false)}
-        onConfirm={handleConfirmSubmit}
+        onConfirm={handleConfirmSubmit}  // Confirmar los cambios
         entityName={entityName}
-        action="guardar los cambios"
+        action={mode}
         confirmButtonText="Confirmar"
         cancelButtonText="Cancelar"
       />

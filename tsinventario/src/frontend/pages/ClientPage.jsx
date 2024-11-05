@@ -316,7 +316,7 @@ export default function ClientPage() {
                 onClose={() => setConfirmationModalOpen(false)}
                 onConfirm={() => handleDelete(modalData)}
                 entityName={modalData?.DSC_CEDULA}
-                action="eliminar"
+                action={'delete'}
                 confirmButtonText="Eliminar"
                 cancelButtonText="Cancelar"
                 errorMessages={errorMessages}

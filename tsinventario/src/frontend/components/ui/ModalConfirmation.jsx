@@ -1,75 +1,29 @@
-// // ModalConfirmation.jsx
-
-// import React from "react";
-// import { Button, Alert } from "../ui";
-
-// const ModalConfirmation = ({ isOpen, onClose, onDelete, entityName, errorMessages = [], successMessage }) => {
-//   if (!isOpen) return null;
-
-//   const handleDelete = async () => {
-//     await onDelete();
-//   };
-
-//   return (
-//     <div className={`modal fade ${isOpen ? 'show' : ''}`} style={{ display: isOpen ? 'block' : 'none' }} tabIndex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-//       <div className="modal-dialog modal-dialog-centered">
-//         <div className="modal-content">
-//           <div className="modal-header">
-//             <h5 className="modal-title" id="modalLabel">Eliminar {entityName}</h5>
-//           </div>
-//           <div className="modal-body">
-//             {errorMessages.length > 0 && (
-//               <Alert
-//                 type="warning"
-//                 message={errorMessages}
-//                 duration={5000}
-//               />
-//             )}
-//             {successMessage && (
-//               <Alert
-//                 type="success"
-//                 message={successMessage}
-//                 duration={2000}
-//               />
-//             )}
-//             <p>¿Estás seguro que deseas eliminar esta {entityName}?</p>
-//           </div>
-//           <div className="modal-footer">
-//             <Button type="button" className="btn btn-secondary" onClick={onClose} data-bs-dismiss="modal">
-//               Cancelar
-//             </Button>
-//             <Button type="button" className="btn btn-danger" onClick={handleDelete}>
-//               Eliminar
-//             </Button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ModalConfirmation;
-
-// ModalConfirmation.jsx
-
 import React from "react";
 import { Button, Alert } from "../ui";
 
 const ModalConfirmation = ({
   isOpen,
   onClose,
-  onConfirm,       // Antes era onDelete, ahora es más genérico
+  onConfirm,
   entityName,
-  action = "eliminar", // Acción genérica, por defecto "eliminar"
+  action = "eliminar",
   errorMessages = [],
   successMessage,
-  confirmButtonText = "Eliminar",  // Texto para botón de confirmación
-  cancelButtonText = "Cancelar",   // Texto para botón de cancelar
+  confirmButtonText = "Eliminar",
+  cancelButtonText = "Cancelar",
 }) => {
   if (!isOpen) return null;
 
+  const actionTranslations = {
+    add: "Agregar",
+    edit: "Editar",
+    delete: "Eliminar"
+  };
+
+  const translatedAction = actionTranslations[action] || action;
+
   const handleConfirm = async () => {
-    await onConfirm();  // Más genérico, antes era onDelete
+    await onConfirm();
   };
 
   return (
@@ -78,7 +32,7 @@ const ModalConfirmation = ({
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="modalLabel">
-              {action.charAt(0).toUpperCase() + action.slice(1)} {entityName}
+              {translatedAction} {entityName}
             </h5>
           </div>
           <div className="modal-body">
@@ -96,13 +50,13 @@ const ModalConfirmation = ({
                 duration={2000}
               />
             )}
-            <p>¿Estás seguro que deseas { (action === 'eliminar') ? 'eliminar' : (action === 'editar') ? 'editar' : 'agregar'}: {entityName}?</p>
+            <p>¿Estás seguro que deseas {translatedAction.toLowerCase()} {entityName}?</p>
           </div>
           <div className="modal-footer">
             <Button type="button" className="btn btn-secondary" onClick={onClose} data-bs-dismiss="modal">
               {cancelButtonText}
             </Button>
-            <Button type="button" className={`btn ${action === 'eliminar' ? 'btn-danger' : 'btn-primary'}`} onClick={handleConfirm}>
+            <Button type="button" className={`btn ${action === 'delete' ? 'btn-danger' : 'btn-primary'}`} onClick={handleConfirm}>
               {confirmButtonText}
             </Button>
           </div>
@@ -113,4 +67,3 @@ const ModalConfirmation = ({
 };
 
 export default ModalConfirmation;
-

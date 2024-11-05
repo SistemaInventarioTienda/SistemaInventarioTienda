@@ -369,7 +369,7 @@ export default function UserPage() {
         onClose={() => setConfirmationModalOpen(false)}
         onConfirm={() => handleDelete(modalData)}
         entityName={modalData?.DSC_CEDULA}
-        action="eliminar"
+        action={'delete'}
         confirmButtonText="Eliminar"
         cancelButtonText="Cancelar"
         errorMessages={errorMessages}

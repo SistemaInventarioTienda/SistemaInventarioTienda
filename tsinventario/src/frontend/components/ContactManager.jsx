@@ -10,6 +10,7 @@ export default function ContactManager({
     type = 'phone',
     mode = 'view'
 }) {
+    console.log("Contacts in ContactManager:", contacts);
     const [newContact, setNewContact] = useState('');
     const [alert, setAlert] = useState({ show: false, message: '' });
 
