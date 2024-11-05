@@ -27,7 +27,7 @@ export const getAllSuppliers = async (req, res) => {
             include: [
                 {
                     model: supplierDirection,
-                    attributes: ['DSC_DIRECCIONEXACTA'],
+                    attributes: ['ID_DIRECCIONPROVEEDOR', 'DSC_DIRECCIONEXACTA'],
                 },
                 {
                     model: numberSupplier,
@@ -195,12 +195,13 @@ export const createSupplier = async (req, res) => {
 
 
 export const updatedSupplier = async (req, res) => {
-  const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO } = req.body;
+  const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO, ID_DIRECCION } = req.body;
 
   try {
       const date = await getDateCR(); 
-      
+
       const validateFields = validateSupplierDataUpdate(req);
+      console.log("Resultado de validateFields:", validateFields);
       if (validateFields !== true) {
           return res.status(400).json({
               message: validateFields,
@@ -208,18 +209,24 @@ export const updatedSupplier = async (req, res) => {
       }
 
       const suplierName = await validateRegisterSupplierUpdate(DSC_NOMBRE, IDENTIFICADOR_PROVEEDOR);
+      console.log("Resultado de suplierName:", suplierName);
       if (suplierName !== true) {
           return res.status(400).json({
               message: suplierName,
           });
       }
 
-      await supplierDirection.update(
-        { DSC_DIRECCIONEXACTA },
-        { where: { ID_DIRECCIONPROVEEDOR: req.body.ID_DIRECCION } }
-      );
+      if (ID_DIRECCION){
+        await supplierDirection.update(
+          { DSC_DIRECCIONEXACTA },
+          { where: { ID_DIRECCIONPROVEEDOR:  ID_DIRECCION} }//req.body.ID_DIRECCION
+        );
+        console.log("Dirección del proveedor actualizada correctamente.");
+      }
+      
 
 
+      
       await Supplier.update(
         {
           DSC_NOMBRE,

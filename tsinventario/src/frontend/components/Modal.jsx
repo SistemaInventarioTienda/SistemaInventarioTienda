@@ -5,7 +5,7 @@ import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ContactManager from "./ContactManager";
 import InputFile from "../components/ui/InputFile";
 import "./css/modal.css";
-import {getPersonById } from "../api/hacienda";
+import { getPersonById } from "../api/hacienda";
 
 
 export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName, supplierTypes, }) {
@@ -41,12 +41,12 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
   const handleChange = async (e) => {
     const { name, value, type, files } = e.target;
 
-    if(entityName === 'Usuario' || entityName === 'Cliente'){
-      if(name === 'cedula' && value.length === 9){
+    if (entityName === 'Usuario' || entityName === 'Cliente') {
+      if (name === 'cedula' && value.length === 9) {
         const { nombre, segundoNombre, apellidoUno, apellidoDos } = await getPersonById(value);
-        
-        const newName = (segundoNombre.length >= 0) ? (nombre + " " +  segundoNombre) : nombre;
-        
+
+        const newName = (segundoNombre.length >= 0) ? (nombre + " " + segundoNombre) : nombre;
+
         setFormData((prevData) => ({
           ...prevData,
           nombre: newName,
@@ -54,7 +54,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
           segundoApellido: apellidoDos,
         }));
 
-       
+
       }
     }
 
@@ -112,13 +112,16 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
             {...commonStyles}
             disabled
           >
-            <option value="">Seleccione el tipo de proveedor</option>
-            {Array.isArray(supplierTypes) &&
-              supplierTypes.map((type) => (
-                <option key={type.ID_TIPOPROVEEDOR} value={type.DSC_NOMBRE}>
+            <option value="">Seleccione el tipo</option>
+            {localSupplierTypes.length > 0 ? (
+              localSupplierTypes.map((type) => (
+                <option key={type.ID_TIPOPROVEEDOR} value={type.ID_TIPOPROVEEDOR}>
                   {type.DSC_NOMBRE}
                 </option>
-              ))}
+              ))
+            ) : (
+              <option disabled>Cargando tipos de proveedores...</option>
+            )}
           </Select>
         );
       }
@@ -187,7 +190,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
         onChange={handleChange}
         required={field.required}
         placeholder={`Ingrese ${field.label.toLowerCase()}`}
-        disabled={ (mode === 'edit' && field.name === 'cedula') ||  field.name === 'nombre' || field.name === 'primerApellido' || field.name === 'segundoApellido' }
+        disabled={(mode === 'edit' && field.name === 'cedula') || field.name === 'nombre' || field.name === 'primerApellido' || field.name === 'segundoApellido'}
         {...commonStyles}
       />
     );
