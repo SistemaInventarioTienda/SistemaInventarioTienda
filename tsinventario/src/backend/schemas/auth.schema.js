@@ -28,10 +28,12 @@ export const registerSchema = z.object({
     }),
   ID_ROL: z.number().optional(),
   DSC_CEDULA: z
-    .string()
-    .optional()
-    .refine((val) => val === undefined || val.length <= 15, {
-      message: "La cédula no puede tener más de 15 caracteres",
+    .string({
+      required_error: "La cedula es obligatoria",
+    }).min(9, {
+      message: "La cédula debe tener 9 caracteres",
+    }).max(9, {
+      message: "La cédula debe tener 9 caracteres"
     }),
   DSC_NOMBRE: z
     .string({

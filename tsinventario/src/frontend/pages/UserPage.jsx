@@ -234,6 +234,7 @@ export default function UserPage() {
         // setModalOpen(false);
         // setErrorMessages([]);
         // console.log("Usuario agregado exitosamente");
+        setModalOpen(false);
       } catch (e) {
         const errorMessage = e.response?.data?.message || "Error desconocido al agregar el usuario.";
         // setErrorMessages([errorMessage]);

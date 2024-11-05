@@ -5,6 +5,8 @@ import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ContactManager from "./ContactManager";
 import InputFile from "../components/ui/InputFile";
 import "./css/modal.css";
+import {getPersonById } from "../api/hacienda";
+
 
 export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName, supplierTypes, }) {
   const [formData, setFormData] = useState({});
@@ -36,8 +38,25 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
     { value: 2, label: "Inactivo" },
   ];
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value, type, files } = e.target;
+
+    if(entityName === 'Usuario' || entityName === 'Cliente'){
+      if(name === 'cedula' && value.length === 9){
+        const { nombre, segundoNombre, apellidoUno, apellidoDos } = await getPersonById(value);
+        
+        const newName = (segundoNombre.length >= 0) ? (nombre + " " +  segundoNombre) : nombre;
+        
+        setFormData((prevData) => ({
+          ...prevData,
+          nombre: newName,
+          primerApellido: apellidoUno,
+          segundoApellido: apellidoDos,
+        }));
+
+       
+      }
+    }
 
     // Verifica si el campo es de tipo 'file'
     if (type === "file" && files.length > 0) {
@@ -168,7 +187,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
         onChange={handleChange}
         required={field.required}
         placeholder={`Ingrese ${field.label.toLowerCase()}`}
-        disabled={mode === 'edit' && field.name === 'cedula'}
+        disabled={ (mode === 'edit' && field.name === 'cedula') ||  field.name === 'nombre' || field.name === 'primerApellido' || field.name === 'segundoApellido' }
         {...commonStyles}
       />
     );

@@ -5,6 +5,8 @@ export const registerSchema = z.object({
     required_error: "La cédula es obligatoria.",
   }).min(9, {
     message: "La cédula debe tener minimo 9 caracteres.",
+  }).max(9, {
+    message: "La cédula debe tener minimo 9 caracteres.",
   }),
   DSC_NOMBRE: z
     .string({
