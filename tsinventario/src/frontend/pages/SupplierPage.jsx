@@ -64,6 +64,7 @@ export default function SupplierPage() {
                 ? data.suppliers.map((supplier) => ({
                     ...supplier,
                     ESTADO: supplier.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
+
                     DSC_TELEFONO:
                         supplier.numberSuppliers && supplier.numberSuppliers.length > 0
                             ? supplier.numberSuppliers[0].DSC_TELEFONO
@@ -105,7 +106,7 @@ export default function SupplierPage() {
             setCurrentPage(1);
         }
         const response = await getSuppliers(aux, itemsPerPage, field, order);
-        console.log('SUPPLIERS',response);
+        console.log(response);
         refreshData(response);
     };
 
@@ -223,14 +224,10 @@ export default function SupplierPage() {
 
     //map del proveedor
     const mapSupplierFiels = (supplier) => ({
-        identificador: supplier.IDENTIFICADOR_PROVEEDOR, // Extrae este campo
         nombre: supplier.DSC_NOMBRE,
-        //tipoProveedor: supplier.DSC_TIPOPROVEEDOR || "",
-        tipoProveedor: supplier.ID_TIPOPROVEEDOR || "",
+        tipoProveedor: supplier.DSC_TIPOPROVEEDOR,
         estado: supplier.ESTADO === "ACTIVO" ? 1 : 2,
-        // direccion: supplier.DSC_DIRECCION,
-        direccion: supplier.supplierDirection?.DSC_DIRECCIONEXACTA || "",
-        ID_DIRECCION: supplier.supplierDirection?.ID_DIRECCIONPROVEEDOR || supplier.ID_DIRECCION || "", // Agregar este campo
+        direccion: supplier.DSC_DIRECCION,
         telefonos: supplier.numberSuppliers.map(t => t.DSC_TELEFONO) || [],
         correos: supplier.mailSuppliers.map(t => t.DSC_CORREO) || [],
     });
@@ -239,18 +236,13 @@ export default function SupplierPage() {
         let successMessageText = "";
         console.log("supplierData", supplierData);
         const supplierPayload = {
-          IDENTIFICADOR_PROVEEDOR: supplierData.identificador, // Agrega este campo
             DSC_NOMBRE: supplierData.nombre,
             ID_TIPOPROVEEDOR: parseInt(supplierData.tipoProveedor, 10),
             ESTADO: supplierData.estado,
             DSC_DIRECCIONEXACTA: supplierData.direccion,
-            ID_DIRECCION: supplierData.ID_DIRECCION, // Agregar este campo
             phones: supplierData.telefonos,
             emails: supplierData.correos,
         };
-
-        console.log("Payload enviado al backend:", supplierPayload); // Verificar que el payload es correcto.
-
 
         try {
             if (modalMode === "add") {
@@ -360,7 +352,7 @@ export default function SupplierPage() {
             <Table
                 columns={columns}
                 data={filteredData}
-                actions={{ edit: handleEditSupplier, delete: handleDeleteSupplier, view: handleViewSupplier}}
+                actions={{ edit: handleEditSupplier, delete: handleDeleteSupplier }}
                 onSort={sortData}
                 sortField={sortField}
                 sortOrder={sortOrder}
