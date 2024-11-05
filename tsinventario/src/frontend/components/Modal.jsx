@@ -43,18 +43,40 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
 
     if(entityName === 'Usuario' || entityName === 'Cliente'){
       if(name === 'cedula' && value.length === 9){
-        const { nombre, segundoNombre, apellidoUno, apellidoDos } = await getPersonById(value);
+        try {
+          setFormData((prevData) => ({
+            ...prevData,
+            nombre: "Cargando...",
+            primerApellido: "Cargando...",
+            segundoApellido: "Cargando...",
+          }));
+          const { nombre, segundoNombre, apellidoUno, apellidoDos } = await getPersonById(value);
         
-        const newName = (segundoNombre.length >= 0) ? (nombre + " " +  segundoNombre) : nombre;
-        
-        setFormData((prevData) => ({
-          ...prevData,
-          nombre: newName,
-          primerApellido: apellidoUno,
-          segundoApellido: apellidoDos,
-        }));
+          const newName = (segundoNombre.length >= 0) ? (nombre + " " +  segundoNombre) : nombre;
+          
+          setFormData((prevData) => ({
+            ...prevData,
+            nombre: newName,
+            primerApellido: apellidoUno,
+            segundoApellido: apellidoDos,
+          }));
+        } catch(error) {
+          setFormData((prevData) => ({
+            ...prevData,
+            nombre: "",
+            primerApellido: "",
+            segundoApellido: "",
+          }));
+        }
 
        
+      } else if(name === 'cedula' && value.length !== 9){
+        setFormData((prevData) => ({
+          ...prevData,
+          nombre: "",
+          primerApellido: "",
+          segundoApellido: "",
+        }));
       }
     }
 
