@@ -212,8 +212,36 @@ export const searchClient = async (req, res) => {
       }
     });
 
+    const phoneMatches = await phoneClient.findAll({
+      attributes: ["ID_CLIENTE"],
+      where: { DSC_TELEFONO: expectedMatch }
+    });
 
-    if (rows.length === 0) {
+    // Extrae los IDs de clientes únicos de la consulta de teléfonos
+    const phoneClientIds = [...new Set(phoneMatches.map(phone => phone.ID_CLIENTE))];
+    const clientIdsFromFirstQuery = rows.map(client => client.ID_CLIENTE);
+
+    // Filtra los clientes de la segunda consulta que no estén ya en la primera
+    const additionalClients = await Client.findAll({
+      attributes: {
+        exclude: ['FEC_MODIFICADOEN', 'ID_CLIENTE', 'FEC_CREADOEN']
+      },
+      include: [{
+        model: phoneClient,
+        attributes: ['DSC_TELEFONO']
+      }],
+      where: {
+        ID_CLIENTE: {
+          [Op.in]: phoneClientIds,
+          [Op.notIn]: clientIdsFromFirstQuery
+        }
+      }
+    });
+
+    // Unir ambas listas de resultados
+    const allClients = [...rows, ...additionalClients];
+
+    if (allClients.length === 0) {
       return res.status(204).json({
         message: "No se encontraron clientes.",
       });
@@ -224,7 +252,7 @@ export const searchClient = async (req, res) => {
       totalPages: Math.ceil(count / limit),
       currentPage: parseInt(page),
       pageSize: limit,
-      clients: rows
+      clients: allClients
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
