@@ -1,0 +1,779 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = '-06:00';
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+DROP DATABASE IF EXISTS `dbtiendasistemainventario`;
+CREATE DATABASE IF NOT EXISTS `dbtiendasistemainventario` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `dbtiendasistemainventario`;
+
+DROP TABLE IF EXISTS `tsil_clienteaudi`;
+CREATE TABLE `tsil_clienteaudi` (
+  `ID_CLIENTEAUDI` int(11) NOT NULL,
+  `ID_CLIENTE` int(11) DEFAULT NULL,
+  `DSC_CEDULA` varchar(15) DEFAULT NULL,
+  `DSC_NOMBRE` varchar(50) DEFAULT NULL,
+  `DSC_APELLIDOUNO` varchar(50) DEFAULT NULL,
+  `DSC_APELLIDODOS` varchar(50) DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `DSC_ACCION` char(8) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_correoproveedoraudi`;
+CREATE TABLE `tsil_correoproveedoraudi` (
+  `ID_CORREOPROVEEDORAUDI` int(11) NOT NULL,
+  `ID_CORREOPROVEEDOR` int(11) NOT NULL,
+  `ID_PROVEEDOR` int(11) DEFAULT NULL,
+  `DSC_CORREO` varchar(100) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `DSC_ACCION` char(8) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_detalleordenaudi`;
+CREATE TABLE `tsil_detalleordenaudi` (
+  `ID_DETALLEORDENAUDI` int(11) NOT NULL,
+  `ID_DETALLEORDEN` int(11) DEFAULT NULL,
+  `ID_ORDEN` int(11) DEFAULT NULL,
+  `ID_VARIANTE` int(11) DEFAULT NULL,
+  `NUM_CANTIDADCOMPRADA` int(11) DEFAULT NULL,
+  `MONTO_PRECIOCOMRPA` decimal(13,2) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_direccionproveedoraudi`;
+CREATE TABLE `tsil_direccionproveedoraudi` (
+  `ID_DIRECCIONPROVEEDORAUDI` int(11) NOT NULL,
+  `ID_DIRECCIONPROVEEDOR` int(11) DEFAULT NULL,
+  `DSC_DIRECCIONEXACTA` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_empresaaudi`;
+CREATE TABLE `tsil_empresaaudi` (
+  `ID_EMPRESAAUDI` int(11) NOT NULL,
+  `ID_EMPRESA` int(11) DEFAULT NULL,
+  `DSC_NOMBRE` varchar(50) DEFAULT NULL,
+  `NUM_TELEFONO` varchar(8) DEFAULT NULL,
+  `DSC_MENSAJE_VENTA` varchar(100) DEFAULT NULL,
+  `FEC_CREACICON` datetime DEFAULT NULL,
+  `FEC_MODIFICADO` datetime DEFAULT NULL,
+  `ID_USUARIOMODIFICADOR` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_loteaudi`;
+CREATE TABLE `tsil_loteaudi` (
+  `ID_LOTEAUDI` int(11) NOT NULL,
+  `ID_USUARIOMODIFICADOR` int(11) DEFAULT NULL,
+  `ID_LOTE` int(11) DEFAULT NULL,
+  `ID_PRODUCTO` int(11) DEFAULT NULL,
+  `DSC_CODIGO` varchar(255) DEFAULT NULL,
+  `FEC_COMPRA` datetime DEFAULT NULL,
+  `FEC_EXPIRACION` datetime DEFAULT NULL,
+  `NUM_CANTIDAD` int(11) DEFAULT NULL,
+  `MONTO_COSTO` decimal(10,2) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `DSC_ACCION` char(8) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_ordenaudi`;
+CREATE TABLE `tsil_ordenaudi` (
+  `ID_ORDENAUDI` int(11) NOT NULL,
+  `ID_ORDEN` int(11) DEFAULT NULL,
+  `ID_CLIENTE` int(11) DEFAULT NULL,
+  `FEC_ORDEN` datetime DEFAULT NULL,
+  `MONTO_TOTAL` decimal(13,2) DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `ID_USUARIO` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `DSC_ACCION` char(8) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_permisousuarioaudi`;
+CREATE TABLE `tsil_permisousuarioaudi` (
+  `ID_PERMISOUSUARIOAUDI` int(11) NOT NULL,
+  `ID_PERMISOUSUARIO` int(11) DEFAULT NULL,
+  `ID_USUARIO` int(11) DEFAULT NULL,
+  `ID_PERMISO` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `FECH_MODIFICADOEN` datetime DEFAULT NULL,
+  `DSC_ACCION` char(8) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_proveedoraudi`;
+CREATE TABLE `tsil_proveedoraudi` (
+  `ID_PROVEEDORAUDI` int(11) NOT NULL,
+  `ID_PROVEEDOR` int(11) DEFAULT NULL,
+  `DSC_NOMBRE` varchar(255) DEFAULT NULL,
+  `ID_TIPOPROVEEDOR` int(11) DEFAULT NULL,
+  `ID_DIRECCION` int(11) DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `ID_PROVEEDORMODIFICADOR` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_telefonoclienteaudi`;
+CREATE TABLE `tsil_telefonoclienteaudi` (
+  `ID_TELEFONOCLIENTEAUDI` int(11) NOT NULL,
+  `ID_TELEFONOCLIENTE` int(11) DEFAULT NULL,
+  `ID_CLIENTE` int(11) DEFAULT NULL,
+  `DSC_TELEFONO` varchar(8) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `DSC_ACCION` char(8) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_telefonoproveedoraudi`;
+CREATE TABLE `tsil_telefonoproveedoraudi` (
+  `ID_TELEFONOPROVEEDORAUDI` int(11) NOT NULL,
+  `ID_TELEFONOPROVEEDOR` int(11) DEFAULT NULL,
+  `ID_PROVEEDOR` int(11) DEFAULT NULL,
+  `DSC_TELEFONO` varchar(8) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `DSC_ACCION` char(8) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsil_usuarioaudi`;
+CREATE TABLE `tsil_usuarioaudi` (
+  `ID_USUARIOAUDI` int(11) NOT NULL,
+  `ID_USUARIO` int(11) DEFAULT NULL,
+  `ID_USUARIOMODIFICADOR` int(11) DEFAULT NULL,
+  `DSC_NOMBREUSUARIO` varchar(255) DEFAULT NULL,
+  `DSC_CONTRASENIA` varchar(255) DEFAULT NULL,
+  `DSC_CORREO` varchar(100) DEFAULT NULL,
+  `DSC_TELEFONO` varchar(8) DEFAULT NULL,
+  `ID_ROL` int(11) DEFAULT NULL,
+  `DSC_CEDULA` varchar(15) DEFAULT NULL,
+  `DSC_NOMBRE` varchar(50) DEFAULT NULL,
+  `DSC_APELLIDOUNO` varchar(50) DEFAULT NULL,
+  `DSC_APELLIDODOS` varchar(50) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsim_categoria`;
+CREATE TABLE `tsim_categoria` (
+  `ID_CATEGORIA` int(11) NOT NULL,
+  `DSC_NOMBRE` varchar(100) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `tsim_categoria` (`ID_CATEGORIA`, `DSC_NOMBRE`, `FEC_CREADOEN`, `FEC_MODIFICADOEN`, `ESTADO`) VALUES
+(3, 'Electronica', '2024-10-14 18:15:14', '2024-10-14 18:49:36', 1),
+(4, 'Ropa', '2024-10-14 18:15:23', NULL, 1),
+(5, 'Hogar y oficina', '2024-10-14 18:17:02', '2024-10-14 18:17:22', 1),
+(6, 'Juguetes y juegos', '2024-10-14 18:18:05', '2024-10-14 18:51:34', 1),
+(7, 'Alimentos y bebidas', '2024-10-14 18:18:15', NULL, 1),
+(8, 'Deportes y Aire libre', '2024-10-14 18:18:27', NULL, 1),
+(9, 'Belleza y cuidado personal', '2024-10-14 18:18:54', NULL, 1),
+(10, 'Libros y papelería', '2024-10-14 18:19:09', NULL, 1),
+(11, 'Zapatos y accesorios', '2024-10-14 18:19:21', '2024-10-14 18:20:40', 1),
+(12, 'Salud y bienestar', '2024-10-14 18:19:33', NULL, 1);
+
+DROP TABLE IF EXISTS `tsim_empresa`;
+CREATE TABLE `tsim_empresa` (
+  `ID_EMPRESA` int(11) NOT NULL,
+  `DSC_NOMBRE` varchar(50) DEFAULT NULL,
+  `NUM_TELEFONO` varchar(8) DEFAULT NULL,
+  `DSC_MENSAJE_VENTA` varchar(100) DEFAULT NULL,
+  `FEC_CREACICON` datetime DEFAULT NULL,
+  `FEC_MODIFICADO` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsim_estado`;
+CREATE TABLE `tsim_estado` (
+  `ID_ESTADO` int(11) NOT NULL,
+  `DSC_NOMBRE` varchar(100) DEFAULT NULL COMMENT 'Activo, inactivo, suspendido',
+  `DSC_PARA` varchar(100) DEFAULT NULL COMMENT 'Nombre de el modulo al que pertenece el estado',
+  `FEC_CREADOEN` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `tsim_estado` (`ID_ESTADO`, `DSC_NOMBRE`, `DSC_PARA`, `FEC_CREADOEN`) VALUES
+(1, 'Activo', 'Lo que sea', '2024-10-12 17:53:52'),
+(2, 'Inactivo', 'Lo que sea x2', '2024-10-12 17:53:52');
+
+DROP TABLE IF EXISTS `tsim_fechainiciosesion`;
+CREATE TABLE `tsim_fechainiciosesion` (
+  `ID_FECHAINICIOSESION` int(11) NOT NULL,
+  `ID_USUARIO` int(11) DEFAULT NULL,
+  `FEC_ULTIMOINGRESO` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsim_permiso`;
+CREATE TABLE `tsim_permiso` (
+  `ID_PERMISO` int(11) NOT NULL,
+  `DSC_NOMBRE` varchar(100) DEFAULT NULL,
+  `DSC_DESCRIPCION` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsim_producto`;
+CREATE TABLE `tsim_producto` (
+  `ID_PRODUCTO` int(11) NOT NULL,
+  `ID_CATEGORIA` int(11) DEFAULT NULL,
+  `DSC_NOMBRE` varchar(100) DEFAULT NULL,
+  `DSC_DESCRIPCION` varchar(400) DEFAULT NULL,
+  `MONTO_PRECIOBASE` decimal(13,2) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `DSC_TIENEVARIACION` bit(1) DEFAULT NULL,
+  `DSC_TIENECADUCIDAD` bit(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsim_rol`;
+CREATE TABLE `tsim_rol` (
+  `ID_ROL` int(11) NOT NULL,
+  `DSC_NOMBRE` varchar(50) DEFAULT NULL COMMENT 'SuperAdmin, Administrador, ventas, etc',
+  `DSC_DESCRIPCION` varchar(255) DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `tsim_rol` (`ID_ROL`, `DSC_NOMBRE`, `DSC_DESCRIPCION`, `ESTADO`) VALUES
+(1, 'Admin', 'Para usuarios administradores', 1);
+
+DROP TABLE IF EXISTS `tsim_subcategoria`;
+CREATE TABLE `tsim_subcategoria` (
+  `ID_SUBCATEGORIA` int(11) NOT NULL,
+  `ID_CATEGORIA` int(11) DEFAULT NULL,
+  `DSC_NOMBRE` varchar(100) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `subcategoriamodificadoen` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsim_tipoproveedor`;
+CREATE TABLE `tsim_tipoproveedor` (
+  `ID_TIPOPROVEEDOR` int(11) NOT NULL,
+  `DSC_NOMBRE` varchar(255) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `tsim_tipoproveedor` (`ID_TIPOPROVEEDOR`, `DSC_NOMBRE`, `FEC_CREADOEN`, `ESTADO`) VALUES
+(1, 'Proveedor Nacional', '2024-11-05 10:00:00', 1),
+(2, 'Proveedor Internacional', '2024-11-05 10:05:00', 1),
+(3, 'Proveedor de Servicios', '2024-11-05 10:10:00', 1),
+(4, 'Proveedor de Productos', '2024-11-05 10:15:00', 1),
+(5, 'Proveedor Temporal', '2024-11-05 10:20:00', 1);
+
+DROP TABLE IF EXISTS `tsim_variante`;
+CREATE TABLE `tsim_variante` (
+  `ID_VARIANTE` int(11) NOT NULL,
+  `ID_PRODUCTO` int(11) DEFAULT NULL,
+  `DSC_TALLA` varchar(100) DEFAULT NULL,
+  `DSC_COLOR` varchar(100) DEFAULT NULL,
+  `DSC_GENERO` varchar(25) DEFAULT NULL,
+  `MONTO_PRECIOAJUSTADO` decimal(13,2) DEFAULT NULL,
+  `NUM_CANTIDAD` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsit_cliente`;
+CREATE TABLE `tsit_cliente` (
+  `ID_CLIENTE` int(11) NOT NULL,
+  `DSC_CEDULA` varchar(15) NOT NULL,
+  `DSC_NOMBRE` varchar(50) DEFAULT NULL,
+  `DSC_APELLIDOUNO` varchar(50) DEFAULT NULL,
+  `DSC_APELLIDODOS` varchar(50) DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `URL_FOTO` varchar(255) NOT NULL,
+  `DSC_DIRECCION` varchar(500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `tsit_cliente` (`ID_CLIENTE`, `DSC_CEDULA`, `DSC_NOMBRE`, `DSC_APELLIDOUNO`, `DSC_APELLIDODOS`, `ESTADO`, `FEC_CREADOEN`, `FEC_MODIFICADOEN`, `URL_FOTO`, `DSC_DIRECCION`) VALUES
+(1, '703050017', 'Daniel', 'Briones', 'Vargas', 1, '2024-11-05 09:39:30', NULL, 'public/Assets/image/clientes/703050017.png', 'En Guápiles'),
+(3, '703050018', 'Josue', 'Porras', 'Rojas', 1, '2024-11-05 09:40:25', NULL, 'public/Assets/image/clientes/703050018.png', 'En Río Frio '),
+(4, '403475544', 'Yeiler', 'Montes', 'Rojas', 1, '2024-11-05 09:47:40', NULL, 'public/Assets/image/clientes/403475544.png', 'En Siquirres '),
+(5, '432514878', 'Aaron', 'Matarrita', 'Portuguez', 1, '2024-11-05 09:48:49', NULL, 'public/Assets/image/clientes/432514878.png', 'En Liberia ');
+
+DROP TABLE IF EXISTS `tsit_correoproveedor`;
+CREATE TABLE `tsit_correoproveedor` (
+  `ID_CORREOPROVEEDOR` int(11) NOT NULL,
+  `ID_PROVEEDOR` int(11) DEFAULT NULL,
+  `DSC_CORREO` varchar(100) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_correoproveedor`
+--
+
+INSERT INTO `tsit_correoproveedor` (`ID_CORREOPROVEEDOR`, `ID_PROVEEDOR`, `DSC_CORREO`, `FEC_CREADOEN`, `ESTADO`) VALUES
+(1, 29, 'proveedoruno@gmail.com', '2024-11-05 09:45:07', 1),
+(2, 30, 'proveedordos@gmail.com', '2024-11-05 09:53:18', 1),
+(3, 31, 'proveedortres@gmail.com', '2024-11-05 09:54:24', 1),
+(4, 32, 'proveedorcuatro@gmail.com', '2024-11-05 09:55:48', 1);
+
+DROP TABLE IF EXISTS `tsit_detalleorden`;
+CREATE TABLE `tsit_detalleorden` (
+  `ID_DETALLEORDEN` int(11) NOT NULL,
+  `ID_ORDEN` int(11) DEFAULT NULL,
+  `ID_VARIANTE` int(11) DEFAULT NULL,
+  `NUM_CANTIDADCOMPRADA` int(11) DEFAULT NULL,
+  `MONTO_PRECIOCOMRPA` decimal(13,2) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsit_direccionproveedor`;
+CREATE TABLE `tsit_direccionproveedor` (
+  `ID_DIRECCIONPROVEEDOR` int(11) NOT NULL,
+  `DSC_DIRECCIONEXACTA` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_direccionproveedor`
+--
+
+INSERT INTO `tsit_direccionproveedor` (`ID_DIRECCIONPROVEEDOR`, `DSC_DIRECCIONEXACTA`) VALUES
+(1, 'En Río Frio'),
+(2, 'Puntarenas'),
+(3, 'Guanacaste'),
+(4, 'Limón');
+
+DROP TABLE IF EXISTS `tsit_lote`;
+CREATE TABLE `tsit_lote` (
+  `ID_LOTE` int(11) NOT NULL,
+  `ID_PRODUCTO` int(11) DEFAULT NULL,
+  `DSC_CODIGO` varchar(255) DEFAULT NULL,
+  `FEC_COMPRA` datetime DEFAULT NULL,
+  `FEC_EXPIRACION` datetime DEFAULT NULL,
+  `lotecantidad` int(11) DEFAULT NULL,
+  `lotecosto` decimal(10,2) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsit_orden`;
+CREATE TABLE `tsit_orden` (
+  `ID_ORDEN` int(11) NOT NULL,
+  `ID_CLIENTE` int(11) DEFAULT NULL,
+  `FEC_ORDEN` datetime DEFAULT NULL,
+  `MONTO_TOTAL` decimal(13,2) DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `ID_USUARIO` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsit_permisousuario`;
+CREATE TABLE `tsit_permisousuario` (
+  `ID_PERMISOUSUARIO` int(11) NOT NULL,
+  `ID_USUARIO` int(11) DEFAULT NULL,
+  `ID_PERMISO` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `tsit_proveedor`;
+CREATE TABLE `tsit_proveedor` (
+  `ID_PROVEEDOR` int(11) NOT NULL,
+  `IDENTIFICADOR_PROVEEDOR` varchar(255) DEFAULT NULL,
+  `DSC_NOMBRE` varchar(255) DEFAULT NULL,
+  `ID_TIPOPROVEEDOR` int(11) DEFAULT NULL,
+  `DSC_VENTA` varchar(500) NOT NULL,
+  `CTA_BANCARIA` varchar(500) NOT NULL,
+  `ID_DIRECCION` int(11) DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_proveedor`
+--
+
+INSERT INTO `tsit_proveedor` (`ID_PROVEEDOR`, `IDENTIFICADOR_PROVEEDOR`, `DSC_NOMBRE`, `ID_TIPOPROVEEDOR`, `DSC_VENTA`, `CTA_BANCARIA`, `ID_DIRECCION`, `ESTADO`, `FEC_CREADOEN`, `FEC_MODIFICADOEN`) VALUES
+(29, 'SUP-20241105 09450-44b95a58', 'Proveedor 1', 1, 'vende zapatos', 'CTA-43ef2483', 1, 1, '2024-11-05 09:45:07', NULL),
+(30, 'SUP-20241105 09531-a8709e7e', 'Proveedor dos', 1, 'vende zapatos', 'CTA-c9109ddd', 2, 1, '2024-11-05 09:53:18', NULL),
+(31, 'SUP-20241105 09542-1ca6f29d', 'proveedor tres', 1, 'vende zapatos', 'CTA-96ccbfbf', 3, 1, '2024-11-05 09:54:24', NULL),
+(32, 'SUP-20241105 09554-ed97802e', 'Proveedor cuatro', 1, 'vende zapatos', 'CTA-4c00b13f', 4, 1, '2024-11-05 09:55:48', NULL);
+
+DROP TABLE IF EXISTS `tsit_telefonocliente`;
+CREATE TABLE `tsit_telefonocliente` (
+  `ID_TELEFONOCLIENTE` int(11) NOT NULL,
+  `ID_CLIENTE` int(11) DEFAULT NULL,
+  `DSC_TELEFONO` varchar(8) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_telefonocliente`
+--
+
+INSERT INTO `tsit_telefonocliente` (`ID_TELEFONOCLIENTE`, `ID_CLIENTE`, `DSC_TELEFONO`, `FEC_CREADOEN`, `FEC_MODIFICADOEN`, `ESTADO`) VALUES
+(1, 1, '84042628', '2024-11-05 09:39:30', NULL, 1),
+(2, 3, '87872456', '2024-11-05 09:40:25', NULL, 1),
+(3, 4, '54234978', '2024-11-05 09:47:40', NULL, 1),
+(4, 5, '43689989', '2024-11-05 09:48:49', NULL, 1),
+(5, 5, '45127847', '2024-11-05 09:48:49', NULL, 1);
+
+DROP TABLE IF EXISTS `tsit_telefonoproveedor`;
+CREATE TABLE `tsit_telefonoproveedor` (
+  `ID_TELEFONOPROVEEDOR` int(11) NOT NULL,
+  `ID_PROVEEDOR` int(11) DEFAULT NULL,
+  `DSC_TELEFONO` varchar(8) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_telefonoproveedor`
+--
+
+INSERT INTO `tsit_telefonoproveedor` (`ID_TELEFONOPROVEEDOR`, `ID_PROVEEDOR`, `DSC_TELEFONO`, `FEC_CREADOEN`, `ESTADO`) VALUES
+(1, 29, '87879587', '2024-11-05 09:45:07', 1),
+(2, 29, '45216487', '2024-11-05 09:45:07', 1),
+(3, 30, '27154964', '2024-11-05 09:53:18', 1),
+(4, 31, '23479898', '2024-11-05 09:54:24', 1),
+(5, 32, '12121212', '2024-11-05 09:55:48', 1);
+
+DROP TABLE IF EXISTS `tsit_usuario`;
+CREATE TABLE `tsit_usuario` (
+  `ID_USUARIO` int(11) NOT NULL,
+  `DSC_NOMBREUSUARIO` varchar(255) DEFAULT NULL,
+  `DSC_CONTRASENIA` varchar(255) DEFAULT NULL,
+  `DSC_CORREO` varchar(100) DEFAULT NULL,
+  `DSC_TELEFONO` varchar(8) DEFAULT NULL,
+  `ID_ROL` int(11) DEFAULT NULL,
+  `DSC_CEDULA` varchar(15) DEFAULT NULL,
+  `DSC_NOMBRE` varchar(50) DEFAULT NULL,
+  `DSC_APELLIDOUNO` varchar(50) DEFAULT NULL,
+  `DSC_APELLIDODOS` varchar(50) DEFAULT NULL,
+  `FEC_CREADOEN` datetime DEFAULT NULL,
+  `ESTADO` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `tsit_usuario` (`ID_USUARIO`, `DSC_NOMBREUSUARIO`, `DSC_CONTRASENIA`, `DSC_CORREO`, `DSC_TELEFONO`, `ID_ROL`, `DSC_CEDULA`, `DSC_NOMBRE`, `DSC_APELLIDOUNO`, `DSC_APELLIDODOS`, `FEC_CREADOEN`, `ESTADO`) VALUES
+(10, 'admin', '$2a$10$rD1Hd4SLCsWjJNS7aoWAw.Egg/N7YFbUh8LkXkExnz6KH7b37hb3G', 'admin@gmail.com', '11111111', 1, '1111111111', 'Admin', 'Admin', 'Admin', '2024-10-12 17:53:52', 1),
+(14, 'danielbv', '$2a$10$.ScHoNz3vTI04wyG03kEYOjnsPXH0Qf5SBQZ9cWocPov0tHDPAOKe', 'daniel@gmail.com', '84042628', 1, '703050017', 'Daniel', 'Briones', 'Vargas', '2024-11-05 10:11:00', 1),
+(15, 'jamels@gmail.com', '$2a$10$cquppGKentzQL4CKNdSDwuy/mD0bOnahIZrYMsAK7n44BVPdnChdG', 'jamelsani@gmail.com', '84842652', 1, '703100064', 'Jamel', 'Sandí', 'Anderson', '2024-11-05 10:12:59', 1),
+(16, 'yeiler@gmail.com', '$2a$10$GprGapwq0qkUKUoOA6pj2.r57cJ47H0z16DElMKtEC1TLlQziEhRm', 'yeiler@gmail.com', '52147845', 1, '406412457', 'Yeiler', 'Murillo', 'Rojas', '2024-11-05 10:14:47', 1),
+(17, 'carlos@gmail.com', '$2a$10$pc2ke02VPHEWqk0h5f46UuDju1GKNh3t1wDqIHbkTf5v2qGrZix.O', 'carlos@gmail.com', '78452136', 1, '301780019', 'Carlos', 'Obando', 'Obando', '2024-11-05 10:16:22', 1);
+
+ALTER TABLE `tsil_clienteaudi`
+  ADD PRIMARY KEY (`ID_CLIENTEAUDI`);
+
+ALTER TABLE `tsil_correoproveedoraudi`
+  ADD PRIMARY KEY (`ID_CORREOPROVEEDORAUDI`,`ID_CORREOPROVEEDOR`);
+
+ALTER TABLE `tsil_detalleordenaudi`
+  ADD PRIMARY KEY (`ID_DETALLEORDENAUDI`);
+
+ALTER TABLE `tsil_direccionproveedoraudi`
+  ADD PRIMARY KEY (`ID_DIRECCIONPROVEEDORAUDI`);
+
+ALTER TABLE `tsil_empresaaudi`
+  ADD PRIMARY KEY (`ID_EMPRESAAUDI`);
+
+ALTER TABLE `tsil_loteaudi`
+  ADD PRIMARY KEY (`ID_LOTEAUDI`);
+
+ALTER TABLE `tsil_ordenaudi`
+  ADD PRIMARY KEY (`ID_ORDENAUDI`);
+
+ALTER TABLE `tsil_permisousuarioaudi`
+  ADD PRIMARY KEY (`ID_PERMISOUSUARIOAUDI`);
+
+ALTER TABLE `tsil_proveedoraudi`
+  ADD PRIMARY KEY (`ID_PROVEEDORAUDI`);
+
+ALTER TABLE `tsil_telefonoclienteaudi`
+  ADD PRIMARY KEY (`ID_TELEFONOCLIENTEAUDI`);
+
+ALTER TABLE `tsil_telefonoproveedoraudi`
+  ADD PRIMARY KEY (`ID_TELEFONOPROVEEDORAUDI`);
+
+ALTER TABLE `tsil_usuarioaudi`
+  ADD PRIMARY KEY (`ID_USUARIOAUDI`);
+
+ALTER TABLE `tsim_categoria`
+  ADD PRIMARY KEY (`ID_CATEGORIA`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsim_empresa`
+  ADD PRIMARY KEY (`ID_EMPRESA`);
+
+ALTER TABLE `tsim_estado`
+  ADD PRIMARY KEY (`ID_ESTADO`);
+
+ALTER TABLE `tsim_fechainiciosesion`
+  ADD PRIMARY KEY (`ID_FECHAINICIOSESION`),
+  ADD KEY `ID_USUARIO` (`ID_USUARIO`);
+
+ALTER TABLE `tsim_permiso`
+  ADD PRIMARY KEY (`ID_PERMISO`);
+
+ALTER TABLE `tsim_producto`
+  ADD PRIMARY KEY (`ID_PRODUCTO`),
+  ADD KEY `ID_CATEGORIA` (`ID_CATEGORIA`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsim_rol`
+  ADD PRIMARY KEY (`ID_ROL`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsim_subcategoria`
+  ADD PRIMARY KEY (`ID_SUBCATEGORIA`),
+  ADD KEY `ID_CATEGORIA` (`ID_CATEGORIA`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsim_tipoproveedor`
+  ADD PRIMARY KEY (`ID_TIPOPROVEEDOR`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsim_variante`
+  ADD PRIMARY KEY (`ID_VARIANTE`),
+  ADD KEY `ID_PRODUCTO` (`ID_PRODUCTO`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsit_cliente`
+  ADD PRIMARY KEY (`ID_CLIENTE`),
+  ADD UNIQUE KEY `DSC_CEDULA` (`DSC_CEDULA`),
+  ADD UNIQUE KEY `FOTOURL` (`URL_FOTO`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsit_correoproveedor`
+  ADD PRIMARY KEY (`ID_CORREOPROVEEDOR`),
+  ADD KEY `ID_PROVEEDOR` (`ID_PROVEEDOR`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsit_detalleorden`
+  ADD PRIMARY KEY (`ID_DETALLEORDEN`),
+  ADD KEY `ID_ORDEN` (`ID_ORDEN`),
+  ADD KEY `ID_VARIANTE` (`ID_VARIANTE`);
+
+ALTER TABLE `tsit_direccionproveedor`
+  ADD PRIMARY KEY (`ID_DIRECCIONPROVEEDOR`);
+
+ALTER TABLE `tsit_lote`
+  ADD PRIMARY KEY (`ID_LOTE`),
+  ADD KEY `ID_PRODUCTO` (`ID_PRODUCTO`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsit_orden`
+  ADD PRIMARY KEY (`ID_ORDEN`),
+  ADD KEY `ID_CLIENTE` (`ID_CLIENTE`),
+  ADD KEY `ESTADO` (`ESTADO`),
+  ADD KEY `ID_USUARIO` (`ID_USUARIO`);
+
+ALTER TABLE `tsit_permisousuario`
+  ADD PRIMARY KEY (`ID_PERMISOUSUARIO`),
+  ADD KEY `ID_USUARIO` (`ID_USUARIO`),
+  ADD KEY `ID_PERMISO` (`ID_PERMISO`);
+
+ALTER TABLE `tsit_proveedor`
+  ADD PRIMARY KEY (`ID_PROVEEDOR`),
+  ADD KEY `ID_TIPOPROVEEDOR` (`ID_TIPOPROVEEDOR`),
+  ADD KEY `ID_DIRECCION` (`ID_DIRECCION`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsit_telefonocliente`
+  ADD PRIMARY KEY (`ID_TELEFONOCLIENTE`),
+  ADD KEY `ID_CLIENTE` (`ID_CLIENTE`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsit_telefonoproveedor`
+  ADD PRIMARY KEY (`ID_TELEFONOPROVEEDOR`),
+  ADD KEY `ID_PROVEEDOR` (`ID_PROVEEDOR`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+ALTER TABLE `tsit_usuario`
+  ADD PRIMARY KEY (`ID_USUARIO`),
+  ADD KEY `ID_ROL` (`ID_ROL`),
+  ADD KEY `ESTADO` (`ESTADO`);
+
+
+ALTER TABLE `tsil_clienteaudi`
+  MODIFY `ID_CLIENTEAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_correoproveedoraudi`
+  MODIFY `ID_CORREOPROVEEDORAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_detalleordenaudi`
+  MODIFY `ID_DETALLEORDENAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_direccionproveedoraudi`
+  MODIFY `ID_DIRECCIONPROVEEDORAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_empresaaudi`
+  MODIFY `ID_EMPRESAAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_loteaudi`
+  MODIFY `ID_LOTEAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_ordenaudi`
+  MODIFY `ID_ORDENAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_permisousuarioaudi`
+  MODIFY `ID_PERMISOUSUARIOAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_proveedoraudi`
+  MODIFY `ID_PROVEEDORAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_telefonoclienteaudi`
+  MODIFY `ID_TELEFONOCLIENTEAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_telefonoproveedoraudi`
+  MODIFY `ID_TELEFONOPROVEEDORAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsil_usuarioaudi`
+  MODIFY `ID_USUARIOAUDI` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsim_categoria`
+  MODIFY `ID_CATEGORIA` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsim_empresa`
+  MODIFY `ID_EMPRESA` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsim_estado`
+  MODIFY `ID_ESTADO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+ALTER TABLE `tsim_fechainiciosesion`
+  MODIFY `ID_FECHAINICIOSESION` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsim_permiso`
+  MODIFY `ID_PERMISO` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsim_producto`
+  MODIFY `ID_PRODUCTO` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsim_rol`
+  MODIFY `ID_ROL` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+ALTER TABLE `tsim_subcategoria`
+  MODIFY `ID_SUBCATEGORIA` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsim_tipoproveedor`
+  MODIFY `ID_TIPOPROVEEDOR` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsim_variante`
+  MODIFY `ID_VARIANTE` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_cliente`
+  MODIFY `ID_CLIENTE` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_correoproveedor`
+  MODIFY `ID_CORREOPROVEEDOR` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_detalleorden`
+  MODIFY `ID_DETALLEORDEN` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_direccionproveedor`
+  MODIFY `ID_DIRECCIONPROVEEDOR` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_lote`
+  MODIFY `ID_LOTE` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_orden`
+  MODIFY `ID_ORDEN` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_permisousuario`
+  MODIFY `ID_PERMISOUSUARIO` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_proveedor`
+  MODIFY `ID_PROVEEDOR` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_telefonocliente`
+  MODIFY `ID_TELEFONOCLIENTE` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_telefonoproveedor`
+  MODIFY `ID_TELEFONOPROVEEDOR` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tsit_usuario`
+  MODIFY `ID_USUARIO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+
+ALTER TABLE `tsim_categoria`
+  ADD CONSTRAINT `tsim_categoria_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsim_fechainiciosesion`
+  ADD CONSTRAINT `tsim_fechainiciosesion_ibfk_1` FOREIGN KEY (`ID_USUARIO`) REFERENCES `tsit_usuario` (`ID_USUARIO`);
+
+ALTER TABLE `tsim_producto`
+  ADD CONSTRAINT `tsim_producto_ibfk_1` FOREIGN KEY (`ID_CATEGORIA`) REFERENCES `tsim_subcategoria` (`ID_SUBCATEGORIA`),
+  ADD CONSTRAINT `tsim_producto_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsim_rol`
+  ADD CONSTRAINT `tsim_rol_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsim_subcategoria`
+  ADD CONSTRAINT `tsim_subcategoria_ibfk_1` FOREIGN KEY (`ID_CATEGORIA`) REFERENCES `tsim_categoria` (`ID_CATEGORIA`),
+  ADD CONSTRAINT `tsim_subcategoria_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsim_tipoproveedor`
+  ADD CONSTRAINT `tsim_tipoproveedor_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsim_variante`
+  ADD CONSTRAINT `tsim_variante_ibfk_1` FOREIGN KEY (`ID_PRODUCTO`) REFERENCES `tsim_producto` (`ID_PRODUCTO`),
+  ADD CONSTRAINT `tsim_variante_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsit_cliente`
+  ADD CONSTRAINT `tsit_cliente_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsit_correoproveedor`
+  ADD CONSTRAINT `tsit_correoproveedor_ibfk_1` FOREIGN KEY (`ID_PROVEEDOR`) REFERENCES `tsit_proveedor` (`ID_PROVEEDOR`),
+  ADD CONSTRAINT `tsit_correoproveedor_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsit_detalleorden`
+  ADD CONSTRAINT `tsit_detalleorden_ibfk_1` FOREIGN KEY (`ID_ORDEN`) REFERENCES `tsit_orden` (`ID_ORDEN`),
+  ADD CONSTRAINT `tsit_detalleorden_ibfk_2` FOREIGN KEY (`ID_VARIANTE`) REFERENCES `tsim_variante` (`ID_VARIANTE`);
+
+ALTER TABLE `tsit_lote`
+  ADD CONSTRAINT `tsit_lote_ibfk_1` FOREIGN KEY (`ID_PRODUCTO`) REFERENCES `tsim_producto` (`ID_PRODUCTO`),
+  ADD CONSTRAINT `tsit_lote_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsit_orden`
+  ADD CONSTRAINT `tsit_orden_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`),
+  ADD CONSTRAINT `tsit_orden_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`),
+  ADD CONSTRAINT `tsit_orden_ibfk_3` FOREIGN KEY (`ID_USUARIO`) REFERENCES `tsit_usuario` (`ID_USUARIO`);
+
+ALTER TABLE `tsit_permisousuario`
+  ADD CONSTRAINT `tsit_permisousuario_ibfk_1` FOREIGN KEY (`ID_USUARIO`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
+  ADD CONSTRAINT `tsit_permisousuario_ibfk_2` FOREIGN KEY (`ID_PERMISO`) REFERENCES `tsim_permiso` (`ID_PERMISO`);
+
+ALTER TABLE `tsit_proveedor`
+  ADD CONSTRAINT `tsit_proveedor_ibfk_1` FOREIGN KEY (`ID_TIPOPROVEEDOR`) REFERENCES `tsim_tipoproveedor` (`ID_TIPOPROVEEDOR`),
+  ADD CONSTRAINT `tsit_proveedor_ibfk_2` FOREIGN KEY (`ID_DIRECCION`) REFERENCES `tsit_direccionproveedor` (`ID_DIRECCIONPROVEEDOR`),
+  ADD CONSTRAINT `tsit_proveedor_ibfk_3` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsit_telefonocliente`
+  ADD CONSTRAINT `tsit_telefonocliente_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`),
+  ADD CONSTRAINT `tsit_telefonocliente_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsit_telefonoproveedor`
+  ADD CONSTRAINT `tsit_telefonoproveedor_ibfk_1` FOREIGN KEY (`ID_PROVEEDOR`) REFERENCES `tsit_proveedor` (`ID_PROVEEDOR`),
+  ADD CONSTRAINT `tsit_telefonoproveedor_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+
+ALTER TABLE `tsit_usuario`
+  ADD CONSTRAINT `tsit_usuario_ibfk_1` FOREIGN KEY (`ID_ROL`) REFERENCES `tsim_rol` (`ID_ROL`),
+  ADD CONSTRAINT `tsit_usuario_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
