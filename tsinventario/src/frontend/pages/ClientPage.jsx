@@ -185,7 +185,7 @@ export default function ClientPage() {
         direccion: client.DSC_DIRECCION,
         foto: process.env.PUBLIC_URL + '/Assets/image/clientes/' + client.URL_FOTO,
         estado: client.ESTADO === "ACTIVO" ? 1 : 2,
-        telefonos: client.telefonos || [],
+        telefonos: client.TelefonoClientes ? client.TelefonoClientes.map(t => t.DSC_TELEFONO) : [],
     });
 
     const handleSubmit = async (clientData) => {

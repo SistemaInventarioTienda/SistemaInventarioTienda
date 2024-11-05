@@ -119,7 +119,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
         onChange={handleChange}
         required={field.required}
         placeholder={`Ingrese ${field.label.toLowerCase()}`}
-        disabled={mode === 'edit'  && field.name === 'cedula'}
+        disabled={mode === 'edit' && field.name === 'cedula'}
         {...commonStyles}
       />
     );
@@ -140,7 +140,6 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
 
   const showPhones = entityName === 'Cliente' || entityName === 'Proveedor';
   const showEmails = entityName === 'Proveedor';
-  const showContactManager = !((isEditMode || isViewMode) && entityName === "Cliente");
 
   return (
     <div className="modal-overlay">
@@ -208,18 +207,18 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
                   </div>
                 );
               })}
-
               {/* Mostrar ContactManager solo si se cumple la condición */}
-              {showPhones && showContactManager && (
+              {showPhones && (
                 <div className="full-width-component">
                   <ContactManager
                     contacts={phones}
                     onContactsChange={setPhones}
                     type="phone"
+                    mode={mode}
                   />
                 </div>
               )}
-              {showEmails && showContactManager && (
+              {showEmails && (
                 <div className="form-group full-width-component">
                   <label>Correos electrónicos</label>
                   <ContactManager
