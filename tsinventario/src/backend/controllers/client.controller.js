@@ -52,25 +52,25 @@ export const registerClient = async (req, res) => {
     if (error.name === 'SequelizeUniqueConstraintError') {
 
       if (error.errors[0].path === 'DSC_CEDULA') {
-        res.status(500).json({ errorMessage: "El cliente ya se encuentra registrado" });
+        res.status(500).json({ message: "El cliente ya se encuentra registrado" });
       } else if (error.errors[0].path === 'FOTOURL') {
-        res.status(500).json({ errorMessage: "Error al agregar la foto del cliente" });
+        res.status(500).json({ message: "Error al agregar la foto del cliente" });
       }
 
 
     } else if (error.name === 'SequelizeDatabaseError' && error.parent.code === 'ER_INNODB_AUTOEXTEND_SIZE_OUT_OF_RANGE') {
       if (error.parent.sqlMessage.includes('chk_cedula_no_empty')) {
-        res.status(500).json({ errorMessage: "La cédula no puede estar vacia." });
+        res.status(500).json({ message: "La cédula no puede estar vacia." });
       } else if (error.parent.sqlMessage.includes('chk_urlphoto_no_empty')) {
-        res.status(500).json({ errorMessage: "La url de la foto no puede estar vacia." });
+        res.status(500).json({ message: "La url de la foto no puede estar vacia." });
       } else if (error.parent.sqlMessage.includes('chk_direction_no_empty')) {
-        res.status(500).json({ errorMessage: "La dirección no puede estar vacia." });
+        res.status(500).json({ message: "La dirección no puede estar vacia." });
       } else {
-        res.status(500).json({ errorMessage: error });
+        res.status(500).json({ message: error });
       }
 
     } else {
-      res.status(500).json({ errorMessage: error });
+      res.status(500).json({ message: error });
     }
   }
 };
