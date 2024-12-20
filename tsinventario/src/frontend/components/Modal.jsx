@@ -79,7 +79,6 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
         }));
       }
     }
-
     // Verifica si el campo es de tipo 'file'
     if (type === "file" && files.length > 0) {
       const fileName = files[0].name;

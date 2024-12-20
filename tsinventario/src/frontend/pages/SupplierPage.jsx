@@ -130,6 +130,14 @@ export default function SupplierPage() {
                 DSC_DIRECCION:
                     supplier.supplierDirection?.DSC_DIRECCIONEXACTA || "No Disponible",
                 DSC_TIPOPROVEEDOR: supplier.supplierType?.DSC_NOMBRE || "No Disponible",
+
+                DSC_TELEFONO: supplier.numberSuppliers && supplier.numberSuppliers.length > 0
+                    ? supplier.numberSuppliers[0].DSC_TELEFONO
+                    : "No Disponible",
+
+                DSC_CORREO: supplier.mailSuppliers && supplier.mailSuppliers.length > 0
+                    ? supplier.mailSuppliers[0].DSC_CORREO
+                    : "No Disponible",
             }));
             setModalData(transformedSuppliers);
             setFilteredData(transformedSuppliers);
@@ -236,6 +244,7 @@ export default function SupplierPage() {
         let successMessageText = "";
         console.log("supplierData", supplierData);
         const supplierPayload = {
+            IDENTIFICADOR_PROVEEDOR: supplierData.identificador, // Agrega este campo
             DSC_NOMBRE: supplierData.nombre,
             ID_TIPOPROVEEDOR: parseInt(supplierData.tipoProveedor, 10),
             ESTADO: supplierData.estado,
@@ -352,7 +361,7 @@ export default function SupplierPage() {
             <Table
                 columns={columns}
                 data={filteredData}
-                actions={{ edit: handleEditSupplier, delete: handleDeleteSupplier }}
+                actions={{ edit: handleEditSupplier, delete: handleDeleteSupplier, view: handleViewSupplier }}
                 onSort={sortData}
                 sortField={sortField}
                 sortOrder={sortOrder}
