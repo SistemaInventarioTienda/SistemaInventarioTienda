@@ -5,7 +5,6 @@ import ModalConfirmation from "../components/ui/ModalConfirmation";
 import ContactManager from "./ContactManager";
 import InputFile from "../components/ui/InputFile";
 import "./css/modal.css";
-import {getPersonById } from "../api/hacienda";
 
 
 export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName, supplierTypes, }) {
@@ -14,6 +13,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
   const [phones, setPhones] = useState(data?.telefonos || []);
   const [emails, setEmails] = useState(data?.correos || []);
   const [localSupplierTypes, setLocalSupplierTypes] = useState([]);
+  const [searchPersonWorker, setSearchPersonWorker] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -25,6 +25,32 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
       console.log("correos cargados:", data?.correos);
     }
   }, [isOpen, data, supplierTypes]);
+
+  useEffect(() => {
+    // Create a new web worker
+    const searchPersonWorker = new Worker('workers/searchPerson.worker.js');
+    // Set up event listener for messages from the worker
+    searchPersonWorker.onmessage = function (event) {
+      // console.log('Received result from worker:', event.data);
+
+      const { nombre, segundoNombre, apellidoUno, apellidoDos } = event.data;
+      const newName = (segundoNombre.length >= 0) ? (nombre + " " + segundoNombre) : nombre;
+      setFormData((prevData) => ({
+        ...prevData,
+        nombre: newName,
+        primerApellido: apellidoUno,
+        segundoApellido: apellidoDos,
+      }));
+    };
+
+    // Save the worker instance to state
+    setSearchPersonWorker(searchPersonWorker);
+
+    // Clean up the worker when the component unmounts
+    return () => {
+      searchPersonWorker.terminate();
+    };
+  }, []); // Run this effect only once when the component mounts
 
   if (!isOpen) return null;
 
@@ -41,8 +67,23 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
   const handleChange = async (e) => {
     const { name, value, type, files } = e.target;
 
-    if(entityName === 'Usuario' || entityName === 'Cliente'){
-      if(name === 'cedula' && value.length === 9){
+
+    if (name === 'cedula') {
+      if (value.length > 9) {
+        setErrorMessages(["La cédula solo permite 9 caracteres."]);
+        return;
+      }
+
+      let numeros = /^[0-9]+$/;
+      if(!numeros.exec(value) && value.length > 0){
+        setErrorMessages(["La cédula solo permite numeros."]);
+        return;
+      }
+    }
+
+
+    if (entityName === 'Usuario' || entityName === 'Cliente') {
+      if (name === 'cedula' && value.length === 9) {
         try {
           setFormData((prevData) => ({
             ...prevData,
@@ -50,17 +91,20 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
             primerApellido: "Cargando...",
             segundoApellido: "Cargando...",
           }));
-          const { nombre, segundoNombre, apellidoUno, apellidoDos } = await getPersonById(value);
-        
-          const newName = (segundoNombre.length >= 0) ? (nombre + " " +  segundoNombre) : nombre;
-          
-          setFormData((prevData) => ({
-            ...prevData,
-            nombre: newName,
-            primerApellido: apellidoUno,
-            segundoApellido: apellidoDos,
-          }));
-        } catch(error) {
+
+          searchPersonWorker.postMessage(value);
+
+          // const { nombre, segundoNombre, apellidoUno, apellidoDos } = await getPersonById(value);
+
+          // const newName = (segundoNombre.length >= 0) ? (nombre + " " + segundoNombre) : nombre;
+
+          // setFormData((prevData) => ({
+          //   ...prevData,
+          //   nombre: newName,
+          //   primerApellido: apellidoUno,
+          //   segundoApellido: apellidoDos,
+          // }));
+        } catch (error) {
           setFormData((prevData) => ({
             ...prevData,
             nombre: "",
@@ -68,9 +112,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
             segundoApellido: "",
           }));
         }
-
-       
-      } else if(name === 'cedula' && value.length !== 9){
+      } else if (name === 'cedula' && value.length !== 9) {
         setFormData((prevData) => ({
           ...prevData,
           nombre: "",
@@ -208,7 +250,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
         onChange={handleChange}
         required={field.required}
         placeholder={`Ingrese ${field.label.toLowerCase()}`}
-        disabled={ (mode === 'edit' && field.name === 'cedula') ||  field.name === 'nombre' || field.name === 'primerApellido' || field.name === 'segundoApellido' }
+        disabled={(mode === 'edit' && field.name === 'cedula') || field.name === 'nombre' || field.name === 'primerApellido' || field.name === 'segundoApellido'}
         {...commonStyles}
       />
     );
