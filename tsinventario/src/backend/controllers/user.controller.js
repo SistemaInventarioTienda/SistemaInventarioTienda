@@ -40,7 +40,7 @@ export const updateUser = async (req, res) => {
         
 
         await user.update({
-            DSC_NOMBREUSUARIO, DSC_CORREO, DSC_CONTRASENIA: passwordHash, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
+            DSC_NOMBREUSUARIO, DSC_CORREO: DSC_CORREO.toLowerCase(), DSC_CONTRASENIA: passwordHash, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
             DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO
         });
 
