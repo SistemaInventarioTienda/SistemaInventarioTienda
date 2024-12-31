@@ -171,13 +171,13 @@ export default function UserPage() {
       await deleteUser(user.DSC_CEDULA);
       setAlert({ show: true, message: "Usuario eliminado exitosamente", type: "success" }); // Mostrar alerta de éxito
       await fetchUsers();
-      setConfirmationModalOpen(false);
+      // setConfirmationModalOpen(false);
 
     } catch (err) {
-      const errorMessage = err.message?.data?.message || "Error desconocido al eliminar al usuario.";
+      const errorMessage = err.message?.data?.message || err.response?.data?.message || "Error desconocido al eliminar al usuario.";
       setAlert({ show: true, message: errorMessage, type: "error" }); // Mostrar alerta de error
     }
-    // setConfirmationModalOpen(false); // Cerrar modal de confirmación después de eliminar
+    setConfirmationModalOpen(false); // Cerrar modal de confirmación después de eliminar
   };
 
   const handleGrantPermissionsUser = user => ("grantPermissions", user);
