@@ -38,3 +38,6 @@ Cosas por mejorar en las siguientes entregas:
     ✅1.4- El correo solo puede guardarse en minuscula 
     ✅1.5- Al buscar en la api no puede bloquear la escritura del 9no caracter.
     ❌1.6- Los campos que se autocompletan (esta bloqueada la escritura) deben ir en un color más oscuro
+    ❌1.7- Deshabilitar algunas opciones. Por ejemplo: 
+        ❌1.7.1- En la tabla de usuario se debe deshabilitar o ocultar el botón para eliminar el usuario administrador o el mismo
+        ❌1.7.2- Solo los administradores pueden cambiar los permisos de otros usuarios
