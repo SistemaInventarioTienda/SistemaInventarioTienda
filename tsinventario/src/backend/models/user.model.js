@@ -59,6 +59,21 @@ const User = db.define('User', {
 }, {
   timestamps: false,
   tableName: 'tsit_usuario',
+}, {
+  hooks: {
+    // Hook antes de la creación de un usuario
+    beforeCreate: (user, options) => {
+      if (user.DSC_CORREO) {
+        user.DSC_CORREO = user.DSC_CORREO.toLowerCase(); // Convierte el correo a minúsculas
+      }
+    },
+    // Hook antes de la actualización de un usuario
+    beforeUpdate: (user, options) => {
+      if (user.DSC_CORREO) {
+        user.DSC_CORREO = user.DSC_CORREO.toLowerCase(); // Convierte el correo a minúsculas
+      }
+    },
+  },
 });
 
 export default User;

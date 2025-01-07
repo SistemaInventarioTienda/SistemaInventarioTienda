@@ -9,3 +9,13 @@ export async function createAccessToken(payload, expiresIn = "1d") {
     });
   });
 }
+
+export async function decodedToken(token) {
+  try {
+    const decoded = jwt.verify(token, TOKEN_SECRET);
+    return decoded; // Devuelve el payload decodificado
+  } catch (error) {
+    console.error("Error al verificar el token:", error);
+    return null; // El token es inválido o ha expirado
+  }
+}

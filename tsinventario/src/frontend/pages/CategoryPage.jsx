@@ -10,14 +10,18 @@ import PageLayout from "../components/layout/PageLayout";
 import { Table, Pagination, Button, Input, Select, Alert, } from "../components/common";
 // Modals
 import { ModalComponent, ModalConfirmation } from "../components/modals";
+// Forms
+import ClientForm from "./forms/CategoryForm";
 // Icons
 import { Tag, Search } from "lucide-react";
 // API calls
 import { getAllCategories, saveCategory, updateCategory, deleteCategory, searchCategoryByName, } from "../api/category";
 // Styles
 import "./styles/Page.css";
+import CategoryForm from "./forms/CategoryForm";
 
 export default function CategoryPage() {
+  const entityName = 'Categorías';
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -341,15 +345,28 @@ export default function CategoryPage() {
 
       <ModalComponent
         isOpen={isModalOpen}
+        title={
+          modalMode === "add"
+            ? `Agregar ${entityName}`
+            : modalMode === "edit"
+              ? `Editar ${entityName}`
+              : `Detalles de ${entityName}`
+        }
         mode={modalMode}
-        fields={categoryFields}
         data={modalData}
         onClose={() => setModalOpen(false)}
         onSubmit={handleSubmit}
         errorMessages={errorMessages}
         setErrorMessages={setErrorMessages}
-        entityName="Categoría"
-      />
+        entityName={entityName}
+      >
+        <CategoryForm
+          mode={modalMode}
+          initialData={modalData}
+          onSubmit={handleSubmit}
+          fields={categoryFields}
+        />
+      </ModalComponent>
     </PageLayout>
   );
 }

@@ -96,3 +96,88 @@ export const validateCategoryName = (req) => {
     return errors.length > 0 ? errors : true;
 };
 
+export const validateSupplierData = (req) => {
+    const {
+        DSC_DIRECCIONEXACTA,
+        DSC_NOMBRE,
+        ID_TIPOPROVEEDOR,
+        ESTADO,
+        phones,
+        emails
+    } = req.body;
+
+    // Lista de campos requeridos
+    const fields = [
+        { field: DSC_DIRECCIONEXACTA, name: 'DSC_DIRECCIONEXACTA' },
+        { field: DSC_NOMBRE, name: 'DSC_NOMBRE' },
+        { field: ID_TIPOPROVEEDOR, name: 'TIPO_PROVEEDOR' },
+        { field: ESTADO, name: 'ESTADO' }
+    ];
+
+    const errors = [];
+
+    for (const { field, name } of fields) {
+        if (!isNotEmpty(field)) {
+            errors.push(`El campo ${name} es requerido y no puede estar vacío.`);
+        }
+    }
+
+    if (!Array.isArray(phones) || phones.length === 0) {
+        errors.push('La lista de teléfonos es requerida y no puede estar vacía.');
+    } else {
+        phones.forEach((phone, index) => {
+            if (!isNotEmpty(phone)) {
+                errors.push(`El teléfono no puede estar vacío.`);
+            }
+        });
+    }
+
+    if (!Array.isArray(emails) || emails.length === 0) {
+        errors.push('La lista de correos es requerida y no puede estar vacía.');
+    } else {
+        emails.forEach((email, index) => {
+            if (!isNotEmpty(email)) {
+                errors.push(`El correo no puede estar vacío.`);
+            } else if (!isValidEmail(email)) {
+                errors.push(`El correo no es válido.`);
+            }
+        });
+    }
+
+    return errors.length > 0 ? errors : true;
+};
+
+
+export const validateSupplierDataUpdate = (req) => {
+    const {
+        DSC_DIRECCIONEXACTA,
+        DSC_NOMBRE,
+        ID_TIPOPROVEEDOR,
+        ESTADO
+    } = req.body;
+
+    // Lista de campos requeridos
+    const fields = [
+        { field: DSC_DIRECCIONEXACTA, name: 'DSC_DIRECCIONEXACTA' },
+        { field: DSC_NOMBRE, name: 'DSC_NOMBRE' },
+        { field: ID_TIPOPROVEEDOR, name: 'TIPO_PROVEEDOR' },
+        { field: ESTADO, name: 'ESTADO' }
+    ];
+
+    const errors = [];
+
+    for (const { field, name } of fields) {
+        if (!isNotEmpty(field)) {
+            errors.push(`El campo ${name} es requerido y no puede estar vacío.`);
+        }
+    }
+
+    return errors.length > 0 ? errors : true;
+};
+
+
+
+const isValidEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+};

@@ -10,6 +10,8 @@ import PageLayout from "../components/layout/PageLayout";
 import { Table, Pagination, Button, Input, Select, Alert, } from "../components/common";
 // Modals
 import { ModalComponent, ModalConfirmation } from "../components/modals";
+// Forms
+import ClientForm from "./forms/ClientForm";
 // Icons
 import { Search, UserCheck } from "lucide-react";
 // API calls
@@ -18,6 +20,7 @@ import { getClients, updateClient, registerClient, deleteClient, searchClient } 
 import "./styles/Page.css";
 
 export default function ClientPage() {
+    const entityName = 'Clientes';
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
 
@@ -66,7 +69,7 @@ export default function ClientPage() {
         { name: "segundoApellido", label: "Segundo Apellido", type: "text" },
         { name: "direccion", label: "Dirección", type: "text", required: true },
         { name: "fotografia", label: "Fotografía", type: "file", required: true },
-        { name: "estado", label: "Estado", type: "select", required: true },
+        { name: 'estado', label: 'Estado', type: 'select', required: true, options: [{ value: 1, label: 'Activo' }, { value: 0, label: 'Inactivo' },], },
     ];
 
     const refreshData = async (data) => {
@@ -186,12 +189,13 @@ export default function ClientPage() {
     const handleAddClient = () => openModal("add");
 
     const openModal = (mode, client = null) => {
+        console.log("openModal ejecutado", { mode, client });
         setModalMode(mode);
         setModalData(
             mode === "add" ? { telefonos: [] } : mapClientFields(client)
         );
         setModalOpen(true);
-        setModalOpen(true);
+        console.log("Estado del modal después de abrir:", isModalOpen); // Este podría no reflejar el cambio inmediato por la naturaleza asíncrona de setState
     };
 
     const mapClientFields = (client) => ({
@@ -362,17 +366,32 @@ export default function ClientPage() {
                 cancelButtonText="Cancelar"
                 errorMessages={errorMessages}
             />
+            
             <ModalComponent
                 isOpen={isModalOpen}
+                title={
+                    modalMode === "add"
+                        ? `Agregar ${entityName}`
+                        : modalMode === "edit"
+                            ? `Editar ${entityName}`
+                            : `Detalles de ${entityName}`
+                }
                 mode={modalMode}
-                fields={clientFields}
+                fields={clientFields} // Verifica esta línea
                 data={modalData}
                 onClose={() => setModalOpen(false)}
                 onSubmit={handleSubmit}
                 errorMessages={errorMessages}
                 setErrorMessages={setErrorMessages}
                 entityName="Cliente"
-            />
+            >
+                <ClientForm
+                    mode={modalMode}
+                    initialData={modalData}
+                    onSubmit={handleSubmit}
+                    fields={clientFields}
+                />
+            </ModalComponent>
 
         </PageLayout>
     );

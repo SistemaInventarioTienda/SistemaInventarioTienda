@@ -40,7 +40,7 @@ export const register = async (req, res) => {
     const creadoEn =  await getDateCR();
     const newUser = new User({
       DSC_NOMBREUSUARIO,
-      DSC_CORREO,
+      DSC_CORREO: DSC_CORREO.toLowerCase(),
       DSC_CONTRASENIA: passwordHash,
       DSC_TELEFONO,
       ID_ROL: 1,
