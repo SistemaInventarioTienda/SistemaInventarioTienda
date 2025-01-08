@@ -1,12 +1,20 @@
+// React imports
 import React, { useState, useEffect } from 'react';
+// Routing
 import { useNavigate } from 'react-router-dom';
+// Form validation
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+// Context
 import { useAuth } from '../context/authContext';
+// Schemas
 import { loginSchema } from '../schemas/auth';
-import { Card, Button, Input, Alert } from '../components/ui';
+// Common components
+import { Card, Button, Input, Alert } from "../components/common";
+// Icons
 import { ShoppingBag, User, Lock, Eye, EyeOff } from 'lucide-react';
-import './css/LoginPage.css';
+// Styles
+import './styles/LoginPage.css';
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,7 +29,7 @@ export function LoginPage() {
   useEffect(() => {
     document.title = 'Iniciar Sesión';
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/home');
     } else {
       const storedRememberMe = localStorage.getItem('rememberMe') === 'true';
       setRememberMe(storedRememberMe);

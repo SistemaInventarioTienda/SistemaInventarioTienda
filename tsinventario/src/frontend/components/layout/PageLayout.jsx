@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../components/ui';
+import { Card } from '../common';
 
 const PageLayout = ({ children, title, description }) => {
   return (

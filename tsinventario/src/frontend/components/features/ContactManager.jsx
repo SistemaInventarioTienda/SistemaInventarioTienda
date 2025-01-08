@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Plus, Trash } from 'lucide-react';
-import { Alert } from '../components/ui';
-import { Button, InputButton } from '../components/ui';
-import "./css/contactManager.css";
+import { Alert, Button, InputButton  } from '../common';
+
+import "./styles/contactManager.css";
 
 export default function ContactManager({
     contacts = [],

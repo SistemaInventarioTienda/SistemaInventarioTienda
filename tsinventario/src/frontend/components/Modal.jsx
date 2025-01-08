@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Input, Button, Select, Alert } from "./ui";
+import { Input, Button, Select, Alert } from "../components/common";
 import { ChevronRight, Plus } from "lucide-react";
-import ModalConfirmation from "../components/ui/ModalConfirmation";
-import ContactManager from "./ContactManager";
-import InputFile from "../components/ui/InputFile";
-import "./css/modal.css";
+import ModalConfirmation from "../components/common/ModalConfirmation";
+import ContactManager from "../components/features/ContactManager";
+import InputFile from "../components/common/InputFile";
+import "../components/modals/styles/modal.css";
 
 
 export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubmit, errorMessages, setErrorMessages, entityName, supplierTypes, }) {
@@ -75,7 +75,7 @@ export default function Modal({ isOpen, onClose, mode, fields, data = {}, onSubm
       }
 
       let numeros = /^[0-9]+$/;
-      if(!numeros.exec(value) && value.length > 0){
+      if (!numeros.exec(value) && value.length > 0) {
         setErrorMessages(["La cédula solo permite numeros."]);
         return;
       }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../../context/authContext';
 import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, ChevronLeft, ChevronRight } from 'lucide-react';
-import './css/sidebar.css';
+import './styles/sidebar.css';
 
 const Sidebar = () => {
     const { isAuthenticated } = useAuth();

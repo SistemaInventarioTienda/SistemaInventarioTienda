@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/authContext';
 import { User, Settings, LogOut } from 'lucide-react';
-import '../css/userMenu.css';
+import './styles/userMenu.css';
 
 const UserMenu = ({ isOpen }) => {
     const { user, logout } = useAuth();

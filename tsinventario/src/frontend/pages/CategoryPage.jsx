@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
+// Routing
 import { useNavigate } from "react-router-dom";
+// Contexts
 import { useAuth } from "../context/authContext";
-import PageLayout from "../components/PageLayout";
-import Table from "../components/ui/Table";
-import Pagination from "../components/ui/Pagination";
-import { getAllCategories, saveCategory, updateCategory, deleteCategory, searchCategoryByName } from "../api/category";
-import { Button, InputButton, Select, Alert } from "../components/ui";
-import ModalConfirmation from "../components/ui/ModalConfirmation";
-import ModalComponent from "../components/Modal";
+// Layout components
+import PageLayout from "../components/layout/PageLayout";
+// Common components
+import { Table, Pagination, Button, InputButton, Select, Alert, } from "../components/common";
+// Modals
+import { ModalComponent, ModalConfirmation } from "../components/modals";
+// Icons
 import { Tag, Search } from "lucide-react";
-// import { Alert } from "../components/ui";
-import "./css/Page.css";
+// API calls
+import { getAllCategories, saveCategory, updateCategory, deleteCategory, searchCategoryByName, } from "../api/category";
+// Styles
+import "./styles/Page.css";
+// Forms
+// import CategoryForm from "./forms/CategoryForm";
 
 export default function CategoryPage() {
   const navigate = useNavigate();

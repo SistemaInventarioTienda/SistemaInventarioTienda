@@ -1,17 +1,27 @@
+// React imports
 import React, { useEffect, useState } from "react";
+// Routing
 import { useNavigate } from "react-router-dom";
+// Contexts
 import { useAuth } from "../context/authContext";
-import PageLayout from "../components/PageLayout";
-import Table from "../components/ui/Table";
-import Pagination from "../components/ui/Pagination";
-import { Button, InputButton, Select, Alert } from "../components/ui";
-import ModalComponent from "../components/Modal";
-import ModalConfirmation from "../components/ui/ModalConfirmation";
+// Layout components
+import PageLayout from "../components/layout/PageLayout";
+// Common components
+import { Table, Pagination, Button, InputButton, Select, Alert, } from "../components/common";
+// Modals
+import { ModalComponent, ModalConfirmation } from "../components/modals";
+// Forms
+import ClientForm from "./forms/ClientForm";
+// Icons
 import { Search, UserCheck } from "lucide-react";
+// API calls
 import { getClients, updateClient, registerClient, deleteClient, searchClient } from "../api/client";
-import "./css/Page.css";
+// Styles
+import "./styles/Page.css";
 
 export default function ClientPage() {
+
+    const entityName = 'Clientes';
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
 
@@ -323,15 +333,29 @@ export default function ClientPage() {
             />
             <ModalComponent
                 isOpen={isModalOpen}
+                title={
+                    modalMode === "add"
+                        ? `Agregar ${entityName}`
+                        : modalMode === "edit"
+                            ? `Editar ${entityName}`
+                            : `Detalles de ${entityName}`
+                }
                 mode={modalMode}
-                fields={clientFields}
+                fields={clientFields} // Verifica esta línea
                 data={modalData}
                 onClose={() => setModalOpen(false)}
                 onSubmit={handleSubmit}
                 errorMessages={errorMessages}
                 setErrorMessages={setErrorMessages}
                 entityName="Cliente"
-            />
+            >
+                <ClientForm
+                    mode={modalMode}
+                    initialData={modalData}
+                    onSubmit={handleSubmit}
+                    fields={clientFields}
+                />
+            </ModalComponent>
         </PageLayout>
     );
 }

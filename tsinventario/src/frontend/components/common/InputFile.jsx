@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button } from '../ui';
+import { Button } from './';
 import { Upload, Trash } from "lucide-react";
-import '../css/InputFile.css';
+import './styles/inputFile.css';
 
 const DEFAULT_IMAGE_URL = process.env.PUBLIC_URL + '/Assets/image/clientes/default_client.png';
 

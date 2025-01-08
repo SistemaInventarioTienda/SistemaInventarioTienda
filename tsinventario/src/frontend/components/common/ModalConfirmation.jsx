@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Alert } from "../ui";
+import { Button, Alert } from "./";
 
 const ModalConfirmation = ({
   isOpen,

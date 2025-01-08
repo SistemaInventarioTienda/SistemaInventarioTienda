@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import { Button } from "./Button";
-import "../css/inputButton.css";
+import "./styles/inputButton.css";
 
 const InputButton = forwardRef(({
     inputClassName = '',
