@@ -38,6 +38,7 @@ export const updateClient = async (id, clientData) => {
 
 // Función para eliminar un cliente
 export const deleteClient = async (id) => {
+    console.log('Deleting client id:', id);
     try {
         const response = await axios.delete(`/client/delete_client/${id}`);
         return response.data;
