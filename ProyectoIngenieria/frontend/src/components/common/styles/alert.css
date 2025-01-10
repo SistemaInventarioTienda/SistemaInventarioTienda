@@ -1,0 +1,84 @@
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px); /* Le da un pequeño movimiento ascendente */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Animación para que la alerta salga */
+@keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(20px); /* Se mueve un poco hacia abajo al salir */
+    }
+  }
+
+.alert {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    z-index: 1000;
+    background-color: #4caf50; /* Este color cambiará según el tipo */
+    color: white;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+  }
+
+  .alert.fade-out{
+    animation: fadeOut 0.5s forwards;
+  }
+  
+  .alert .icon {
+    margin-right: 10px;
+  }
+  
+  .alert .message {
+    flex-grow: 1;
+  }
+  
+  .alert .message-list {
+    margin: 0;
+    padding-left: 20px;
+  }
+  
+  .alert.success {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .alert.error {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .alert.warning {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  .alert.info {
+    background-color: #2196f3;
+    color: white;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  

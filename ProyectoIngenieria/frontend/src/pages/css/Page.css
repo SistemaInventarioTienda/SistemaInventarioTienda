@@ -1,0 +1,141 @@
+.page-content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.card {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    border-radius: 16px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 16px;
+    max-height: calc(100vh - 150px);
+}
+
+.content {
+    flex-grow: 1;
+    overflow: hidden;
+    padding: 40px;
+    background-color: var(--color-secondary);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-primary) !important;
+    margin: 0;
+}
+
+.page-header p {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 4px 0 0;
+}
+
+.add-btn {
+    background-color: var(--color-primary) !important;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.page-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.search-container {
+    width: 50%;
+}
+
+.search-input {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-primary) !important;
+    border-radius: 16px;
+    flex: 1;
+    padding: 8px 12px;
+    margin-right: 10px;
+    font-size: 16px;
+    color: var(--color-primary) !important;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    border-color: var(--color-secondary);
+}
+
+.search-btn {
+    background-color: var(--color-primary) !important;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+    background-color: var(--color-secondary);
+}
+
+
+.items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.items-per-page label {
+    font-size: 16px;
+    color: var(--color-primary);
+}
+
+.items-per-page select {
+    background-color: #F5F7FA;
+    border: 1px solid var(--color-primary) !important;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 14px;
+    color: var(--color-primary) !important;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.items-per-page select:focus {
+    outline: none;
+    box-shadow: none;
+}

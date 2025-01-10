@@ -1,0 +1,105 @@
+/* Sidebar.css */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px 12px;
+    gap: 20px;
+    width: 280px;
+    height: 100vh;
+    background-color: var(--color-primary) !important;
+    color: var(--color-card);
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    /* Asegura que nada se desborde */
+}
+
+.sidebar.collapsed {
+    width: 80px;
+    /* Ancho de la sidebar cuando está colapsada */
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed~.main-content {
+    margin-left: 80px;
+    /* Ajuste del margen cuando la sidebar está colapsada */
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    color: var(--color-card);
+    text-decoration: none;
+    transition: background-color 0.3s, padding 0.3s;
+    border-radius: 16px;
+    white-space: nowrap;
+    /* Evita que el texto se rompa en varias líneas */
+    overflow: hidden;
+    /* Oculta el desbordamiento del contenido */
+}
+
+.sidebar.collapsed .sidebar-link {
+    padding: 16px 12px;
+    /* Reducir el padding en modo colapsado */
+    justify-content: center;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background-color: var(--color-card);
+    color: var(--color-primary);
+}
+
+.sidebar-link span {
+    margin-left: 24px;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-link span {
+    display: none;
+    /* Ocultar el texto en el estado colapsado */
+}
+
+.sidebar-toggle {
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
+    color: var(--color-card);
+    padding: 10px;
+}
+
+.sidebar-toggle:hover {
+    color: var(--color-secondary);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+    }
+
+    .sidebar .sidebar-link span {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 80px;
+    }
+
+    .sidebar-link {
+        justify-content: center;
+        padding: 16px 12px;
+    }
+}

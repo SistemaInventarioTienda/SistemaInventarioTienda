@@ -1,0 +1,180 @@
+@import '~bootstrap/dist/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+
+* {
+  font-family: "Poppins";
+}
+
+:root {
+  --color-primary: #05004E;
+  --color-secondary: #F5F7FA;
+  --color-card: #FFFFFF;
+  --color-font: #000000;
+}
+
+body {
+  background-color: var(--color-secondary);
+  color: var(--color-font);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.App {
+  text-align: center;
+}
+
+
+.alert-float{
+  position: fixed;
+  top: 20px; /* Distancia desde el borde superior de la ventana */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #28a745; /* Color verde para éxito */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Para que quede por encima de todo */
+  font-size: 16px;
+}
+
+/* Clases de utilidad personalizadas */
+.bg-primary-custom {
+  background-color: var(--color-primary) !important;
+}
+
+.bg-secondary-custom {
+  background-color: var(--color-secondary) !important;
+}
+
+.bg-card-custom {
+  background-color: var(--color-card) !important;
+}
+
+.text-primary-custom {
+  color: var(--color-primary) !important;
+}
+
+.text-secondary-custom {
+  color: var(--color-secondary) !important;
+}
+
+.text-font-custom {
+  color: var(--color-font) !important;
+}
+
+/* Sobrescribir algunas clases de Bootstrap */
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  opacity: 0.9;
+}
+
+.card {
+  background-color: var(--color-card);
+  border-color: var(--color-card);
+}
+
+.border-custom {
+  border-radius: 16px;
+}
+
+/* Estilos layout y wrapper*/
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.layout {
+  display: flex;
+  width: 100%;
+}
+
+.navbar {
+  height: 60px;
+  background-color: var(--color-card);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Estilos específicos para la página de login */
+body.login-page .app-wrapper {
+  justify-content: center;
+  align-items: center;
+}
+
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content .card {
+  flex: 1;
+}
+
+/* Alert.css */
+
+.alert {
+  padding: 10px 15px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-family: Poppins, Regular;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+.message-list {
+  margin: 0;
+}
+
+.message {
+  margin: 0;
+}
+
+/* Estilos para diferentes tipos de alerta */
+.error {
+  background-color: #F44336;
+  border: 1px solid #F44336;
+  color: #FFFFFF;
+}
+
+.warning {
+  background-color: #F9CB32;
+  border: 1px solid #F9CB32;
+  color: #FFFFFF;
+}
+
+.info {
+  background-color: #007AFF;
+  border: 1px solid #007AFF;
+  color: #007AFF;
+}
+
+.success {
+  background-color: #4CAF50;
+  border: 1px solid #4CAF50;
+  color: #FFFFFF;
+}
+
+.alert-demo {
+  background-color: #FFFFFF;
+  padding: 20px;
+  color: #FFFFFF;
+}
