@@ -10,7 +10,7 @@ import { Table, Pagination, Button, InputButton, Select, Alert, } from "../compo
 // Modals
 import { ModalComponent, ModalConfirmation } from "../components/modals";
 // Forms
-// import SupplierForm from "./forms/SupplierForm";
+import SupplierForm from "./forms/SupplierForm";
 // Icons
 import { Search, Truck } from "lucide-react";
 // API calls
@@ -392,7 +392,14 @@ export default function SupplierPage() {
                 setErrorMessages={setErrorMessages}
                 entityName="Proveedor" //revisar esto
                 supplierTypes={supplierTypes}
-            />
+            >
+                <SupplierForm
+                    mode={modalMode}
+                    initialData={modalData}
+                    onSubmit={handleSubmit}
+                    fields={supplierFields}
+                />
+            </ModalComponent>
         </PageLayout>
     );
 }

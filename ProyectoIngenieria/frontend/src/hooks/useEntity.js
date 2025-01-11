@@ -17,18 +17,19 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
     const [sortField, setSortField] = useState(null);
     const [sortOrder, setSortOrder] = useState("asc");
 
-    const fetchData = async (resetPage = false) => {
-        setLoading(true);
+    const fetchData = async ({ resetPage = false, field = null, order = null } = {}) => {
         try {
             const page = resetPage ? 1 : currentPage;
 
-            const response = searchTerm.trim()
-                ? await searchByValue(page, itemsPerPage, searchTerm, sortField, sortOrder)
-                : await fetchAll(page, itemsPerPage, sortField, sortOrder);
+            // Actualizar estados de orden si se pasan nuevos valores
+            if (field !== null) setSortField(field);
+            if (order !== null) setSortOrder(order);
 
-            // Mapeo dinámico basado en el nombre de la entidad
+            const response = searchTerm.trim()
+                ? await searchByValue(page, itemsPerPage, searchTerm, field || sortField, order || sortOrder)
+                : await fetchAll(page, itemsPerPage, field || sortField, order || sortOrder);
+
             const items = response[entityKey] || [];
-            
             const transformedData = items.map(item => ({
                 ...item,
                 ESTADO: item.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
@@ -67,10 +68,10 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
         sortField,
         sortOrder,
         setCurrentPage,
-        setSearchTerm,
         setItemsPerPage,
+        fetchData,
         setSortField,
         setSortOrder,
-        fetchData,
+        setSearchTerm,
     };
 };

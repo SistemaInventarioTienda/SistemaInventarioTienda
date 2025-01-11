@@ -7,6 +7,7 @@ import { Search, Plus } from "lucide-react";
 
 export const EntityPage = ({
     entityName,
+    entityMessage,
     columns,
     fields,
     fetchAll,
@@ -18,9 +19,7 @@ export const EntityPage = ({
 }) => {
     const {
         data,
-        setData,
         filteredData,
-        setFilteredData,
         currentPage,
         totalPages,
         loading,
@@ -64,18 +63,23 @@ export const EntityPage = ({
         try {
             await onDelete(modalData);
 
-            // Recargar los datos después de la eliminación
-            fetchData();
-
-            // Mostrar la alerta de éxito
+            fetchData(); // Recargar datos tras eliminación
             setAlert({ show: true, message: `${entityName} eliminado exitosamente.`, type: "success" });
         } catch (error) {
-            console.log("error", error);
-            // Mostrar la alerta de error
             setAlert({ show: true, message: `Error al eliminar ${entityName}.`, type: "error" });
         } finally {
             setConfirmationModalOpen(false);
         }
+    };
+
+    const handleSearch = () => {
+        fetchData(true); // Forzar búsqueda con el término actual
+    };
+
+    const handleSort = (field) => {
+        const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+        setSortField(field);
+        setSortOrder(order);
     };
 
     if (loading) return <p>Loading...</p>;
@@ -84,25 +88,30 @@ export const EntityPage = ({
     return (
         <PageLayout>
             <div className="page-header">
-                <h1>{entityName}</h1>
+                <div>
+                    <h1>{entityName}</h1>
+                    <p>{entityMessage}</p>
+                </div>
                 <Button className="add-btn" onClick={handleAdd}>
                     <Plus size={20} />
                     Agregar {entityName}
                 </Button>
             </div>
             <div className="page-controls">
-                {/* Buscador */}
                 <div className="search-container">
                     <InputButton
                         inputClassName="search-input"
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyPress={(e) => {
+                            if (e.key === "Enter") handleSearch();
+                        }}
                         placeholder={`Buscar ${entityName.toLowerCase()}...`}
                         icon={Search}
+                        onButtonClick={handleSearch}
                     />
                 </div>
-                {/* Selección de registros por página */}
                 <div className="items-per-page">
                     <label htmlFor="itemsPerPage">Mostrar</label>
                     <Select
@@ -119,11 +128,10 @@ export const EntityPage = ({
                     <label htmlFor="itemsPerPage">por página</label>
                 </div>
             </div>
-            {/* Tabla */}
             <Table
                 columns={columns}
                 data={filteredData}
-                onSort={(field) => setSortField(field)}
+                onSort={handleSort}
                 sortField={sortField}
                 sortOrder={sortOrder}
                 actions={{
@@ -131,13 +139,11 @@ export const EntityPage = ({
                     delete: handleDeleteConfirmation,
                 }}
             />
-            {/* Paginación */}
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
             />
-            {/* Modal de formulario */}
             <ModalComponent
                 isOpen={isModalOpen}
                 title={modalMode === "add" ? `Agregar ${entityName}` : `Editar ${entityName}`}
@@ -152,13 +158,11 @@ export const EntityPage = ({
             >
                 <ModalFormComponent data={modalData} />
             </ModalComponent>
-            {/* Modal de confirmación */}
             <ModalConfirmation
                 isOpen={isConfirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}
                 onConfirm={handleDelete}
             />
-            {/* Alerta */}
             {alert.show && (
                 <Alert
                     type={alert.type}
