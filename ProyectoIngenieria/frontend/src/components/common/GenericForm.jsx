@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Input, FileInput, Select, Button, Alert } from './';
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
@@ -25,26 +25,24 @@ function GenericForm({
             color: "#05004E",
         },
     };
+
     const [formData, setFormData] = useState(initialData);
     const [phones, setPhones] = useState(initialData?.telefonos || []);
     const [emails, setEmails] = useState(initialData?.correos || []);
     const [localSupplierTypes, setLocalSupplierTypes] = useState(supplierTypes);
     const [searchPersonWorker, setSearchPersonWorker] = useState(null);
 
+    const initialLoaded = useRef(false);
+
     useEffect(() => {
-        if (JSON.stringify(formData) !== JSON.stringify(initialData)) {
+        if (!initialLoaded.current) {
             setFormData(initialData);
-        }
-        if (JSON.stringify(phones) !== JSON.stringify(initialData?.telefonos || [])) {
             setPhones(initialData?.telefonos || []);
-        }
-        if (JSON.stringify(emails) !== JSON.stringify(initialData?.correos || [])) {
             setEmails(initialData?.correos || []);
-        }
-        if (JSON.stringify(localSupplierTypes) !== JSON.stringify(supplierTypes)) {
             setLocalSupplierTypes(supplierTypes);
+            initialLoaded.current = true;
         }
-    }, [initialData, supplierTypes]); // Dependencias limpias
+    }, [initialData, supplierTypes]);
 
     useEffect(() => {
         const worker = new Worker("workers/searchPerson.worker.js");
@@ -69,30 +67,35 @@ function GenericForm({
             searchPersonWorker.postMessage(value);
         }
 
-        if (type === "file" && files.length > 0) {
-            setFormData({ ...formData, [name]: files[0] });
-        } else {
-            setFormData({ ...formData, [name]: name === "estado" ? parseInt(value, 10) : value });
-        }
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === "file" && files.length > 0 ? files[0] : value,
+        }));
     };
 
     const handleFileSelect = (file) => {
         setFormData((prevData) => ({ ...prevData, foto: file }));
     };
-
     const handleSubmit = (e) => {
         e.preventDefault();
+
         const estadoValue = parseInt(formData.estado, 10);
+
         if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
             setErrorMessages(["Por favor, seleccione un estado válido."]);
             return;
         }
-        onSubmit({
+        console.log(formData);
+        const dataToSubmit = {
             ...formData,
-            telefonos: phones,
-            correos: emails,
             estado: estadoValue,
-        });
+        };
+
+        // Mostrar en consola lo que se va a enviar
+        console.log("Datos enviados:", dataToSubmit);
+
+        // Llamar a la función de envío con los datos
+        onSubmit(dataToSubmit);
     };
 
     const renderField = (field) => {

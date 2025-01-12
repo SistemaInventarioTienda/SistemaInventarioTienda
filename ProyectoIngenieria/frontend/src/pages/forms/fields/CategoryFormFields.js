@@ -1,4 +1,4 @@
-export const CategoryFormFields = [
+export const categoryFormFields = [
     { name: "nombre", label: "Nombre", type: "text", required: true },
     {
         name: 'estado',

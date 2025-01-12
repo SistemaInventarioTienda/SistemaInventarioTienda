@@ -19,11 +19,26 @@ export default function ClientPage() {
             : [],
     });
 
+    const mapToBackendFields = (formData) => ({
+        DSC_CEDULA: formData.cedula,
+        DSC_NOMBRE: formData.nombre,
+        DSC_APELLIDOUNO: formData.primerApellido,
+        DSC_APELLIDODOS: formData.segundoApellido,
+        DSC_DIRECCION: formData.direccion,
+        URL_FOTO: formData.foto?.name || formData.foto,
+        ESTADO: formData.estado,
+
+        TelefonoClientes: formData.telefonos?.map((telefono) => ({
+            DSC_TELEFONO: telefono,
+        })) || [],
+    });
+
     const handleClientSubmit = async (mode, clientData) => {
+        const backendData = mapToBackendFields(clientData);
         if (mode === "add") {
-            await registerClient(clientData);
+            await registerClient(backendData);
         } else if (mode === "edit") {
-            await updateClient(clientData.cedula, clientData);
+            await updateClient(backendData.DSC_CEDULA, backendData);
         }
     };
 
