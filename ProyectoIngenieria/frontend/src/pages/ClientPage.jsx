@@ -2,8 +2,23 @@ import React from "react";
 import { EntityPage } from "./EntityPage";
 import { getClients, searchClient, registerClient, updateClient, deleteClient } from "../api/client";
 import ClientForm from "./forms/ClientForm";
+import { clientFormFields } from '../pages/forms/fields/ClientFormFields';
 
 export default function ClientPage() {
+
+    const mapClientFields = (client) => ({
+        cedula: client.DSC_CEDULA,
+        nombre: client.DSC_NOMBRE,
+        primerApellido: client.DSC_APELLIDOUNO,
+        segundoApellido: client.DSC_APELLIDODOS,
+        direccion: client.DSC_DIRECCION,
+        foto: process.env.PUBLIC_URL + '/Assets/image/clientes/' + client.URL_FOTO,
+        estado: client.ESTADO === "ACTIVO" ? 1 : 2,
+        telefonos: client.TelefonoClientes
+            ? client.TelefonoClientes.map((t) => t.DSC_TELEFONO)
+            : [],
+    });
+
     const handleClientSubmit = async (mode, clientData) => {
         if (mode === "add") {
             await registerClient(clientData);
@@ -25,21 +40,14 @@ export default function ClientPage() {
                 { field: "ESTADO", label: "Estado" },
                 { field: "actions", label: "Acciones" },
             ]}
-            fields={[
-                { name: "cedula", label: "Cédula", type: "text", required: true },
-                { name: "nombre", label: "Nombre", type: "text", required: true },
-                { name: "primerApellido", label: "Primer Apellido", type: "text", required: true },
-                { name: "segundoApellido", label: "Segundo Apellido", type: "text" },
-                { name: "direccion", label: "Dirección", type: "text", required: true },
-                { name: "estado", label: "Estado", type: "select", required: true },
-                { name: "foto", label: "Fotografía", type: "file", required: true },
-            ]}
+            fields={clientFormFields}
             fetchAll={getClients}
             searchByName={searchClient}
             onSubmit={handleClientSubmit}
             onDelete={(client) => deleteClient(client.DSC_CEDULA)}
             modalComponent={ClientForm}
-            entityKey="clients" // Clave para identificar la entidad en useEntity
+            entityKey="clients"
+            transformData={mapClientFields}
         />
     );
-}
+}    

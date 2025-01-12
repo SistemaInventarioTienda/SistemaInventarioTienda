@@ -341,8 +341,7 @@ export default function ClientPage() {
                             : `Detalles de ${entityName}`
                 }
                 mode={modalMode}
-                fields={clientFields} // Verifica esta línea
-                data={modalData}
+                
                 onClose={() => setModalOpen(false)}
                 onSubmit={handleSubmit}
                 errorMessages={errorMessages}

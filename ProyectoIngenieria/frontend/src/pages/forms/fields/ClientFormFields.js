@@ -14,7 +14,7 @@ export const clientFormFields = [
         ],
         required: true,
     },
-    { name: 'foto', label: 'Foto', type: 'file', required: false },
+    { name: 'foto', type: 'file', required: false },
     {
         name: 'telefonos',
         label: 'Teléfonos',

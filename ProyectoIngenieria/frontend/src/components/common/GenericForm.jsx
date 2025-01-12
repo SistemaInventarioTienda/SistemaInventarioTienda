@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Input, FileInput, Select } from './';
-
-function GenericForm({ mode, initialData = {}, fields, onSubmit, onCancel }) {
+import { Input, FileInput, Select, Button, Alert } from './';
+import ContactManager from "../features/ContactManager";
+import { Plus } from "lucide-react";
+function GenericForm({
+    mode,
+    fields,
+    initialData = {},
+    entityName,
+    supplierTypes = [],
+    onSubmit,
+    errorMessages = [],
+    setErrorMessages,
+    onCancel,
+}) {
     const commonStyles = {
         className: "form-control border-custom",
         style: {
@@ -14,55 +25,105 @@ function GenericForm({ mode, initialData = {}, fields, onSubmit, onCancel }) {
             color: "#05004E",
         },
     };
-
-    const [formData, setFormData] = useState({
-        ...initialData,
-    });
+    const [formData, setFormData] = useState(initialData);
+    const [phones, setPhones] = useState(initialData?.telefonos || []);
+    const [emails, setEmails] = useState(initialData?.correos || []);
+    const [localSupplierTypes, setLocalSupplierTypes] = useState(supplierTypes);
+    const [searchPersonWorker, setSearchPersonWorker] = useState(null);
 
     useEffect(() => {
-        setFormData((prevData) => ({
-            ...prevData,
-            ...initialData,
-        }));
-    }, [initialData]);
+        if (JSON.stringify(formData) !== JSON.stringify(initialData)) {
+            setFormData(initialData);
+        }
+        if (JSON.stringify(phones) !== JSON.stringify(initialData?.telefonos || [])) {
+            setPhones(initialData?.telefonos || []);
+        }
+        if (JSON.stringify(emails) !== JSON.stringify(initialData?.correos || [])) {
+            setEmails(initialData?.correos || []);
+        }
+        if (JSON.stringify(localSupplierTypes) !== JSON.stringify(supplierTypes)) {
+            setLocalSupplierTypes(supplierTypes);
+        }
+    }, [initialData, supplierTypes]); // Dependencias limpias
+
+    useEffect(() => {
+        const worker = new Worker("workers/searchPerson.worker.js");
+        worker.onmessage = ({ data }) => {
+            const { nombre, segundoNombre, apellidoUno, apellidoDos } = data;
+            const newName = segundoNombre ? `${nombre} ${segundoNombre}` : nombre;
+            setFormData((prev) => ({
+                ...prev,
+                nombre: newName,
+                primerApellido: apellidoUno,
+                segundoApellido: apellidoDos,
+            }));
+        };
+        setSearchPersonWorker(worker);
+        return () => worker.terminate();
+    }, []);
 
     const handleChange = (e) => {
-        const { name: fieldName, value } = e.target;
-        setFormData({ ...formData, [fieldName]: value });
+        const { name, value, type, files } = e.target;
+
+        if (name === "cedula" && value.length === 9) {
+            searchPersonWorker.postMessage(value);
+        }
+
+        if (type === "file" && files.length > 0) {
+            setFormData({ ...formData, [name]: files[0] });
+        } else {
+            setFormData({ ...formData, [name]: name === "estado" ? parseInt(value, 10) : value });
+        }
     };
 
-    const handleFileChange = (e) => {
-        const { name: fieldName } = e.target;
-        setFormData({ ...formData, [fieldName]: e.target.files[0] });
+    const handleFileSelect = (file) => {
+        setFormData((prevData) => ({ ...prevData, foto: file }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(formData);
+        const estadoValue = parseInt(formData.estado, 10);
+        if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
+            setErrorMessages(["Por favor, seleccione un estado válido."]);
+            return;
+        }
+        onSubmit({
+            ...formData,
+            telefonos: phones,
+            correos: emails,
+            estado: estadoValue,
+        });
     };
 
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";
 
         if (field.type === "select") {
+            const options =
+                field.name === "tipoProveedor"
+                    ? localSupplierTypes.map((type) => ({
+                        value: type.ID_TIPOPROVEEDOR,
+                        label: type.DSC_NOMBRE,
+                    }))
+                    : [
+                        { value: "", label: "Seleccione el estado" },
+                        { value: 1, label: "Activo" },
+                        { value: 2, label: "Inactivo" },
+                    ];
             return (
                 <Select
                     name={field.name}
                     value={fieldValue}
                     onChange={handleChange}
                     required={field.required}
+                    disabled={mode === "view"}
                     {...commonStyles}
                 >
-                    <option value="">Seleccione {field.label.toLowerCase()}</option>
-                    {Array.isArray(field.options) ? (
-                        field.options.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))
-                    ) : (
-                        <option disabled>No hay opciones disponibles</option>
-                    )}
+                    {options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
                 </Select>
             );
         }
@@ -72,7 +133,7 @@ function GenericForm({ mode, initialData = {}, fields, onSubmit, onCancel }) {
                 <FileInput
                     name={field.name}
                     label={field.label}
-                    onChange={handleFileChange}
+                    onFileSelect={handleFileSelect}
                     required={field.required}
                     {...commonStyles}
                 />
@@ -85,6 +146,7 @@ function GenericForm({ mode, initialData = {}, fields, onSubmit, onCancel }) {
                 value={fieldValue}
                 onChange={handleChange}
                 required={field.required}
+                readOnly={mode === "view"}
                 placeholder={`Ingrese ${field.label.toLowerCase()}`}
                 {...commonStyles}
             />
@@ -93,24 +155,46 @@ function GenericForm({ mode, initialData = {}, fields, onSubmit, onCancel }) {
 
     return (
         <form onSubmit={handleSubmit} className="form-grid">
-            {Array.isArray(fields) &&
-                fields.map((field) => (
-                    <div key={field.name}>
-                        <label htmlFor={field.name}>{field.label}</label>
-                        {renderField(field)}
-                    </div>
-                ))}
+            {fields.map((field) => (
+                <div className="form-group" key={field.name}>
+                    <label htmlFor={field.name}>{field.label}</label>
+                    {renderField(field)}
+                </div>
+            ))}
+
+            {(entityName === "Cliente" || entityName === "Proveedor") && (
+                <ContactManager
+                    contacts={phones}
+                    onContactsChange={setPhones}
+                    type="phone"
+                    mode={mode}
+                />
+            )}
+
+            {entityName === "Proveedor" && (
+                <ContactManager
+                    contacts={emails}
+                    onContactsChange={setEmails}
+                    type="email"
+                    mode={mode}
+                />
+            )}
 
             <div className="form-footer">
                 {onCancel && (
-                    <button type="button" onClick={onCancel} className="btn-cancel">
+                    <Button type="button" onClick={onCancel} className="cancel-btn">
                         Cancelar
-                    </button>
+                    </Button>
                 )}
-                <button type="submit" className="btn-submit">
-                    {mode === "add" ? "Agregar" : "Guardar Cambios"}
-                </button>
+                {mode !== "view" && (
+                    <Button type="submit" className="add-btn">
+                        <Plus size={20} />
+                        {mode === "add" ? "Agregar" : "Guardar Cambios"}
+                    </Button>
+                )}
             </div>
+
+            {errorMessages.length > 0 && <Alert type="warning" message={errorMessages} />}
         </form>
     );
 }

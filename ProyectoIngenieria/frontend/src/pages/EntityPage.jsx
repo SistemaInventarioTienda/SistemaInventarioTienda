@@ -5,6 +5,7 @@ import { ModalComponent, ModalConfirmation } from "../components/modals";
 import { useEntityPage } from "../hooks/useEntity";
 import { Search, Plus } from "lucide-react";
 
+
 export const EntityPage = ({
     entityName,
     entityMessage,
@@ -16,6 +17,7 @@ export const EntityPage = ({
     onDelete,
     modalComponent: ModalFormComponent,
     entityKey,
+    transformData,
 }) => {
     const {
         data,
@@ -50,7 +52,13 @@ export const EntityPage = ({
 
     const handleEdit = (rowData) => {
         setModalMode("edit");
-        setModalData(rowData);
+        setModalData(transformData ? transformData(rowData) : rowData);
+        setModalOpen(true);
+    };
+
+    const handleView = (rowData) => {
+        setModalMode("view");
+        setModalData(transformData ? transformData(rowData) : rowData);
         setModalOpen(true);
     };
 
@@ -135,6 +143,7 @@ export const EntityPage = ({
                 sortField={sortField}
                 sortOrder={sortOrder}
                 actions={{
+                    view: handleView,
                     edit: handleEdit,
                     delete: handleDeleteConfirmation,
                 }}
@@ -146,18 +155,30 @@ export const EntityPage = ({
             />
             <ModalComponent
                 isOpen={isModalOpen}
-                title={modalMode === "add" ? `Agregar ${entityName}` : `Editar ${entityName}`}
+                title={
+                    modalMode === "add"
+                        ? `Agregar ${entityName}`
+                        : `Editar ${entityName}`
+                }
+                mode={modalMode} // Prop adicional
                 onClose={() => setModalOpen(false)}
                 onSubmit={(formData) => {
                     onSubmit(modalMode, formData);
                     fetchData();
                     setModalOpen(false);
                 }}
-                initialData={modalData}
-                fields={fields}
+                entityName={entityName}
             >
-                <ModalFormComponent data={modalData} />
+                <ModalFormComponent
+                    mode={modalMode}
+                    initialData={modalData}
+                    fields={fields}
+                    onSubmit={(formData) => {
+                        onSubmit(modalMode, formData);
+                    }}
+                />
             </ModalComponent>
+
             <ModalConfirmation
                 isOpen={isConfirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}
