@@ -2,7 +2,7 @@ import React from "react";
 import PageLayout from "../components/layout/PageLayout";
 import { Table, Pagination, Button, InputButton, Select, Alert } from "../components/common";
 import { ModalComponent, ModalConfirmation } from "../components/modals";
-import { useEntityPage } from "../hooks/useEntity";
+import { useEntityPage } from "../hooks/useEntityPage";
 import { Search, Plus } from "lucide-react";
 
 
@@ -158,9 +158,11 @@ export const EntityPage = ({
                 title={
                     modalMode === "add"
                         ? `Agregar ${entityName}`
-                        : `Editar ${entityName}`
+                        : modalMode === "edit"
+                            ? `Editar ${entityName}`
+                            : `Información detallada`
                 }
-                mode={modalMode} // Prop adicional
+                mode={modalMode}
                 onClose={() => setModalOpen(false)}
                 onSubmit={(formData) => {
                     onSubmit(modalMode, formData);
@@ -176,6 +178,7 @@ export const EntityPage = ({
                     onSubmit={(formData) => {
                         onSubmit(modalMode, formData);
                     }}
+                    onCancel={() => setModalOpen(false)}
                 />
             </ModalComponent>
 

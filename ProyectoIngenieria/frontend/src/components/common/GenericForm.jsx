@@ -183,17 +183,15 @@ function GenericForm({
                 />
             )}
 
-            <div className="form-footer">
-                {onCancel && (
-                    <Button type="button" onClick={onCancel} className="cancel-btn">
-                        Cancelar
-                    </Button>
-                )}
+            <div className="modal-footer">
+                <button type="button" onClick={onCancel} className="close-btn">
+                    Cancelar
+                </button>
                 {mode !== "view" && (
-                    <Button type="submit" className="add-btn">
+                    <button type="submit" className="add-btn">
                         <Plus size={20} />
                         {mode === "add" ? "Agregar" : "Guardar Cambios"}
-                    </Button>
+                    </button>
                 )}
             </div>
 

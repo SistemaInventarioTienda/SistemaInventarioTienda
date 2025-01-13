@@ -6,6 +6,7 @@ function ClientForm({ mode, initialData, onSubmit, onCancel }) {
     console.log("ClientForm", mode, initialData);
     return (
         <GenericForm
+            entityName={"Cliente"}
             mode={mode}
             initialData={initialData}
             fields={clientFormFields}

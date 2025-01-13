@@ -33,8 +33,11 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
             const transformedData = items.map(item => ({
                 ...item,
                 ESTADO: item.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
+                DSC_TELEFONO: item.TelefonoClientes.length > 0
+                    ? item.TelefonoClientes[0].DSC_TELEFONO
+                    : "Sin Información"
             }));
-
+            console.log("transformed data", transformedData);
             setData(transformedData);
             setFilteredData(transformedData);
             setTotalPages(response.totalPages);
