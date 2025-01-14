@@ -35,8 +35,10 @@ export const deleteCategory = async (DSC_NOMBRE) => {
 
 // Actualizar una categoría
 export const updateCategory = async (categoryData) => {
+
     try {
         const response = await axios.put(`/category/updateCategory`, categoryData);
+        console.log("api front", response.data);
         return response.data;
     } catch (error) {
         console.error('Error updating category:', error.message);

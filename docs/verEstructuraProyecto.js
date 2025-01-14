@@ -30,7 +30,7 @@ function getDirectoryStructure(dir, indent = '|') {
 }
 
 // Cambia esta ruta por la que quieras escanear
-const directoryPath = '../tsinventario';
+const directoryPath = '../ProyectoIngenieria/frontend';
 const outputFilePath = './directory_structure.txt'; // Archivo de salida
 
 // Obtiene la estructura del directorio

@@ -85,7 +85,6 @@ function GenericForm({
             setErrorMessages(["Por favor, seleccione un estado válido."]);
             return;
         }
-        console.log(formData);
         const dataToSubmit = {
             ...formData,
             estado: estadoValue,

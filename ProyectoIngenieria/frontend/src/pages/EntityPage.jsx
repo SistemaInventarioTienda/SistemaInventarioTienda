@@ -18,6 +18,8 @@ export const EntityPage = ({
     modalComponent: ModalFormComponent,
     entityKey,
     transformData,
+    transformConfig,
+    actions = {},
 }) => {
     const {
         data,
@@ -35,7 +37,7 @@ export const EntityPage = ({
         setItemsPerPage,
         fetchData,
         toggleSortOrder,
-    } = useEntityPage({ fetchAll, searchByValue: searchByName, entityKey });
+    } = useEntityPage({ fetchAll, searchByValue: searchByName, entityKey, transformConfig });
 
     const [isModalOpen, setModalOpen] = React.useState(false);
     const [modalMode, setModalMode] = React.useState("add");
@@ -66,29 +68,50 @@ export const EntityPage = ({
         setConfirmationModalOpen(true);
     };
 
+
+    const tableActions = Object.entries(actions)
+        .filter(([actionKey, isEnabled]) => isEnabled)
+        .reduce((acc, [actionKey, isEnabled]) => {
+            if (isEnabled) {
+                acc[actionKey] =
+                    actionKey === "edit" ? handleEdit :
+                        actionKey === "delete" ? handleDeleteConfirmation :
+                            actionKey === "view" ? handleView :
+                                undefined; // Por si llegan nuevas acciones en el futuro
+            }
+            return acc;
+        }, {});
+
+
     React.useEffect(() => {
         if (searchTerm.trim() === "") {
-            fetchData({ resetPage: true, term: "" });
+            fetchData({ resetPage: true, term: "", transformConfig });
         }
     }, [searchTerm]);
 
     const handleDelete = async () => {
         try {
             await onDelete(modalData);
-
-            fetchData(); // Recargar datos tras eliminación
-            setAlert({ show: true, message: `${entityName} eliminado exitosamente.`, type: "success" });
+            fetchData({ transformConfig });
+            setAlert({
+                show: true,
+                message: `${entityName} eliminado exitosamente.`,
+                type: "success",
+            });
         } catch (error) {
-            setAlert({ show: true, message: `Error al eliminar ${entityName}.`, type: "error" });
+            setAlert({
+                show: true,
+                message: error.response?.data?.message,
+                type: "error",
+            });
         } finally {
             setConfirmationModalOpen(false);
         }
     };
 
     const handleSearch = () => {
-        fetchData(true); // Forzar búsqueda con el término actual
+        fetchData({ resetPage: true, transformConfig });
     };
-
     const handleSort = (field) => {
         toggleSortOrder(field);
     };
@@ -119,7 +142,7 @@ export const EntityPage = ({
                             setSearchTerm(value);
 
                             if (value.trim() === "") {
-                                fetchData({ resetPage: true, term: "" }); 
+                                fetchData({ resetPage: true, term: "", transformConfig: transformConfig });
                             }
                         }}
                         onKeyPress={(e) => {
@@ -152,11 +175,7 @@ export const EntityPage = ({
                 onSort={handleSort}
                 sortField={sortField}
                 sortOrder={sortOrder}
-                actions={{
-                    view: handleView,
-                    edit: handleEdit,
-                    delete: handleDeleteConfirmation,
-                }}
+                actions={tableActions}
             />
             <Pagination
                 currentPage={currentPage}

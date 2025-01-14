@@ -1,15 +1,18 @@
 import React from 'react';
 import GenericForm from '../../components/common/GenericForm';
-import { clientFormFields } from './fields/ClientFormFields';
+import { clientConfig } from "../../config/entities/clientConfig";
 
 function ClientForm({ mode, initialData, onSubmit, onCancel }) {
-    console.log("ClientForm", mode, initialData);
+    const {
+        fields
+    } = clientConfig;
+
     return (
         <GenericForm
             entityName={"Cliente"}
             mode={mode}
             initialData={initialData}
-            fields={clientFormFields}
+            fields={fields}
             onSubmit={onSubmit}
             onCancel={onCancel}
         />

@@ -1,17 +1,20 @@
 import React from 'react';
 import GenericForm from '../../components/common/GenericForm';
-import { categoryFormFields } from './fields/CategoryFormFields';
+import { categoryConfig } from "../../config/entities/categoryConfig";
 
-function CategoryForm({ mode, initialData, onSubmit, onCancel }) {
+function SupplierForm({ mode, initialData, onSubmit, onCancel }) {
+    const {
+        fields
+    } = categoryConfig;
     return (
         <GenericForm
             mode={mode}
             initialData={initialData}
-            fields={categoryFormFields}
+            fields={fields}
             onSubmit={onSubmit}
             onCancel={onCancel}
         />
     );
 }
 
-export default CategoryForm;
+export default SupplierForm;

@@ -5,7 +5,7 @@ import { usePagination } from './usePagination';
 import { useSearch } from './useSearch';
 import { useSorting } from './useSorting';
 
-export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
+export const useEntityPage = ({ fetchAll, searchByValue, entityKey, transformConfig }) => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
 
@@ -19,30 +19,37 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const fetchData = async ({ resetPage = false, field = null, order = null, term = searchTerm } = {}) => {
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate("/login");
+        } else if (currentPage || itemsPerPage || sortField || sortOrder) {
+            fetchData({ transformConfig });
+        }
+    }, [isAuthenticated, navigate, currentPage, itemsPerPage, sortField, sortOrder]);    
+
+    const fetchData = async ({
+        resetPage = false,
+        field = null,
+        order = null,
+        term = searchTerm,
+        transformConfig = null,
+    } = {}) => {
         try {
             const page = resetPage ? 1 : currentPage;
 
             if (field !== null) toggleSortOrder(field);
             if (order !== null) setSortOrder(order);
 
-            console.log("Search term in fetchData:", term);
-
             const response = term.trim()
                 ? await searchByValue(page, itemsPerPage, term, sortField, sortOrder)
                 : await fetchAll(page, itemsPerPage, sortField, sortOrder);
 
-            console.log("Response:", response);
-
             const items = response[entityKey] || [];
-            const transformedData = items.map(item => ({
-                ...item,
-                ESTADO: item.ESTADO === 1 ? "ACTIVO" : "INACTIVO",
-                DSC_TELEFONO: item.TelefonoClientes.length > 0
-                    ? item.TelefonoClientes[0].DSC_TELEFONO
-                    : "Sin Información"
-            }));
 
+            const transformedData = items.map(item =>
+                applyTransformations(item, transformConfig)
+            );
+            console.log("transformed", transformedData);
             setData(transformedData);
             setFilteredData(transformedData);
             setTotalPages(response.totalPages);
@@ -54,14 +61,21 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
         }
     };
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            navigate("/login");
-        } else if (currentPage || itemsPerPage || sortField || sortOrder) {
-            fetchData();
-        }
-    }, [isAuthenticated, navigate, currentPage, itemsPerPage, sortField, sortOrder]);
-
+    // Función genérica para aplicar transformaciones
+    const applyTransformations = (item, config) => {
+        if (!config || typeof config !== "object") return item;
+    
+        const transformedItem = { ...item };
+    
+        Object.entries(config).forEach(([key, transformRule]) => {
+            if (typeof transformRule === "function") {
+                transformedItem[key] = transformRule(item);
+            }
+        });
+    
+        return transformedItem;
+    };
+    
     return {
         filteredData,
         currentPage,
