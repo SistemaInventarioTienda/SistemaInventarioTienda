@@ -134,6 +134,7 @@ function GenericForm({
         if (field.type === "file") {
             return (
                 <FileInput
+                    mode={mode}
                     name={field.name}
                     label={field.label}
                     onFileSelect={handleFileSelect}

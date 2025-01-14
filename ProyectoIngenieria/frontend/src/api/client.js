@@ -17,7 +17,6 @@ export const getClients = async (page, pageSize, orderByField, order) => {
         const response = await axios.get('/client/all_clients', {
             params: { page, pageSize, orderByField, order }
         });
-        console.log(response);
         return response.data;
     } catch (error) {
         console.error('Error obteniendo los clientes:', error.message);
@@ -27,7 +26,6 @@ export const getClients = async (page, pageSize, orderByField, order) => {
 
 // Función para actualizar un cliente
 export const updateClient = async (id, clientData) => {
-    console.log(clientData);
     try {
         const response = await axios.put(`/client/update_client/${id}`, clientData);
         return response.data;

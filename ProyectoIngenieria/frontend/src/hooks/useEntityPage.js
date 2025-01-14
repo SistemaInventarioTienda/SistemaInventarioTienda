@@ -1,33 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
+import { usePagination } from './usePagination';
+import { useSearch } from './useSearch';
+import { useSorting } from './useSorting';
 
 export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
 
+    const { currentPage, itemsPerPage, setCurrentPage, setItemsPerPage } = usePagination();
+    const { searchTerm, setSearchTerm, handleSearchChange } = useSearch();
+    const { sortField, sortOrder, setSortOrder, toggleSortOrder } = useSorting(); // Incluido setSortField y setSortOrder
+
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [itemsPerPage, setItemsPerPage] = useState(5);
-    const [sortField, setSortField] = useState(null);
-    const [sortOrder, setSortOrder] = useState("asc");
 
-    const fetchData = async ({ resetPage = false, field = null, order = null } = {}) => {
+    const fetchData = async ({ resetPage = false, field = null, order = null, term = searchTerm } = {}) => {
         try {
             const page = resetPage ? 1 : currentPage;
 
-            // Actualizar estados de orden si se pasan nuevos valores
-            if (field !== null) setSortField(field);
+            if (field !== null) toggleSortOrder(field);
             if (order !== null) setSortOrder(order);
 
-            const response = searchTerm.trim()
-                ? await searchByValue(page, itemsPerPage, searchTerm, field || sortField, order || sortOrder)
-                : await fetchAll(page, itemsPerPage, field || sortField, order || sortOrder);
+            console.log("Search term in fetchData:", term);
+
+            const response = term.trim()
+                ? await searchByValue(page, itemsPerPage, term, sortField, sortOrder)
+                : await fetchAll(page, itemsPerPage, sortField, sortOrder);
+
+            console.log("Response:", response);
 
             const items = response[entityKey] || [];
             const transformedData = items.map(item => ({
@@ -37,7 +42,7 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
                     ? item.TelefonoClientes[0].DSC_TELEFONO
                     : "Sin Información"
             }));
-            console.log("transformed data", transformedData);
+
             setData(transformedData);
             setFilteredData(transformedData);
             setTotalPages(response.totalPages);
@@ -52,16 +57,13 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
     useEffect(() => {
         if (!isAuthenticated) {
             navigate("/login");
-        } else {
+        } else if (currentPage || itemsPerPage || sortField || sortOrder) {
             fetchData();
         }
-    }, [isAuthenticated, navigate, currentPage, itemsPerPage, sortField, sortOrder, searchTerm]);
+    }, [isAuthenticated, navigate, currentPage, itemsPerPage, sortField, sortOrder]);
 
     return {
-        data,
-        setData,
         filteredData,
-        setFilteredData,
         currentPage,
         totalPages,
         loading,
@@ -71,10 +73,9 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey }) => {
         sortField,
         sortOrder,
         setCurrentPage,
+        setSearchTerm,
         setItemsPerPage,
         fetchData,
-        setSortField,
-        setSortOrder,
-        setSearchTerm,
+        toggleSortOrder,
     };
 };

@@ -9,7 +9,7 @@ const InputFile = ({ value, mode, entity, onFileSelect }) => {
     const inputRef = useRef();
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(mode === 'add' ? null : value || DEFAULT_IMAGE_URL);
-
+    console.log("modo desde input file", mode);
     useEffect(() => {
         if (mode !== 'add') {
             setPreview(value || DEFAULT_IMAGE_URL);
@@ -17,6 +17,7 @@ const InputFile = ({ value, mode, entity, onFileSelect }) => {
     }, [value, mode]);
 
     const handleOnChange = (event) => {
+        
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
             setSelectedFile(file);

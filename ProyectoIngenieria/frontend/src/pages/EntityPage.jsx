@@ -33,9 +33,8 @@ export const EntityPage = ({
         setCurrentPage,
         setSearchTerm,
         setItemsPerPage,
-        setSortField,
-        setSortOrder,
         fetchData,
+        toggleSortOrder,
     } = useEntityPage({ fetchAll, searchByValue: searchByName, entityKey });
 
     const [isModalOpen, setModalOpen] = React.useState(false);
@@ -67,6 +66,12 @@ export const EntityPage = ({
         setConfirmationModalOpen(true);
     };
 
+    React.useEffect(() => {
+        if (searchTerm.trim() === "") {
+            fetchData({ resetPage: true, term: "" });
+        }
+    }, [searchTerm]);
+
     const handleDelete = async () => {
         try {
             await onDelete(modalData);
@@ -85,9 +90,7 @@ export const EntityPage = ({
     };
 
     const handleSort = (field) => {
-        const order = sortField === field && sortOrder === "asc" ? "desc" : "asc";
-        setSortField(field);
-        setSortOrder(order);
+        toggleSortOrder(field);
     };
 
     if (loading) return <p>Loading...</p>;
@@ -111,7 +114,14 @@ export const EntityPage = ({
                         inputClassName="search-input"
                         type="text"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setSearchTerm(value);
+
+                            if (value.trim() === "") {
+                                fetchData({ resetPage: true, term: "" }); 
+                            }
+                        }}
                         onKeyPress={(e) => {
                             if (e.key === "Enter") handleSearch();
                         }}

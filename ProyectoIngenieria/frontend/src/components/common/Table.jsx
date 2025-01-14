@@ -105,7 +105,6 @@ const Table = ({ columns, data, actions, onSort, sortField, sortOrder }) => {
                                     </>
                                 )}
                             </th>
-
                         ))}
                     </tr>
                 </thead>
