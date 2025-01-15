@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, X } from 'lucide-react';
 import './css/sidebar.css';
 
 const Sidebar = () => {
@@ -28,7 +28,7 @@ const Sidebar = () => {
     return (
         <div className={`sidebar ${collapsed ? 'collapsed' : ''}`} >
             <div className="sidebar-toggle" onClick={() => setCollapsed(!collapsed)}>
-                {collapsed ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
+                {collapsed ? <Menu size={24} /> : <X size={24} />}
             </div>
             <ul className="list-unstyled">
                 {menuItems.map((item, index) => (

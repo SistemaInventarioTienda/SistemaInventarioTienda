@@ -15,11 +15,11 @@
     top: 0;
     transition: width 0.3s ease;
     overflow: hidden;
-    /* Asegura que nada se desborde */
 }
 
 .sidebar.collapsed {
     width: 80px;
+    align-items: center;
     /* Ancho de la sidebar cuando está colapsada */
 }
 
