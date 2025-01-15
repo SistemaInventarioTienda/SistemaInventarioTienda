@@ -27,7 +27,7 @@ const Sidebar = () => {
 
     return (
         <div className={`sidebar ${collapsed ? 'collapsed' : ''}`} >
-            <div className="sidebar-toggle" onClick={() => setCollapsed(!collapsed)}>
+            <div className="sidebar-toggle" alt="Menu" onClick={() => setCollapsed(!collapsed)}>
                 {collapsed ? <Menu size={24} /> : <X size={24} />}
             </div>
             <ul className="list-unstyled">
