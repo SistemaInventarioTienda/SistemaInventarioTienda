@@ -6,6 +6,7 @@ import {
     registerSupplier,
     updateSupplier,
     deleteSupplier,
+    getAllSupplierTypes
 } from "../../api/supplier";
 
 // Configuración principal de la entidad
@@ -21,23 +22,36 @@ export const supplierConfig = {
     columns: [
         { field: "DSC_NOMBRE", label: "Nombre" },
         { field: "DSC_TELEFONO", label: "Teléfono" },
-        { field: "DSC_CORREO", label: "Correo" },
         { field: "DSC_TIPOPROVEEDOR", label: "Tipo de Proveedor" },
+        { field: "DSC_TELEFONO", label: "Teléfono" },
+        { field: "DSC_CORREO", label: "Correo" },
         { field: "ESTADO", label: "Estado" },
-        { field: "actions", label: "Acciones" }, 
+        { field: "actions", label: "Acciones" },
     ],
 
     // Configuración de campos del formulario
     fields: [
         { name: "nombre", label: "Nombre", type: "text", required: true },
         { name: "direccion", label: "Dirección", type: "text", required: true },
+        { name: "cuentaBanco", label: "Cuenta Bancaria", type: "text", required: true },
+        { name: "venta", label: "Descripción de Venta", type: "textarea", required: true },
         { name: "tipoProveedor", label: "Tipo de Proveedor", type: "select", required: true },
-        { name: "estado", label: "Estado", type: "select", required: true },
+        {
+            name: "estado",
+            label: "Estado",
+            type: "select",
+            required: true,
+            options: [
+                { value: 1, label: "Activo" },
+                { value: 0, label: "Inactivo" },
+            ],
+        },
     ],
 
     // Funciones API específicas de la entidad
     api: {
         fetchAll: getSuppliers,
+        fetchAllSuppliersTypes: getAllSupplierTypes,
         searchByName: searchSupplier,
         create: registerSupplier,
         update: updateSupplier,
@@ -48,20 +62,25 @@ export const supplierConfig = {
     transformData: {
         // Transformar datos desde la API hacia el frontend
         toFrontend: (supplier) => ({
+            id: supplier.IDENTIFICADOR_PROVEEDOR,
             nombre: supplier.DSC_NOMBRE,
-            tipoProveedor: supplier.supplierType?.DSC_NOMBRE || "No Disponible",
+            tipoProveedor: supplier.supplierType?.DSC_NOMBRE || "",
             estado: supplier.ESTADO === "ACTIVO" ? 1 : 2,
-            direccion: supplier.DSC_DIRECCIONEXACTA || "No Disponible",
+            direccion: supplier.supplierDirection.DSC_DIRECCIONEXACTA || "No Disponible",
+            venta: supplier.DSC_VENTA,
+            cuentaBanco: supplier.CTA_BANCARIA,
             telefonos: supplier.numberSuppliers?.map((t) => t.DSC_TELEFONO) || [],
             correos: supplier.mailSuppliers?.map((t) => t.DSC_CORREO) || [],
         }),
 
         // Transformar datos desde el formulario hacia la API
         toBackend: (formData) => ({
+            IDENTIFICADOR_PROVEEDOR: formData.id,
             DSC_NOMBRE: formData.nombre,
             ID_TIPOPROVEEDOR: parseInt(formData.tipoProveedor, 10),
-            ESTADO: formData.estado === 1 ? "ACTIVO" : "INACTIVO",
-            DSC_DIRECCIONEXACTA: formData.direccion,
+            ESTADO: formData.estado,
+            ID_DIRECCION: 1,
+            DSC_DIRECCIONEXACTA: "Limón",
             phones: formData.telefonos.map((telefono) => ({ DSC_TELEFONO: telefono })),
             emails: formData.correos.map((correo) => ({ DSC_CORREO: correo })),
         }),
@@ -69,7 +88,8 @@ export const supplierConfig = {
 
     // Transformaciones específicas de campos individuales
     transformConfig: {
-        ESTADO: (item) => (item.ESTADO === "ACTIVO" ? "ACTIVO" : "INACTIVO"),
+        ESTADO: (item) => (item.ESTADO === 1 ? "ACTIVO" : "INACTIVO"),
+        DSC_TIPOPROVEEDOR: (item) => item.supplierType.DSC_NOMBRE,
         DSC_TELEFONO: (item) =>
             item.numberSuppliers?.length > 0
                 ? item.numberSuppliers[0].DSC_TELEFONO

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, FileInput, Select, Button, Alert } from './';
+import { Input, FileInput, Select, Alert } from './';
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 function GenericForm({
@@ -39,8 +39,8 @@ function GenericForm({
             setFormData(initialData);
             setPhones(initialData?.telefonos || []);
             setEmails(initialData?.correos || []);
-            setLocalSupplierTypes(supplierTypes);
             initialLoaded.current = true;
+            setLocalSupplierTypes(supplierTypes || []);
         }
     }, [initialData, supplierTypes]);
 
@@ -103,10 +103,13 @@ function GenericForm({
         if (field.type === "select") {
             const options =
                 field.name === "tipoProveedor"
-                    ? localSupplierTypes.map((type) => ({
-                        value: type.ID_TIPOPROVEEDOR,
-                        label: type.DSC_NOMBRE,
-                    }))
+                    ? [
+                        { value: "", label: "Seleccione el tipo de proveedor" },
+                        ...localSupplierTypes.map((type) => ({
+                            value: type.ID_TIPOPROVEEDOR,
+                            label: type.DSC_NOMBRE,
+                        })),
+                    ]
                     : [
                         { value: "", label: "Seleccione el estado" },
                         { value: 1, label: "Activo" },
@@ -158,32 +161,47 @@ function GenericForm({
 
     return (
         <form onSubmit={handleSubmit} className="form-grid">
-            {fields.map((field) => (
-                <div className="form-group" key={field.name}>
-                    <label htmlFor={field.name}>{field.label}</label>
-                    {renderField(field)}
-                </div>
-            ))}
+            {fields
+                .filter((field) => {
+                    // Excluir campos de contraseña en modos distintos de 'add'
+                    if ((field.name === "contrasena" || field.name === "confirmarContrasena") && mode !== "add") {
+                        return false;
+                    }
+                    return true;
+                })
+                .map((field) => (
+                    <div className="form-group" key={field.name}>
+                        <label htmlFor={field.name}>{field.label}</label>
+                        {renderField(field)}
+                    </div>
+                ))}
 
             {(entityName === "Cliente" || entityName === "Proveedor") && (
-                <ContactManager
-                    contacts={phones}
-                    onContactsChange={setPhones}
-                    type="phone"
-                    mode={mode}
-                />
+                <div className="full-width">
+                    <ContactManager
+                        contacts={phones}
+                        onContactsChange={setPhones}
+                        type="phone"
+                        mode={mode}
+                    />
+                </div>
             )}
 
             {entityName === "Proveedor" && (
-                <ContactManager
-                    contacts={emails}
-                    onContactsChange={setEmails}
-                    type="email"
-                    mode={mode}
-                />
+                <div className="full-width">
+                    <ContactManager
+                        contacts={emails}
+                        onContactsChange={setEmails}
+                        type="email"
+                        mode={mode}
+                    />
+                </div>
             )}
 
-            <div className="modal-footer">
+            {errorMessages.length > 0 && (
+                <Alert type="warning" message={errorMessages} />
+            )}
+            <div className="modal-footer full-width">
                 <button type="button" onClick={onCancel} className="close-btn">
                     Cancelar
                 </button>
@@ -194,8 +212,6 @@ function GenericForm({
                     </button>
                 )}
             </div>
-
-            {errorMessages.length > 0 && <Alert type="warning" message={errorMessages} />}
         </form>
     );
 }

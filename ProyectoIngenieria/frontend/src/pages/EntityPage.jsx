@@ -74,10 +74,11 @@ export const EntityPage = ({
         .reduce((acc, [actionKey, isEnabled]) => {
             if (isEnabled) {
                 acc[actionKey] =
-                    actionKey === "edit" ? handleEdit :
-                        actionKey === "delete" ? handleDeleteConfirmation :
-                            actionKey === "view" ? handleView :
-                                undefined; // Por si llegan nuevas acciones en el futuro
+                    actionKey === "grantPermissions" ? handleView :
+                        actionKey === "edit" ? handleEdit :
+                            actionKey === "delete" ? handleDeleteConfirmation :
+                                actionKey === "view" ? handleView :
+                                    undefined; // Por si llegan nuevas acciones en el futuro
             }
             return acc;
         }, {});

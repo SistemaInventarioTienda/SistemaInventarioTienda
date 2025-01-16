@@ -42,7 +42,7 @@ export default function ClientPage() {
                 fetchAll={api.fetchAll}
                 searchByName={api.searchByName}
                 onSubmit={onSubmit}
-                onDelete={(client) => api.delete(client.DSC_NOMBRE)}
+                onDelete={(client) => api.delete(client.DSC_CEDULA)}
                 modalComponent={ClientForm}
                 entityKey={entityKey}
                 transformData={transformData.toFrontend}
