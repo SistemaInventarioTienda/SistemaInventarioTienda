@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose } from 'lucide-react';
 import './styles/sidebar.css';
 
 const Sidebar = () => {
@@ -27,8 +27,11 @@ const Sidebar = () => {
 
     return (
         <div className={`sidebar ${collapsed ? 'collapsed' : ''}`} >
-            <div className="sidebar-toggle" onClick={() => setCollapsed(!collapsed)}>
-                {collapsed ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
+            <div className="sidebar-header">
+                {!collapsed && <h2 className="sidebar-title">Sistema de Gestión de Inventario</h2>}
+                <button className="toggle-btn" onClick={() => setCollapsed(!collapsed)}>
+                    {collapsed ? <Menu size={24} /> : <PanelLeftClose size={24} />}
+                </button>
             </div>
             <ul className="list-unstyled">
                 {menuItems.map((item, index) => (
@@ -43,7 +46,7 @@ const Sidebar = () => {
                     </li>
                 ))}
             </ul>
-        </div>
+        </div >
     );
 }
 

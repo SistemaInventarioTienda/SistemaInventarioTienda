@@ -13,7 +13,7 @@ function HomePage() {
 
   useEffect(() => {
     document.title = "Inicio";
-    if (isAuthenticated) {
+    if (!isAuthenticated) {
       navigate("/login");
     }
   }, [isAuthenticated, navigate]);

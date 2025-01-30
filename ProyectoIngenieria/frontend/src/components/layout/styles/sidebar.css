@@ -8,19 +8,17 @@
     gap: 20px;
     width: 280px;
     height: 100vh;
-    background-color: var(--color-primary) !important;
+    background-color: var(--color-primary);
     color: var(--color-card);
     position: fixed;
     left: 0;
     top: 0;
     transition: width 0.3s ease;
     overflow: hidden;
-    /* Asegura que nada se desborde */
 }
 
 .sidebar.collapsed {
     width: 80px;
-    /* Ancho de la sidebar cuando está colapsada */
 }
 
 .main-content {
@@ -33,9 +31,38 @@
 
 .sidebar.collapsed~.main-content {
     margin-left: 80px;
-    /* Ajuste del margen cuando la sidebar está colapsada */
 }
 
+/* Sidebar Header */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-bottom: 2px solid var(--color-secondary);
+}
+
+.toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-title {
+    font-size: 18px;
+    text-align: center;
+    flex-grow: 1;
+    color: var(--color-card);
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-card);
+    border-radius: 8px;
+    padding: 5px;
+}
+
+/* Sidebar Links */
 .sidebar-link {
     display: flex;
     align-items: center;
@@ -45,14 +72,11 @@
     transition: background-color 0.3s, padding 0.3s;
     border-radius: 16px;
     white-space: nowrap;
-    /* Evita que el texto se rompa en varias líneas */
     overflow: hidden;
-    /* Oculta el desbordamiento del contenido */
 }
 
 .sidebar.collapsed .sidebar-link {
     padding: 16px 12px;
-    /* Reducir el padding en modo colapsado */
     justify-content: center;
 }
 
@@ -69,19 +93,6 @@
 
 .sidebar.collapsed .sidebar-link span {
     display: none;
-    /* Ocultar el texto en el estado colapsado */
-}
-
-.sidebar-toggle {
-    display: flex;
-    justify-content: flex-end;
-    cursor: pointer;
-    color: var(--color-card);
-    padding: 10px;
-}
-
-.sidebar-toggle:hover {
-    color: var(--color-secondary);
 }
 
 /* Responsivo */
@@ -90,7 +101,7 @@
         width: 80px;
     }
 
-    .sidebar .sidebar-link span {
+    .sidebar-title {
         display: none;
     }
 

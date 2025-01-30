@@ -1,0 +1,29 @@
+.navbar-custom {
+    height: 80px;
+    padding: 0 30px;
+}
+
+.bg-card-custom {
+    background-color: #ffffff;
+}
+
+.text-primary-custom {
+    color: #05004E;
+}
+
+.icon-button {
+    background-color: #05004E !important;
+    border-color: #05004E !important;
+    border-radius: 16px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon {
+    color: #FFFFFF;
+    margin: auto;
+}
