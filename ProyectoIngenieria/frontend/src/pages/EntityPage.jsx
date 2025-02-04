@@ -194,19 +194,26 @@ export const EntityPage = ({
                 }
                 mode={modalMode}
                 onClose={() => setModalOpen(false)}
-                onSubmit={(formData) => {
-                    onSubmit(modalMode, formData);
-                    fetchData();
-                    setModalOpen(false);
-                }}
                 entityName={entityName}
             >
                 <ModalFormComponent
                     mode={modalMode}
                     initialData={modalData}
                     fields={fields}
-                    onSubmit={(formData) => {
-                        onSubmit(modalMode, formData);
+                    onSubmit={async (formData) => {
+                        try {
+                            const response = await onSubmit(modalMode, formData);
+                            console.log(response);
+                            if (response && response.success) {
+                                await fetchData({ transformConfig }); 
+                                setModalOpen(false); 
+                                console.log("✅ Modal cerrado correctamente");
+                            } else {
+                                console.error("❌ Error: Respuesta no exitosa", response);
+                            }
+                        } catch (error) {
+                            console.error("❌ Error al guardar:", error);
+                        }
                     }}
                     onCancel={() => setModalOpen(false)}
                 />

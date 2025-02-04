@@ -42,14 +42,14 @@ const Navbar = () => {
         <span className="text-primary-custom me-3">{user.username}</span>
 
         <Button className="btn icon-button me-3">
-          <Bell size={20} className="icon" />
+          <Bell size={20} className="navbar-icon" />
         </Button>
 
         <Button
           className="btn icon-button me-3"
           onClick={toggleUserMenu}
         >
-          <UserRoundCogIcon size={20} className="icon" />
+          <UserRoundCogIcon size={20} className="navbar-icon" />
         </Button>
 
         <div ref={userMenuRef}>

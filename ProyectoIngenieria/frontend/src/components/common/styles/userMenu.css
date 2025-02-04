@@ -26,7 +26,7 @@
     cursor: pointer;
 }
 
-.dropdown-menu {
+.dropdown-menu{
     display: block;
     position: relative;
     width: 100%;
@@ -50,6 +50,6 @@
     background-color: rgb(207, 211, 207);
 }
 
-.icon {
+.usermenu-icon {
     margin-right: 8px;
 }

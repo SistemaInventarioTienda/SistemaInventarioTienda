@@ -22,7 +22,7 @@ Cosas por mejorar en las siguientes entregas:
 3. Usuarios
     ✅3.1 Ver la forma que al momento de filtrar si el dato existe, pero está en otra pag lo muestre en la pag actual.
     ✅3.2 Hay un usuario inactivo, y deseo ver su contenido y me dice que esta activo. Debe decir el estado real.
-    ❌3.3 Un usuario con acceso a este CRUD no se puede autoeliminar ni se puede eliminar el usuario admin
+    ✅3.3 Un usuario con acceso a este CRUD no se puede autoeliminar ni se puede eliminar el usuario admin
     ❌3.4 Asignar la parte de permisos, a que CRUD's puede entrar un usuario 
         (Ojala que ni salga en el sidebar el CRUD que no tiene acceso)
 4. Sidebar:
@@ -32,9 +32,9 @@ Cosas por mejorar en las siguientes entregas:
 
 
 1- Tareas para vacaciones:
-    ❌1.1- Solucionar bug que al usar la api de hacienda en usuarios y clientes no permite editar: nombre de proveedor, nombre de categoría.
-    ❌1.2- Si la api de hacienda lanza un error debe permitir escribir en campos de nombre y apellidos, para no detener el uso del sistema.
+    ✅1.1- Solucionar bug que al usar la api de hacienda en usuarios y clientes no permite editar: nombre de proveedor, nombre de categoría.
+    ✅1.2- Si la api de hacienda lanza un error debe permitir escribir en campos de nombre y apellidos, para no detener el uso del sistema.
     ✅1.3- El campo de cédula solo debe permitir escribir 9 digitos (no letras)
-    ❌1.4- El correo solo puede guardarse en minuscula 
+    ✅1.4- El correo solo puede guardarse en minuscula                          -> !! aunque se escriba en mayúsculas desde el UI, en el back este pasa a Minúscula *
     ✅1.5- Al buscar en la api no puede bloquear la escritura del 9no caracter.
-    ❌1.6- Los campos que se autocompletan (esta bloqueada la escritura) deben ir en un color más oscuro
+    ✅1.6- Los campos que se autocompletan (esta bloqueada la escritura) deben ir en un color más oscuro

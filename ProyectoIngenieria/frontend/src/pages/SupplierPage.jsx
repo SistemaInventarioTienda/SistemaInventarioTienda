@@ -20,15 +20,20 @@ export default function SupplierPage() {
     } = supplierConfig;
 
     const { alert, showAlert, hideAlert } = useAlert();
-    
+
     // Lógica para manejar el submit
     const onSubmit = async (mode, data) => {
-        const backendData = transformData.toBackend(data);
-        console.log("backendData", backendData);
-        if (mode === "add") {
-            await handleApiCall(() => api.create(backendData), "Proveedor agregado exitosamente.", showAlert);
-        } else if (mode === "edit") {
-            await handleApiCall(() => api.update(backendData), "Proveedor actualizado exitosamente.", showAlert);
+        try {
+            const backendData = transformData.toBackend(data);
+            console.log("backendData", backendData);
+            if (mode === "add") {
+                await handleApiCall(() => api.create(backendData), "Proveedor agregado exitosamente.", showAlert);
+            } else if (mode === "edit") {
+                await handleApiCall(() => api.update(backendData), "Proveedor actualizado exitosamente.", showAlert);
+            }
+            return { success: true };
+        } catch (error) {
+            return { success: false };
         }
     };
 

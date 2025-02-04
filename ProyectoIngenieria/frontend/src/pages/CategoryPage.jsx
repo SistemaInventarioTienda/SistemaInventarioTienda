@@ -23,12 +23,17 @@ export default function CategoryPage() {
 
     // Lógica para manejar el submit
     const onSubmit = async (mode, data) => {
-        const backendData = transformData.toBackend(data);
-        console.log("backendData", backendData);
-        if (mode === "add") {
-            await handleApiCall(() => api.create(backendData), "Categoría agregada exitosamente.", showAlert);
-        } else if (mode === "edit") {
-            await handleApiCall(() => api.update(backendData), "Categoría actualizada exitosamente.", showAlert);
+        try {
+            const backendData = transformData.toBackend(data);
+            console.log("backendData", backendData);
+            if (mode === "add") {
+                await handleApiCall(() => api.create(backendData), "Categoría agregada exitosamente.", showAlert);
+            } else if (mode === "edit") {
+                await handleApiCall(() => api.update(backendData), "Categoría actualizada exitosamente.", showAlert);
+            }
+            return { success: true };
+        } catch (error) {
+            return { success: false };
         }
     };
 

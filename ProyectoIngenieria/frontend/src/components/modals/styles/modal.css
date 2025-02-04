@@ -16,7 +16,7 @@
     padding-bottom: 100px;
 }
 
-.modal-footer {
+.modal-data-footer {
     /*position:fixed ;*/
     bottom: 20px;
     right: 20px;
@@ -26,7 +26,6 @@
     background-color: #EEF1F8;
     padding: 10px;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: calc(100% - 40px);
     max-width: 600px;
     box-sizing: border-box;

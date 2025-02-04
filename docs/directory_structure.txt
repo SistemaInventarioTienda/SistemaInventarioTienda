@@ -68,6 +68,7 @@
 |    |   |   ├── PageLayout.jsx
 |    |   |   ├── Sidebar.jsx
 |    |   |   └── styles
+|    |   |       ├── navbar.css
 |    |   |       └── sidebar.css
 |    |   ├── modals
 |    |   |   ├── index.js
@@ -80,10 +81,17 @@
 |    |   |       └── modal.css
 |    |   └── tasks
 |    |       └── TaskCard.jsx
+|    ├── config
+|    |   └── entities
+|    |       ├── categoryConfig.js
+|    |       ├── clientConfig.js
+|    |       ├── supplierConfig.js
+|    |       └── userConfig.js
 |    ├── config.js
 |    ├── context
 |    |   └── authContext.jsx
 |    ├── hooks
+|    |   ├── useAlert.js
 |    |   ├── useEntityPage.js
 |    |   ├── usePagination.js
 |    |   ├── useSearch.js
@@ -92,26 +100,24 @@
 |    ├── pages
 |    |   ├── CategoryPage.jsx
 |    |   ├── ClientPage.jsx
-|    |   ├── css
-|    |   |   ├── LoginPage.css
-|    |   |   └── Page.css
 |    |   ├── EntityPage.jsx
-|    |   ├── forms
-|    |   |   ├── CategoryForm.jsx
-|    |   |   ├── ClientForm.jsx
-|    |   |   ├── fields
-|    |   |   |   ├── CategoryFormFields.js
-|    |   |   |   ├── ClientFormFields.js
-|    |   |   |   └── SupplierFormFields.js
-|    |   |   └── SupplierForm.jsx
 |    |   ├── HomePage.jsx
 |    |   ├── LoginPage.jsx
+|    |   ├── pagesForms
+|    |   |   ├── CategoryForm.jsx
+|    |   |   ├── ClientForm.jsx
+|    |   |   ├── SupplierForm.jsx
+|    |   |   └── UserForm.jsx
 |    |   ├── RegisterPage.jsx
 |    |   ├── styles
 |    |   |   ├── LoginPage.css
 |    |   |   └── Page.css
+|    |   ├── SupplierPage-old.jsx
 |    |   ├── SupplierPage.jsx
+|    |   ├── UserPage-old.jsx
 |    |   └── UserPage.jsx
 |    ├── routes.jsx
-|    └── schemas
-|        └── auth.js
+|    ├── schemas
+|    |   └── auth.js
+|    └── utils
+|        └── handleApiCall.js

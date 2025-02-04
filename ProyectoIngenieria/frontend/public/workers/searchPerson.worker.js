@@ -1,47 +1,42 @@
-// worker.js
-onmessage = async function (event) {
-    // console.log('Received message from the main thread:', event.data);
+// workers/searchPerson.worker.js
 
+onmessage = async function (event) {
     try {
         const response = await fetch(`https://api.hacienda.go.cr/fe/ae?identificacion=${event.data}`);
-        if (response.ok) {
-            const data = await response.json();
-            if (data.nombre) {
-                const nombreCompleto = data.nombre.split(" ");
-                const nombre = capitalizar(nombreCompleto[0]);
-                if (nombreCompleto.length === 4) {
-                    const segundoNombre = capitalizar(nombreCompleto[1]);
-                    const apellidoUno = capitalizar(nombreCompleto[2]);
-                    const apellidoDos = capitalizar(nombreCompleto[3]);
-
-                    const result = {
-                        nombre: nombre,
-                        segundoNombre: segundoNombre,
-                        apellidoUno: apellidoUno,
-                        apellidoDos: apellidoDos,
-                      };
-                      
-                      postMessage(result);                      
-                    //Enviar datos
-                } else {
-                    const segundoNombre = "";
-                    const apellidoUno = capitalizar(nombreCompleto[1]);
-                    const apellidoDos = capitalizar(nombreCompleto[2]);
-                    // Enviar datos
-                    const result = {
-                        nombre: nombre,
-                        segundoNombre: segundoNombre,
-                        apellidoUno: apellidoUno,
-                        apellidoDos: apellidoDos,
-                      };
-                      
-                    postMessage(result);  
-                }
-            } 
+        if (!response.ok) {
+            throw new Error("API response not OK");
         }
+
+        const data = await response.json();
+        if (!data.nombre) {
+            throw new Error("No data found for the given ID");
+        }
+
+        const nombreCompleto = data.nombre.split(" ");
+        const nombre = capitalizar(nombreCompleto[0]);
+
+        let segundoNombre = "";
+        let apellidoUno = "";
+        let apellidoDos = "";
+
+        if (nombreCompleto.length === 4) {
+            segundoNombre = capitalizar(nombreCompleto[1]);
+            apellidoUno = capitalizar(nombreCompleto[2]);
+            apellidoDos = capitalizar(nombreCompleto[3]);
+        } else {
+            apellidoUno = capitalizar(nombreCompleto[1]);
+            apellidoDos = capitalizar(nombreCompleto[2]);
+        }
+
+        postMessage({
+            nombre,
+            segundoNombre,
+            apellidoUno,
+            apellidoDos,
+        });
     } catch (error) {
-        // console.error("Error en la solicitud:", error);
-        // postMessage(error);
+        console.error("Error en la solicitud:", error);
+        postMessage(null); // Indicar que hubo un error
     }
 };
 

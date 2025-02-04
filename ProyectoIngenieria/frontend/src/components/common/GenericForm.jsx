@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Input, FileInput, Select, Alert } from './';
+import React from "react";
+import { Input, FileInput, Select, Alert } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
+import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
+
 function GenericForm({
     mode,
     fields,
@@ -26,75 +28,32 @@ function GenericForm({
         },
     };
 
-    const [formData, setFormData] = useState(initialData);
-    const [phones, setPhones] = useState(initialData?.telefonos || []);
-    const [emails, setEmails] = useState(initialData?.correos || []);
-    const [localSupplierTypes, setLocalSupplierTypes] = useState(supplierTypes);
-    const [searchPersonWorker, setSearchPersonWorker] = useState(null);
+    const {
+        formData,
+        phones,
+        emails,
+        localSupplierTypes,
+        isCedulaValid,
+        workerError,
+        handleChange,
+        handleSubmit,
+        setFormData,
+        setPhones,
+        setEmails,
+    } = useGenericFormLogic({
+        initialData,
+        supplierTypes,
+        onSubmit,
+        setErrorMessages,
+    });
 
-    const initialLoaded = useRef(false);
-
-    useEffect(() => {
-        if (!initialLoaded.current) {
-            setFormData(initialData);
-            setPhones(initialData?.telefonos || []);
-            setEmails(initialData?.correos || []);
-            initialLoaded.current = true;
-            setLocalSupplierTypes(supplierTypes || []);
-        }
-    }, [initialData, supplierTypes]);
-
-    useEffect(() => {
-        const worker = new Worker("workers/searchPerson.worker.js");
-        worker.onmessage = ({ data }) => {
-            const { nombre, segundoNombre, apellidoUno, apellidoDos } = data;
-            const newName = segundoNombre ? `${nombre} ${segundoNombre}` : nombre;
-            setFormData((prev) => ({
-                ...prev,
-                nombre: newName,
-                primerApellido: apellidoUno,
-                segundoApellido: apellidoDos,
-            }));
-        };
-        setSearchPersonWorker(worker);
-        return () => worker.terminate();
-    }, []);
-
-    const handleChange = (e) => {
-        const { name, value, type, files } = e.target;
-
-        if (name === "cedula" && value.length === 9) {
-            searchPersonWorker.postMessage(value);
-        }
-
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === "file" && files.length > 0 ? files[0] : value,
-        }));
-    };
+    const getReadOnlyStyle = () => ({
+        backgroundColor: "#e9ecef",
+        cursor: "not-allowed",
+    });
 
     const handleFileSelect = (file) => {
         setFormData((prevData) => ({ ...prevData, foto: file }));
-    };
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const estadoValue = parseInt(formData.estado, 10);
-
-        if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
-            setErrorMessages(["Por favor, seleccione un estado válido."]);
-            return;
-        }
-        const dataToSubmit = {
-            ...formData,
-            estado: estadoValue,
-        };
-
-        // Mostrar en consola lo que se va a enviar
-        console.log("Datos enviados:", dataToSubmit);
-
-        // Llamar a la función de envío con los datos
-        onSubmit(dataToSubmit);
     };
 
     const renderField = (field) => {
@@ -115,6 +74,7 @@ function GenericForm({
                         { value: 1, label: "Activo" },
                         { value: 2, label: "Inactivo" },
                     ];
+
             return (
                 <Select
                     name={field.name}
@@ -146,15 +106,18 @@ function GenericForm({
             );
         }
 
+        const isBlocked = isCedulaValid && ["nombre", "primerApellido", "segundoApellido"].includes(field.name);
+
         return (
             <Input
                 name={field.name}
                 value={fieldValue}
                 onChange={handleChange}
                 required={field.required}
-                readOnly={mode === "view"}
+                readOnly={isBlocked || mode === "view"}
                 placeholder={`Ingrese ${field.label.toLowerCase()}`}
                 {...commonStyles}
+                style={isBlocked ? getReadOnlyStyle() : {}}
             />
         );
     };
@@ -163,7 +126,6 @@ function GenericForm({
         <form onSubmit={handleSubmit} className="form-grid">
             {fields
                 .filter((field) => {
-                    // Excluir campos de contraseña en modos distintos de 'add'
                     if ((field.name === "contrasena" || field.name === "confirmarContrasena") && mode !== "add") {
                         return false;
                     }
@@ -175,7 +137,6 @@ function GenericForm({
                         {renderField(field)}
                     </div>
                 ))}
-
             {(entityName === "Cliente" || entityName === "Proveedor") && (
                 <div className="full-width">
                     <ContactManager
@@ -186,7 +147,6 @@ function GenericForm({
                     />
                 </div>
             )}
-
             {entityName === "Proveedor" && (
                 <div className="full-width">
                     <ContactManager
@@ -197,7 +157,6 @@ function GenericForm({
                     />
                 </div>
             )}
-
             {errorMessages.length > 0 && (
                 <Alert type="warning" message={errorMessages} />
             )}
