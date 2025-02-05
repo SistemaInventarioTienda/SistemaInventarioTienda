@@ -15,10 +15,10 @@ export const register = async (req, res) => {
     } = req.body;
 
     const validateFields = validateRegisterUser(req);
-    if(validateFields !== true) {
-        return res.status(400).json({
-            message: validateFields,
-        })
+    if (validateFields !== true) {
+      return res.status(400).json({
+        message: validateFields,
+      })
     }
 
     const output = await validateRegister(DSC_CORREO, DSC_TELEFONO, DSC_CEDULA, DSC_NOMBREUSUARIO);
@@ -28,7 +28,7 @@ export const register = async (req, res) => {
       })
     }
 
-    if(DSC_CONTRASENIA !== CONFIRMARCONTRASENIA){
+    if (DSC_CONTRASENIA !== CONFIRMARCONTRASENIA) {
       return res.status(400).json({
         message: 'Las contraseñas no coinciden.',
       })
@@ -37,7 +37,7 @@ export const register = async (req, res) => {
     const passwordHash = await encryptData(DSC_CONTRASENIA, 10);
 
     // creating the user
-    const creadoEn =  await getDateCR();
+    const creadoEn = await getDateCR();
     const newUser = new User({
       DSC_NOMBREUSUARIO,
       DSC_CORREO: DSC_CORREO.toLowerCase(),
@@ -81,11 +81,11 @@ export const login = async (req, res) => {
   try {
     const { DSC_NOMBREUSUARIO, DSC_CONTRASENIA, REMEMBERME = false } = req.body;
 
-    const userFound = await User.findOne({ 
+    const userFound = await User.findOne({
       where: {
-          DSC_NOMBREUSUARIO: DSC_NOMBREUSUARIO.toLowerCase(),
-          ESTADO: 1
-        } 
+        DSC_NOMBREUSUARIO: DSC_NOMBREUSUARIO.toLowerCase(),
+        ESTADO: 1
+      }
     });
     if (!userFound)
       return res.status(400).json({
@@ -102,8 +102,8 @@ export const login = async (req, res) => {
     const token = await createAccessToken({
       id: userFound.DSC_CEDULA,
       username: userFound.DSC_NOMBREUSUARIO,
-    }, 
-    REMEMBERME ? '30d' : '1d'
+    },
+      REMEMBERME ? '30d' : '1d'
     );
 
     res.cookie("token", token, {
@@ -113,9 +113,15 @@ export const login = async (req, res) => {
     });
 
     res.json({
-      id: userFound.DSC_CEDULA,
-      username: userFound.DSC_NOMBREUSUARIO,
+      cedula: userFound.DSC_CEDULA,
+      nombreUsuario: userFound.DSC_NOMBREUSUARIO,
       email: userFound.DSC_CORREO,
+      nombre: userFound.DSC_NOMBRE,
+      primerApellido: userFound.DSC_APELLIDOUNO,
+      segundoApellido: userFound.DSC_APELLIDODOS,
+      telefono: userFound.DSC_TELEFONO,
+      correo: userFound.DSC_CORREO,
+      estado: userFound.ESTADO,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });

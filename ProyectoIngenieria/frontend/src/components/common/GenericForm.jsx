@@ -161,9 +161,11 @@ function GenericForm({
                 <Alert type="warning" message={errorMessages} />
             )}
             <div className="modal-footer full-width">
-                <button type="button" onClick={onCancel} className="close-btn">
-                    Cancelar
-                </button>
+                {mode !== "edit" && (
+                    <button type="button" onClick={onCancel} className="close-btn">
+                        Cancelar
+                    </button>
+                )}
                 {mode !== "view" && (
                     <button type="submit" className="add-btn">
                         <Plus size={20} />

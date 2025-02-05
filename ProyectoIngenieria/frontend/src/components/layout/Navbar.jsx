@@ -39,7 +39,7 @@ const Navbar = () => {
   return (
     <nav className="navbar bg-card-custom navbar-custom">
       <div className="d-flex justify-content-end align-items-center w-100">
-        <span className="text-primary-custom me-3">{user.username}</span>
+        <span className="text-primary-custom me-3">{user.nombreUsuario}</span>
 
         <Button className="btn icon-button me-3">
           <Bell size={20} className="navbar-icon" />

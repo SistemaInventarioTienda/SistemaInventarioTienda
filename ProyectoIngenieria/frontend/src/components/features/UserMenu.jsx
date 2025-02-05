@@ -1,10 +1,16 @@
 import React from 'react';
 import { useAuth } from '../../context/authContext';
 import { User, Settings, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './styles/userMenu.css';
 
 const UserMenu = ({ isOpen }) => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const goToUserProfile = () => {
+        navigate('/profile');
+    };
 
     return (
         <div className={`user-menu ${isOpen ? 'open' : ''}`}>
@@ -15,7 +21,7 @@ const UserMenu = ({ isOpen }) => {
                 </div>
                 <hr />
                 {/* Enlace al perfil del usuario */}
-                <span className="dropdown-item" onClick={() => {/* futuro */ }}>
+                <span className="dropdown-item" onClick={goToUserProfile}>
                     <User size={16} className="icon" /> Perfil
                 </span>
                 {/* Enlace a la configuración */}
