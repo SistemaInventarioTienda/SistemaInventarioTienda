@@ -29,7 +29,7 @@ export function LoginPage() {
   useEffect(() => {
     document.title = 'Iniciar Sesión';
     if (isAuthenticated) {
-      navigate('/home');
+      navigate('/');
     } else {
       const storedRememberMe = localStorage.getItem('rememberMe') === 'true';
       setRememberMe(storedRememberMe);
