@@ -15,7 +15,7 @@ async function createWindow() {
       contextIsolation: false, // Necesario para usar ipcMain si lo implementas
     },
   });
-
+  mainWindow.webContents.openDevTools();
   const isDev = (await import('electron-is-dev')).default;
   mainWindow.loadURL(
     isDev

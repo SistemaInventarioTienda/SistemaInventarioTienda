@@ -3,9 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Navbar from "./components/layout/Navbar";
 import Sidebar from './components/layout/Sidebar';
-import { BrowserRouter, Routes, Route, useLocation, Outlet } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/authContext";
 import { ProtectedRoute } from "./routes";
+import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import CategoryPage from "./pages/CategoryPage";
 import ClientPage from "./pages/ClientPage";
 import HomePage from "./pages/HomePage";
@@ -17,9 +17,9 @@ import ProfilePage from "./pages/ProfilePage";
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <HashRouter>
         <AppContent />
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   );
 }
@@ -29,20 +29,17 @@ function AppContent() {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (location.pathname === '/login') {
-      document.body.classList.add('login-page');
-    } else {
+    if (location.pathname !== '/login' && isAuthenticated) {
       document.body.classList.remove('login-page');
+    } else {
+      document.body.classList.add('login-page');
     }
-  }, [location]);
+  }, [location, isAuthenticated]);
 
   return (
     <div className="app-wrapper">
       <Routes>
-        {/* Ruta pública para login */}
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>
           <Route path="/*" element={<Layout />}>
             <Route index element={<HomePage />} />
@@ -50,8 +47,6 @@ function AppContent() {
             <Route path="category" element={<CategoryPage />} />
             <Route path="clients" element={<ClientPage />} />
             <Route path="suppliers" element={<SupplierPage />} />
-
-
             <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Route>
@@ -67,7 +62,14 @@ function Layout() {
       <div className="main-content">
         <Navbar />
         <main className="content">
-          <Outlet />
+          <Routes>
+            <Route index element={<HomePage />} />
+            <Route path="user" element={<UserPage />} />
+            <Route path="category" element={<CategoryPage />} />
+            <Route path="clients" element={<ClientPage />} />
+            <Route path="suppliers" element={<SupplierPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+          </Routes>
         </main>
       </div>
     </div>
