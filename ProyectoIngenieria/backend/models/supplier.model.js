@@ -28,7 +28,7 @@ const supplierType = db.define('supplierType', {
   timestamps: false // Desactiva createdAt y updatedAt si no los necesitas
 });
 
-
+/*
 const supplierDirection = db.define('supplierDirection', {
   ID_DIRECCIONPROVEEDOR: {
     type: DataTypes.INTEGER,
@@ -36,7 +36,7 @@ const supplierDirection = db.define('supplierDirection', {
     primaryKey: true,
     autoIncrement: true,
   },
-  DSC_DIRECCIONEXACTA: {
+  DSC_DIRECCION: {
     type: DataTypes.STRING(255),
     allowNull: true,
   }
@@ -44,7 +44,7 @@ const supplierDirection = db.define('supplierDirection', {
   timestamps: false,
   tableName: 'tsit_direccionproveedor',
 });
-
+*/
 
 
 const Supplier = db.define('Supplier', {
@@ -81,13 +81,9 @@ const Supplier = db.define('Supplier', {
     type: DataTypes.STRING(500),
     allowNull: false,
   },
-  ID_DIRECCION: {
-    type: DataTypes.INTEGER,
+  DSC_DIRECCIONEXACTA: {
+    type: DataTypes.STRING(255),
     allowNull: true,
-    references: {
-      model: supplierDirection,
-      key: 'ID_DIRECCIONPROVEEDOR',
-    }
   },
   ESTADO: {
     type: DataTypes.INTEGER,
@@ -188,7 +184,5 @@ numberSupplier.belongsTo(Supplier, { foreignKey: 'ID_PROVEEDOR' });
 Supplier.hasMany(mailSupplier, { foreignKey: 'ID_PROVEEDOR' });
 mailSupplier.belongsTo(Supplier, { foreignKey: 'ID_PROVEEDOR' });
 
-Supplier.belongsTo(supplierDirection, { foreignKey: 'ID_DIRECCION' });
-supplierDirection.hasMany(Supplier, { foreignKey: 'ID_DIRECCION' });
 
-export { Supplier, numberSupplier, mailSupplier,supplierDirection, supplierType };
+export { Supplier, numberSupplier, mailSupplier, supplierType };

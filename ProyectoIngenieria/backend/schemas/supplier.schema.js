@@ -1,42 +1,8 @@
 import { z } from "zod";
 
-// Schema para Supplier
-export const supplierSchema = z.object({
-  IDENTIFICADOR_PROVEEDOR: z
-  .string({
-    required_error: "El identificador del proveedor es obligatorio.",
-  })
-  .min(1, { message: "El identificador del proveedor no puede estar vacío." })
-  .optional(),
-  DSC_NOMBRE: z
-    .string({
-      required_error: "El nombre del proveedor es obligatorio.",
-    })
-    .min(3, { message: "El nombre del proveedor debe tener al menos 3 caracteres." })
-    .max(255, { message: "El nombre del proveedor no puede tener más de 255 caracteres." }),
-  ID_TIPOPROVEEDOR: z
-    .number()
-    .int()
-    .positive()
-    .optional(),
-  ID_DIRECCION: z
-    .number()
-    .int()
-    .positive()
-    .optional(),
-  ESTADO: z
-    .number()
-    .int()
-    .optional(),
-  FEC_CREADOEN: z
-    .date()
-    .optional(),
-  FEC_MODIFICADOEN: z
-    .date()
-    .optional(),
-});
+// Schema para Supplier ACTUALIZADO
 
-/* esquema real para la proxima
+
 export const supplierSchema = z.object({
   IDENTIFICADOR_PROVEEDOR: z
   .string({
@@ -66,11 +32,12 @@ export const supplierSchema = z.object({
       required_error: "La cuenta bancaria es obligatoria.",
     })
     .max(500, { message: "La cuenta bancaria no puede tener más de 500 caracteres." }),
-  ID_DIRECCION: z
-    .number()
-    .int()
-    .positive()
-    .optional(),
+    DSC_DIRECCIONEXACTA: z
+    .string({
+      required_error: "La dirección exacta es obligatoria.",
+    })
+    .min(5, { message: "La dirección debe tener al menos 5 caracteres." })
+    .max(255, { message: "La dirección no puede tener más de 255 caracteres." }),
   ESTADO: z
     .number()
     .int()
@@ -82,22 +49,22 @@ export const supplierSchema = z.object({
     .date()
     .optional(),
 });
-*/ 
 
+/*
 export const supplierDirectionSchema = z.object({
-  DSC_DIRECCIONEXACTA: z
+  DSC_DIRECCION: z
     .string({
       required_error: "La dirección exacta es obligatoria.",
     })
     .min(5, { message: "La dirección debe tener al menos 5 caracteres." })
     .max(255, { message: "La dirección no puede tener más de 255 caracteres." }),
 });
-
+*/
 
 export const numberSupplierSchema = z.object({
   ID_PROVEEDOR: z
     .number({
-      required_error: "El ID del proveedor es obligatorio.",
+      required_error: "El identificador del proveedor es obligatorio.",
     })
     .int()
     .positive(),
@@ -116,7 +83,7 @@ export const numberSupplierSchema = z.object({
 export const mailSupplierSchema = z.object({
   ID_PROVEEDOR: z
     .number({
-      required_error: "El ID del proveedor es obligatorio.",
+      required_error: "El identificador del proveedor es obligatorio.",
     })
     .int()
     .positive(),
