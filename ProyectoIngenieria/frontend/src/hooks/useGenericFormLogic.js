@@ -91,6 +91,8 @@ export function useGenericFormLogic({
 
         const dataToSubmit = {
             ...formData,
+            telefonos: phones,
+            correos: emails,
             estado: estadoValue,
         };
 

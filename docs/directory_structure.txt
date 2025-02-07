@@ -1,123 +1,180 @@
-|├── .gitignore
-|├── package-lock.json
-|├── package.json
-|├── public
-||   ├── electron.js
-||   ├── icono.ico
-||   ├── index.html
-||   └── workers
-||       └── searchPerson.worker.js
-|├── README.md
-|└── src
-|    ├── api
-|    |   ├── auth.js
-|    |   ├── axios.js
-|    |   ├── category.js
-|    |   ├── client.js
-|    |   ├── hacienda.js
-|    |   ├── supplier.js
-|    |   └── user.js
-|    ├── App.css
-|    ├── App.jsx
-|    ├── assets
-|    |   └── react.svg
-|    ├── components
-|    |   ├── common
-|    |   |   ├── Alert.jsx
-|    |   |   ├── Button.jsx
-|    |   |   ├── ButtonLink.jsx
-|    |   |   ├── Card.jsx
-|    |   |   ├── GenericForm.jsx
-|    |   |   ├── index.js
-|    |   |   ├── Input.jsx
-|    |   |   ├── InputButton.jsx
-|    |   |   ├── InputFile.jsx
-|    |   |   ├── Label.jsx
-|    |   |   ├── Message.jsx
-|    |   |   ├── ModalConfirmation.jsx
-|    |   |   ├── Pagination.jsx
-|    |   |   ├── Select.jsx
-|    |   |   ├── styles
-|    |   |   |   ├── alert.css
-|    |   |   |   ├── inputButton.css
-|    |   |   |   ├── inputFile.css
-|    |   |   |   ├── table.css
-|    |   |   |   └── userMenu.css
-|    |   |   ├── Table.jsx
-|    |   |   ├── Textarea.jsx
-|    |   |   └── UserMenu.jsx
-|    |   ├── css
-|    |   |   ├── Alert.css
-|    |   |   ├── contactManager.css
-|    |   |   ├── inputButton.css
-|    |   |   ├── InputFile.css
-|    |   |   ├── modal.css
-|    |   |   ├── sidebar.css
-|    |   |   ├── table.css
-|    |   |   └── userMenu.css
-|    |   ├── features
-|    |   |   ├── ContactManager.jsx
-|    |   |   ├── styles
-|    |   |   |   ├── contactManager.css
-|    |   |   |   └── userMenu.css
-|    |   |   ├── tasks
-|    |   |   |   └── TaskCard.jsx
-|    |   |   └── UserMenu.jsx
-|    |   ├── layout
-|    |   |   ├── Navbar.jsx
-|    |   |   ├── PageLayout.jsx
-|    |   |   ├── Sidebar.jsx
-|    |   |   └── styles
-|    |   |       ├── navbar.css
-|    |   |       └── sidebar.css
-|    |   ├── modals
-|    |   |   ├── index.js
-|    |   |   ├── Modal.jsx
-|    |   |   ├── ModalBody.jsx
-|    |   |   ├── ModalConfirmation.jsx
-|    |   |   ├── ModalFooter.jsx
-|    |   |   ├── ModalHeader.jsx
-|    |   |   └── styles
-|    |   |       └── modal.css
-|    |   └── tasks
-|    |       └── TaskCard.jsx
-|    ├── config
-|    |   └── entities
-|    |       ├── categoryConfig.js
-|    |       ├── clientConfig.js
-|    |       ├── supplierConfig.js
-|    |       └── userConfig.js
-|    ├── config.js
-|    ├── context
-|    |   └── authContext.jsx
-|    ├── hooks
-|    |   ├── useAlert.js
-|    |   ├── useEntityPage.js
-|    |   ├── usePagination.js
-|    |   ├── useSearch.js
-|    |   └── useSorting.js
-|    ├── index.js
-|    ├── pages
-|    |   ├── CategoryPage.jsx
-|    |   ├── ClientPage.jsx
-|    |   ├── EntityPage.jsx
-|    |   ├── HomePage.jsx
-|    |   ├── LoginPage.jsx
-|    |   ├── pagesForms
-|    |   |   ├── CategoryForm.jsx
-|    |   |   ├── ClientForm.jsx
-|    |   |   ├── SupplierForm.jsx
-|    |   |   └── UserForm.jsx
-|    |   ├── RegisterPage.jsx
-|    |   ├── styles
-|    |   |   ├── LoginPage.css
-|    |   |   └── Page.css
-|    |   ├── SupplierPage-old.jsx
-|    |   ├── SupplierPage.jsx
-|    |   ├── UserPage-old.jsx
-|    |   └── UserPage.jsx
-|    ├── routes.jsx
-|    ├── schemas
-|    |   └── auth.js
-|    └── utils
-|        └── handleApiCall.js
+|├── backend
+||   ├── .gitignore
+||   ├── app.js
+||   ├── config.js
+||   ├── controllers
+||   |   ├── auth.controller.js
+||   |   ├── category.controller.js
+||   |   ├── client.controller.js
+||   |   ├── supplier.controller.js
+||   |   └── user.controller.js
+||   ├── db.js
+||   ├── index.js
+||   ├── libs
+||   |   ├── date.js
+||   |   ├── encryptData.js
+||   |   └── jwt.js
+||   ├── logic
+||   |   ├── category
+||   |   |   └── category.logic.js
+||   |   ├── supplier
+||   |   |   └── supplier.logic.js
+||   |   ├── user
+||   |   |   └── user.logic.js
+||   |   └── validateFields.logic.js
+||   ├── middlewares
+||   |   ├── auth.middleware.js
+||   |   └── validator.middleware.js
+||   ├── models
+||   |   ├── category.model.js
+||   |   ├── client.model.js
+||   |   ├── phoneClient.model.js
+||   |   ├── supplier.model.js
+||   |   └── user.model.js
+||   ├── package-lock.json
+||   ├── package.json
+||   ├── routes
+||   |   ├── auth.routes.js
+||   |   ├── category.routes.js
+||   |   ├── client.routes.js
+||   |   ├── supplier.routes.js
+||   |   └── user.routes.js
+||   ├── schemas
+||   |   ├── auth.schema.js
+||   |   ├── category.schema.js
+||   |   ├── client.schema.js
+||   |   └── supplier.schema.js
+||   └── startUp4000_pm2_APISTienda.bat
+|└── frontend
+|    ├── .gitignore
+|    ├── package-lock.json
+|    ├── package.json
+|    ├── public
+|    |   ├── electron.js
+|    |   ├── icono.ico
+|    |   ├── index.html
+|    |   └── workers
+|    |       └── searchPerson.worker.js
+|    ├── README.md
+|    └── src
+|        ├── api
+|        |   ├── auth.js
+|        |   ├── axios.js
+|        |   ├── category.js
+|        |   ├── client.js
+|        |   ├── hacienda.js
+|        |   ├── supplier.js
+|        |   └── user.js
+|        ├── App.css
+|        ├── App.jsx
+|        ├── assets
+|        |   └── react.svg
+|        ├── components
+|        |   ├── common
+|        |   |   ├── Alert.jsx
+|        |   |   ├── Button.jsx
+|        |   |   ├── ButtonLink.jsx
+|        |   |   ├── Card.jsx
+|        |   |   ├── GenericForm.jsx
+|        |   |   ├── index.js
+|        |   |   ├── Input.jsx
+|        |   |   ├── InputButton.jsx
+|        |   |   ├── InputFile.jsx
+|        |   |   ├── Label.jsx
+|        |   |   ├── Message.jsx
+|        |   |   ├── MetricCard.jsx
+|        |   |   ├── ModalConfirmation.jsx
+|        |   |   ├── Pagination.jsx
+|        |   |   ├── Select.jsx
+|        |   |   ├── Spinner.jsx
+|        |   |   ├── styles
+|        |   |   |   ├── alert.css
+|        |   |   |   ├── inputButton.css
+|        |   |   |   ├── inputFile.css
+|        |   |   |   ├── metricCard.css
+|        |   |   |   ├── table.css
+|        |   |   |   └── userMenu.css
+|        |   |   ├── Table.jsx
+|        |   |   ├── Textarea.jsx
+|        |   |   └── UserMenu.jsx
+|        |   ├── css
+|        |   |   ├── Alert.css
+|        |   |   ├── contactManager.css
+|        |   |   ├── inputButton.css
+|        |   |   ├── InputFile.css
+|        |   |   ├── modal.css
+|        |   |   ├── sidebar.css
+|        |   |   ├── table.css
+|        |   |   └── userMenu.css
+|        |   ├── features
+|        |   |   ├── ContactManager.jsx
+|        |   |   ├── styles
+|        |   |   |   ├── contactManager.css
+|        |   |   |   └── userMenu.css
+|        |   |   ├── tasks
+|        |   |   |   └── TaskCard.jsx
+|        |   |   └── UserMenu.jsx
+|        |   ├── layout
+|        |   |   ├── Navbar.jsx
+|        |   |   ├── PageLayout.jsx
+|        |   |   ├── Sidebar.jsx
+|        |   |   └── styles
+|        |   |       ├── navbar.css
+|        |   |       ├── sidebar.css
+|        |   |       └── spinner.css
+|        |   ├── modals
+|        |   |   ├── index.js
+|        |   |   ├── Modal.jsx
+|        |   |   ├── ModalBody.jsx
+|        |   |   ├── ModalConfirmation.jsx
+|        |   |   ├── ModalFooter.jsx
+|        |   |   ├── ModalHeader.jsx
+|        |   |   └── styles
+|        |   |       └── modal.css
+|        |   └── tasks
+|        |       └── TaskCard.jsx
+|        ├── config
+|        |   └── entities
+|        |       ├── categoryConfig.js
+|        |       ├── clientConfig.js
+|        |       ├── supplierConfig.js
+|        |       └── userConfig.js
+|        ├── config.js
+|        ├── context
+|        |   └── authContext.jsx
+|        ├── hooks
+|        |   ├── useAlert.js
+|        |   ├── useEntityPage.js
+|        |   ├── useGenericFormLogic.js
+|        |   ├── usePagination.js
+|        |   ├── useSearch.js
+|        |   └── useSorting.js
+|        ├── index.js
+|        ├── pages
+|        |   ├── CategoryPage.jsx
+|        |   ├── ClientPage.jsx
+|        |   ├── EntityPage.jsx
+|        |   ├── HomePage.jsx
+|        |   ├── LoginPage.jsx
+|        |   ├── pagesForms
+|        |   |   ├── CategoryForm.jsx
+|        |   |   ├── ClientForm.jsx
+|        |   |   ├── ProfileForm.jsx
+|        |   |   ├── SupplierForm.jsx
+|        |   |   └── UserForm.jsx
+|        |   ├── ProfilePage.jsx
+|        |   ├── RegisterPage.jsx
+|        |   ├── styles
+|        |   |   ├── HomePage.css
+|        |   |   ├── LoginPage.css
+|        |   |   ├── Page.css
+|        |   |   └── profilePage.css
+|        |   ├── SupplierPage-old.jsx
+|        |   ├── SupplierPage.jsx
+|        |   ├── UserPage-old.jsx
+|        |   └── UserPage.jsx
+|        ├── routes.jsx
+|        ├── schemas
+|        |   └── auth.js
+|        └── utils
+|            └── handleApiCall.js
