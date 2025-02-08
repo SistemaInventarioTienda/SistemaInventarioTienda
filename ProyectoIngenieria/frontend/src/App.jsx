@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Navbar from "./components/layout/Navbar";
@@ -15,16 +15,23 @@ import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+    document.body.classList.toggle('dark-mode');
+  };
+
   return (
     <AuthProvider>
       <HashRouter>
-        <AppContent />
+        <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       </HashRouter>
     </AuthProvider>
   );
 }
 
-function AppContent() {
+function AppContent({ isDarkMode, toggleDarkMode }) {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
 
@@ -41,7 +48,7 @@ function AppContent() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/*" element={<Layout />}>
+          <Route path="/*" element={<Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}>
             <Route index element={<HomePage />} />
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
@@ -55,12 +62,12 @@ function AppContent() {
   );
 }
 
-function Layout() {
+function Layout({ isDarkMode, toggleDarkMode }) {
   return (
     <div className="layout">
       <Sidebar />
       <div className="main-content">
-        <Navbar />
+        <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
         <main className="content">
           <Routes>
             <Route index element={<HomePage />} />

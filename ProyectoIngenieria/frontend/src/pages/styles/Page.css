@@ -78,7 +78,7 @@
     border-radius: 16px;
     flex: 1;
     padding: 8px 12px;
-    margin-right: 10px;
+    margin-right: 5px;
     font-size: 16px;
     color: var(--color-primary) !important;
     transition: border-color 0.3s ease;
@@ -119,15 +119,6 @@
 .items-per-page label {
     font-size: 16px;
     color: var(--color-primary);
-}
-
-.items-per-page select {
-    background-color: #F5F7FA;
-    border: 1px solid var(--color-primary) !important;
-    border-radius: 8px;
-    padding: 4px 8px;
-    font-size: 14px;
-    color: var(--color-primary) !important;
 }
 
 .search-input:focus {

@@ -84,7 +84,6 @@ function GenericForm({
                     onChange={handleChange}
                     required={field.required}
                     disabled={mode === "view"}
-                    {...commonStyles}
                 >
                     {options.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -105,8 +104,7 @@ function GenericForm({
                 required={field.required}
                 readOnly={isBlocked || mode === "view"}
                 placeholder={`Ingrese ${field.label.toLowerCase()}`}
-                {...commonStyles}
-                style={isBlocked ? getReadOnlyStyle() : {}}
+                className={isBlocked ? "readonly-input" : ""}
             />
         );
     };

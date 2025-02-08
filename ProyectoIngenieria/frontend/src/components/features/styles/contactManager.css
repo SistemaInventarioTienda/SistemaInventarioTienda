@@ -1,9 +1,9 @@
 .contacts-container {
     width: 100%;
-    border: 1px solid var(--color-primary, #05004E);
+    border: 1px solid var(--color-primary);
     border-radius: 16px;
     padding: 1rem;
-    background-color: #EEF1F8;
+    background-color: var(--color-offcanvas);
     box-sizing: border-box;
 }
 
@@ -24,8 +24,8 @@
 }
 
 .contact-input {
-    background-color: #F5F7FA;
-    border: 1px solid var(--color-primary, #05004E);
+    background-color: var(--color-input-background);
+    border: 1px solid var(--color-primary);
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border-radius: 16px;
     flex: 1 1 auto;
@@ -33,8 +33,8 @@
 }
 
 .add-contact-btn {
-    background-color: var(--color-primary, #05004E);
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-font-secondary);
     border-radius: 8px;
     padding: 0.5rem 1rem;
     display: flex;
@@ -52,7 +52,7 @@ table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background-color: #F8F9FA;
+    background-color: var(--color-table-background);
     margin: 0 auto;
 }
 
@@ -60,12 +60,12 @@ th,
 td {
     padding: 12px;
     text-align: center;
-    border-bottom: 1px solid var(--color-primary, #05004E);
+    border-bottom: 1px solid var(--color-primary);
 }
 
 th {
-    background-color: #EEF1F8;
-    color: var(--color-primary, #05004E);
+    background-color: var(--color-table-header);
+    color: var(--color-primary);
 }
 
 tr:last-child td {
@@ -73,7 +73,7 @@ tr:last-child td {
 }
 
 tr:hover td {
-    background-color: rgb(207, 211, 207);
+    background-color: var(--color-table-hover);
 }
 
 td .delete-btn {
@@ -89,7 +89,7 @@ td .delete-btn {
 }
 
 .delete-btn:hover {
-    background-color: #FFEBEE;
+    background-color: var(--color-error);
 }
 
 /* Responsivo */

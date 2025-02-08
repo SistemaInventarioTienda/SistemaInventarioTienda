@@ -107,33 +107,22 @@ export function LoginPage() {
                 </span>
                 <Input
                   type={showPassword ? 'text' : 'password'}
-                  style={{
-                    backgroundColor: "#F5F7FA",
-                    borderColor: "#05004E",
-                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                    fontSize: "16px",
-                    fontWeight: "500",
-                    fontFamily: "Poppins, sans-serif",
-                    color: "#05004E",
-                  }}
                   className={`form-control border-custom ${errors.DSC_CONTRASENIA ? 'is-invalid' : ''}`}
                   placeholder="Contraseña"
                   {...register('DSC_CONTRASENIA')}
                 />
-                <Button
-                  id="paswordField"
+                <button
                   type="button"
-                  className="btn"
+                  className="password-toggle-btn"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </Button>
+                </button>
               </div>
               {errors.DSC_CONTRASENIA && (
                 <div className="invalid-feedback d-block">{errors.DSC_CONTRASENIA.message}</div>
               )}
             </div>
-
             {loginErrors && loginErrors.map((error, i) => (
               <Alert
                 key={i}

@@ -1,7 +1,7 @@
 .metric-card {
-    background-color: #ffffff;
+    background-color: var(--color-metric-card-background);
     border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--color-metric-card-shadow);
     padding: 1.5rem;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     display: flex;
@@ -15,7 +15,7 @@
 
 .metric-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px var(--color-metric-card-hover-shadow);
 }
 
 .metric-card-header {
@@ -26,7 +26,7 @@
 }
 
 .metric-card-icon {
-    background-color: #f3f4f6;
+    background-color: var(--color-metric-card-icon-background);
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -37,14 +37,14 @@
 
 .metric-card-title {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--color-metric-card-title);
     margin: 0;
 }
 
 .metric-card-value {
     font-size: 1.75rem;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--color-metric-card-value);
     margin-top: 0.25rem;
 }
 

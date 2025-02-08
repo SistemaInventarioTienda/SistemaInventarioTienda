@@ -1,15 +1,116 @@
-@import '~bootstrap/dist/css/bootstrap.min.css';
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+@import "~bootstrap/dist/css/bootstrap.min.css";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap");
 
 * {
   font-family: "Poppins";
 }
 
 :root {
-  --color-primary: #05004E;
-  --color-secondary: #F5F7FA;
-  --color-card: #FFFFFF;
+  /* Main Theme Colors - Light Mode */
+  --color-primary: #05004e;
+  --color-secondary: #f5f7fa;
+  --color-card: #ffffff;
   --color-font: #000000;
+  --color-font-secondary: #ffffff;
+  /* Status Colors - Light Mode */
+  --color-error: #F44336;
+  --color-warning: #F9CB32;
+  --color-info: #007AFF;
+  --color-success: #4CAF50;
+  /* UI Element Colors - Light Mode */
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --color-border: #e0e0e0;
+  --color-icon-button: #05004E;
+  --color-icon: #FFFFFF;
+  --color-toggle-btn-hover: rgba(255, 255, 255, 0.1);
+  /* Navigation & Sidebar Colors - Light Mode */
+  --color-offcanvas: #EEF1F8;
+  --color-offcanvas-border: #05004E;
+  /* Table Colors - Light Mode */
+  --color-table-hover: rgb(207, 211, 207);
+  --color-table-header: #EEF1F8;
+  --color-table-background: #F8F9FA;
+  --color-input-background: #F5F7FA;
+  /* Form Elements - Light Mode */
+  --color-input-border: #ccc;
+  --color-button-hover: #04003a;
+  --color-file-btn-hover: rgba(245, 247, 250, 0.8);
+  /* File Upload Elements - Light Mode */
+  --color-file-btn-border: #05004E;
+  --color-file-btn-text: #05004E;
+  --color-selected-file-border: #05004E;
+  --color-selected-file-background: #F5F7FA;
+  --color-selected-file-text: #05004E;
+  --color-selected-file-icon: #05004E;
+  /* Metric Cards - Light Mode */
+  --color-metric-card-background: #ffffff;
+  --color-metric-card-shadow: rgba(0, 0, 0, 0.1);
+  --color-metric-card-hover-shadow: rgba(0, 0, 0, 0.15);
+  --color-metric-card-icon-background: #f3f4f6;
+  --color-metric-card-title: #6b7280;
+  --color-metric-card-value: #1f2937;
+  /* Status Pills - Light Mode */
+  --color-status-pill-active-bg: #E8F5E9;
+  --color-status-pill-active-text: #4CAF50;
+  --color-status-pill-inactive-bg: #FFEBEE;
+  --color-status-pill-inactive-text: #F44336;
+  /* Pagination - Light Mode */
+  --color-pagination-bg: #f1f1f1;
+  --color-pagination-hover-bg: #05004E;
+  --color-pagination-hover-text: #fff;
+  --color-pagination-active-bg: #05004E;
+  --color-pagination-active-text: #fff;
+}
+
+.dark-mode {
+  /* Main Theme Colors - Dark Mode */
+  --color-primary: #6b63ff;
+  --color-secondary: #1a1a2e;
+  --color-card: #242438;
+  --color-font: #ffffff;
+  --color-font-secondary: #ffffff;
+  /* Status Colors remain the same for consistency */
+  /* UI Element Colors - Dark Mode */
+  --color-overlay: rgba(0, 0, 0, 0.8);
+  --color-border: #363651;
+  --color-icon-button: #6b63ff;
+  --color-icon: #FFFFFF;
+  --color-toggle-btn-hover: rgba(107, 99, 255, 0.1);
+  /* Navigation & Sidebar Colors - Dark Mode */
+  --color-offcanvas: #242438;
+  --color-offcanvas-border: #363651;
+  /* Table Colors - Dark Mode */
+  --color-table-hover: rgba(107, 99, 255, 0.1);
+  --color-table-header: #1a1a2e;
+  --color-table-background: #242438;
+  /* Form Elements - Dark Mode */
+  --color-input-background: #1a1a2e;
+  --color-input-border: #363651;
+  --color-button-hover: #5750ff;
+  /* File Upload Elements - Dark Mode */
+  --color-file-btn-hover: rgba(107, 99, 255, 0.1);
+  --color-file-btn-border: #6b63ff;
+  --color-file-btn-text: #ffffff;
+  --color-selected-file-border: #6b63ff;
+  --color-selected-file-background: #1a1a2e;
+  --color-selected-file-text: #ffffff;
+  --color-selected-file-icon: #6b63ff;
+  /* Metric Cards - Dark Mode */
+  --color-metric-card-background: #242438;
+  --color-metric-card-shadow: rgba(0, 0, 0, 0.3);
+  --color-metric-card-hover-shadow: rgba(0, 0, 0, 0.4);
+  --color-metric-card-icon-background: #1a1a2e;
+  --color-metric-card-title: #a0aec0;
+  --color-metric-card-value: #ffffff;
+  /* Status Pills - Dark Mode */
+  --color-status-pill-active-bg: rgba(76, 175, 80, 0.2);
+  --color-status-pill-inactive-bg: rgba(244, 67, 54, 0.2);
+  /* Pagination - Dark Mode */
+  --color-pagination-bg: #1a1a2e;
+  --color-pagination-hover-bg: #6b63ff;
+  --color-pagination-hover-text: #fff;
+  --color-pagination-active-bg: #6b63ff;
+  --color-pagination-active-text: #fff;
 }
 
 body {
@@ -27,18 +128,17 @@ body {
   text-align: center;
 }
 
-
-.alert-float{
+.alert-float {
   position: fixed;
-  top: 20px; /* Distancia desde el borde superior de la ventana */
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #28a745; /* Color verde para éxito */
-  color: white;
+  background-color: var(--color-success);
+  color: var(--color-font-secondary);
   padding: 10px 20px;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000; /* Para que quede por encima de todo */
+  z-index: 1000;
   font-size: 16px;
 }
 
@@ -105,7 +205,7 @@ body {
 .navbar {
   height: 60px;
   background-color: var(--color-card);
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 /* Estilos específicos para la página de login */
@@ -125,7 +225,6 @@ body.login-page .app-wrapper {
 }
 
 /* Alert.css */
-
 .alert {
   padding: 10px 15px;
   border-radius: 16px;
@@ -150,31 +249,51 @@ body.login-page .app-wrapper {
 
 /* Estilos para diferentes tipos de alerta */
 .error {
-  background-color: #F44336;
-  border: 1px solid #F44336;
-  color: #FFFFFF;
+  background-color: var(--color-error);
+  border: 1px solid var(--color-error);
+  color: var(--color-font-secondary);
 }
 
 .warning {
-  background-color: #F9CB32;
-  border: 1px solid #F9CB32;
-  color: #FFFFFF;
+  background-color: var(--color-warning);
+  border: 1px solid var(--color-warning);
+  color: var(--color-font-secondary);
 }
 
 .info {
-  background-color: #007AFF;
-  border: 1px solid #007AFF;
-  color: #007AFF;
+  background-color: var(--color-info);
+  border: 1px solid var(--color-info);
+  color: var(--color-font-secondary);
 }
 
 .success {
-  background-color: #4CAF50;
-  border: 1px solid #4CAF50;
-  color: #FFFFFF;
+  background-color: var(--color-success);
+  border: 1px solid var(--color-success);
+  color: var(--color-font-secondary);
 }
 
 .alert-demo {
-  background-color: #FFFFFF;
+  background-color: var(--color-card);
   padding: 20px;
-  color: #FFFFFF;
+  color: var(--color-font);
+}
+
+/* Scrollbar global para toda la aplicación */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--color-secondary);
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 8px;
+  border: 2px solid var(--color-secondary);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-button-hover);
 }

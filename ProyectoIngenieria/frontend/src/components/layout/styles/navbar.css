@@ -4,16 +4,16 @@
 }
 
 .bg-card-custom {
-    background-color: #ffffff;
+    background-color: var(--color-card);
 }
 
 .text-primary-custom {
-    color: #05004E;
+    color: var(--color-primary);
 }
 
 .icon-button {
-    background-color: #05004E !important;
-    border-color: #05004E !important;
+    background-color: var(--color-icon-button) !important;
+    border-color: var(--color-icon-button) !important;
     border-radius: 16px;
     width: 40px;
     height: 40px;
@@ -24,6 +24,6 @@
 }
 
 .navbar-icon {
-    color: #FFFFFF;
+    color: var(--color-icon);
     margin: auto;
 }

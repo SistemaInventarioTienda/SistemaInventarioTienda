@@ -14,7 +14,9 @@
     left: 0;
     top: 0;
     transition: width 0.3s ease;
-    overflow: hidden;
+    overflow-y: auto;
+    /* Permite scroll si es necesario */
+    overflow-x: hidden;
 }
 
 .sidebar.collapsed {
@@ -42,17 +44,6 @@
     border-bottom: 2px solid var(--color-secondary);
 }
 
-.toggle-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-title {
-    font-size: 18px;
-    text-align: center;
-    flex-grow: 1;
-    color: var(--color-card);
-}
-
 .toggle-btn {
     background: none;
     border: none;
@@ -60,6 +51,17 @@
     color: var(--color-card);
     border-radius: 8px;
     padding: 5px;
+}
+
+.toggle-btn:hover {
+    background-color: var(--color-toggle-btn-hover);
+}
+
+.sidebar-title {
+    font-size: 18px;
+    text-align: center;
+    flex-grow: 1;
+    color: var(--color-card);
 }
 
 /* Sidebar Links */
@@ -99,6 +101,7 @@
 @media (max-width: 768px) {
     .sidebar {
         width: 80px;
+        overflow-y: auto;
     }
 
     .sidebar-title {
