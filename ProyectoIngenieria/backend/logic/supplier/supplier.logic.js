@@ -70,6 +70,15 @@ export const validateRegisterEmails = async (emails) => {
     }
 }
 
+export const validatIbanAccount = async (account) => {
+    try {
+        const output = await validateCRIBAN(account);
+        return (output!== true)? "La cuenta IBAN esta mal digitada" : true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+ }
+
 
 
 
@@ -147,4 +156,9 @@ async function validateEqualsPhones(phones){
 async function validateEqualsEmails(emails){
     const uniqueEmails = [...new Set(emails)];
    return (uniqueEmails.length!== emails.length) ? ["No puede haber correos repetidos."]: false;
+}
+
+async function validateCRIBAN(iban) {
+    const ibanPattern = /^CR\d{2}0\d{18}$/;
+    return ibanPattern.test(iban);
 }

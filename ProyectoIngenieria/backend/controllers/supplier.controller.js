@@ -1,5 +1,5 @@
 import {Supplier,mailSupplier,numberSupplier,supplierType}  from "../models/supplier.model.js";
-import {validateRegisterSupplier,validateRegisterSupplierUpdate,validateRegisterEmails,validateRegisterPhones,validateEqualsEmailsSupplier, validateEqualsPhonesSupplier} from    "../logic/supplier/supplier.logic.js"
+import {validateRegisterSupplier,validateRegisterSupplierUpdate,validateRegisterEmails,validateRegisterPhones,validateEqualsEmailsSupplier, validateEqualsPhonesSupplier,validatIbanAccount} from    "../logic/supplier/supplier.logic.js"
 import { getDateCR } from "../libs/date.js";
 import {validateSupplierData,validateSupplierDataUpdate} from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
@@ -76,6 +76,13 @@ export const createSupplier = async (req, res) => {
         if (suplierName !== true) {
             return res.status(400).json({
                 message: suplierName,
+            });
+        }
+
+        const validateIban = await validatIbanAccount(CTA_BANCARIA);
+        if (validateIban!== true) {
+            return res.status(400).json({
+                message: validateIban,
             });
         }
 
@@ -217,6 +224,14 @@ export const updatedSupplier = async (req, res) => {
               message: suplierName,
           });
       }
+
+      const validateIban = await validatIbanAccount(CTA_BANCARIA);
+      if (validateIban!== true) {
+          return res.status(400).json({
+              message: validateIban,
+          });
+      }
+
 
    
       await Supplier.update(
