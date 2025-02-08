@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, FileInput, Select, Alert } from "./";
+import { Input, InputFile, Select, Alert } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
@@ -24,7 +24,7 @@ function GenericForm({
             fontSize: "16px",
             fontWeight: "500",
             fontFamily: "Poppins, sans-serif",
-            color: "#05004E",
+            color: "red",
         },
     };
 
@@ -52,10 +52,12 @@ function GenericForm({
         cursor: "not-allowed",
     });
 
+    // Manejador para seleccionar archivos
     const handleFileSelect = (file) => {
         setFormData((prevData) => ({ ...prevData, foto: file }));
     };
 
+    // Renderizador de campos dinámicos
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";
 
@@ -93,19 +95,6 @@ function GenericForm({
             );
         }
 
-        if (field.type === "file") {
-            return (
-                <FileInput
-                    mode={mode}
-                    name={field.name}
-                    label={field.label}
-                    onFileSelect={handleFileSelect}
-                    required={field.required}
-                    {...commonStyles}
-                />
-            );
-        }
-
         const isBlocked = isCedulaValid && ["nombre", "primerApellido", "segundoApellido"].includes(field.name);
 
         return (
@@ -122,9 +111,14 @@ function GenericForm({
         );
     };
 
+    // Filtrar y separar el campo de archivo
+    const nonFileFields = fields.filter((field) => field.type !== "file");
+    const fileField = fields.find((field) => field.type === "file");
+
     return (
         <form onSubmit={handleSubmit} className="form-grid">
-            {fields
+            {/* Renderizar campos normales */}
+            {nonFileFields
                 .filter((field) => {
                     if ((field.name === "contrasena" || field.name === "confirmarContrasena") && mode !== "add") {
                         return false;
@@ -137,6 +131,8 @@ function GenericForm({
                         {renderField(field)}
                     </div>
                 ))}
+
+            {/* Renderizar ContactManager para teléfonos */}
             {(entityName === "Cliente" || entityName === "Proveedor") && (
                 <div className="full-width">
                     <ContactManager
@@ -147,6 +143,8 @@ function GenericForm({
                     />
                 </div>
             )}
+
+            {/* Renderizar ContactManager para correos electrónicos */}
             {entityName === "Proveedor" && (
                 <div className="full-width">
                     <ContactManager
@@ -157,9 +155,28 @@ function GenericForm({
                     />
                 </div>
             )}
+
+            {/* Renderizar el campo de archivo al final */}
+            {fileField && (
+                <div className="full-width">
+                    <InputFile
+                        mode={mode}
+                        name={fileField.name}
+                        label={`${entityName === "Cliente" ? "Foto de Cliente" : "Foto de Proveedor"}`}
+                        onFileSelect={handleFileSelect}
+                        value={formData[fileField.name]}
+                        required={fileField.required}
+                        {...commonStyles}
+                    />
+                </div>
+            )}
+
+            {/* Mostrar mensajes de error */}
             {errorMessages.length > 0 && (
                 <Alert type="warning" message={errorMessages} />
             )}
+
+            {/* Botones de acción */}
             <div className="modal-footer full-width">
                 {mode !== "edit" && (
                     <button type="button" onClick={onCancel} className="close-btn">

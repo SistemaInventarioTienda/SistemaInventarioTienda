@@ -1,3 +1,17 @@
+/* Estilos para el contenedor principal */
+.input-file-container {
+    width: 100%;
+}
+
+.input-file-container label {
+    font-size: 16px;
+    font-weight: 600;
+    font-family: Poppins, sans-serif;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    display: block;
+}
+
 /* Estilos para el botón de archivo */
 .file-btn {
     width: 100%;
@@ -32,19 +46,16 @@
 
 /* Estilos para el archivo seleccionado */
 .selected-file {
-    gap: 10px;
-    width: 100%;
-    height: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: var(--color-primary);
+    gap: 10px;
+    width: 100%;
     background-color: var(--color-secondary);
     border: 2px dashed var(--color-primary);
     border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
     padding: 10px 15px;
+    box-sizing: border-box;
 }
 
 .selected-file img {
@@ -55,7 +66,13 @@
     border: 1px solid var(--color-primary);
 }
 
-.selected-file p {
+.selected-file .file-info {
+    flex-grow: 1;
+    margin-right: 10px;
+    overflow: hidden;
+}
+
+.selected-file .file-name {
     font-size: 14px;
     font-weight: 500;
     color: var(--color-primary);
@@ -63,8 +80,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    flex-grow: 1;
-    margin-right: 10px;
 }
 
 .file-size {

@@ -41,9 +41,12 @@
 }
 
 .modal-header {
-    display: flex;
+    font-size: 24px;
+    font-weight: 600;
+    font-family: Poppins, sans-serif;
+    color: var(--color-primary);
     justify-content: space-between;
-    align-items: center;
+    border-bottom: 2px solid var(--color-primary);
 }
 
 .offcanvas-header h2 {
