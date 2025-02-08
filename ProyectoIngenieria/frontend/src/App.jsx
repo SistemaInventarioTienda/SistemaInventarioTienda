@@ -15,12 +15,26 @@ import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("darkMode") === "true";
+  });
 
   const toggleDarkMode = () => {
-    setIsDarkMode((prevMode) => !prevMode);
-    document.body.classList.toggle('dark-mode');
+    setIsDarkMode((prevMode) => {
+      const newMode = !prevMode;
+      localStorage.setItem("darkMode", newMode);
+      document.body.classList.toggle("dark-mode", newMode);
+      return newMode;
+    });
   };
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [isDarkMode]);
 
   return (
     <AuthProvider>
