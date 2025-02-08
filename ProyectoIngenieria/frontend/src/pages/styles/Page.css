@@ -130,3 +130,22 @@
     outline: none;
     box-shadow: none;
 }
+
+/* Estilos para la barra de desplazamiento */
+.card-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.card-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Más sutil y elegante */
+    border-radius: 4px;
+}
+
+.card-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.card-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
+}

@@ -1,0 +1,72 @@
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--color-primary);
+    z-index: 1;
+}
+
+.input-field {
+    background-color: var(--color-input-background);
+    border: 1px solid var(--color-input-border);
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 40px;
+    border-radius: 16px;
+    font-size: 16px;
+    color: var(--color-font);
+    transition: border-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
+}
+
+.input-field-password {
+    padding-right: 40px;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(5, 0, 78, 0.1);
+}
+
+.input-field::placeholder {
+    color: var(--color-font);
+    opacity: 0.7;
+}
+
+.input-field:valid {
+    border-color: var(--color-primary);
+}
+
+.input-with-icon button {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--color-icon);
+    transition: color 0.3s ease;
+}
+
+.input-with-icon button:hover {
+    color: var(--color-primary);
+}
+
+.input-with-icon button:active {
+    transform: scale(0.95);
+}
+
+.is-invalid {
+    border-color: var(--color-error) !important;
+    transition: border-color 0.3s ease;
+}
+
+.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1) !important;
+}

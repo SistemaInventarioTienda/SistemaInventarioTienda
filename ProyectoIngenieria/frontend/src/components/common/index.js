@@ -3,6 +3,7 @@ export { ButtonLink } from "./ButtonLink";
 export { Card } from "./Card";
 export { Input } from "./Input";
 export { default as InputButton } from "./InputButton";
+export { InputWithIcon } from "./InputWithIcon";
 export { default as InputFile } from "./InputFile"
 export { Select } from "./Select";
 export { Message } from "./Message";

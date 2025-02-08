@@ -15,18 +15,6 @@ function GenericForm({
     setErrorMessages,
     onCancel,
 }) {
-    const commonStyles = {
-        className: "form-control border-custom",
-        style: {
-            backgroundColor: "#F5F7FA",
-            borderColor: "#05004E",
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-            fontSize: "16px",
-            fontWeight: "500",
-            fontFamily: "Poppins, sans-serif",
-            color: "red",
-        },
-    };
 
     const {
         formData,
@@ -160,11 +148,10 @@ function GenericForm({
                     <InputFile
                         mode={mode}
                         name={fileField.name}
-                        label={`${entityName === "Cliente" ? "Foto de Cliente" : "Foto de Proveedor"}`}
+                        label={`${entityName === "Cliente" ? "Foto del Cliente" : "Foto de Proveedor"}`}
                         onFileSelect={handleFileSelect}
                         value={formData[fileField.name]}
                         required={fileField.required}
-                        {...commonStyles}
                     />
                 </div>
             )}

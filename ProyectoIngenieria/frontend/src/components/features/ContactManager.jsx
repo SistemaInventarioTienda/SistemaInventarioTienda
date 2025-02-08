@@ -69,16 +69,7 @@ export default function ContactManager({
                         value={newContact}
                         onChange={(e) => setNewContact(e.target.value)}
                         placeholder={`Ingrese el ${type === 'phone' ? 'teléfono' : 'correo'}`}
-                        inputClassName="form-control border-custom"
-                        inputStyle={{
-                            backgroundColor: "#F5F7FA",
-                            borderColor: "#05004E",
-                            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                            fontSize: "16px",
-                            fontWeight: "500",
-                            fontFamily: "Poppins, sans-serif",
-                            color: "#05004E",
-                        }}
+                        inputClassName=" border-custom"
                         onButtonClick={handleAddContact}
                         icon={Plus}
                     />
@@ -102,12 +93,6 @@ export default function ContactManager({
                                         <td>
                                             <Button
                                                 className="btn delete-btn"
-                                                style={{
-                                                    backgroundColor: '#F44336',
-                                                    borderRadius: '16px',
-                                                    width: '40px',
-                                                    height: '40px'
-                                                }}
                                                 variant="ghost"
                                                 onClick={() => handleDeleteContact(index)}
                                             >
