@@ -1,26 +1,32 @@
-/* Estilo general del contenedor */
 .input-button-wrapper {
     position: relative;
     display: flex;
     width: 100%;
 }
 
-/* Estilo del input */
 .input-button-wrapper input {
     width: 100%;
     padding: 8px 12px;
     font-size: 14px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
     transition: border-color 0.3s;
+    border-radius: 16px;
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    border: 1px solid var(--color-primary);
+    border-radius: 16px;
+    background-color: var(--color-secondary);
+    color: var(--color-font);
 }
 
 .input-button-wrapper input:focus {
     outline: none;
-    border-color: #05004E;
 }
 
-/* Estilo del botón */
+.input-button-wrapper input::placeholder {
+    color: var(--color-font);
+    opacity: 0.7;
+}
+
 .input-button-wrapper .button {
     position: absolute;
     right: 0;
@@ -32,17 +38,17 @@
     padding: 0;
     width: 40px;
     height: 100%;
-    background-color: #05004E;
-    border: 1px solid #05004E;
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-primary);
     border-left: none;
     border-radius: 0 4px 4px 0;
     cursor: pointer;
-    color: #FFFFFF;
+    color: var(--color-font-secondary);
     transition: background-color 0.3s;
     border-top-right-radius: 16px;
     border-bottom-right-radius: 16px;
 }
 
 .input-button-wrapper .button:hover {
-    background-color: #04003a;
+    background-color: var(--color-button-hover);
 }

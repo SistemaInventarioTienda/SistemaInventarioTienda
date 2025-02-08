@@ -1,19 +1,11 @@
-// React imports
 import React, { useState, useEffect } from 'react';
-// Routing
 import { useNavigate } from 'react-router-dom';
-// Form validation
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-// Context
 import { useAuth } from '../context/authContext';
-// Schemas
 import { loginSchema } from '../schemas/auth';
-// Common components
-import { Card, Button, Input, Alert } from "../components/common";
-// Icons
+import { Card, Button, Input, InputWithIcon, Alert } from "../components/common";
 import { ShoppingBag, User, Lock, Eye, EyeOff } from 'lucide-react';
-// Styles
 import './styles/LoginPage.css';
 
 export function LoginPage() {
@@ -49,6 +41,7 @@ export function LoginPage() {
   }, [isAuthenticated, navigate, setValue]);
 
   const onSubmit = (data) => {
+    console.log(data);
     signin({ ...data, REMEMBERME: rememberMe });
     console.log(rememberMe);
 
@@ -64,71 +57,40 @@ export function LoginPage() {
   };
 
   return (
-    <div className="h-[calc(200vh-200px)] flex items-center justify-center bg-secondary-custom border-custom">
-      <Card className="login-card shadow-lg">
-        <div className="card-body p-5">
+    <div className="login-page-container">
+      <Card className="login-card">
+        <div className="card-login-body">
           <div className="text-center mb-4">
             <ShoppingBag size={48} className="mb-2 text-primary-custom" />
             <h2 className="fw-bold text-primary-custom">Inicio de Sesión</h2>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
 
-            <div className="mb-3">
-              <div className="input-group">
-                <span className="input-group-text bg-primary-custom text-secondary-custom">
-                  <User size={18} />
-                </span>
-                <Input
-                  id="usernameInput"
-                  type="text"
-                  style={{
-                    backgroundColor: "#F5F7FA",
-                    borderColor: "#05004E",
-                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                    fontSize: "16px",
-                    fontWeight: "500",
-                    fontFamily: "Poppins, sans-serif",
-                    color: "#05004E",
-                  }}
-                  className={`form-control border-custom ${errors.DSC_NOMBREUSUARIO ? 'is-invalid' : ''}`}
-                  placeholder="Usuario"
-                  {...register('DSC_NOMBREUSUARIO')}
-                />
-              </div>
+            <div className="mb-4">
+              <InputWithIcon
+                id="usernameInput"
+                icon={User}
+                type="text"
+                placeholder="Usuario"
+                className={`input-field border-custom ${errors.DSC_NOMBREUSUARIO ? 'is-invalid' : ''}`}
+                {...register('DSC_NOMBREUSUARIO')}
+              />
               {errors.DSC_NOMBREUSUARIO && (
                 <div className="invalid-feedback d-block">{errors.DSC_NOMBREUSUARIO.message}</div>
               )}
             </div>
 
             <div className="mb-4">
-              <div className="input-group">
-                <span className="input-group-text bg-primary-custom text-secondary-custom">
-                  <Lock size={18} />
-                </span>
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  style={{
-                    backgroundColor: "#F5F7FA",
-                    borderColor: "#05004E",
-                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                    fontSize: "16px",
-                    fontWeight: "500",
-                    fontFamily: "Poppins, sans-serif",
-                    color: "#05004E",
-                  }}
-                  className={`form-control border-custom ${errors.DSC_CONTRASENIA ? 'is-invalid' : ''}`}
-                  placeholder="Contraseña"
-                  {...register('DSC_CONTRASENIA')}
-                />
-                <Button
-                  id="paswordField"
-                  type="button"
-                  className="btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </Button>
-              </div>
+              <InputWithIcon
+                id="passwordInput"
+                icon={Lock}
+                rightIcon={showPassword ? EyeOff : Eye}
+                onRightIconClick={() => setShowPassword(!showPassword)}
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Contraseña"
+                className={`input-field border-custom ${errors.DSC_CONTRASENIA ? 'is-invalid' : ''}`}
+                {...register('DSC_CONTRASENIA')}
+              />
               {errors.DSC_CONTRASENIA && (
                 <div className="invalid-feedback d-block">{errors.DSC_CONTRASENIA.message}</div>
               )}

@@ -30,7 +30,7 @@ function ProfilePage() {
                 </div>
             </div>
 
-            <div className="card-body">
+            <div>
                 <ProfileForm initialData={user} onSubmit={handleSubmit} />
             </div>
 

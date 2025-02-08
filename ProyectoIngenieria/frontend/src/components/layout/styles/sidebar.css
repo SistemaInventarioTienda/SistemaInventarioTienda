@@ -4,17 +4,27 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 20px 12px;
-    gap: 20px;
+    padding: 1rem 0.75rem;
+    gap: 1rem;
     width: 280px;
     height: 100vh;
+    /* Usar 100vh para que ocupe toda la altura de la ventana */
     background-color: var(--color-primary);
     color: var(--color-card);
     position: fixed;
     left: 0;
     top: 0;
     transition: width 0.3s ease;
-    overflow: hidden;
+    overflow-y: hidden;
+    /* Ocultar el scroll por defecto */
+    z-index: 1000;
+    scroll-behavior: smooth;
+    /* Scroll suave */
+}
+
+.sidebar:hover {
+    overflow-y: auto;
+    /* Mostrar scroll solo al hacer hover */
 }
 
 .sidebar.collapsed {
@@ -38,16 +48,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 0.5rem;
     border-bottom: 2px solid var(--color-secondary);
 }
 
-.toggle-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
 .sidebar-title {
-    font-size: 18px;
+    font-size: 1.125rem;
     text-align: center;
     flex-grow: 1;
     color: var(--color-card);
@@ -59,14 +65,18 @@
     cursor: pointer;
     color: var(--color-card);
     border-radius: 8px;
-    padding: 5px;
+    padding: 0.5rem;
+}
+
+.toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Sidebar Links */
 .sidebar-link {
     display: flex;
     align-items: center;
-    padding: 16px 24px;
+    padding: 0.75rem 1rem;
     color: var(--color-card);
     text-decoration: none;
     transition: background-color 0.3s, padding 0.3s;
@@ -76,7 +86,7 @@
 }
 
 .sidebar.collapsed .sidebar-link {
-    padding: 16px 12px;
+    padding: 0.75rem;
     justify-content: center;
 }
 
@@ -87,7 +97,7 @@
 }
 
 .sidebar-link span {
-    margin-left: 24px;
+    margin-left: 1rem;
     transition: opacity 0.3s ease;
 }
 
@@ -111,6 +121,6 @@
 
     .sidebar-link {
         justify-content: center;
-        padding: 16px 12px;
+        padding: 0.75rem;
     }
 }

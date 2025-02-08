@@ -2,8 +2,6 @@
     position: absolute;
     top: 60px;
     right: 40px;
-    background-color: var(--color-card);
-    border-color: var(--color-card);
     border-radius: 16px;
     width: 200px;
     z-index: 1000;
@@ -12,9 +10,11 @@
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-font);
 }
 
 .user-menu.open {
+    border: 1px solid var(--color-border);
     opacity: 1;
     transform: scale(1);
     pointer-events: auto;
@@ -30,11 +30,16 @@
     display: block;
     position: relative;
     width: 100%;
+    background-color: var(--color-card);
+    border-color: var(--color-card);
+    border-radius: 16px;
 }
 
 .user-info {
     padding: 10px;
     text-align: center;
+    color: var(--color-primary);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .dropdown-item {
@@ -42,12 +47,13 @@
     display: flex;
     align-items: center;
     color: var(--color-primary);
+    border-color: var(--color-primary);
     text-decoration: none;
     cursor: pointer;
 }
 
 .dropdown-item:hover {
-    background-color: rgb(207, 211, 207);
+    background-color: var(--color-table-hover);
 }
 
 .icon {
