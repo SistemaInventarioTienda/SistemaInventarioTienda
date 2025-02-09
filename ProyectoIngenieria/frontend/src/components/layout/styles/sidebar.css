@@ -17,7 +17,6 @@
     transition: width 0.3s ease;
     overflow-y: hidden;
     /* Ocultar el scroll por defecto */
-    z-index: 1000;
     scroll-behavior: smooth;
     /* Scroll suave */
 }

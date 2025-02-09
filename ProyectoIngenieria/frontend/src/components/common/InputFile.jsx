@@ -9,17 +9,27 @@ const InputFile = ({
     value,
     mode,
     label = "Archivo",
-    placeholder = "Selecciona un archivo",
     accept = "image/*",
     onFileSelect
 }) => {
     const inputRef = useRef();
     const [selectedFile, setSelectedFile] = useState(null);
-    const [preview, setPreview] = useState(mode === 'add' ? null : value || DEFAULT_IMAGE_URL);
+    const [preview, setPreview] = useState(null);
 
     useEffect(() => {
-        if (mode !== 'add') {
-            setPreview(value || DEFAULT_IMAGE_URL);
+        // Determinar qué imagen mostrar según el modo y el valor
+        if (mode === 'add') {
+            setPreview(null);
+        } else {
+            console.log(DEFAULT_IMAGE_URL);
+            if (value && typeof value === 'string' && (value.startsWith("http") || value.startsWith("/"))) {
+
+                // Si `value` es una URL válida, usarla como vista previa
+                setPreview(process.env.PUBLIC_URL + value);
+            } else {
+                // Si no hay URL válida, usar la imagen predeterminada
+                setPreview(DEFAULT_IMAGE_URL);
+            }
         }
     }, [value, mode]);
 
@@ -27,7 +37,6 @@ const InputFile = ({
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
             setSelectedFile(file);
-
             if (file.type.startsWith("image/")) {
                 const reader = new FileReader();
                 reader.onloadend = () => {
@@ -37,7 +46,6 @@ const InputFile = ({
             } else {
                 setPreview(DEFAULT_IMAGE_URL);
             }
-
             // Llamamos a la función onFileSelect con el archivo seleccionado
             if (onFileSelect) {
                 onFileSelect(file);
@@ -46,6 +54,7 @@ const InputFile = ({
     };
 
     const handleImageError = () => {
+        // Si ocurre un error al cargar la imagen, usar la imagen predeterminada
         setPreview(DEFAULT_IMAGE_URL);
     };
 

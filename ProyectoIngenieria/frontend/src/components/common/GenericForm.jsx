@@ -28,6 +28,7 @@ function GenericForm({
         setFormData,
         setPhones,
         setEmails,
+        isProcessing,
     } = useGenericFormLogic({
         initialData,
         supplierTypes,
@@ -150,7 +151,7 @@ function GenericForm({
                         name={fileField.name}
                         label={`${entityName === "Cliente" ? "Foto del Cliente" : "Foto de Proveedor"}`}
                         onFileSelect={handleFileSelect}
-                        value={formData[fileField.name]}
+                        value={formData.foto}
                         required={fileField.required}
                     />
                 </div>
@@ -169,9 +170,14 @@ function GenericForm({
                     </button>
                 )}
                 {mode !== "view" && (
-                    <button type="submit" className="add-btn">
+                    // En el botón de submit:
+                    <button
+                        type="submit"
+                        className="add-btn"
+                        disabled={isProcessing} // Deshabilitar durante el procesamiento
+                    >
                         <Plus size={20} />
-                        {mode === "add" ? "Agregar" : "Guardar Cambios"}
+                        {isProcessing ? "Procesando..." : (mode === "add" ? "Agregar" : "Guardar Cambios")}
                     </button>
                 )}
             </div>
