@@ -4,6 +4,7 @@ export { Card } from "./Card";
 export { Input } from "./Input";
 export { default as InputButton } from "./InputButton";
 export { default as FileInput } from "./InputFile"
+export { default as NumberInput } from "./NumberInput";
 export { Select } from "./Select";
 export { Message } from "./Message";
 export { Label } from "./Label";

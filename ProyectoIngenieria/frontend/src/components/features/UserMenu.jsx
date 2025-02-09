@@ -12,6 +12,11 @@ const UserMenu = ({ isOpen }) => {
         navigate('/profile');
     };
 
+    // enlace a la ventana de configuraciones
+    const goToSettings = () => {
+        navigate('/settings');
+    };
+
     return (
         <div className={`user-menu ${isOpen ? 'open' : ''}`}>
             <div className="dropdown-menu">
@@ -25,7 +30,7 @@ const UserMenu = ({ isOpen }) => {
                     <User size={16} className="icon" /> Perfil
                 </span>
                 {/* Enlace a la configuración */}
-                <span className="dropdown-item" onClick={() => {/* futuro */ }}>
+                <span className="dropdown-item" onClick={goToSettings}>
                     <Settings size={16} className="icon" /> Configuración
                 </span>
                 <hr />

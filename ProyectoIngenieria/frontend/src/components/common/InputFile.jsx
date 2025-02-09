@@ -2,8 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Button } from './';
 import { Upload, Trash } from "lucide-react";
 import './styles/inputFile.css';
-
-const DEFAULT_IMAGE_URL = process.env.PUBLIC_URL + '/Assets/image/clientes/default_client.png';
+                                                // '/assets/image/clientes/default_client.png'
+const DEFAULT_IMAGE_URL = process.env.PUBLIC_URL + '/assets/image/Default_Image.png';
 
 const InputFile = ({ value, mode, entity, onFileSelect }) => {
     const inputRef = useRef();

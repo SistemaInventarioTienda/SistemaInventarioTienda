@@ -13,6 +13,7 @@ import UserPage from "./pages/UserPage";
 import SupplierPage from './pages/SupplierPage';
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from './pages/SettingsPage';
 
 function App() {
   return (
@@ -53,6 +54,9 @@ function AppContent() {
 
 
             <Route path="profile" element={<ProfilePage />} />
+            {/* ruta al componente de configuraciones */}
+            <Route path="settings" element={<SettingsPage/>}/>
+
           </Route>
         </Route>
       </Routes>

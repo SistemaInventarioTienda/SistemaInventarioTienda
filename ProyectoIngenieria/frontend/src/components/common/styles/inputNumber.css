@@ -1,0 +1,32 @@
+/* NumberInput.css */
+
+.container {
+  /* border: 1px solid;
+    border-color: #05004E; /* Borde azul oscuro 
+    border-radius: 12px; Bordes redondeados */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .input {
+    width: 4rem;
+    text-align: center;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

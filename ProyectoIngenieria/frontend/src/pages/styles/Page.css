@@ -21,6 +21,12 @@
     max-height: calc(100vh - 150px);
 }
 
+.card-body-settings{
+    flex-grow: 1;
+    padding: 16px;
+    max-height: calc(100vh - 150px);
+}
+
 .content {
     flex-grow: 1;
     overflow: hidden;
