@@ -24,7 +24,6 @@ const UserMenu = ({ isOpen }) => {
                     <strong>{user?.name}</strong>
                     <div>{user?.email}</div>
                 </div>
-                <hr />
                 {/* Enlace al perfil del usuario */}
                 <span className="dropdown-item" onClick={goToUserProfile}>
                     <User size={16} className="icon" /> Perfil
@@ -33,7 +32,6 @@ const UserMenu = ({ isOpen }) => {
                 <span className="dropdown-item" onClick={goToSettings}>
                     <Settings size={16} className="icon" /> Configuración
                 </span>
-                <hr />
                 <button onClick={logout} className="dropdown-item">
                     <LogOut size={16} className="icon" /> Cerrar sesión
                 </button>

@@ -51,6 +51,34 @@ export const validateRegisterEmails = async (emails) => {
     }
 };
 
+ export const validateEqualsPhonesSupplier = async (phones) => {
+    try {
+        const output = await validateEqualsPhones(phones);
+        return (output !== false) ? output : true;
+
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+ export const validateEqualsEmailsSupplier = async (emails) => {
+    try {
+        const output = await validateEqualsEmails(emails);
+        return (output!== false) ? output : true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+}
+
+export const validatIbanAccount = async (account) => {
+    try {
+        const output = await validateCRIBAN(account);
+        return (output!== true)? "La cuenta IBAN esta mal digitada" : true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+ }
+
 
 
 
@@ -117,4 +145,20 @@ async function validateEmailsSupplier(emails) {
     }
 
     return false;  
+}
+
+async function validateEqualsPhones(phones){ 
+    const uniquePhones = [...new Set(phones)];
+    return (uniquePhones.length!== phones.length) ?  ["No puede haber números de teléfono repetidos."]: false;
+}
+
+
+async function validateEqualsEmails(emails){
+    const uniqueEmails = [...new Set(emails)];
+   return (uniqueEmails.length!== emails.length) ? ["No puede haber correos repetidos."]: false;
+}
+
+async function validateCRIBAN(iban) {
+    const ibanPattern = /^CR\d{2}0\d{18}$/;
+    return ibanPattern.test(iban);
 }

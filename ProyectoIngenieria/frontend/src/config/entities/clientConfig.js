@@ -11,7 +11,7 @@ import {
 // Configuración principal de la entidad
 export const clientConfig = {
     // Nombre y descripción de la entidad
-    entityName: "Clientes", 
+    entityName: "Clientes",
     entityMessage: "Gestión de clientes del sistema",
 
     // Identificador clave de la entidad
@@ -35,6 +35,7 @@ export const clientConfig = {
         { name: "primerApellido", label: "Primer Apellido", type: "text", required: true },
         { name: "segundoApellido", label: "Segundo Apellido", type: "text", required: false },
         { name: "direccion", label: "Dirección", type: "text", required: false },
+        { name: "foto", type: "file", required: true },
         {
             name: "estado",
             label: "Estado",
@@ -70,15 +71,22 @@ export const clientConfig = {
         }),
 
         // Transformar datos desde el formulario hacia la API
-        toBackend: (formData) => ({
-            DSC_CEDULA: formData.cedula,
-            DSC_NOMBRE: formData.nombre,
-            DSC_APELLIDOUNO: formData.primerApellido,
-            DSC_APELLIDODOS: formData.segundoApellido,
-            DSC_DIRECCION: formData.direccion,
-            ESTADO: formData.estado,
-            TelefonoClientes: formData.telefonos?.map((telefono) => ({ DSC_TELEFONO: telefono })) || [],
-        }),
+        toBackend: (formData) => {
+            const data = {
+                DSC_CEDULA: formData.cedula,
+                DSC_NOMBRE: formData.nombre,
+                DSC_APELLIDOUNO: formData.primerApellido,
+                DSC_APELLIDODOS: formData.segundoApellido,
+                DSC_DIRECCION: formData.direccion,
+                ESTADO: formData.estado,
+            };
+
+            formData.telefonos?.forEach((telefono, index) => {
+                data[`DSC_TELEFONO${index + 1}`] = telefono;
+            });
+
+            return data;
+        },
     },
 
     // Transformaciones específicas de campos individuales

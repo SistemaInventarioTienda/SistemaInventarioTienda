@@ -12,7 +12,9 @@
       "build/**/*",
       "node_modules/**/*",
       "package.json",
-      "public/**"
+      "public/**",
+      "backend/**"
+      
     ],
     "directories" : {
       "buildResources" : "assets"

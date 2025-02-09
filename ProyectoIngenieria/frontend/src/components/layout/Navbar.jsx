@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, UserRoundCogIcon } from 'lucide-react';
+import { Bell, UserRoundCogIcon, Moon, Sun } from 'lucide-react';
 import { Button } from '../common';
 import { useAuth } from "../../context/authContext";
 import UserMenu from '../features/UserMenu';
 import './styles/navbar.css';
 
-const Navbar = () => {
+const Navbar = ({ isDarkMode, toggleDarkMode }) => {
   const { isAuthenticated, user } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
@@ -40,6 +40,13 @@ const Navbar = () => {
     <nav className="navbar bg-card-custom navbar-custom">
       <div className="d-flex justify-content-end align-items-center w-100">
         <span className="text-primary-custom me-3">{user.nombreUsuario}</span>
+
+        <Button
+          className="btn icon-button me-3"
+          onClick={toggleDarkMode}
+        >
+          {isDarkMode ? <Sun size={20} className='navbar-icon' /> : <Moon size={20} className='navbar-icon' />}
+        </Button>
 
         <Button className="btn icon-button me-3">
           <Bell size={20} className="navbar-icon" />

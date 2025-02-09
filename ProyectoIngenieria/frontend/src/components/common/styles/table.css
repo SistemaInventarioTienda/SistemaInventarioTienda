@@ -1,17 +1,17 @@
 .table-container {
     width: 100%;
-    border: 1px solid var(--color-primary, #05004E);
+    border: 1px solid var(--color-primary);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #FFFFFF;
+    box-shadow: 0 4px 6px var(--color-metric-card-shadow);
 }
 
 .custom-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background-color: #F8F9FA;
+    background-color: var(--color-table-background);
+    color: var(--color-font);
 }
 
 .custom-table th,
@@ -20,12 +20,12 @@
     padding: 12px 0.5cap;
     text-align: center;
     vertical-align: middle;
-    border-bottom: 1px solid var(--color-primary, #05004E);
+    border-bottom: 1px solid var(--color-primary);
 }
 
 .custom-table th {
-    background-color: #EEF1F8;
-    color: var(--color-primary, #05004E);
+    background-color: var(--color-table-header);
+    color: var(--color-primary);
     font-style: semi-bold;
 }
 
@@ -34,7 +34,7 @@
 }
 
 .custom-table tr:hover td {
-    background-color: rgb(207, 211, 207);
+    background-color: var(--color-table-hover);
 }
 
 th {
@@ -60,13 +60,13 @@ th:hover .chevron-icon {
 }
 
 .status-pill.active {
-    background-color: #E8F5E9;
-    color: #4CAF50;
+    background-color: var(--color-status-pill-active-bg);
+    color: var(--color-status-pill-active-text);
 }
 
 .status-pill.inactive {
-    background-color: #FFEBEE;
-    color: #F44336;
+    background-color: var(--color-status-pill-inactive-bg);
+    color: var(--color-status-pill-inactive-text);
 }
 
 .actions-cell {
@@ -91,36 +91,6 @@ th:hover .chevron-icon {
     transform: scale(1.05);
 }
 
-.status-pill {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-}
-
-.status-pill.active {
-    background-color: #E8F5E9;
-    color: #4CAF50;
-}
-
-.status-pill.inactive {
-    background-color: #FFEBEE;
-    color: #F44336;
-}
-
-.actions-cell {
-    display: flex;
-    gap: 8px;
-}
-
-.actions-cell button {
-    padding: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
 .pagination {
     display: flex;
     justify-content: center;
@@ -130,7 +100,7 @@ th:hover .chevron-icon {
 }
 
 .pagination button {
-    background-color: #f1f1f1;
+    background-color: var(--color-pagination-bg);
     border: none;
     color: var(--color-font);
     padding: 8px 12px;
@@ -140,13 +110,13 @@ th:hover .chevron-icon {
 }
 
 .pagination button:hover {
-    background-color: var(--color-primary);
-    color: #fff;
+    background-color: var(--color-pagination-hover-bg);
+    color: var(--color-pagination-hover-text);
 }
 
 .pagination .active {
-    background-color: var(--color-primary);
-    color: #fff;
+    background-color: var(--color-pagination-active-bg);
+    color: var(--color-pagination-active-text);
 }
 
 /* Estilos responsivos */

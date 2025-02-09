@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Navbar from "./components/layout/Navbar";
 import Sidebar from './components/layout/Sidebar';
-import { BrowserRouter, Routes, Route, useLocation, Outlet } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/authContext";
 import { ProtectedRoute } from "./routes";
+import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import CategoryPage from "./pages/CategoryPage";
 import ClientPage from "./pages/ClientPage";
 import HomePage from "./pages/HomePage";
@@ -16,43 +16,59 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from './pages/SettingsPage';
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("darkMode") === "true";
+  });
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prevMode) => {
+      const newMode = !prevMode;
+      localStorage.setItem("darkMode", newMode);
+      document.body.classList.toggle("dark-mode", newMode);
+      return newMode;
+    });
+  };
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [isDarkMode]);
+
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <HashRouter>
+        <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      </HashRouter>
     </AuthProvider>
   );
 }
 
-function AppContent() {
+function AppContent({ isDarkMode, toggleDarkMode }) {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (location.pathname === '/login') {
-      document.body.classList.add('login-page');
-    } else {
+    if (location.pathname !== '/login' && isAuthenticated) {
       document.body.classList.remove('login-page');
+    } else {
+      document.body.classList.add('login-page');
     }
-  }, [location]);
+  }, [location, isAuthenticated]);
 
   return (
     <div className="app-wrapper">
       <Routes>
-        {/* Ruta pública para login */}
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/*" element={<Layout />}>
+          <Route path="/*" element={<Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}>
             <Route index element={<HomePage />} />
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
             <Route path="clients" element={<ClientPage />} />
             <Route path="suppliers" element={<SupplierPage />} />
-
-
             <Route path="profile" element={<ProfilePage />} />
             {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage/>}/>
@@ -64,14 +80,21 @@ function AppContent() {
   );
 }
 
-function Layout() {
+function Layout({ isDarkMode, toggleDarkMode }) {
   return (
     <div className="layout">
       <Sidebar />
       <div className="main-content">
-        <Navbar />
+        <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
         <main className="content">
-          <Outlet />
+          <Routes>
+            <Route index element={<HomePage />} />
+            <Route path="user" element={<UserPage />} />
+            <Route path="category" element={<CategoryPage />} />
+            <Route path="clients" element={<ClientPage />} />
+            <Route path="suppliers" element={<SupplierPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+          </Routes>
         </main>
       </div>
     </div>

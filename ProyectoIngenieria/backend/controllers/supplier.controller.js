@@ -1,5 +1,5 @@
-import {Supplier,mailSupplier,supplierDirection,numberSupplier,supplierType}  from "../models/supplier.model.js";
-import {validateRegisterSupplier,validateRegisterSupplierUpdate,validateRegisterEmails,validateRegisterPhones} from    "../logic/supplier/supplier.logic.js"
+import {Supplier,mailSupplier,numberSupplier,supplierType}  from "../models/supplier.model.js";
+import {validateRegisterSupplier,validateRegisterSupplierUpdate,validateRegisterEmails,validateRegisterPhones,validateEqualsEmailsSupplier, validateEqualsPhonesSupplier,validatIbanAccount} from    "../logic/supplier/supplier.logic.js"
 import { getDateCR } from "../libs/date.js";
 import {validateSupplierData,validateSupplierDataUpdate} from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
@@ -20,15 +20,11 @@ export const getAllSuppliers = async (req, res) => {
 
       
         const { count, rows } = await Supplier.findAndCountAll({
-            attributes: { exclude: ['FEC_MODIFICADOEN','ID_PROVEEDOR','ID_DIRECCION'] },
+            attributes: { exclude: ['FEC_MODIFICADOEN','ID_PROVEEDOR'] },
             limit,
             offset,
             order: [[field, sortOrder]],
             include: [
-                {
-                    model: supplierDirection,
-                    attributes: ['DSC_DIRECCIONEXACTA'],
-                },
                 {
                     model: numberSupplier,
                     attributes: ['DSC_TELEFONO'],
@@ -65,7 +61,7 @@ export const getAllSuppliers = async (req, res) => {
 
 
 export const createSupplier = async (req, res) => {
-    const { DSC_DIRECCIONEXACTA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
+    const { DSC_DIRECCIONEXACTA,DSC_VENTA, DSC_NOMBRE,CTA_BANCARIA, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
   
     try {
         const date = await getDateCR(); 
@@ -83,6 +79,25 @@ export const createSupplier = async (req, res) => {
             });
         }
 
+        const validateIban = await validatIbanAccount(CTA_BANCARIA);
+        if (validateIban!== true) {
+            return res.status(400).json({
+                message: validateIban,
+            });
+        }
+
+        const validatePhones= await validateEqualsPhonesSupplier(phones);
+        if (validatePhones!== true) {
+            return res.status(400).json({
+                message: validatePhones,
+            });
+        }
+        const validateEmails = await validateEqualsEmailsSupplier(emails);
+        if (validateEmails!== true) {
+            return res.status(400).json({
+                message: validateEmails,
+            });
+        }
 
         const numberValidation = await validateRegisterPhones(phones);
         if (numberValidation !== true) {
@@ -99,21 +114,17 @@ export const createSupplier = async (req, res) => {
         }
   
 
-      const direction = await supplierDirection.create({
-        DSC_DIRECCIONEXACTA,
-      });
+      
   
       const formattedDate = date.toString().replace(/[:-]/g, '').slice(0, 14);
       const IDENTIFICADOR_PROVEEDOR = `SUP-${formattedDate}-${uuidv4().slice(0, 8)}`;
-      const CTA_BANCARIA = `CTA-${uuidv4().slice(0, 8)}`;
-      const DSC_VENTA='vende zapatos';
       const supplier = await Supplier.create({
         IDENTIFICADOR_PROVEEDOR,
         DSC_NOMBRE,
         ID_TIPOPROVEEDOR,
         DSC_VENTA,
         CTA_BANCARIA,
-        ID_DIRECCION: direction.ID_DIRECCIONPROVEEDOR,
+        DSC_DIRECCIONEXACTA,
         ESTADO,
         FEC_CREADOEN: date,
       });
@@ -195,7 +206,7 @@ export const createSupplier = async (req, res) => {
 
 
 export const updatedSupplier = async (req, res) => {
-  const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO } = req.body;
+  const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA,DSC_VENTA,CTA_BANCARIA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO } = req.body;
 
   try {
       const date = await getDateCR(); 
@@ -214,16 +225,22 @@ export const updatedSupplier = async (req, res) => {
           });
       }
 
-      await supplierDirection.update(
-        { DSC_DIRECCIONEXACTA },
-        { where: { ID_DIRECCIONPROVEEDOR: req.body.ID_DIRECCION } }
-      );
+      const validateIban = await validatIbanAccount(CTA_BANCARIA);
+      if (validateIban!== true) {
+          return res.status(400).json({
+              message: validateIban,
+          });
+      }
 
 
+   
       await Supplier.update(
         {
           DSC_NOMBRE,
           ID_TIPOPROVEEDOR,
+          DSC_DIRECCIONEXACTA,
+          DSC_VENTA,
+          CTA_BANCARIA,
           ESTADO,
           FEC_MODIFICADOEN: date,
         },
@@ -254,10 +271,6 @@ export const selectOneSupplier = async (req, res) => {
           where: { IDENTIFICADOR_PROVEEDOR: IDENTIFICADOR_PROVEEDOR },
           attributes: { exclude: ['FEC_MODIFICADOEN'] },
           include: [
-              {
-                  model: supplierDirection,
-                  attributes: ['DSC_DIRECCIONEXACTA'],
-              },
               {
                   model: numberSupplier,
                   attributes: ['DSC_TELEFONO'],
@@ -314,10 +327,6 @@ export const searchSupplier = async (req, res) => {
               ]
           },
           include: [
-            {
-                model: supplierDirection,
-                attributes: ['DSC_DIRECCIONEXACTA'],
-            },
             {
                 model: numberSupplier,
                 attributes: ['DSC_TELEFONO'],

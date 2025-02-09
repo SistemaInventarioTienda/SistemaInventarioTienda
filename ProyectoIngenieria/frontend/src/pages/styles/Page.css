@@ -84,7 +84,7 @@
     border-radius: 16px;
     flex: 1;
     padding: 8px 12px;
-    margin-right: 10px;
+    margin-right: 5px;
     font-size: 16px;
     color: var(--color-primary) !important;
     transition: border-color 0.3s ease;
@@ -127,15 +127,6 @@
     color: var(--color-primary);
 }
 
-.items-per-page select {
-    background-color: #F5F7FA;
-    border: 1px solid var(--color-primary) !important;
-    border-radius: 8px;
-    padding: 4px 8px;
-    font-size: 14px;
-    color: var(--color-primary) !important;
-}
-
 .search-input:focus {
     outline: none;
     box-shadow: none;
@@ -144,4 +135,23 @@
 .items-per-page select:focus {
     outline: none;
     box-shadow: none;
+}
+
+/* Estilos para la barra de desplazamiento */
+.card-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.card-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Más sutil y elegante */
+    border-radius: 4px;
+}
+
+.card-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.card-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
 }

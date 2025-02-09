@@ -1,54 +1,74 @@
-const electron = require('electron');
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
-const path = require('path');
+const { app, BrowserWindow } = require("electron");
+const path = require("path");
+const { exec } = require("child_process");
+
+let mainWindow;
+let backendProcess;
 
 async function createWindow() {
   mainWindow = new BrowserWindow({
-    title: 'Sistema tienda',
-    width: 800, // Ajusta el ancho y alto
+    title: "Sistema Tienda",
+    width: 800,
     height: 600,
-    frame: true, // Elimina el marco por defecto
-    show: false, // La ventana no se muestra inicialmente
+    frame: true,
+    show: false,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false, // Necesario para usar ipcMain si lo implementas
+      contextIsolation: false,
     },
   });
 
-  const isDev = (await import('electron-is-dev')).default;
+  const isDev = (await import("electron-is-dev")).default;
+
+  if (!isDev) {
+    startBackend();
+  }
+
   mainWindow.loadURL(
     isDev
       ? "http://localhost:3000"
       : `file://${path.join(__dirname, "../build/index.html")}`
   );
-  if (isDev) {
-    mainWindow.webContents.openDevTools();
-  }
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show(); // Muestra la ventana después de cargar el contenido
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
   });
 
   mainWindow.setMenu(null);
-  // mainWindow.setFullScreen(true);
   mainWindow.maximize();
-  mainWindow.on('closed', () => {
+  mainWindow.on("closed", () => {
     mainWindow = null;
+    if (backendProcess) {
+      backendProcess.kill();
+    }
   });
 }
 
-app.on('ready', () => {
-  createWindow();
-});
+function startBackend() {
+  const backendPath = path.join(__dirname, "../backend/index.js");
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  backendProcess = exec(`node ${backendPath}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error iniciando el backend: ${error.message}`);
+    }
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+    }
+    console.log(`stdout: ${stdout}`);
+  });
+
+  backendProcess.stdout.on("data", (data) => {
+    console.log(`Backend: ${data}`);
+  });
+}
+
+app.on("ready", createWindow);
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
-
-app.on('activate', () => {
+app.on("activate", () => {
   if (mainWindow === null) {
     createWindow();
   }

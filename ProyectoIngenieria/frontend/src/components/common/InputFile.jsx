@@ -2,14 +2,21 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Button } from './';
 import { Upload, Trash } from "lucide-react";
 import './styles/inputFile.css';
-                                                // '/assets/image/clientes/default_client.png'
-const DEFAULT_IMAGE_URL = process.env.PUBLIC_URL + '/assets/image/Default_Image.png';
 
-const InputFile = ({ value, mode, entity, onFileSelect }) => {
+const DEFAULT_IMAGE_URL = process.env.PUBLIC_URL + '/assets/image/default_image.png';
+
+const InputFile = ({
+    value,
+    mode,
+    label = "Archivo",
+    placeholder = "Selecciona un archivo",
+    accept = "image/*",
+    onFileSelect
+}) => {
     const inputRef = useRef();
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(mode === 'add' ? null : value || DEFAULT_IMAGE_URL);
-    console.log("modo desde input file", mode);
+
     useEffect(() => {
         if (mode !== 'add') {
             setPreview(value || DEFAULT_IMAGE_URL);
@@ -17,7 +24,6 @@ const InputFile = ({ value, mode, entity, onFileSelect }) => {
     }, [value, mode]);
 
     const handleOnChange = (event) => {
-        
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
             setSelectedFile(file);
@@ -31,6 +37,7 @@ const InputFile = ({ value, mode, entity, onFileSelect }) => {
             } else {
                 setPreview(DEFAULT_IMAGE_URL);
             }
+
             // Llamamos a la función onFileSelect con el archivo seleccionado
             if (onFileSelect) {
                 onFileSelect(file);
@@ -49,6 +56,9 @@ const InputFile = ({ value, mode, entity, onFileSelect }) => {
     const removeFile = () => {
         setSelectedFile(null);
         setPreview(null);
+        if (onFileSelect) {
+            onFileSelect(null); // Notificar que se eliminó el archivo
+        }
     };
 
     const formatFileSize = (size) => {
@@ -59,41 +69,46 @@ const InputFile = ({ value, mode, entity, onFileSelect }) => {
 
     return (
         <div className="input-file-container">
-            <label>Fotografía</label>
+            <label>{label}</label>
             {preview ? (
                 <div className="selected-file">
                     <img
                         src={preview}
                         alt="Vista previa"
                         className="preview-image"
-                        onError={handleImageError} // Aquí agregamos el evento onError
+                        onError={handleImageError}
                     />
-                    <div>
-                        <p>{selectedFile ? selectedFile.name : ""}</p>
+                    <div className="file-info">
+                        <p className="file-name">{selectedFile ? selectedFile.name : ""}</p>
                         <p className="file-size">{selectedFile ? formatFileSize(selectedFile.size) : ""}</p>
                     </div>
-                    {(mode === 'edit' || mode === 'add') && entity === 'Cliente' ? (
+                    {(mode === 'edit' || mode === 'add') && (
                         <>
-                            <Button onClick={removeFile} type="button">
-                                <Trash />
-                            </Button>
-                            <Button onClick={onChooseFile} className="file-btn" type="button">
-                                <Upload />
-                                <span>{mode === 'edit' ? "Seleccionar Nuevo Archivo" : "Seleccionar Archivo"}</span>
-                            </Button>
+                            {/* Botón de eliminar solo si no es la imagen predeterminada */}
+                            {preview !== DEFAULT_IMAGE_URL && (
+                                <Button onClick={removeFile} type="button">
+                                    <Trash />
+                                </Button>
+                            )}
+                            {!selectedFile && (
+                                <Button onClick={onChooseFile} className="file-btn" type="button">
+                                    <Upload />
+                                    <span>{mode === 'edit' ? "Seleccionar Nuevo Archivo" : "Seleccionar Archivo"}</span>
+                                </Button>
+                            )}
                             <input
                                 onChange={handleOnChange}
                                 type="file"
                                 ref={inputRef}
                                 style={{ display: "none" }}
-                                accept="image/*"
+                                accept={accept}
                             />
                         </>
-                    ) : null}
+                    )}
                 </div>
             ) : (
                 <>
-                    {(mode === 'edit' || mode === 'add') && entity === 'Cliente' ? (
+                    {(mode === 'edit' || mode === 'add') && (
                         <>
                             <Button onClick={onChooseFile} className="file-btn" type="button">
                                 <Upload />
@@ -104,10 +119,10 @@ const InputFile = ({ value, mode, entity, onFileSelect }) => {
                                 type="file"
                                 ref={inputRef}
                                 style={{ display: "none" }}
-                                accept="image/*"
+                                accept={accept}
                             />
                         </>
-                    ) : null}
+                    )}
                 </>
             )}
         </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, FileInput, Select, Alert } from "./";
+import { Input, InputFile, Select, Alert } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
@@ -15,18 +15,6 @@ function GenericForm({
     setErrorMessages,
     onCancel,
 }) {
-    const commonStyles = {
-        className: "form-control border-custom",
-        style: {
-            backgroundColor: "#F5F7FA",
-            borderColor: "#05004E",
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-            fontSize: "16px",
-            fontWeight: "500",
-            fontFamily: "Poppins, sans-serif",
-            color: "#05004E",
-        },
-    };
 
     const {
         formData,
@@ -52,10 +40,12 @@ function GenericForm({
         cursor: "not-allowed",
     });
 
+    // Manejador para seleccionar archivos
     const handleFileSelect = (file) => {
         setFormData((prevData) => ({ ...prevData, foto: file }));
     };
 
+    // Renderizador de campos dinámicos
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";
 
@@ -82,7 +72,6 @@ function GenericForm({
                     onChange={handleChange}
                     required={field.required}
                     disabled={mode === "view"}
-                    {...commonStyles}
                 >
                     {options.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -90,19 +79,6 @@ function GenericForm({
                         </option>
                     ))}
                 </Select>
-            );
-        }
-
-        if (field.type === "file") {
-            return (
-                <FileInput
-                    mode={mode}
-                    name={field.name}
-                    label={field.label}
-                    onFileSelect={handleFileSelect}
-                    required={field.required}
-                    {...commonStyles}
-                />
             );
         }
 
@@ -116,15 +92,19 @@ function GenericForm({
                 required={field.required}
                 readOnly={isBlocked || mode === "view"}
                 placeholder={`Ingrese ${field.label.toLowerCase()}`}
-                {...commonStyles}
-                style={isBlocked ? getReadOnlyStyle() : {}}
+                className={isBlocked ? "readonly-input" : ""}
             />
         );
     };
 
+    // Filtrar y separar el campo de archivo
+    const nonFileFields = fields.filter((field) => field.type !== "file");
+    const fileField = fields.find((field) => field.type === "file");
+
     return (
         <form onSubmit={handleSubmit} className="form-grid">
-            {fields
+            {/* Renderizar campos normales */}
+            {nonFileFields
                 .filter((field) => {
                     if ((field.name === "contrasena" || field.name === "confirmarContrasena") && mode !== "add") {
                         return false;
@@ -137,6 +117,8 @@ function GenericForm({
                         {renderField(field)}
                     </div>
                 ))}
+
+            {/* Renderizar ContactManager para teléfonos */}
             {(entityName === "Cliente" || entityName === "Proveedor") && (
                 <div className="full-width">
                     <ContactManager
@@ -147,6 +129,8 @@ function GenericForm({
                     />
                 </div>
             )}
+
+            {/* Renderizar ContactManager para correos electrónicos */}
             {entityName === "Proveedor" && (
                 <div className="full-width">
                     <ContactManager
@@ -157,9 +141,27 @@ function GenericForm({
                     />
                 </div>
             )}
+
+            {/* Renderizar el campo de archivo al final */}
+            {fileField && (
+                <div className="full-width">
+                    <InputFile
+                        mode={mode}
+                        name={fileField.name}
+                        label={`${entityName === "Cliente" ? "Foto del Cliente" : "Foto de Proveedor"}`}
+                        onFileSelect={handleFileSelect}
+                        value={formData[fileField.name]}
+                        required={fileField.required}
+                    />
+                </div>
+            )}
+
+            {/* Mostrar mensajes de error */}
             {errorMessages.length > 0 && (
                 <Alert type="warning" message={errorMessages} />
             )}
+
+            {/* Botones de acción */}
             <div className="modal-footer full-width">
                 {mode !== "edit" && (
                     <button type="button" onClick={onCancel} className="close-btn">
