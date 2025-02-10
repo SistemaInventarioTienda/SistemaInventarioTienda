@@ -35,7 +35,7 @@ export const clientConfig = {
         { name: "primerApellido", label: "Primer Apellido", type: "text", required: true },
         { name: "segundoApellido", label: "Segundo Apellido", type: "text", required: false },
         { name: "direccion", label: "Dirección", type: "text", required: false },
-        { name: "foto", type: "file", required: true },
+        { name: "foto", type: "file", required: false },
         {
             name: "estado",
             label: "Estado",
@@ -73,7 +73,9 @@ export const clientConfig = {
 
         // Transformar datos desde el formulario hacia la API
         toBackend: async (formData) => {
-            const base64Image = formData.foto ? await convertToBase64(formData.foto) : null;
+            const base64Image = formData.foto instanceof File
+                ? await convertToBase64(formData.foto)
+                : formData.foto;
             const data = {
                 DSC_CEDULA: formData.cedula,
                 DSC_NOMBRE: formData.nombre,
@@ -81,7 +83,7 @@ export const clientConfig = {
                 DSC_APELLIDODOS: formData.segundoApellido,
                 DSC_DIRECCION: formData.direccion,
                 ESTADO: formData.estado,
-                FOTO: base64Image,
+                FOTO: base64Image || null,
             };
 
             formData.telefonos?.forEach((telefono, index) => {
@@ -111,13 +113,15 @@ export const clientConfig = {
 
 const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
-        if (!file) resolve(null); // Si no hay archivo, resolver inmediatamente
+        if (!file) {
+            resolve(null); // Si no hay archivo, resolver con null
+            return;
+        }
 
+        // Solo leer si hay archivo
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => {
-            reject(new Error("Error al convertir la imagen a base64")); // Propagar error claramente
-        };
+        reader.onerror = (error) => reject(error);
     });
 };
