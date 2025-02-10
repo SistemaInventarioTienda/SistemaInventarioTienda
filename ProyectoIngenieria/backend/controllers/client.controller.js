@@ -2,17 +2,6 @@ import Client from "../models/client.model.js";
 import phoneClient from "../models/phoneClient.model.js";
 import { getDateCR } from '../libs/date.js';
 import { Op } from 'sequelize';
-import { saveImage, deleteImage } from '../utils/fileManager.js';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-// Obtener la ruta del archivo actual
-const __filename = fileURLToPath(import.meta.url);
-// Construir __dirname
-const __dirname = path.dirname(__filename);
-
-// Ruta base para las imágenes de clientes
-const CLIENT_IMAGE_DIR = path.resolve(__dirname, '../../frontend/public/assets/image/clientes');
 
 function isNotEmpty(value) {
   if (typeof value === 'string') {
@@ -25,7 +14,6 @@ function isNotEmpty(value) {
 }
 
 export const registerClient = async (req, res) => {
-  let tempFilePath = null;
   try {
 
     const { DSC_CEDULA, DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FOTO, ...telefonos } = req.body;
@@ -48,15 +36,6 @@ export const registerClient = async (req, res) => {
       })
     }
 
-    // Guardar la imagen temporalmente si se proporciona
-    if (FOTO) {
-      tempFilePath = await saveImage(FOTO, DSC_CEDULA, CLIENT_IMAGE_DIR);
-    }
-
-    const formattedPath = path.join('public', 'assets', 'image', 'clientes', `${DSC_CEDULA}.${FOTO.match(/^data:image\/(\w+);base64,/)[1]}`);
-    // Guardamos la URL con barras invertidas para Windows, pero asegurando compatibilidad con Linux/Unix
-    const finalPath = formattedPath.split(path.sep).join('\\');
-
     // Crear el cliente
     const creadoEn = await getDateCR();
     const newClient = new Client({
@@ -66,7 +45,7 @@ export const registerClient = async (req, res) => {
       DSC_APELLIDODOS: DSC_APELLIDODOS,
       FEC_CREADOEN: creadoEn,
       ESTADO: ESTADO,
-      URL_FOTO: FOTO ? finalPath : null,
+      URL_FOTO: `public/Assets/image/clientes/${DSC_CEDULA}.png`,
       DSC_DIRECCION: DSC_DIRECCION
     });
 
@@ -97,11 +76,6 @@ export const registerClient = async (req, res) => {
       "cliente": clientSaved
     });
   } catch (error) {
-
-    // En caso de error, eliminar la imagen temporal
-    if (tempFilePath) {
-      await deleteImage(tempFilePath);
-    }
 
     if (error.name === 'SequelizeUniqueConstraintError') {
 
@@ -207,61 +181,25 @@ export const deleteClient = async (req, res) => {
 }
 
 export const updateClient = async (req, res) => {
-  let tempFilePath = null;
-  let oldFilePath = null;
-
   try {
     const { DSC_CEDULA, DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FOTO, ...telefonos } = req.body;
 
+    const modificadoEN = await getDateCR();
     const client = await Client.findOne({ where: { DSC_CEDULA: req.params.id } });
     if (!client) {
       return res.status(404).json({ message: "Cliente no encontrado." });
     }
 
-    // Guardar la ruta de la imagen anterior si existe
-    if (client.URL_FOTO) {
-      oldFilePath = path.resolve(__dirname, '../../frontend', client.URL_FOTO);
-    }
-
-    // Guardar la nueva imagen temporalmente si se proporciona
-    if (FOTO) {
-      tempFilePath = await saveImage(FOTO, DSC_CEDULA, CLIENT_IMAGE_DIR);
-    }
-
-    const formattedPath = path.join('public', 'assets', 'image', 'clientes', `${DSC_CEDULA}.${FOTO.match(/^data:image\/(\w+);base64,/)[1]}`);
-    // Guardamos la URL con barras invertidas para Windows, pero asegurando compatibilidad con Linux/Unix
-    const finalPath = formattedPath.split(path.sep).join('\\');
-
-    // Actualizar el cliente
-    const modificadoEN = await getDateCR();
     await client.update({
-      DSC_CEDULA,
-      DSC_NOMBRE,
-      DSC_APELLIDOUNO,
-      DSC_APELLIDODOS,
-      ESTADO,
-      DSC_DIRECCION,
-      URL_FOTO: FOTO ? finalPath : client.URL_FOTO,
-      FEC_MODIFICADOEN: modificadoEN,
-    });
+      DSC_CEDULA, DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FOTO, FEC_MODIFICADOEN: modificadoEN
+    })
 
-    // Eliminar la imagen anterior si existe
-    if (oldFilePath && FOTO) {
-      await deleteImage(oldFilePath);
-    }
-
-    // Respuesta exitosa
     return res.json(client);
-  } catch (error) {
-    // En caso de error, eliminar la imagen temporal
-    if (tempFilePath) {
-      await deleteImage(tempFilePath);
-    }
 
-    // Manejo de errores
+  } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-};
+}
 
 export const searchClient = async (req, res) => {
   try {

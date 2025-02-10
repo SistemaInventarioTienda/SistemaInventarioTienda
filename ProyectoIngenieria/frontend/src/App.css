@@ -31,6 +31,7 @@
   --color-table-header: #EEF1F8;
   --color-table-background: #F8F9FA;
   --color-input-background: #F5F7FA;
+  --color-input-readonly-background: #E9ECEF;
   /* Form Elements - Light Mode */
   --color-input-border: #ccc;
   --color-button-hover: #04003a;
@@ -87,6 +88,7 @@
   --color-input-background: #1a1a2e;
   --color-input-border: #363651;
   --color-button-hover: #5750ff;
+  --color-input-readonly-background: #2C2F33;
   /* File Upload Elements - Dark Mode */
   --color-file-btn-hover: rgba(107, 99, 255, 0.1);
   --color-file-btn-border: #6b63ff;

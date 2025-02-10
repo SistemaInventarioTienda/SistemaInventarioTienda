@@ -22,14 +22,15 @@ const InputFile = ({
             setPreview(null);
         } else {
             console.log(DEFAULT_IMAGE_URL);
-            if (value && typeof value === 'string' && (value.startsWith("http") || value.startsWith("/"))) {
-
-                // Si `value` es una URL válida, usarla como vista previa
-                setPreview(process.env.PUBLIC_URL + value);
+            if (value && typeof value === 'string') {
+                if (value.startsWith("http") || value.startsWith("/")) {
+                    setPreview(value); // Si es una URL absoluta o relativa correcta
+                } else {
+                    setPreview(`${process.env.PUBLIC_URL}/${value.replace(/^public[\\/]/, '')}`);
+                }
             } else {
-                // Si no hay URL válida, usar la imagen predeterminada
                 setPreview(DEFAULT_IMAGE_URL);
-            }
+            }            
         }
     }, [value, mode]);
 
