@@ -2,6 +2,12 @@ import Client from "../models/client.model.js";
 import phoneClient from "../models/phoneClient.model.js";
 import { getDateCR } from '../libs/date.js';
 import { Op } from 'sequelize';
+import { saveImage, deleteImage } from '../utils/fileManager.js';
+
+/* new
+import path from "path";
+const CLIENT_IMAGE_FOLDER = path.join("..", "frontend", "public", "assets", "image", "clientes");
+*/
 
 function isNotEmpty(value) {
   if (typeof value === 'string') {
@@ -71,6 +77,17 @@ export const registerClient = async (req, res) => {
       );
     }
 
+    /* new - manejar el guardado de la foto en el servidor y guardar la ruta en bd
+    if (FOTO) {
+      try {
+        const filePath = await saveImage(FOTO, DSC_CEDULA, CLIENT_IMAGE_FOLDER);
+        await clientSaved.update({ URL_FOTO: filePath });
+      } catch (error) {
+        return res.status(500).json({ message: "Error al guardar la imagen", error: error.message });
+      }
+    }
+    */
+
     res.json({
       'status': 200,
       "cliente": clientSaved
@@ -128,7 +145,10 @@ export const getAllClients = async (req, res) => {
       include: [{
         model: phoneClient,
         attributes: ['DSC_TELEFONO'],
-      }]
+      }],
+      // new - distinct - para manejar bien la cantidad de registros de clientes, ya que sin esto puede surgir duplicaciones con phoneClient,
+      // lo que resultaba en una página de más que no contenia nada
+      distinct: true
     });
 
 
@@ -190,17 +210,27 @@ export const updateClient = async (req, res) => {
       return res.status(404).json({ message: "Cliente no encontrado." });
     }
 
-    await client.update({
-      DSC_CEDULA, DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FOTO, FEC_MODIFICADOEN: modificadoEN
-    })
+    let updatedData = { DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO, DSC_DIRECCION, FEC_MODIFICADOEN: modificadoEN };
 
+    // new - manejar el guardado de la foto en el servidor y guardar la ruta en bd
+    /* también el eliminado de la foto en el servidor
+    if (FOTO) {
+      try {
+        if (client.URL_FOTO) await deleteImage(client.URL_FOTO);
+        const filePath = await saveImage(FOTO, req.params.id, CLIENT_IMAGE_FOLDER);
+        updatedData.URL_FOTO = filePath;
+      } catch (error) {
+        return res.status(500).json({ message: "Error al actualizar la imagen", error: error.message });
+      }
+    }
+    */
+    await client.update(updatedData);
     return res.json(client);
 
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 }
-
 export const searchClient = async (req, res) => {
   try {
     // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
