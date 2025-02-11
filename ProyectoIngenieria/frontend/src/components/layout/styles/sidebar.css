@@ -17,7 +17,6 @@
     transition: width 0.3s ease;
     overflow-y: hidden;
     /* Ocultar el scroll por defecto */
-    z-index: 1000;
     scroll-behavior: smooth;
     /* Scroll suave */
 }
@@ -103,6 +102,26 @@
 
 .sidebar.collapsed .sidebar-link span {
     display: none;
+}
+
+
+/* Scrollbar global para toda la aplicación  */
+.sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 }
 
 /* Responsivo */

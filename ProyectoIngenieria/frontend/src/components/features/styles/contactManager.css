@@ -5,6 +5,16 @@
     padding: 1rem;
     background-color: var(--color-offcanvas);
     box-sizing: border-box;
+    max-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.contacts-container label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: var(--color-primary);
 }
 
 .contact-input-group {
@@ -12,110 +22,163 @@
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 1rem;
-    border-radius: 16px;
-}
-
-/* Centrar el botón */
-.contact-input-group,
-.add-contact-btn-container {
-    display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
 }
 
-.contact-input {
-    background-color: var(--color-input-background);
+.contact-input-group .border-custom {
+    flex: 1;
+    min-width: 100px;
     border: 1px solid var(--color-primary);
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    flex: 1 1 auto;
-    min-width: 200px;
+    border-radius: 8px;
+    padding: 0.5rem;
 }
 
-.add-contact-btn {
+.contact-input-group button {
     background-color: var(--color-primary);
     color: var(--color-font-secondary);
+    border: none;
     border-radius: 8px;
     padding: 0.5rem 1rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn.cancel-btn {
+    background-color: var(--color-error);
+    color: var(--color-font-secondary);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
 }
 
 .contacts-table {
     width: 100%;
     overflow-x: auto;
-    text-align: center;
+    overflow-y: auto;
+    flex-grow: 1;
 }
 
-table {
+.contacts-table table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     background-color: var(--color-table-background);
-    margin: 0 auto;
 }
 
-th,
-td {
+.contacts-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.contacts-table th,
+.contacts-table td {
+    color: var(--color-font);
     padding: 12px;
     text-align: center;
     border-bottom: 1px solid var(--color-primary);
 }
 
-th {
+.contacts-table th {
     background-color: var(--color-table-header);
     color: var(--color-primary);
 }
 
-tr:last-child td {
+.contacts-table tr:last-child td {
     border-bottom: none;
 }
 
-tr:hover td {
+.contacts-table tr:hover td {
     background-color: var(--color-table-hover);
 }
 
-td .delete-btn {
+.action-cell {
     display: flex;
     justify-content: center;
-    align-items: center;
-    margin: 0 auto;
+    gap: 0.5rem;
 }
 
-.delete-btn {
+.btn-edit-btn,
+.btn-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
     padding: 4px;
     border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
 
-.delete-btn:hover {
+.icon-cm {
+    color: var(--color-font);
+}
+
+.btn-edit-btn:hover {
+    background-color: var(--color-info);
+}
+
+.btn-delete-btn:hover {
     background-color: var(--color-error);
 }
 
-/* Responsivo */
+/* scrollbar */
+.contacts-table::-webkit-scrollbar {
+    /* Aplicar scrollbar solo a la tabla */
+    width: 16px;
+}
+
+.contacts-table::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+}
+
+.contacts-table::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 4px solid var(--scrollbar-arrow-bg);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+    min-height: 40px;
+}
+
+.contacts-table::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
 @media (max-width: 640px) {
     .contact-input-group {
         flex-direction: column;
-        align-items: center;
     }
 
-    th {
+    .contacts-table th {
         display: none;
     }
 
-    td {
+    .contacts-table td {
         display: block;
         text-align: right;
         padding-left: 50%;
         position: relative;
     }
 
-    td::before {
+    .contacts-table td::before {
         content: attr(data-label);
         position: absolute;
         left: 8px;
         width: 45%;
         text-align: left;
         font-weight: 600;
+    }
+
+    .action-cell {
+        justify-content: flex-end;
     }
 }

@@ -35,7 +35,7 @@ export const clientConfig = {
         { name: "primerApellido", label: "Primer Apellido", type: "text", required: true },
         { name: "segundoApellido", label: "Segundo Apellido", type: "text", required: false },
         { name: "direccion", label: "Dirección", type: "text", required: false },
-        { name: "foto", type: "file", required: true },
+        { name: "foto", type: "file", required: false },
         {
             name: "estado",
             label: "Estado",
@@ -68,10 +68,14 @@ export const clientConfig = {
             direccion: client.DSC_DIRECCION,
             estado: client.ESTADO === "ACTIVO" ? 1 : 2,
             telefonos: client.TelefonoClientes?.map((t) => t.DSC_TELEFONO) || [],
+            foto: client.URL_FOTO,
         }),
 
         // Transformar datos desde el formulario hacia la API
-        toBackend: (formData) => {
+        toBackend: async (formData) => {
+            const base64Image = formData.foto instanceof File
+                ? await convertToBase64(formData.foto)
+                : formData.foto;
             const data = {
                 DSC_CEDULA: formData.cedula,
                 DSC_NOMBRE: formData.nombre,
@@ -79,6 +83,7 @@ export const clientConfig = {
                 DSC_APELLIDODOS: formData.segundoApellido,
                 DSC_DIRECCION: formData.direccion,
                 ESTADO: formData.estado,
+                FOTO: base64Image || null,
             };
 
             formData.telefonos?.forEach((telefono, index) => {
@@ -104,4 +109,19 @@ export const clientConfig = {
         delete: true,
         view: true,
     },
+};
+
+const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            resolve(null); // Si no hay archivo, resolver con null
+            return;
+        }
+
+        // Solo leer si hay archivo
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
 };

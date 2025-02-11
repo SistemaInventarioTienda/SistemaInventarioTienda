@@ -24,8 +24,10 @@ export default function ClientPage() {
     // Lógica para manejar el submit
     const onSubmit = async (mode, data) => {
         try {
-            const backendData = transformData.toBackend(data);
+            // Convertir la imagen a base64 antes de enviar
+            const backendData = await clientConfig.transformData.toBackend(data); // <--- Esperar aquí
             console.log("backendData", backendData);
+
             if (mode === "add") {
                 await handleApiCall(() => api.create(backendData), "Cliente agregado exitosamente.", showAlert);
             } else if (mode === "edit") {
@@ -33,6 +35,7 @@ export default function ClientPage() {
             }
             return { success: true };
         } catch (error) {
+            showAlert("error", "Error al procesar la imagen. Intente nuevamente.");
             return { success: false };
         }
     };
