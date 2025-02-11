@@ -9,6 +9,7 @@ export { Select } from "./Select";
 export { Message } from "./Message";
 export { Label } from "./Label";
 export { Alert } from "./Alert";
+export { default as Spinner } from "./Spinner";
 export { default as MetricCard } from "./MetricCard";
 export { default as Table } from "./Table";
 export { default as Pagination } from "./Pagination";

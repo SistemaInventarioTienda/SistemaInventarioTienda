@@ -56,8 +56,6 @@
 |    |   ├── assets
 |    |   |   └── image
 |    |   |       ├── clientes
-|    |   |       |   ├── 107810177.jpeg
-|    |   |       |   ├── 119160537.jpeg
 |    |   |       |   └── default_client.png
 |    |   |       └── default_image.png
 |    |   ├── electron.js

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../context/authContext';
 import { loginSchema } from '../schemas/auth';
-import { Card, Button, Input, InputWithIcon, Alert } from "../components/common";
+import { Card, Button, Spinner, InputWithIcon, Alert } from "../components/common";
 import { ShoppingBag, User, Lock, Eye, EyeOff } from 'lucide-react';
 import './styles/LoginPage.css';
 
@@ -17,6 +17,7 @@ export function LoginPage() {
 
   const { signin, errors: loginErrors, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     document.title = 'Iniciar Sesión';
@@ -40,24 +41,35 @@ export function LoginPage() {
     }
   }, [isAuthenticated, navigate, setValue]);
 
-  const onSubmit = (data) => {
-    console.log(data);
-    signin({ ...data, REMEMBERME: rememberMe });
-    console.log(rememberMe);
+  const onSubmit = async (data) => {
+    setIsLoading(true);
 
-    if (rememberMe) {
-      localStorage.setItem('username', data.DSC_NOMBREUSUARIO);
-      localStorage.setItem('password', data.DSC_CONTRASENIA);
-      localStorage.setItem('rememberMe', 'true');
-    } else {
-      localStorage.removeItem('username');
-      localStorage.removeItem('password');
-      localStorage.setItem('rememberMe', 'false');
+    try {
+      await signin({ ...data, REMEMBERME: rememberMe });
+
+      if (rememberMe) {
+        localStorage.setItem('username', data.DSC_NOMBREUSUARIO);
+        localStorage.setItem('password', data.DSC_CONTRASENIA);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('username');
+        localStorage.removeItem('password');
+        localStorage.setItem('rememberMe', 'false');
+      }
+
+      // Si el login es exitoso, redirigir al usuario
+      navigate('/');
+    } catch (error) {
+      // Si hay un error, mostrar la alerta
+      console.error('Error during login:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="login-page-container">
+      {isLoading && <Spinner text="Iniciando sesión" />}
       <Card className="login-card">
         <div className="card-login-body">
           <div className="text-center mb-4">
@@ -121,8 +133,9 @@ export function LoginPage() {
             <Button
               type="submit"
               className="btn btn-primary w-100 border-custom"
+              disabled={isLoading}
             >
-              Iniciar Sesión
+              {isLoading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
             </Button>
           </form>
         </div>
