@@ -1,56 +1,70 @@
 import React from "react";
-import { Button, Alert } from "../common";
-
+import { toast } from "sonner";
+import './styles/modalConfirmation.css';
 const ModalConfirmation = ({
   isOpen,
   onClose,
   onConfirm,
   entityName,
-  action = "eliminar",
-  errorMessages = [],
-  successMessage,
+  action = "delete",
   confirmButtonText = "Eliminar",
   cancelButtonText = "Cancelar",
 }) => {
   if (!isOpen) return null;
 
-  const handleConfirm = async () => {
-    await onConfirm();
+  const actionTranslations = {
+    add: "Agregar",
+    edit: "Editar",
+    delete: "Eliminar",
+  };
+
+  const translatedAction = actionTranslations[action] || action;
+
+  const handleConfirm = async (event) => {
+    try {
+      await onConfirm(event);
+      onClose(); // Cierra el modal después de confirmar
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(error.response?.data?.message || "Error al realizar la operación.");
+    }
+    onClose(); // Cierra el modal después de la confirmación
   };
 
   return (
-    <div className={`modal fade ${isOpen ? 'show' : ''}`} style={{ display: isOpen ? 'block' : 'none' }} tabIndex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title" id="modalLabel">
-              {action.charAt(0).toUpperCase() + action.slice(1)} {entityName}
+    <div
+      className={`modal-confirmation-overlay ${isOpen ? "show" : ""}`}
+      style={{ display: isOpen ? "block" : "none" }}
+    >
+      <div className="modal-confirmation-dialog">
+        <div className="modal-confirmation-content">
+          <div className="modal-confirmation-header">
+            <h5 className="modal-confirmation-title">
+              {translatedAction} {entityName}
             </h5>
           </div>
-          <div className="modal-body">
-            {errorMessages.length > 0 && (
-              <Alert
-                type="warning"
-                message={errorMessages}
-                duration={5000}
-              />
-            )}
-            {successMessage && (
-              <Alert
-                type="success"
-                message={successMessage}
-                duration={2000}
-              />
-            )}
-            <p>¿Estás seguro que deseas {(action === 'eliminar') ? 'eliminar' : (action === 'editar') ? 'editar' : 'agregar'} este registro?</p>
+          <div className="modal-confirmation-body">
+            <p>
+              ¿Estás seguro que deseas {translatedAction.toLowerCase()} este{" "}
+              {entityName.toLowerCase()}?
+            </p>
           </div>
-          <div className="modal-footer">
-            <Button type="button" className="btn btn-secondary" onClick={onClose} data-bs-dismiss="modal">
+          <div className="modal-confirmation-footer">
+            <button
+              type="button"
+              className="modal-confirmation-cancel-btn"
+              onClick={onClose}
+            >
               {cancelButtonText}
-            </Button>
-            <Button type="button" className={`btn ${action === 'eliminar' ? 'btn-danger' : 'btn-primary'}`} onClick={handleConfirm}>
+            </button>
+            <button
+              type="button"
+              className={`modal-confirmation-confirm-btn ${action === "delete" ? "danger" : "primary"
+                }`}
+              onClick={handleConfirm}
+            >
               {confirmButtonText}
-            </Button>
+            </button>
           </div>
         </div>
       </div>

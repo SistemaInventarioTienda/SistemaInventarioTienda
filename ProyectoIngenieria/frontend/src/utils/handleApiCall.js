@@ -1,13 +1,15 @@
-const handleApiCall = async (apiCall, successMessage, showAlert) => {
+import { toast } from "sonner";
+
+const handleApiCall = async (apiCall, successMessage = "Operación realizada exitosamente.") => {
     try {
         await apiCall();
-        showAlert(successMessage, "success");
+        if (successMessage) {
+            toast.success(successMessage);
+        }
         return { success: true };
     } catch (error) {
-        showAlert(
-            error.response?.data?.message || "Error al realizar la operación.",
-            "error"
-        );
+        const errorMessage = error.response?.data?.message || "Error al realizar la operación.";
+        toast.error(errorMessage);
         throw error;
     }
 };

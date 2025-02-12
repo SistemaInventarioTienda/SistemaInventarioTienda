@@ -1,7 +1,6 @@
 import { Plus, Trash, Edit, XCircle } from 'lucide-react';
-import { Alert, Button, InputButton } from '../common';
+import { Button, InputButton } from '../common';
 import { useContactManager } from '../../hooks/useContactManager';
-
 import "./styles/contactManager.css";
 
 export default function ContactManager({
@@ -14,30 +13,20 @@ export default function ContactManager({
         contacts,
         newContact,
         editingIndex,
-        alert,
         setNewContact,
         handleAddOrUpdateContact,
         handleEditContact,
         handleDeleteContact,
         handleCancelEdit,
-    } = useContactManager(initialContacts);
+    } = useContactManager(initialContacts, onContactsChange);
 
     const isViewMode = mode === 'view';
     const isEditMode = mode === 'edit';
-    const isAddMode = mode === 'add';  // Nueva variable para modo 'add'
+    const isAddMode = mode === 'add';
 
     return (
         <div className="contacts-container">
             <label>{type === 'phone' ? 'Teléfonos' : 'Correos Electrónicos'}</label>
-
-            {alert.show && (
-                <Alert
-                    type={alert.type || "warning"}
-                    message={alert.message}
-                    duration={3000}
-                />
-            )}
-
             {!isViewMode && (
                 <div className="contact-input-group">
                     <InputButton
@@ -58,7 +47,6 @@ export default function ContactManager({
                     )}
                 </div>
             )}
-
             {contacts.length > 0 && (
                 <div className="contacts-table">
                     <table>
@@ -74,7 +62,7 @@ export default function ContactManager({
                                     <td>{contact}</td>
                                     {(isEditMode || isAddMode) && (
                                         <td className="action-cell">
-                                            {isEditMode && (  // Solo mostrar Edit en modo edit
+                                            {isEditMode && (
                                                 <Button
                                                     className="btn-edit-btn"
                                                     variant="ghost"

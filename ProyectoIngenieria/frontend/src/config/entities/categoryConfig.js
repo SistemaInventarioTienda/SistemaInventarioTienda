@@ -11,7 +11,7 @@ import {
 // Configuración principal de la entidad
 export const categoryConfig = {
     // Nombre y descripción de la entidad
-    entityName: "Categorías",
+    entityName: "Categoría",
     entityMessage: "Gestión de categorías de los productos del sistema",
 
     // Identificador clave de la entidad

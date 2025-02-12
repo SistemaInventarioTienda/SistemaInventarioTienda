@@ -1,0 +1,105 @@
+/* Estilos específicos para el modal de confirmación */
+
+.modal-confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-overlay);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-confirmation-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-confirmation-dialog {
+    max-width: 500px;
+    width: 90%;
+    margin: auto;
+    transform: translateY(-50%);
+    top: 50%;
+    position: relative;
+}
+
+.modal-confirmation-content {
+    background-color: var(--color-card);
+    color: var(--color-font);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-confirmation-header {
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem;
+}
+
+.modal-confirmation-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modal-confirmation-body {
+    padding: 1rem;
+}
+
+.modal-confirmation-footer {
+    border-top: 1px solid var(--color-border);
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.modal-confirmation-cancel-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    background-color: var(--color-secondary);
+    color: var(--color-font);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-confirmation-cancel-btn:hover {
+    background-color: var(--color-button-hover);
+    color: var(--color-font-secondary);
+}
+
+.modal-confirmation-confirm-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-confirmation-confirm-btn.primary {
+    background-color: var(--color-primary);
+    color: var(--color-font-secondary);
+}
+
+.modal-confirmation-confirm-btn.primary:hover {
+    background-color: var(--color-button-hover);
+}
+
+.modal-confirmation-confirm-btn.danger {
+    background-color: var(--color-error);
+    color: var(--color-font-secondary);
+}
+
+.modal-confirmation-confirm-btn.danger:hover {
+    background-color: #c62828;
+}
