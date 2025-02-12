@@ -1,5 +1,6 @@
 import subcategory  from "../models/subcategory.model.js";
 import Category from "../models/category.model.js";
+import { validateRegisterSubcategory } from "../logic/subcategory/subcategory.logic.js";
 import { getDateCR } from "../libs/date.js";
 import {validateSubcategoryData} from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
@@ -64,11 +65,17 @@ export const createSubcategory = async (req, res) => {
                 message: validateFields,
             });
         }
+        const suplierName = await validateRegisterSubcategory(DSC_NOMBRE,ID_CATEGORIA);
+        if (suplierName!== true) {
+            return res.status(400).json({
+                message: suplierName,
+            });
+        }
 
         const date = new Date();
         const formattedDate = date.toISOString();
 
-        await subcategory.create({
+        subcategory.create({
             DSC_NOMBRE,
             ID_CATEGORIA,
             ESTADO,
