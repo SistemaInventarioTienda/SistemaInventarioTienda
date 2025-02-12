@@ -84,12 +84,14 @@ export function useGenericFormLogic({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsProcessing(true); // Activar el estado de procesamiento
+        setIsProcessing(true);
 
         try {
             const estadoValue = parseInt(formData.estado, 10);
-            if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
+
+            if (isNaN(estadoValue) || estadoValue === 0 || estadoValue === "") {
                 setErrorMessages(["Por favor, seleccione un estado válido."]);
+                setIsProcessing(false);
                 return;
             }
 
@@ -100,12 +102,11 @@ export function useGenericFormLogic({
                 estado: estadoValue,
             };
 
-            // Asegurar que onSubmit espere a las operaciones asíncronas
-            await onSubmit(dataToSubmit); // <--- Clave: usar await aquí
+            await onSubmit(dataToSubmit);
         } catch (error) {
             setErrorMessages(["Error al procesar el formulario. Intente nuevamente."]);
         } finally {
-            setIsProcessing(false); // Desactivar al finalizar
+            setIsProcessing(false);
         }
     };
 

@@ -1,10 +1,10 @@
 import React from "react";
 import PageLayout from "../components/layout/PageLayout";
-import { Table, Pagination, Button, InputButton, Select, Alert } from "../components/common";
+import { Table, Pagination, Button, InputButton, Select } from "../components/common";
 import { ModalComponent, ModalConfirmation } from "../components/modals";
 import { useEntityPage } from "../hooks/useEntityPage";
 import { Search, Plus } from "lucide-react";
-
+import { toast } from "sonner";
 
 export const EntityPage = ({
     entityName,
@@ -43,7 +43,6 @@ export const EntityPage = ({
     const [modalMode, setModalMode] = React.useState("add");
     const [modalData, setModalData] = React.useState(null);
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
-    const [alert, setAlert] = React.useState({ show: false, message: "", type: "" });
 
     const handleAdd = () => {
         setModalMode("add");
@@ -94,17 +93,9 @@ export const EntityPage = ({
         try {
             await onDelete(modalData);
             fetchData({ transformConfig });
-            setAlert({
-                show: true,
-                message: `${entityName} eliminado exitosamente.`,
-                type: "success",
-            });
+            toast.success(`${entityName} eliminado exitosamente.`);
         } catch (error) {
-            setAlert({
-                show: true,
-                message: error.response?.data?.message,
-                type: "error",
-            });
+            toast.error(error.response?.data?.message);
         } finally {
             setConfirmationModalOpen(false);
         }
@@ -205,8 +196,8 @@ export const EntityPage = ({
                             const response = await onSubmit(modalMode, formData);
                             console.log(response);
                             if (response && response.success) {
-                                await fetchData({ transformConfig }); 
-                                setModalOpen(false); 
+                                await fetchData({ transformConfig });
+                                setModalOpen(false);
                                 console.log("✅ Modal cerrado correctamente");
                             } else {
                                 console.error("❌ Error: Respuesta no exitosa", response);
@@ -223,15 +214,12 @@ export const EntityPage = ({
                 isOpen={isConfirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}
                 onConfirm={handleDelete}
+                entityName={entityName}
+                action="delete"
+                confirmButtonText="Eliminar"
+                cancelButtonText="Cancelar"
             />
-            {alert.show && (
-                <Alert
-                    type={alert.type}
-                    message={alert.message}
-                    duration={3000}
-                    onClose={() => setAlert({ ...alert, show: false })}
-                />
-            )}
+
         </PageLayout>
     );
 };

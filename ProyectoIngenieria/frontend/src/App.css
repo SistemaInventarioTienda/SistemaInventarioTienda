@@ -262,33 +262,17 @@ body.login-page .app-wrapper {
   margin: 0;
 }
 
-/* Estilos para diferentes tipos de alerta */
-.error {
-  background-color: var(--color-error);
-  border: 1px solid var(--color-error);
-  color: var(--color-font-secondary);
+/* Margen para las notificaciones */
+.custom-toaster {
+  margin: -20px;
 }
 
-.warning {
-  background-color: var(--color-warning);
-  border: 1px solid var(--color-warning);
-  color: var(--color-font-secondary);
+/* Ocultar el botón de cerrar por defecto */
+.custom-toaster .sonner-toast .close-button {
+  display: none;
 }
 
-.info {
-  background-color: var(--color-info);
-  border: 1px solid var(--color-info);
-  color: var(--color-font-secondary);
-}
-
-.success {
-  background-color: var(--color-success);
-  border: 1px solid var(--color-success);
-  color: var(--color-font-secondary);
-}
-
-.alert-demo {
-  background-color: var(--color-card);
-  padding: 20px;
-  color: var(--color-font);
+/* Mostrar el botón de cerrar al hacer hover */
+.custom-toaster .sonner-toast:hover .close-button {
+  display: block;
 }
