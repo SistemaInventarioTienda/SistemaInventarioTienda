@@ -4,6 +4,12 @@
     width: 100%;
 }
 
+.select.view-only {
+    background-color: var(--color-input-readonly-background);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .select {
     width: 100%;
     padding: 8px 12px;
@@ -20,13 +26,11 @@
     -moz-appearance: none;
 }
 
-/* Estilo para el hover */
 .select:hover {
     border-color: var(--color-primary);
     opacity: 0.9;
 }
 
-/* Estilo para el ícono de flecha */
 .select-wrapper::after {
     content: "▼";
     position: absolute;
@@ -38,20 +42,17 @@
     font-size: 12px;
 }
 
-/* Estilo para las opciones dentro del select */
 .select option {
     background-color: var(--color-card);
     color: var(--color-font);
     padding: 8px;
 }
 
-/* Estilo para las opciones cuando se seleccionan */
 .select option:checked {
     background-color: var(--color-primary);
     color: var(--color-font-secondary);
 }
 
-/* Estilo para las opciones cuando se hace hover */
 .select option:hover {
     background-color: var(--color-table-hover);
 }

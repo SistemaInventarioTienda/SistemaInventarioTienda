@@ -14,12 +14,12 @@ import SupplierPage from './pages/SupplierPage';
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from './pages/SettingsPage';
+import { Toaster } from "sonner";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "true";
   });
-
   const toggleDarkMode = () => {
     setIsDarkMode((prevMode) => {
       const newMode = !prevMode;
@@ -28,7 +28,6 @@ function App() {
       return newMode;
     });
   };
-
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("dark-mode");
@@ -36,11 +35,20 @@ function App() {
       document.body.classList.remove("dark-mode");
     }
   }, [isDarkMode]);
-
   return (
     <AuthProvider>
       <HashRouter>
         <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+        <Toaster
+          position="bottom-right"
+          visibleToasts={2}
+          richColors
+          closeButton
+          theme={isDarkMode ? "dark" : "light"}
+          toastOptions={{
+            className: 'custom-toaster',
+          }}
+        />
       </HashRouter>
     </AuthProvider>
   );
@@ -49,7 +57,6 @@ function App() {
 function AppContent({ isDarkMode, toggleDarkMode }) {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
-
   useEffect(() => {
     if (location.pathname !== '/login' && isAuthenticated) {
       document.body.classList.remove('login-page');
@@ -57,7 +64,6 @@ function AppContent({ isDarkMode, toggleDarkMode }) {
       document.body.classList.add('login-page');
     }
   }, [location, isAuthenticated]);
-
   return (
     <div className="app-wrapper">
       <Routes>

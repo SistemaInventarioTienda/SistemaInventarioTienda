@@ -31,6 +31,7 @@
   --color-table-header: #EEF1F8;
   --color-table-background: #F8F9FA;
   --color-input-background: #F5F7FA;
+  --color-input-readonly-background: #E9ECEF;
   /* Form Elements - Light Mode */
   --color-input-border: #ccc;
   --color-button-hover: #04003a;
@@ -60,6 +61,12 @@
   --color-pagination-hover-text: #fff;
   --color-pagination-active-bg: #05004E;
   --color-pagination-active-text: #fff;
+  /* Scrollbar variables - Light Mode */
+  --scrollbar-track: rgba(0, 0, 0, 0.1);
+  --scrollbar-thumb: rgba(128, 128, 128, 0.5);
+  --scrollbar-thumb-hover: rgba(128, 128, 128, 0.7);
+  --scrollbar-arrow: var(--color-font);
+  --scrollbar-arrow-bg: var(--color-card);
 }
 
 .dark-mode {
@@ -87,6 +94,7 @@
   --color-input-background: #1a1a2e;
   --color-input-border: #363651;
   --color-button-hover: #5750ff;
+  --color-input-readonly-background: #2C2F33;
   /* File Upload Elements - Dark Mode */
   --color-file-btn-hover: rgba(107, 99, 255, 0.1);
   --color-file-btn-border: #6b63ff;
@@ -111,6 +119,12 @@
   --color-pagination-hover-text: #fff;
   --color-pagination-active-bg: #6b63ff;
   --color-pagination-active-text: #fff;
+  /* Scrollbar variables - Dark Mode */
+  --scrollbar-track: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.3);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.5);
+  --scrollbar-arrow: var(--color-font);
+  --scrollbar-arrow-bg: var(--color-card);
 }
 
 body {
@@ -248,52 +262,17 @@ body.login-page .app-wrapper {
   margin: 0;
 }
 
-/* Estilos para diferentes tipos de alerta */
-.error {
-  background-color: var(--color-error);
-  border: 1px solid var(--color-error);
-  color: var(--color-font-secondary);
+/* Margen para las notificaciones */
+.custom-toaster {
+  margin: -20px;
 }
 
-.warning {
-  background-color: var(--color-warning);
-  border: 1px solid var(--color-warning);
-  color: var(--color-font-secondary);
+/* Ocultar el botón de cerrar por defecto */
+.custom-toaster .sonner-toast .close-button {
+  display: none;
 }
 
-.info {
-  background-color: var(--color-info);
-  border: 1px solid var(--color-info);
-  color: var(--color-font-secondary);
-}
-
-.success {
-  background-color: var(--color-success);
-  border: 1px solid var(--color-success);
-  color: var(--color-font-secondary);
-}
-
-.alert-demo {
-  background-color: var(--color-card);
-  padding: 20px;
-  color: var(--color-font);
-}
-
-/* Scrollbar global para toda la aplicación  */
-*::-webkit-scrollbar {
-  width: 8px;
-}
-
-*::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+/* Mostrar el botón de cerrar al hacer hover */
+.custom-toaster .sonner-toast:hover .close-button {
+  display: block;
 }

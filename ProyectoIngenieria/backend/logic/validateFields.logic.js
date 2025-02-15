@@ -176,6 +176,31 @@ export const validateSupplierDataUpdate = (req) => {
 };
 
 
+//subcategorias
+
+export const validateSubcategoryData = (req) => {
+    const {
+        DSC_NOMBRE,
+        ID_CATEGORIA
+    } = req.body;
+
+    // Lista de campos requeridos
+    const fields = [
+        { field: DSC_NOMBRE, name: 'DSC_NOMBRE' },
+        { field: ID_CATEGORIA, name: 'ID_CATEGORIA' }
+    ];
+
+    const errors = [];
+
+    for (const { field, name } of fields) {
+        if (!isNotEmpty(field)) {
+            errors.push(`El campo ${name} es requerido y no puede estar vacío.`);
+        }
+    }
+
+    return errors.length > 0 ? errors : true;
+};
+
 
 const isValidEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

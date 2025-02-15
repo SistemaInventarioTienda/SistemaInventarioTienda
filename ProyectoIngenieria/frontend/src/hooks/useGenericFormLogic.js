@@ -13,6 +13,7 @@ export function useGenericFormLogic({
     const [searchPersonWorker, setSearchPersonWorker] = useState(null);
     const [isCedulaValid, setIsCedulaValid] = useState(false);
     const [workerError, setWorkerError] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     const initialLoaded = useRef(false);
 
     useEffect(() => {
@@ -81,23 +82,32 @@ export function useGenericFormLogic({
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const estadoValue = parseInt(formData.estado, 10);
-        if (isNaN(estadoValue) || (estadoValue !== 1 && estadoValue !== 2)) {
-            setErrorMessages(["Por favor, seleccione un estado válido."]);
-            return;
+        setIsProcessing(true);
+
+        try {
+            const estadoValue = parseInt(formData.estado, 10);
+
+            if (isNaN(estadoValue) || estadoValue === 0 || estadoValue === "") {
+                setErrorMessages(["Por favor, seleccione un estado válido."]);
+                setIsProcessing(false);
+                return;
+            }
+
+            const dataToSubmit = {
+                ...formData,
+                telefonos: phones,
+                correos: emails,
+                estado: estadoValue,
+            };
+
+            await onSubmit(dataToSubmit);
+        } catch (error) {
+            setErrorMessages(["Error al procesar el formulario. Intente nuevamente."]);
+        } finally {
+            setIsProcessing(false);
         }
-
-        const dataToSubmit = {
-            ...formData,
-            telefonos: phones,
-            correos: emails,
-            estado: estadoValue,
-        };
-
-        console.log("Datos enviados:", dataToSubmit);
-        onSubmit(dataToSubmit);
     };
 
     return {
@@ -112,5 +122,6 @@ export function useGenericFormLogic({
         setFormData,
         setPhones,
         setEmails,
+        isProcessing
     };
 }

@@ -1,9 +1,10 @@
-import React from "react";
-import { Input, InputFile, Select, Alert } from "./";
+import React, { useState, useEffect } from "react";
+import { Input, InputFile, Select } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
-
+import { toast } from "sonner";
+import ModalConfirmation from "../modals/ModalConfirmation";
 function GenericForm({
     mode,
     fields,
@@ -11,11 +12,10 @@ function GenericForm({
     entityName,
     supplierTypes = [],
     onSubmit,
-    errorMessages = [],
-    setErrorMessages,
     onCancel,
 }) {
 
+    const [errorMessages, setErrorMessages] = useState([]);
     const {
         formData,
         phones,
@@ -28,6 +28,7 @@ function GenericForm({
         setFormData,
         setPhones,
         setEmails,
+        isProcessing,
     } = useGenericFormLogic({
         initialData,
         supplierTypes,
@@ -35,10 +36,21 @@ function GenericForm({
         setErrorMessages,
     });
 
-    const getReadOnlyStyle = () => ({
-        backgroundColor: "#e9ecef",
-        cursor: "not-allowed",
-    });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (errorMessages.length > 0) {
+            errorMessages.forEach((msg) => toast.error(msg));
+            setErrorMessages([]);
+        }
+    }, [errorMessages]);
+
+    const handleConfirmSubmit = async (event) => {
+        if (event) event.preventDefault();
+        await handleSubmit(event);
+        setIsModalOpen(false);
+    };
+
 
     // Manejador para seleccionar archivos
     const handleFileSelect = (file) => {
@@ -60,7 +72,7 @@ function GenericForm({
                         })),
                     ]
                     : [
-                        { value: "", label: "Seleccione el estado" },
+                        { value: "0", label: "Seleccione el estado" },
                         { value: 1, label: "Activo" },
                         { value: 2, label: "Inactivo" },
                     ];
@@ -150,15 +162,10 @@ function GenericForm({
                         name={fileField.name}
                         label={`${entityName === "Cliente" ? "Foto del Cliente" : "Foto de Proveedor"}`}
                         onFileSelect={handleFileSelect}
-                        value={formData[fileField.name]}
+                        value={formData.foto}
                         required={fileField.required}
                     />
                 </div>
-            )}
-
-            {/* Mostrar mensajes de error */}
-            {errorMessages.length > 0 && (
-                <Alert type="warning" message={errorMessages} />
             )}
 
             {/* Botones de acción */}
@@ -169,12 +176,30 @@ function GenericForm({
                     </button>
                 )}
                 {mode !== "view" && (
-                    <button type="submit" className="add-btn">
+                    // En el botón de submit:
+                    <button
+                        type="button"
+                        className="add-btn"
+                        disabled={isProcessing}
+                        onClick={() => setIsModalOpen(true)}
+                    >
                         <Plus size={20} />
-                        {mode === "add" ? "Agregar" : "Guardar Cambios"}
+                        {isProcessing ? "Procesando..." : mode === "add" ? "Agregar" : "Guardar Cambios"}
                     </button>
+
                 )}
             </div>
+
+            <ModalConfirmation
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={(e) => handleConfirmSubmit(e)}
+                entityName={entityName}
+                action={mode === "add" ? "add" : "edit"}
+                confirmButtonText={mode === "add" ? "Agregar" : "Guardar Cambios"}
+                cancelButtonText="Cancelar"
+            />
+
         </form>
     );
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { EntityPage } from "./EntityPage";
 import { supplierConfig } from "../config/entities/supplierConfig";
 import SupplierForm from "./pagesForms/SupplierForm";
-import { Alert } from "../components/common";
+import { toast } from "sonner";
 import useAlert from "../hooks/useAlert";
 import handleApiCall from "../utils/handleApiCall";
 
@@ -19,20 +19,27 @@ export default function SupplierPage() {
         actions,
     } = supplierConfig;
 
-    const { alert, showAlert, hideAlert } = useAlert();
-
     // Lógica para manejar el submit
     const onSubmit = async (mode, data) => {
         try {
             const backendData = transformData.toBackend(data);
             console.log("backendData", backendData);
+
             if (mode === "add") {
-                await handleApiCall(() => api.create(backendData), "Proveedor agregado exitosamente.", showAlert);
+                await handleApiCall(
+                    () => api.create(backendData),
+                    "Proveedor agregado exitosamente."
+                );
             } else if (mode === "edit") {
-                await handleApiCall(() => api.update(backendData), "Proveedor actualizado exitosamente.", showAlert);
+                await handleApiCall(
+                    () => api.update(backendData),
+                    "Proveedor actualizado exitosamente."
+                );
             }
+
             return { success: true };
         } catch (error) {
+            console.error("Error:", error);
             return { success: false };
         }
     };
@@ -54,16 +61,6 @@ export default function SupplierPage() {
                 transformConfig={transformConfig}
                 actions={actions}
             />
-            {alert.show && (
-                <div className="alert-container">
-                    <Alert
-                        type={alert.type}
-                        message={alert.message}
-                        duration={3000}
-                        onClose={hideAlert}
-                    />
-                </div>
-            )}
         </>
     );
 }

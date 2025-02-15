@@ -48,7 +48,7 @@
 
 .input[readonly],
 .input:read-only {
-    background-color: #e9ecef;
+    background-color: var(--color-input-readonly-background);
     cursor: not-allowed;
 }
 

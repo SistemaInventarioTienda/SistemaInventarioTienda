@@ -8,11 +8,13 @@ function Modal({ isOpen, title, children, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="offcanvas offcanvas-end show" tabIndex="-1">
-        <div className="modal-data-container">
-          <ModalHeader title={title} onClose={onClose} />
-          <ModalBody>{children}</ModalBody>
+    <div className="scroll-container">
+      <div className="modal-overlay">
+        <div className="offcanvas offcanvas-end show" tabIndex="-1">
+          <div className="modal-data-container">
+            <ModalHeader title={title} onClose={onClose} />
+            <ModalBody>{children}</ModalBody>
+          </div>
         </div>
       </div>
     </div>
