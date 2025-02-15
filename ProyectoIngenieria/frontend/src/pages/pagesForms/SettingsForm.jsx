@@ -1,10 +1,12 @@
 //SettingsForm.jsx
 import React, { useState } from 'react';
 import { Input } from '../../components/common';
-import { FileInput} from '../../components/common';
+import { InputFile} from '../../components/common';
 import { NumberInput } from '../../components/common';
 import GenericForm from '../../components/common/GenericForm';
 
+
+// FileInput
 const SettingsForm = ({ initialData, handleSubmit }) => {
     
     const [image, setImage] = useState(null);
@@ -43,7 +45,7 @@ const SettingsForm = ({ initialData, handleSubmit }) => {
             onChange={handleQuantityChange}
         />
         <br />
-        <FileInput 
+        <InputFile 
             value={image ? URL.createObjectURL(image): null}
             entity={"Cliente"}
             mode="edit"

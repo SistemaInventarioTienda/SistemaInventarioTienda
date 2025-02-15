@@ -94,6 +94,8 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="clients" element={<ClientPage />} />
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            {/* ruta al componente de configuraciones */}
+            <Route path="settings" element={<SettingsPage/>}/>
           </Routes>
         </main>
       </div>
