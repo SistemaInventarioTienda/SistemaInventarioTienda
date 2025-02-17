@@ -12,7 +12,8 @@ import {
 // Configuración principal de la entidad
 export const supplierConfig = {
     // Nombre y descripción de la entidad
-    entityName: "Proveedores",
+    entityName: "Proveedor",
+    titlePage: "Proveedores",
     entityMessage: "Gestión de proveedores del sistema",
 
     // Identificador clave de la entidad

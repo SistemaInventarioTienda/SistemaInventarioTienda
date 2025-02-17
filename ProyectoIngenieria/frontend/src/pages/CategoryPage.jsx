@@ -11,6 +11,7 @@ export default function CategoryPage() {
     const entityPageRef = useRef(); // Crear una referencia a EntityPage
     const {
         entityName,
+        titlePage,
         entityMessage,
         columns,
         fields,
@@ -118,8 +119,9 @@ export default function CategoryPage() {
     return (
         <>
             <EntityPage
-                ref={entityPageRef} // Pasar la referencia a EntityPage
+                ref={entityPageRef}
                 entityName={entityName}
+                titlePage={titlePage}
                 entityMessage={entityMessage}
                 columns={columns}
                 fields={fields}

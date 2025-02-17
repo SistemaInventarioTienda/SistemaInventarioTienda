@@ -8,6 +8,8 @@ import "./styles/Page.css";
 export default function UserPage() {
     const {
         entityName,
+        titlePage,
+        modalName,
         entityMessage,
         columns,
         fields,
@@ -44,6 +46,8 @@ export default function UserPage() {
         <>
             <EntityPage
                 entityName={entityName}
+                titlePage={titlePage}
+                modalName={modalName}
                 entityMessage={entityMessage}
                 columns={columns}
                 fields={fields}

@@ -1,12 +1,14 @@
 import React from "react";
 import { toast } from "sonner";
 import './styles/modalConfirmation.css';
+
 const ModalConfirmation = ({
   isOpen,
   onClose,
   onConfirm,
   entityName,
   action = "delete",
+  message,
   confirmButtonText = "Eliminar",
   cancelButtonText = "Cancelar",
 }) => {
@@ -16,19 +18,23 @@ const ModalConfirmation = ({
     add: "Agregar",
     edit: "Editar",
     delete: "Eliminar",
+    logout: "Cerrar Sesión"
   };
 
   const translatedAction = actionTranslations[action] || action;
 
+  // Mensaje por defecto si no se provee message
+  const defaultMessage = `¿Estás seguro que deseas ${translatedAction.toLowerCase()} este ${entityName?.toLowerCase() || ''}?`;
+
   const handleConfirm = async (event) => {
     try {
       await onConfirm(event);
-      onClose(); // Cierra el modal después de confirmar
+      onClose();
     } catch (error) {
       console.error("Error:", error);
       toast.error(error.response?.data?.message || "Error al realizar la operación.");
     }
-    onClose(); // Cierra el modal después de la confirmación
+    onClose();
   };
 
   return (
@@ -45,8 +51,7 @@ const ModalConfirmation = ({
           </div>
           <div className="modal-confirmation-body">
             <p>
-              ¿Estás seguro que deseas {translatedAction.toLowerCase()} este{" "}
-              {entityName.toLowerCase()}?
+              {message || defaultMessage}
             </p>
           </div>
           <div className="modal-confirmation-footer">

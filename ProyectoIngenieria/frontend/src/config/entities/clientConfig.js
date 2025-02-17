@@ -11,7 +11,8 @@ import {
 // Configuración principal de la entidad
 export const clientConfig = {
     // Nombre y descripción de la entidad
-    entityName: "Clientes",
+    entityName: "Cliente",
+    titlePage: "Clientes",
     entityMessage: "Gestión de clientes del sistema",
 
     // Identificador clave de la entidad
