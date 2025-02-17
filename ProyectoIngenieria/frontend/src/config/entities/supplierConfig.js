@@ -33,8 +33,8 @@ export const supplierConfig = {
     // Configuración de campos del formulario
     fields: [
         { name: "nombre", label: "Nombre", type: "text", required: true },
-        { name: "direccion", label: "Dirección", type: "text", required: true },
-        { name: "cuentaBanco", label: "Cuenta Bancaria", type: "text", required: true },
+        { name: "direccion", label: "Dirección", type: "textarea", required: true },
+        { name: "cuentaBanco", label: "Cuenta Bancaria", type: "textarea", required: true },
         { name: "venta", label: "Descripción de Venta", type: "textarea", required: true },
         { name: "tipoProveedor", label: "Tipo de Proveedor", type: "select", required: true },
         {

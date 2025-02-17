@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, InputFile, Select } from "./";
+import { Input, Textarea, InputFile, Select } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
@@ -60,6 +60,20 @@ function GenericForm({
     // Renderizador de campos dinámicos
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";
+
+        if (field.type === "textarea") {
+            return (
+                <Textarea
+                    name={field.name}
+                    value={fieldValue}
+                    onChange={handleChange}
+                    required={field.required}
+                    readOnly={mode === "view"}
+                    placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                    className="full-width"
+                />
+            );
+        }
 
         if (field.type === "select") {
             const options =

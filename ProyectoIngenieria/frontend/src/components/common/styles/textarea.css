@@ -1,0 +1,75 @@
+.textarea-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.textarea {
+    width: 100%;
+    height: auto;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    border: 1px solid var(--color-primary);
+    border-radius: 16px;
+    background-color: var(--color-secondary);
+    color: var(--color-font);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    resize: none;
+    overflow-y: auto;
+}
+
+/* Scrollbar personalizado solo para textarea */
+.textarea::-webkit-scrollbar {
+    width: 12px;
+}
+
+.textarea::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 4px solid var(--scrollbar-arrow-bg);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+    min-height: 40px;
+}
+
+.textarea::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Efectos al interactuar */
+.textarea:hover {
+    border-color: var(--color-primary);
+    opacity: 0.9;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Placeholder */
+.textarea::placeholder {
+    color: var(--color-font);
+    opacity: 0.7;
+}
+
+/* Modo solo lectura */
+.textarea[readonly],
+.textarea:read-only {
+    background-color: var(--color-input-readonly-background);
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .textarea {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
