@@ -30,6 +30,7 @@ function GenericForm({
         setEmails,
         isProcessing,
     } = useGenericFormLogic({
+        entityName,
         initialData,
         supplierTypes,
         onSubmit,

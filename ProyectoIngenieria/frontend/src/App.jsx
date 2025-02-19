@@ -40,7 +40,7 @@ function App() {
         <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
         <Toaster
           position="bottom-right"
-          visibleToasts={2}
+          visibleToasts={5}
           richColors
           closeButton
           theme={isDarkMode ? "dark" : "light"}
