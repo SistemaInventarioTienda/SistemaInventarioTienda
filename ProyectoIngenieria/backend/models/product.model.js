@@ -47,7 +47,7 @@ const Product = db.define('Product', {
         type: DataTypes.INTEGER,
         allowNull: true,
     },
-    ID_SUBCATEGORIE: {
+    ID_SUBCATEGORIA: {
         type: DataTypes.INTEGER,
         references: {
             model: subcategory,
