@@ -2,11 +2,11 @@ import React from 'react';
 import GenericForm from '../../components/common/GenericForm';
 import { subcategoryConfig } from "../../config/entities/subcategoryConfig";
 
-function CategoryForm({ mode, initialData, onSubmit, onCancel }) {
+function SubcategoryForm({ mode, initialData, onSubmit, onCancel }) {
 
     return (
         <GenericForm
-            entityName={"Categoría"}
+            entityName={"Subategoría"}
             mode={mode}
             initialData={initialData}
             fields={subcategoryConfig.fields}
@@ -16,4 +16,4 @@ function CategoryForm({ mode, initialData, onSubmit, onCancel }) {
     );
 }
 
-export default CategoryForm;
+export default SubcategoryForm;

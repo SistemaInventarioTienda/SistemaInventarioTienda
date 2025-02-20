@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef, useImperativeHandle } from "react"; // Importar forwardRef y useImperativeHandle
 import PageLayout from "../components/layout/PageLayout";
 import { Table, Pagination, Button, InputButton, Select } from "../components/common";
 import { ModalComponent, ModalConfirmation } from "../components/modals";
@@ -6,8 +6,10 @@ import { useEntityPage } from "../hooks/useEntityPage";
 import { Search, Plus } from "lucide-react";
 import { toast } from "sonner";
 
-export const EntityPage = ({
+// Usar forwardRef para envolver el componente
+export const EntityPage = forwardRef(({
     entityName,
+    titlePage,
     entityMessage,
     columns,
     fields,
@@ -20,7 +22,10 @@ export const EntityPage = ({
     transformData,
     transformConfig,
     actions = {},
-}) => {
+    expandableKey,
+    onAddSubcategory,
+    subcategoryActions,
+}, ref) => {
     const {
         data,
         filteredData,
@@ -43,6 +48,13 @@ export const EntityPage = ({
     const [modalMode, setModalMode] = React.useState("add");
     const [modalData, setModalData] = React.useState(null);
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
+
+    // Exponer fetchData al componente padre usando useImperativeHandle
+    useImperativeHandle(ref, () => ({
+        fetchData: () => {
+            fetchData({ transformConfig });
+        }
+    }));
 
     const handleAdd = () => {
         setModalMode("add");
@@ -67,7 +79,6 @@ export const EntityPage = ({
         setConfirmationModalOpen(true);
     };
 
-
     const tableActions = Object.entries(actions)
         .filter(([actionKey, isEnabled]) => isEnabled)
         .reduce((acc, [actionKey, isEnabled]) => {
@@ -77,11 +88,10 @@ export const EntityPage = ({
                         actionKey === "edit" ? handleEdit :
                             actionKey === "delete" ? handleDeleteConfirmation :
                                 actionKey === "view" ? handleView :
-                                    undefined; // Por si llegan nuevas acciones en el futuro
+                                    undefined;
             }
             return acc;
         }, {});
-
 
     React.useEffect(() => {
         if (searchTerm.trim() === "") {
@@ -104,6 +114,7 @@ export const EntityPage = ({
     const handleSearch = () => {
         fetchData({ resetPage: true, transformConfig });
     };
+
     const handleSort = (field) => {
         toggleSortOrder(field);
     };
@@ -115,7 +126,7 @@ export const EntityPage = ({
         <PageLayout>
             <div className="page-header">
                 <div>
-                    <h1>{entityName}</h1>
+                    <h1>{titlePage}</h1>
                     <p>{entityMessage}</p>
                 </div>
                 <Button className="add-btn" onClick={handleAdd}>
@@ -168,6 +179,9 @@ export const EntityPage = ({
                 sortField={sortField}
                 sortOrder={sortOrder}
                 actions={tableActions}
+                expandableKey={expandableKey}
+                onAddSubcategory={onAddSubcategory}
+                subcategoryActions={subcategoryActions}
             />
             <Pagination
                 currentPage={currentPage}
@@ -219,7 +233,6 @@ export const EntityPage = ({
                 confirmButtonText="Eliminar"
                 cancelButtonText="Cancelar"
             />
-
         </PageLayout>
     );
-};
+});

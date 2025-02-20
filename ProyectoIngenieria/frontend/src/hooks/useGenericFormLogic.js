@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { validateGeneral } from "../schemas/validations/validateGeneral";
+import { validateSupplier } from "../schemas/validations/validateSupplier";
 
 export function useGenericFormLogic({
+    entityName,
     initialData = {},
     supplierTypes = [],
     onSubmit,
@@ -87,10 +90,15 @@ export function useGenericFormLogic({
         setIsProcessing(true);
 
         try {
-            const estadoValue = parseInt(formData.estado, 10);
 
-            if (isNaN(estadoValue) || estadoValue === 0 || estadoValue === "") {
-                setErrorMessages(["Por favor, seleccione un estado válido."]);
+            let errors = validateGeneral(formData);
+
+            if (entityName === "Proveedor") {
+                errors = [...errors, ...validateSupplier(formData, phones, emails)];
+            }
+
+            if (errors.length > 0) {
+                setErrorMessages(errors);
                 setIsProcessing(false);
                 return;
             }
@@ -99,11 +107,12 @@ export function useGenericFormLogic({
                 ...formData,
                 telefonos: phones,
                 correos: emails,
-                estado: estadoValue,
+                estado: parseInt(formData.estado, 10),
             };
 
             await onSubmit(dataToSubmit);
         } catch (error) {
+            console.error("Error procesando el formulario:", error.message);
             setErrorMessages(["Error al procesar el formulario. Intente nuevamente."]);
         } finally {
             setIsProcessing(false);

@@ -1,23 +1,17 @@
-// Configuración de la entidad "Categorías"
-
+// Configuración de la entidad "Subcategorías"
 import {
-    getAllCategories,
-    saveCategory,
-    updateCategory,
-    deleteCategory,
-    searchCategoryByName,
-} from "../../api/category";
+    getAllSubcategories,
+    createSubcategory,
+    updateSubcategory,
+    deleteSubcategory,
+} from "../../api/subcategory";
 
 // Configuración principal de la entidad
-export const categoryConfig = {
-    // Nombre y descripción de la entidad
-    entityName: "Categoría",
-    titlePage: "Categorías",
-    entityMessage: "Gestión de categorías de los productos del sistema",
+export const subcategoryConfig = {
 
     // Identificador clave de la entidad
-    entityKey: "category", // Clave única para identificar los datos de esta entidad
-    expandableKey: "subcategories", // Clave única para identificar el manejo de expadir las filas
+    entityKey: "subcategory", // Clave única para identificar los datos de esta entidad
+    expandableKey: "subcategories", // Clave para identificar como actuar la expandabilidad de la entidad
     // Configuración de columnas para la tabla
     columns: [
         { field: "DSC_NOMBRE", label: "Nombre" },
@@ -42,28 +36,27 @@ export const categoryConfig = {
 
     // Funciones API específicas de la entidad
     api: {
-        fetchAll: getAllCategories,
-        searchByName: searchCategoryByName,
-        create: saveCategory,
-        update: updateCategory,
-        delete: deleteCategory,
+        fetchAll: getAllSubcategories,
+        createSub: createSubcategory,
+        updateSub: updateSubcategory,
+        deleteSub: deleteSubcategory,
     },
 
     // Transformaciones de datos
     transformData: {
-        // Transformar datos desde la API hacia el frontend
-        toFrontend: (category) => ({
-            id: category.ID_CATEGORIA,
-            nombre: category.DSC_NOMBRE,
-            estado: category.ESTADO === "ACTIVO" ? 1 : 2,
-        }),
 
-        // Transformar datos desde el formulario hacia la API
+        toFrontend: (subcategory) => ({
+            id: subcategory.ID_SUBCATEGORIA,
+            nombre: subcategory.DSC_NOMBRE,
+            estado: subcategory.ESTADO,
+            ID_CATEGORIA: subcategory.ID_CATEGORIA
+        }),
         toBackend: (formData) => ({
-            ID_CATEGORIA: formData.id,
+            ID_CATEGORIA: formData.ID_CATEGORIA,
+            ID_SUBCATEGORIA: formData.id,
             DSC_NOMBRE: formData.nombre,
             ESTADO: formData.estado,
-        }),
+        })
     },
 
     // Transformaciones específicas de campos individuales
@@ -75,6 +68,5 @@ export const categoryConfig = {
     actions: {
         edit: true,
         delete: true,
-        view: false,
     },
 };
