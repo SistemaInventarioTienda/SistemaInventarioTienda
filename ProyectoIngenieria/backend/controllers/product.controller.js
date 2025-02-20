@@ -1,16 +1,123 @@
 import Product from '../models/product.model.js';
 import User from '../models/user.model.js';
+import subcategory from '../models/subcategory.model.js';
 import { getDateCR } from '../libs/date.js';
-import multer from 'multer'; 
-import path from 'path'; 
+import multer from 'multer';
+import path from 'path';
 import fs from 'fs/promises';
+import { Op } from 'sequelize';
 
 export const getAllProducts = async (req, res) => {
-    return res.status(200).json({ message: "Todos los productos" });
+    try {
+        // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
+        const { page = 1, pageSize = 5, orderByField = 'FEC_CREATED_AT', order = 'asc' } = req.query;
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
+
+        const field = (
+            orderByField === 'DSC_NOMBRE' || orderByField === 'DSC_DESCRIPTION' || orderByField === 'DSC_CODIGO_BARRAS' || orderByField === 'MON_VENTA' ||
+            orderByField === 'MON_COMPRA' || orderByField === 'ESTADO' || orderByField === 'CATEGORIA'
+        ) ? orderByField : 'FEC_CREATED_AT';
+
+        const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+        const conditionOrder = (field === 'CATEGORIA') ? [{ model: subcategory, as: 'subcategory' }, 'DSC_NOMBRE', sortOrder] : [field, sortOrder];
+        const { count, rows } = await Product.findAndCountAll({
+            attributes: {
+                exclude: ['UPDATED_BY_USER', 'CREATED_BY_USER', 'FEC_UPDATE_AT', 'FEC_CREATED_AT', 'ID_SUBCATEGORIA']
+            },
+            include: [
+                {
+                    model: subcategory,
+                    as: 'subcategory',
+                    attributes: ['DSC_NOMBRE', 'ID_SUBCATEGORIA']
+                }
+            ],
+            limit,
+            offset,
+            order: [
+                conditionOrder
+            ]
+        });
+
+
+        if (rows.length === 0) {
+            return res.status(204).json({
+                message: "No se encontraron productos.",
+            });
+        }
+
+        res.json({
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            products: rows
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 }
 
 export const searchProduct = async (req, res) => {
-    return res.status(200).json({ message: "Buscar productos" });
+    try {
+        // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
+        const { page = 1, pageSize = 5, termSearch = '', orderByField = 'FEC_CREATED_AT', order = 'asc' } = req.query;
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
+
+        const field = (
+            orderByField === 'DSC_NOMBRE' || orderByField === 'DSC_DESCRIPTION' || orderByField === 'DSC_CODIGO_BARRAS' || orderByField === 'MON_VENTA' ||
+            orderByField === 'MON_COMPRA' || orderByField === 'ESTADO' || orderByField === 'CATEGORIA'
+        ) ? orderByField : 'FEC_CREATED_AT';
+
+        const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+        const conditionOrder = (field === 'CATEGORIA') ? [{ model: subcategory, as: 'subcategory' }, 'DSC_NOMBRE', sortOrder] : [field, sortOrder];
+        const expectedMatch = { [Op.like]: `%${termSearch}%` };
+        const { count, rows } = await Product.findAndCountAll({
+            attributes: {
+                exclude: ['UPDATED_BY_USER', 'CREATED_BY_USER', 'FEC_UPDATE_AT', 'FEC_CREATED_AT', 'ID_SUBCATEGORIA']
+            },
+            include: [
+                {
+                    model: subcategory,
+                    as: 'subcategory',
+                    attributes: ['DSC_NOMBRE', 'ID_SUBCATEGORIA']
+                }
+            ],
+            limit,
+            offset,
+            order: [
+                conditionOrder
+            ],
+            where: {
+                [Op.or]: [
+                    { DSC_NOMBRE: expectedMatch },
+                    { DSC_DESCRIPTION: expectedMatch },
+                    { DSC_CODIGO_BARRAS: expectedMatch },
+                    { MON_VENTA: expectedMatch },
+                    { MON_COMPRA: expectedMatch },
+                    { '$subcategory.DSC_NOMBRE$': expectedMatch }
+                ]
+            }
+        });
+
+
+        if (rows.length === 0) {
+            return res.status(204).json({
+                message: "No se encontraron productos.",
+            });
+        }
+
+        res.json({
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            products: rows
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 }
 
 //======================== Configuración de Multer ========================
@@ -55,7 +162,7 @@ export const registerProduct = [
                 DSC_CODIGO_BARRAS: barCode,
                 MON_VENTA: MON_VENTA,
                 MON_COMPRA: MON_COMPRA,
-                SUBCATEGORIE: SUBCATEGORIE
+                ID_SUBCATEGORIA: SUBCATEGORIE
             });
             if (isValid?.status === 400) {
                 await eliminarArchivo(req.file);
@@ -98,7 +205,7 @@ export const registerProduct = [
                 MON_COMPRA: purchaseAmount,
                 FEC_CREATED_AT: created_at,
                 ESTADO: 1,
-                ID_SUBCATEGORIE: SUBCATEGORIE,
+                ID_SUBCATEGORIA: SUBCATEGORIE,
                 CREATED_BY_USER: userFound.ID_USUARIO
             })
 
@@ -123,7 +230,41 @@ export const updateProduct = async (req, res) => {
 }
 
 export const deleteProduct = async (req, res) => {
-    return res.status(200).json({ message: "Eliminar productos" });
+    try {
+        const product = await Product.findOne({
+            attributes: ['ID_PRODUCT', 'UPDATED_BY_USER', 'FEC_UPDATE_AT'],
+            where: { ID_PRODUCT: req.params.id }
+        });
+        if (!product) {
+            return res.status(404).json({ message: "Producto no encontrado." });
+        }
+
+
+        const user = await User.findOne({
+            attributes: ['ID_USUARIO'],
+            where: { DSC_CEDULA: req.user.id }
+        })
+
+        if(!user) {
+            return res.status(404).json({message: "El usuario no tiene permiso de eliminar el producto."})
+        }
+
+        const currentDate = await getDateCR();
+        await product.update(
+            {
+                ESTADO: 2,
+                UPDATED_BY_USER: user.ID_USUARIO,
+                FEC_UPDATE_AT: currentDate
+            },
+            {
+                where: { ID_PRODUCT: req.params.id }
+            }
+        );
+
+        return res.status(200).json({message: "Producto eliminado con éxito."});
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 }
 
 
