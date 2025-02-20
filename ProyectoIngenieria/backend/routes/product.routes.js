@@ -1,0 +1,16 @@
+import { Router } from "express";
+import { getAllProducts, deleteProduct, updateProduct, registerProduct, searchProduct } from "../controllers/product.controller.js";
+import { auth } from "../middlewares/auth.middleware.js";
+import { validateSchema } from "../middlewares/validator.middleware.js";
+// import { loginSchema, registerSchema } from "../schemas/auth.schema.js";
+
+const router = Router();
+
+// Parte de autenticación de los usuarios del sistema
+router.post("/register", auth, registerProduct);
+router.get("/all_product", auth, getAllProducts);
+router.put("/update_product/:id", auth,  updateProduct);
+router.delete("/delete_product/:id", auth, deleteProduct);
+router.get("/searchProduct", auth, searchProduct)
+
+export default router;
