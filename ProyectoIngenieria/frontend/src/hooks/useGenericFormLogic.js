@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { validateGeneral } from "../schemas/validations/validateGeneral";
 import { validateSupplier } from "../schemas/validations/validateSupplier";
+import { validateProduct } from "../schemas/validations/validateProduct";
 
 export function useGenericFormLogic({
     entityName,
     initialData = {},
     supplierTypes = [],
+    subcategoriesTypes = [],
     onSubmit,
     setErrorMessages,
 }) {
@@ -13,6 +15,7 @@ export function useGenericFormLogic({
     const [phones, setPhones] = useState(initialData?.telefonos || []);
     const [emails, setEmails] = useState(initialData?.correos || []);
     const [localSupplierTypes, setLocalSupplierTypes] = useState(supplierTypes);
+    const [localSubcategoriesTypes, setLocalSubcategoriesTypes] = useState(subcategoriesTypes);
     const [searchPersonWorker, setSearchPersonWorker] = useState(null);
     const [isCedulaValid, setIsCedulaValid] = useState(false);
     const [workerError, setWorkerError] = useState(false);
@@ -26,6 +29,7 @@ export function useGenericFormLogic({
             setEmails(initialData?.correos || []);
             initialLoaded.current = true;
             setLocalSupplierTypes(supplierTypes || []);
+            setLocalSubcategoriesTypes(subcategoriesTypes || []);
         }
     }, [initialData, supplierTypes]);
 
@@ -86,6 +90,7 @@ export function useGenericFormLogic({
     };
 
     const handleSubmit = async (e) => {
+        console.log("DATOS ENVIADOS",formData);
         e.preventDefault();
         setIsProcessing(true);
 
@@ -95,6 +100,8 @@ export function useGenericFormLogic({
 
             if (entityName === "Proveedor") {
                 errors = [...errors, ...validateSupplier(formData, phones, emails)];
+            }else if (entityName === "Producto"){
+                errors = [...errors, ...validateProduct(formData)];
             }
 
             if (errors.length > 0) {
@@ -124,6 +131,7 @@ export function useGenericFormLogic({
         phones,
         emails,
         localSupplierTypes,
+        localSubcategoriesTypes,
         isCedulaValid,
         workerError,
         handleChange,

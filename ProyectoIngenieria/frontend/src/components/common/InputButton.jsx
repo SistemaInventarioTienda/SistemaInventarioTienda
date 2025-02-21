@@ -9,6 +9,7 @@ const InputButton = forwardRef(({
     buttonStyle = {},
     icon: Icon,
     onButtonClick,
+    buttonLabel,
     ...props
 }, ref) => {
     return (
@@ -21,15 +22,13 @@ const InputButton = forwardRef(({
             />
             <Button
                 className={`button ${buttonClassName}`}
-                style={{
-                    ...buttonStyle
-                }}
+                style={{ ...buttonStyle }}
                 onClick={onButtonClick}
             >
                 {Icon && <Icon size={20} />}
+                {buttonLabel && <span>{buttonLabel}</span>}
             </Button>
         </div>
-
     );
 });
 

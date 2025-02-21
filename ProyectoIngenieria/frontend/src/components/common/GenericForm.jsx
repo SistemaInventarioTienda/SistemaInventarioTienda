@@ -11,6 +11,7 @@ function GenericForm({
     initialData = {},
     entityName,
     supplierTypes = [],
+    subcategoriesTypes = [],
     onSubmit,
     onCancel,
 }) {
@@ -21,6 +22,7 @@ function GenericForm({
         phones,
         emails,
         localSupplierTypes,
+        localSubcategoriesTypes,
         isCedulaValid,
         workerError,
         handleChange,
@@ -33,6 +35,7 @@ function GenericForm({
         entityName,
         initialData,
         supplierTypes,
+        subcategoriesTypes,
         onSubmit,
         setErrorMessages,
     });
@@ -77,20 +80,31 @@ function GenericForm({
         }
 
         if (field.type === "select") {
-            const options =
-                field.name === "tipoProveedor"
-                    ? [
-                        { value: "", label: "Seleccione el tipo de proveedor" },
-                        ...localSupplierTypes.map((type) => ({
-                            value: type.ID_TIPOPROVEEDOR,
-                            label: type.DSC_NOMBRE,
-                        })),
-                    ]
-                    : [
-                        { value: "0", label: "Seleccione el estado" },
-                        { value: 1, label: "Activo" },
-                        { value: 2, label: "Inactivo" },
-                    ];
+            let options = [];
+
+            if (field.name === "tipoProveedor") {
+                options = [
+                    { value: "", label: "Seleccione el tipo de proveedor" },
+                    ...localSupplierTypes.map((type) => ({
+                        value: type.ID_TIPOPROVEEDOR,
+                        label: type.DSC_NOMBRE,
+                    })),
+                ];
+            } else if (field.name === "ID_SUBCATEGORIE") {
+                options = [
+                    { value: "", label: "Seleccione la subcategoría" },
+                    ...localSubcategoriesTypes.map((type) => ({
+                        value: type.ID_SUBCATEGORIA,
+                        label: type.DSC_NOMBRE,
+                    })),
+                ];
+            } else {
+                options = [
+                    { value: "0", label: "Seleccione el estado" },
+                    { value: 1, label: "Activo" },
+                    { value: 2, label: "Inactivo" },
+                ];
+            }
 
             return (
                 <Select
