@@ -138,7 +138,7 @@ export const registerProduct = [
     async (req, res) => {
         try {
             const {
-                DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIE = null
+                DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIA = null
             } = req.body;
 
             const userFound = await User.findOne({
@@ -149,7 +149,7 @@ export const registerProduct = [
                 }
             });
             if (!userFound) {
-                await eliminarArchivo(req.file);
+                await deleteFile(req.file);
                 return res.status(400).json({ message: "Invalid request." })
             }
 
@@ -162,10 +162,10 @@ export const registerProduct = [
                 DSC_CODIGO_BARRAS: barCode,
                 MON_VENTA: MON_VENTA,
                 MON_COMPRA: MON_COMPRA,
-                ID_SUBCATEGORIA: SUBCATEGORIE
+                ID_SUBCATEGORIA: SUBCATEGORIA
             });
             if (isValid?.status === 400) {
-                await eliminarArchivo(req.file);
+                await deleteFile(req.file);
                 return res.status(400).json({ message: isValid.user_message });
             }
 
@@ -178,7 +178,7 @@ export const registerProduct = [
             })
 
             if (productFound) {
-                await eliminarArchivo(req.file);
+                await deleteFile(req.file);
                 return res.status(403).json({
                     message: "Ya existe un producto con este código de barras.",
                     suggestions: "Si es un producto diferente cambia el código de barras, caso contrario actualiza el registro existente."
@@ -189,13 +189,13 @@ export const registerProduct = [
             const purchaseAmount = parseFloat(MON_COMPRA);
 
             if (!salesAmount || !purchaseAmount) {
-                await eliminarArchivo(req.file);
+                await deleteFile(req.file);
                 return res.status(400).json({
                     message: "El monto de venta o compra no es valido."
                 })
             }
 
-            const imagePath = (req.file?.filename) ? req.file.filename : null;
+            const imagePath = (req.file?.filename) ? req.file.filename : 'image_not_found.png';
             const newProduct = new Product({
                 DSC_NOMBRE,
                 DSC_DESCRIPTION,
@@ -205,7 +205,7 @@ export const registerProduct = [
                 MON_COMPRA: purchaseAmount,
                 FEC_CREATED_AT: created_at,
                 ESTADO: 1,
-                ID_SUBCATEGORIA: SUBCATEGORIE,
+                ID_SUBCATEGORIA: SUBCATEGORIA,
                 CREATED_BY_USER: userFound.ID_USUARIO
             })
 
@@ -219,15 +219,89 @@ export const registerProduct = [
 
 
         } catch (error) {
-            await eliminarArchivo(req.file);
+            await deleteFile(req.file);
             res.status(500).json({ message: error.message });
         }
     }
 ];
 
-export const updateProduct = async (req, res) => {
-    return res.status(200).json({ message: "Actualizar productos" });
-}
+export const updateProduct = [
+    upload.single('PRODUCT_IMAGE'), // 'PRODUCT_IMAGE' debe coincidir con el nombre del campo en el formulario
+    async (req, res) => {
+
+        const {
+            DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIA = null
+        } = req.body;
+
+        const product = await Product.findOne({
+            where: { ID_PRODUCT: req.params.id }
+        });
+
+        if (!product) {
+            await deleteFile(req.file);
+            return res.status(404).json({
+                message: "No se pudo encontrar el producto."
+            })
+        }
+
+        const user = await User.findOne({
+            attributes: ['ID_USUARIO'],
+            where: { DSC_CEDULA: req.user.id }
+        })
+
+        if (!user) {
+            await deleteFile(req.file);
+            return res.status(404).json({ message: "El usuario no tiene permiso de modificar el producto." })
+        }
+
+        const salesAmount = parseFloat(MON_VENTA);
+        const purchaseAmount = parseFloat(MON_COMPRA);
+
+        if (!salesAmount || !purchaseAmount) {
+            await deleteFile(req.file);
+            return res.status(400).json({
+                message: "El monto de venta o compra no es valido."
+            })
+        }
+
+        // Validation (similar to registerProduct)
+        const isValid = validateregister({
+            DSC_NOMBRE: DSC_NOMBRE,
+            DSC_DESCRIPTION: DSC_DESCRIPTION,
+            DSC_CODIGO_BARRAS: DSC_CODIGO_BARRAS,
+            MON_VENTA: salesAmount,
+            MON_COMPRA: purchaseAmount,
+            ID_SUBCATEGORIA: SUBCATEGORIA
+        });
+
+        if (isValid?.status === 400) {
+            await deleteFile(req.file);
+            return res.status(400).json({ message: isValid.user_message });
+        }
+
+        const currentDate = await getDateCR();
+        if (req.file) {
+            if (product.URL_IMAGEN) {
+                console.log(product.URL_IMAGEN, req.file)
+                await deleteFile(product.URL_IMAGEN)
+            }
+            product.URL_IMAGEN = req.file.filename;
+        }
+
+        // Update values of the product
+        product.DSC_NOMBRE = DSC_NOMBRE || product.DSC_NOMBRE;
+        product.DSC_DESCRIPTION = DSC_DESCRIPTION || product.DSC_DESCRIPTION;
+        product.DSC_CODIGO_BARRAS = DSC_CODIGO_BARRAS || product.DSC_CODIGO_BARRAS;
+        product.MON_VENTA = MON_VENTA || product.MON_VENTA;
+        product.MON_COMPRA = MON_COMPRA || product.MON_COMPRA;
+        product.ID_SUBCATEGORIA = SUBCATEGORIA || product.ID_SUBCATEGORIA;
+        product.FEC_UPDATE_AT = currentDate;
+        product.UPDATED_BY_USER = user.ID_USUARIO;
+        await product.save();
+
+        return res.status(200).json({ message: "Producto actualizado con éxito." });
+    }
+]
 
 export const deleteProduct = async (req, res) => {
     try {
@@ -245,8 +319,8 @@ export const deleteProduct = async (req, res) => {
             where: { DSC_CEDULA: req.user.id }
         })
 
-        if(!user) {
-            return res.status(404).json({message: "El usuario no tiene permiso de eliminar el producto."})
+        if (!user) {
+            return res.status(404).json({ message: "El usuario no tiene permiso de eliminar el producto." })
         }
 
         const currentDate = await getDateCR();
@@ -261,7 +335,7 @@ export const deleteProduct = async (req, res) => {
             }
         );
 
-        return res.status(200).json({message: "Producto eliminado con éxito."});
+        return res.status(200).json({ message: "Producto eliminado con éxito." });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -294,13 +368,15 @@ function createBarCode(date, length = 15) {
     return "PROD" + formatDate + randomDigits;
 }
 
-async function eliminarArchivo(file) {
+async function deleteFile(file) {
     if (file) {
+        const filePath = file.path || `uploads\\images\\products\\${file}`;
+        if(!filePath.includes('PROD')) return;
         try {
-            await fs.unlink(file.path); // Elimina el archivo
-            console.log('Imagen eliminada porque el producto no se guardó:', file.path);
+            await fs.unlink(filePath); // Elimina el archivo
+            console.log('Archivo eliminado: ', filePath);
         } catch (error) {
-            console.error('Error al eliminar la imagen:', error);
+            console.error('Error al eliminar el archivo:', error);
         }
     }
 }
