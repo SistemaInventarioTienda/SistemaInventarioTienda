@@ -9,6 +9,8 @@ import categoryRoutes from "./routes/category.routes.js";
 import supplierRoutes from "./routes/supplier.routes.js";
 import clientRoutes from "./routes/client.routes.js";
 import subcategoryRoutes from "./routes/subcategory.routes.js";
+import productRoutes from "./routes/product.routes.js";
+
 import { FRONTEND_URL } from "./config.js";
 
 const app = express();
@@ -30,6 +32,8 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/supplier", supplierRoutes);
 app.use("/api/client", clientRoutes);
 app.use("/api/subcategory", subcategoryRoutes);
+app.use("/api/product", productRoutes);
+app.use('/uploads', express.static('uploads'));
 
 if (process.env.NODE_ENV === "production") {
   const path = await import("path");
