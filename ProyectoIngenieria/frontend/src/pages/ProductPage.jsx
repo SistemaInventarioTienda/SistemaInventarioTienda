@@ -19,19 +19,25 @@ export default function ProductPage() {
     } = productConfig;
 
     // Lógica para manejar el submit
-    const onSubmit = async (mode, data) => {
 
+    const onSubmit = async (mode, data) => {
         try {
             const backendData = await productConfig.transformData.toBackend(data);
-            console.log("backendData", backendData);
+
+            const formDataObj = {};
+            for (const [key, value] of backendData.entries()) {
+                formDataObj[key] = value;
+            }
+            console.log("Datos enviados al backend:", formDataObj);
             if (mode === "add") {
                 await handleApiCall(
                     () => api.create(backendData),
                     "Producto agregado exitosamente."
                 );
             } else if (mode === "edit") {
+                const productId = parseInt(backendData.get("ID_PRODUCT"), 10);
                 await handleApiCall(
-                    () => api.update(backendData.DSC_CEDULA, backendData),
+                    () => api.update(productId, backendData),
                     "Producto actualizado exitosamente."
                 );
             }
@@ -53,7 +59,7 @@ export default function ProductPage() {
                 fetchAll={api.fetchAll}
                 searchByName={api.searchByName}
                 onSubmit={onSubmit}
-                onDelete={(product) => api.delete(product.DSC_CEDULA)}
+                onDelete={(product) => api.delete(product.ID_PRODUCT)}
                 modalComponent={ProductForm}
                 entityKey={entityKey}
                 transformData={transformData.toFrontend}

@@ -1,6 +1,6 @@
 // Configuración de la entidad "Productos"
 import {
-    getProducts,
+    getAllProducts,
     searchProduct,
     registerProduct,
     updateProduct,
@@ -29,7 +29,6 @@ export const productConfig = {
         { field: "MON_VENTA", label: "Precio Venta" },
         { field: "MON_COMPRA", label: "Precio Compra" },
         { field: "ESTADO", label: "Estado" },
-        { field: "ID_SUBCATEGORIE", label: "Subcategoría" },
         { field: "actions", label: "Acciones" },
     ],
 
@@ -41,7 +40,7 @@ export const productConfig = {
         { name: "foto", type: "file", required: false },
         { name: "MON_VENTA", label: "Precio de Venta", type: "number", required: true },
         { name: "MON_COMPRA", label: "Precio de Compra", type: "number", required: true },
-        { name: "ID_SUBCATEGORIE", label: "Subcategoría del Producto", type: "select", required: true },
+        { name: "SUBCATEGORIA", label: "Subcategoría del Producto", type: "select", required: true },
         {
             name: "estado",
             label: "Estado",
@@ -57,7 +56,7 @@ export const productConfig = {
     // Funciones API específicas de la entidad
     api: {
         fetchAllSubcategoriesTypes: getAllSubcategories,
-        fetchAll: getProducts,
+        fetchAll: getAllProducts,
         searchByName: searchProduct,
         create: registerProduct,
         update: updateProduct,
@@ -67,34 +66,35 @@ export const productConfig = {
     // Transformaciones de datos
     transformData: {
         toFrontend: (product) => ({
+            id: product.ID_PRODUCT,
             DSC_NOMBRE: product.DSC_NOMBRE,
             DSC_DESCRIPTION: product.DSC_DESCRIPTION,
             DSC_CODIGO_BARRAS: product.DSC_CODIGO_BARRAS,
-            URL_IMAGEN: product.URL_IMAGEN,
+            foto: product.URL_IMAGEN,
             MON_VENTA: product.MON_VENTA,
             MON_COMPRA: product.MON_COMPRA,
-            ESTADO: product.ESTADO === "ACTIVO" ? 1 : 0,
-            ID_SUBCATEGORIE: product.ID_SUBCATEGORIE,
+            estado: product.ESTADO === "ACTIVO" ? 1 : 2,
+            ID_SUBCATEGORIA: product.subcategory?.ID_SUBCATEGORIA || "",
         }),
 
         toBackend: async (formData) => {
-        
+
             const data = new FormData();
-        
+            data.append("ID_PRODUCT", formData.id);
             data.append("DSC_NOMBRE", formData.DSC_NOMBRE);
             data.append("DSC_DESCRIPTION", formData.DSC_DESCRIPTION);
             data.append("DSC_CODIGO_BARRAS", formData.DSC_CODIGO_BARRAS);
             data.append("MON_VENTA", parseFloat(formData.MON_VENTA));
             data.append("MON_COMPRA", parseFloat(formData.MON_COMPRA));
             data.append("ESTADO", formData.estado);
-            data.append("ID_SUBCATEGORIE", formData.ID_SUBCATEGORIE);
-        
+            data.append("SUBCATEGORIA", formData.SUBCATEGORIA);
+
             if (formData.foto instanceof File) {
                 data.append("PRODUCT_IMAGE", formData.foto);
             }
 
             return data;
-        },        
+        },
     },
 
     // Transformaciones específicas de campos

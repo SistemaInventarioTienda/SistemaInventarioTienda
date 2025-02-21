@@ -90,7 +90,7 @@ export function useGenericFormLogic({
     };
 
     const handleSubmit = async (e) => {
-        console.log("DATOS ENVIADOS",formData);
+        console.log("DATOS ENVIADOS", formData);
         e.preventDefault();
         setIsProcessing(true);
 
@@ -100,7 +100,7 @@ export function useGenericFormLogic({
 
             if (entityName === "Proveedor") {
                 errors = [...errors, ...validateSupplier(formData, phones, emails)];
-            }else if (entityName === "Producto"){
+            } else if (entityName === "Producto") {
                 errors = [...errors, ...validateProduct(formData)];
             }
 

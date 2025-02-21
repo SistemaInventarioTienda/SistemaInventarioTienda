@@ -4,6 +4,7 @@ import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
 import { toast } from "sonner";
+import { API_URL_RESOURCES } from '../../config';
 import ModalConfirmation from "../modals/ModalConfirmation";
 function GenericForm({
     mode,
@@ -58,7 +59,11 @@ function GenericForm({
 
     // Manejador para seleccionar archivos
     const handleFileSelect = (file) => {
-        setFormData((prevData) => ({ ...prevData, foto: file }));
+        setFormData((prevData) => ({
+            ...prevData,
+            foto: file, // Guardamos el archivo en el estado
+            URL_IMAGEN: file ? null : prevData.URL_IMAGEN, // Si hay un nuevo archivo, eliminamos la URL previa
+        }));
     };
 
     // Renderizador de campos dinámicos
@@ -90,7 +95,7 @@ function GenericForm({
                         label: type.DSC_NOMBRE,
                     })),
                 ];
-            } else if (field.name === "ID_SUBCATEGORIE") {
+            } else if (field.name === "SUBCATEGORIA") {
                 options = [
                     { value: "", label: "Seleccione la subcategoría" },
                     ...localSubcategoriesTypes.map((type) => ({
@@ -189,7 +194,7 @@ function GenericForm({
                     <InputFile
                         mode={mode}
                         name={fileField.name}
-                        label={`${entityName === "Cliente" ? "Foto del Cliente" : "Foto de Proveedor"}`}
+                        label={`${entityName === "Producto" ? "Imagen del Producto" : "Imagen"}`}
                         onFileSelect={handleFileSelect}
                         value={formData.foto}
                         required={fileField.required}

@@ -11,7 +11,6 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
         async function fetchSubcategoriesTypes() {
             try {
                 const types = await productConfig.api.fetchAllSubcategoriesTypes();
-                console.log("Subcategorías recibidas:", types);
 
                 const extractedSubcategories = types.subcategory.map((item) => ({
                     ID_SUBCATEGORIA: item.ID_SUBCATEGORIA,
@@ -22,13 +21,11 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
 
                 if (initialData) {
                     const matchedType = extractedSubcategories.find(
-                        (subcategory) => subcategory.ID_SUBCATEGORIA === initialData.ID_SUBCATEGORIE
+                        (subcategory) => subcategory.ID_SUBCATEGORIA === initialData.ID_SUBCATEGORIA
                     );
-                    console.log("Subcategoría coincidente:", matchedType);
-
                     setFormData({
                         ...initialData,
-                        ID_SUBCATEGORIE: matchedType ? matchedType.ID_SUBCATEGORIA : "",
+                        SUBCATEGORIA: matchedType ? matchedType.SUBCATEGORIA : "",
                     });
                 } else {
                     setFormData({});

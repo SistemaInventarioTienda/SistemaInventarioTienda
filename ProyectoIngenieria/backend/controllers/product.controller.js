@@ -123,7 +123,7 @@ export const searchProduct = async (req, res) => {
 //======================== Configuración de Multer ========================
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/images/products/'); // Directorio de carga
+        cb(null, '../backend/uploads/images/products/'); // Directorio de carga
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -155,7 +155,7 @@ export const registerProduct = [
 
             // creating the product
             const created_at = await getDateCR();
-            const barCode = (DSC_CODIGO_BARRAS === null || DSC_CODIGO_BARRAS === '') ? createBarCode(created_at) : DSC_CODIGO_BARRAS;
+            const barCode = (DSC_CODIGO_BARRAS === null || DSC_CODIGO_BARRAS === '' || DSC_CODIGO_BARRAS === 'undefined') ? createBarCode(created_at) : DSC_CODIGO_BARRAS;
             const isValid = validateregister({
                 DSC_NOMBRE: DSC_NOMBRE,
                 DSC_DESCRIPTION: DSC_DESCRIPTION,
@@ -230,7 +230,7 @@ export const updateProduct = [
     async (req, res) => {
 
         const {
-            DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIA = null
+            DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIA = null, ESTADO = null,
         } = req.body;
 
         const product = await Product.findOne({
@@ -271,7 +271,8 @@ export const updateProduct = [
             DSC_CODIGO_BARRAS: DSC_CODIGO_BARRAS,
             MON_VENTA: salesAmount,
             MON_COMPRA: purchaseAmount,
-            ID_SUBCATEGORIA: SUBCATEGORIA
+            ID_SUBCATEGORIA: SUBCATEGORIA,
+            ESTADO: ESTADO,
         });
 
         if (isValid?.status === 400) {
@@ -295,6 +296,7 @@ export const updateProduct = [
         product.MON_VENTA = MON_VENTA || product.MON_VENTA;
         product.MON_COMPRA = MON_COMPRA || product.MON_COMPRA;
         product.ID_SUBCATEGORIA = SUBCATEGORIA || product.ID_SUBCATEGORIA;
+        product.ESTADO = ESTADO || product.ESTADO;
         product.FEC_UPDATE_AT = currentDate;
         product.UPDATED_BY_USER = user.ID_USUARIO;
         await product.save();
@@ -371,7 +373,7 @@ function createBarCode(date, length = 15) {
 async function deleteFile(file) {
     if (file) {
         const filePath = file.path || `uploads\\images\\products\\${file}`;
-        if(!filePath.includes('PROD')) return;
+        if (!filePath.includes('PROD')) return;
         try {
             await fs.unlink(filePath); // Elimina el archivo
             console.log('Archivo eliminado: ', filePath);

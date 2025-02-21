@@ -2,9 +2,9 @@ export const validateProduct = (formData ) => {
 
     const errors = [];
 
-    const subcategoriaValue = parseInt(formData.ID_SUBCATEGORIE, 10);
+    const subcategoriaValue = parseInt(formData.SUBCATEGORIA, 10);
     if (isNaN(subcategoriaValue) || subcategoriaValue <= 0) {
-        console.log("TIPO DE PROVEEDOR", formData.ID_SUBCATEGORIE);
+        console.log("SUBCATEGORIA", formData.SUBCATEGORIA);
         errors.push('Seleccione un tipo de categoría válido para el producto.');
     }
 
