@@ -233,11 +233,17 @@ CREATE TABLE `tsim_producto` (
   `FEC_CREATED_AT` datetime DEFAULT NULL,
   `FEC_UPDATE_AT` datetime DEFAULT NULL,
   `ESTADO` int(11) DEFAULT NULL,
-  `ID_SUBCATEGORIE` int(11) NOT NULL,
+  `ID_SUBCATEGORIA` int(11) NOT NULL,
   `UPDATED_BY_USER` int(11) DEFAULT NULL,
   `CREATED_BY_USER` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `tsim_producto`
+--
+
+INSERT INTO `tsim_producto` (`ID_PRODUCT`, `DSC_NOMBRE`, `DSC_DESCRIPTION`, `DSC_CODIGO_BARRAS`, `URL_IMAGEN`, `MON_VENTA`, `MON_COMPRA`, `FEC_CREATED_AT`, `FEC_UPDATE_AT`, `ESTADO`, `ID_SUBCATEGORIA`, `UPDATED_BY_USER`, `CREATED_BY_USER`) VALUES
+(21, 'Coca cola', 'Esta es con un recipiente de 1.5L', 'PROD202502190056154', 'image_not_found.png', 2200, 1950, '2025-02-19 00:56:15', NULL, 2, 1, NULL, 10);
 -- --------------------------------------------------------
 
 --
@@ -287,6 +293,13 @@ CREATE TABLE `tsim_subcategoria` (
     `subcategoriamodificadoen` datetime DEFAULT NULL,
     `ESTADO` int(11) DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsim_subcategoria`
+--
+
+INSERT INTO `tsim_subcategoria` (`ID_SUBCATEGORIA`, `ID_CATEGORIA`, `DSC_NOMBRE`, `FEC_CREADOEN`, `subcategoriamodificadoen`, `ESTADO`) VALUES
+(1, 7, 'Gaseosa', '2024-10-12 17:53:52', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -663,7 +676,8 @@ ALTER TABLE `tsim_producto`
   ADD PRIMARY KEY (`ID_PRODUCT`),
   ADD UNIQUE KEY `DSC_CODIGO_BARRAS` (`DSC_CODIGO_BARRAS`),
   ADD KEY `logs_userCreated` (`CREATED_BY_USER`),
-  ADD KEY `logs_userUpdated` (`UPDATED_BY_USER`);
+  ADD KEY `logs_userUpdated` (`UPDATED_BY_USER`),
+  ADD KEY `ID_SUBCATEGORIA` (`ID_SUBCATEGORIA`);
 
 --
 -- Indices de la tabla `tsim_rol`
@@ -878,8 +892,8 @@ ADD CONSTRAINT `tsim_fechainiciosesion_ibfk_1` FOREIGN KEY (`ID_USUARIO`) REFERE
 --
 ALTER TABLE `tsim_producto`
   ADD CONSTRAINT `logs_userCreated` FOREIGN KEY (`CREATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `logs_userUpdated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
+  ADD CONSTRAINT `logs_userUpdated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `subcategoria` FOREIGN KEY (`ID_SUBCATEGORIA`) REFERENCES `tsim_subcategoria` (`ID_SUBCATEGORIA`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 --
 -- Filtros para la tabla `tsim_rol`
 --
