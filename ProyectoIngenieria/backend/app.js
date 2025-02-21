@@ -31,6 +31,7 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/supplier", supplierRoutes);
 app.use("/api/client", clientRoutes);
 app.use("/api/product", productRoutes);
+app.use('/uploads', express.static('uploads'));
 
 
 if (process.env.NODE_ENV === "production") {
