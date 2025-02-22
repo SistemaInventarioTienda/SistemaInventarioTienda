@@ -1,43 +1,47 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from './';
 import { Upload, Trash } from "lucide-react";
+import { API_URL_RESOURCES } from '../../config';
 import './styles/inputFile.css';
 
-const DEFAULT_IMAGE_URL = process.env.PUBLIC_URL + '/assets/image/default_image.png';
+const DEFAULT_IMAGE_URL = `${API_URL_RESOURCES}/images/image_not_found.png`;
 
 const InputFile = ({
     value,
     mode,
     label = "Archivo",
     accept = "image/*",
+    resourcePath = "images", // Nuevo parámetro genérico para manejar rutas
     onFileSelect
 }) => {
     const inputRef = useRef();
     const [selectedFile, setSelectedFile] = useState(null);
-    const [preview, setPreview] = useState(null);
+    const [preview, setPreview] = useState(DEFAULT_IMAGE_URL);
 
     useEffect(() => {
-        // Determinar qué imagen mostrar según el modo y el valor
+        console.log("RESOURCE PATH", resourcePath);
         if (mode === 'add') {
-            setPreview(null);
-        } else {
-            console.log(DEFAULT_IMAGE_URL);
-            if (value && typeof value === 'string') {
-                if (value.startsWith("http") || value.startsWith("/")) {
-                    setPreview(value); // Si es una URL absoluta o relativa correcta
-                } else {
-                    setPreview(`${process.env.PUBLIC_URL}/${value.replace(/^public[\\/]/, '')}`);
-                }
+            setPreview(DEFAULT_IMAGE_URL);
+        } else if ((mode === 'edit' || mode === 'view') && value) {
+            if (typeof value === "string" && (value.startsWith("http") || value.startsWith("/"))) {
+                setPreview(value);
+            } else if (typeof value === "object" && value instanceof File) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreview(reader.result);
+                };
+                reader.readAsDataURL(value);
             } else {
-                setPreview(DEFAULT_IMAGE_URL);
-            }            
+                setPreview(`${API_URL_RESOURCES}/${resourcePath}/${value}`);
+            }
         }
-    }, [value, mode]);
+    }, [value, mode, resourcePath]);
 
     const handleOnChange = (event) => {
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
             setSelectedFile(file);
+
             if (file.type.startsWith("image/")) {
                 const reader = new FileReader();
                 reader.onloadend = () => {
@@ -47,7 +51,7 @@ const InputFile = ({
             } else {
                 setPreview(DEFAULT_IMAGE_URL);
             }
-            // Llamamos a la función onFileSelect con el archivo seleccionado
+
             if (onFileSelect) {
                 onFileSelect(file);
             }
@@ -55,7 +59,6 @@ const InputFile = ({
     };
 
     const handleImageError = () => {
-        // Si ocurre un error al cargar la imagen, usar la imagen predeterminada
         setPreview(DEFAULT_IMAGE_URL);
     };
 
@@ -65,9 +68,9 @@ const InputFile = ({
 
     const removeFile = () => {
         setSelectedFile(null);
-        setPreview(null);
+        setPreview(DEFAULT_IMAGE_URL);
         if (onFileSelect) {
-            onFileSelect(null); // Notificar que se eliminó el archivo
+            onFileSelect(null);
         }
     };
 
@@ -80,61 +83,40 @@ const InputFile = ({
     return (
         <div className="input-file-container">
             <label>{label}</label>
-            {preview ? (
-                <div className="selected-file">
-                    <img
-                        src={preview}
-                        alt="Vista previa"
-                        className="preview-image"
-                        onError={handleImageError}
-                    />
-                    <div className="file-info">
-                        <p className="file-name">{selectedFile ? selectedFile.name : ""}</p>
-                        <p className="file-size">{selectedFile ? formatFileSize(selectedFile.size) : ""}</p>
-                    </div>
-                    {(mode === 'edit' || mode === 'add') && (
-                        <>
-                            {/* Botón de eliminar solo si no es la imagen predeterminada */}
-                            {preview !== DEFAULT_IMAGE_URL && (
-                                <Button onClick={removeFile} type="button">
-                                    <Trash />
-                                </Button>
-                            )}
-                            {!selectedFile && (
-                                <Button onClick={onChooseFile} className="file-btn" type="button">
-                                    <Upload />
-                                    <span>{mode === 'edit' ? "Seleccionar Nuevo Archivo" : "Seleccionar Archivo"}</span>
-                                </Button>
-                            )}
-                            <input
-                                onChange={handleOnChange}
-                                type="file"
-                                ref={inputRef}
-                                style={{ display: "none" }}
-                                accept={accept}
-                            />
-                        </>
-                    )}
+            <div className="selected-file">
+                <img
+                    src={preview}
+                    alt="Vista previa"
+                    className="preview-image"
+                    onError={handleImageError}
+                />
+                <div className="file-info">
+                    <p className="file-name">{selectedFile ? selectedFile.name : ""}</p>
+                    <p className="file-size">{selectedFile ? formatFileSize(selectedFile.size) : ""}</p>
                 </div>
-            ) : (
-                <>
-                    {(mode === 'edit' || mode === 'add') && (
-                        <>
+                {(mode === 'edit' || mode === 'add') && (
+                    <>
+                        {preview !== DEFAULT_IMAGE_URL && (
+                            <Button onClick={removeFile} type="button">
+                                <Trash />
+                            </Button>
+                        )}
+                        {!selectedFile && (
                             <Button onClick={onChooseFile} className="file-btn" type="button">
                                 <Upload />
                                 <span>{mode === 'edit' ? "Seleccionar Nuevo Archivo" : "Seleccionar Archivo"}</span>
                             </Button>
-                            <input
-                                onChange={handleOnChange}
-                                type="file"
-                                ref={inputRef}
-                                style={{ display: "none" }}
-                                accept={accept}
-                            />
-                        </>
-                    )}
-                </>
-            )}
+                        )}
+                        <input
+                            onChange={handleOnChange}
+                            type="file"
+                            ref={inputRef}
+                            style={{ display: "none" }}
+                            accept={accept}
+                        />
+                    </>
+                )}
+            </div>
         </div>
     );
 };

@@ -1,3 +1,4 @@
+/* Estilo global (fullscreen) por defecto */
 .spinner-overlay {
     position: fixed;
     top: 0;
@@ -10,6 +11,13 @@
     align-items: center;
     z-index: 1000;
     backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Variante local */
+.spinner-overlay.local-spinner {
+    position: absolute;
+    background: var(--color-offcanvas);
 }
 
 .spinner-container {
@@ -79,11 +87,6 @@
     100% {
         content: '.';
     }
-}
-
-/* Añadir efecto de desvanecimiento */
-.spinner-overlay {
-    animation: fadeIn 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
