@@ -9,15 +9,14 @@
     gap: 8px;
   }
   
-  .input {
-    width: 4rem;
+
+   .inputNumber{
     text-align: center;
     padding: 4px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
   }
-  
   .button {
     width: 32px;
     height: 32px;

@@ -35,7 +35,7 @@ const NumberInput = ({
           onChange={handleChange}
           min={min}
           max={max}
-          className="input"
+          className="inputNumber"
         />
         <button onClick={handleIncrement} className="button">
           +
