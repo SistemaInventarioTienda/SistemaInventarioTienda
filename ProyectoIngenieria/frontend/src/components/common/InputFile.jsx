@@ -4,13 +4,14 @@ import { Upload, Trash } from "lucide-react";
 import { API_URL_RESOURCES } from '../../config';
 import './styles/inputFile.css';
 
-const DEFAULT_IMAGE_URL = process.env.PUBLIC_URL + '/assets/image/default_image.png';
+const DEFAULT_IMAGE_URL = `${API_URL_RESOURCES}/images/image_not_found.png`;
 
 const InputFile = ({
     value,
     mode,
     label = "Archivo",
     accept = "image/*",
+    resourcePath = "images", // Nuevo parámetro genérico para manejar rutas
     onFileSelect
 }) => {
     const inputRef = useRef();
@@ -18,17 +19,23 @@ const InputFile = ({
     const [preview, setPreview] = useState(DEFAULT_IMAGE_URL);
 
     useEffect(() => {
-        console.log("RUTA PRODUCTO", `${API_URL_RESOURCES}/images/products/${value}`);
+        console.log("RESOURCE PATH", resourcePath);
         if (mode === 'add') {
-            setPreview(`${API_URL_RESOURCES}/images/products/${value}`);
-        } else if (mode === 'edit' && value) {
-            if (value.startsWith("http") || value.startsWith("/")) {
+            setPreview(DEFAULT_IMAGE_URL);
+        } else if ((mode === 'edit' || mode === 'view') && value) {
+            if (typeof value === "string" && (value.startsWith("http") || value.startsWith("/"))) {
                 setPreview(value);
+            } else if (typeof value === "object" && value instanceof File) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreview(reader.result);
+                };
+                reader.readAsDataURL(value);
             } else {
-                setPreview(`${API_URL_RESOURCES}/images/products/${value}`);
+                setPreview(`${API_URL_RESOURCES}/${resourcePath}/${value}`);
             }
         }
-    }, [value, mode]);
+    }, [value, mode, resourcePath]);
 
     const handleOnChange = (event) => {
         if (event.target.files && event.target.files.length > 0) {

@@ -61,8 +61,8 @@ function GenericForm({
     const handleFileSelect = (file) => {
         setFormData((prevData) => ({
             ...prevData,
-            foto: file, // Guardamos el archivo en el estado
-            URL_IMAGEN: file ? null : prevData.URL_IMAGEN, // Si hay un nuevo archivo, eliminamos la URL previa
+            foto: file,
+            URL_IMAGEN: file ? null : prevData.URL_IMAGEN,
         }));
     };
 
@@ -198,6 +198,7 @@ function GenericForm({
                         onFileSelect={handleFileSelect}
                         value={formData.foto}
                         required={fileField.required}
+                        resourcePath={fileField.resourcePath}
                     />
                 </div>
             )}

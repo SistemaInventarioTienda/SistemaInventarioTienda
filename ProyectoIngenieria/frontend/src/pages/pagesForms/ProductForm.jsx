@@ -25,7 +25,7 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
                     );
                     setFormData({
                         ...initialData,
-                        SUBCATEGORIA: matchedType ? matchedType.SUBCATEGORIA : "",
+                        SUBCATEGORIA: matchedType ? matchedType.ID_SUBCATEGORIA : "",
                     });
                 } else {
                     setFormData({});

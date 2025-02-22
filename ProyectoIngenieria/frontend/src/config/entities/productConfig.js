@@ -37,7 +37,7 @@ export const productConfig = {
         { name: "DSC_NOMBRE", label: "Nombre del Producto", type: "text", required: true },
         { name: "DSC_DESCRIPTION", label: "Descripción", type: "textarea", required: true },
         { name: "DSC_CODIGO_BARRAS", label: "Código de Barras", type: "text", required: true },
-        { name: "foto", type: "file", required: false },
+        { name: "foto", type: "file", required: false, resourcePath: "images/products"},
         { name: "MON_VENTA", label: "Precio de Venta", type: "number", required: true },
         { name: "MON_COMPRA", label: "Precio de Compra", type: "number", required: true },
         { name: "SUBCATEGORIA", label: "Subcategoría del Producto", type: "select", required: true },
