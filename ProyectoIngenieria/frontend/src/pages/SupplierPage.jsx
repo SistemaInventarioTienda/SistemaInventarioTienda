@@ -9,6 +9,7 @@ import handleApiCall from "../utils/handleApiCall";
 export default function SupplierPage() {
     const {
         entityName,
+        titlePage,
         entityMessage,
         columns,
         fields,
@@ -48,6 +49,7 @@ export default function SupplierPage() {
         <>
             <EntityPage
                 entityName={entityName}
+                titlePage={titlePage}
                 entityMessage={entityMessage}
                 columns={columns}
                 fields={fields}

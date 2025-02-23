@@ -12,6 +12,7 @@ import {
 export const categoryConfig = {
     // Nombre y descripción de la entidad
     entityName: "Categoría",
+    titlePage: "Categorías",
     entityMessage: "Gestión de categorías de los productos del sistema",
 
     // Identificador clave de la entidad
@@ -44,8 +45,8 @@ export const categoryConfig = {
         fetchAll: getAllCategories,
         searchByName: searchCategoryByName,
         create: saveCategory,
-        update: updateCategory, 
-        delete: deleteCategory, 
+        update: updateCategory,
+        delete: deleteCategory,
     },
 
     // Transformaciones de datos

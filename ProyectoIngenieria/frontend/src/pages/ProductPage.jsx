@@ -1,15 +1,13 @@
 import React from "react";
 import { EntityPage } from "./EntityPage";
-import { userConfig } from "../config/entities/userConfig";
-import UserForm from "./pagesForms/UserForm";
+import { productConfig } from "../config/entities/productConfig.js";
+import ProductForm from "./pagesForms/ProductForm";
 import handleApiCall from "../utils/handleApiCall";
-import "./styles/Page.css";
 
-export default function UserPage() {
+export default function ProductPage() {
     const {
         entityName,
         titlePage,
-        modalName,
         entityMessage,
         columns,
         fields,
@@ -18,26 +16,34 @@ export default function UserPage() {
         transformData,
         transformConfig,
         actions,
-    } = userConfig;
+    } = productConfig;
 
     // Lógica para manejar el submit
+
     const onSubmit = async (mode, data) => {
         try {
-            const backendData = transformData.toBackend(data);
-            console.log("backendData", backendData);
+            const backendData = await productConfig.transformData.toBackend(data);
+
+            const formDataObj = {};
+            for (const [key, value] of backendData.entries()) {
+                formDataObj[key] = value;
+            }
+            console.log("Datos enviados al backend:", formDataObj);
             if (mode === "add") {
                 await handleApiCall(
                     () => api.create(backendData),
-                    "Usuario agregado exitosamente."
+                    "Producto agregado exitosamente."
                 );
             } else if (mode === "edit") {
+                const productId = parseInt(backendData.get("ID_PRODUCT"), 10);
                 await handleApiCall(
-                    () => api.update(backendData.DSC_CEDULA, backendData),
-                    "Usuario actualizado exitosamente."
+                    () => api.update(productId, backendData),
+                    "Producto actualizado exitosamente."
                 );
             }
             return { success: true };
         } catch (error) {
+            console.error("Error:", error);
             return { success: false };
         }
     };
@@ -47,15 +53,14 @@ export default function UserPage() {
             <EntityPage
                 entityName={entityName}
                 titlePage={titlePage}
-                modalName={modalName}
                 entityMessage={entityMessage}
                 columns={columns}
                 fields={fields}
                 fetchAll={api.fetchAll}
                 searchByName={api.searchByName}
                 onSubmit={onSubmit}
-                onDelete={(user) => api.delete(user.DSC_CEDULA)}
-                modalComponent={UserForm}
+                onDelete={(product) => api.delete(product.ID_PRODUCT)}
+                modalComponent={ProductForm}
                 entityKey={entityKey}
                 transformData={transformData.toFrontend}
                 transformConfig={transformConfig}

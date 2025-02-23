@@ -35,6 +35,10 @@
     justify-content: center;
 }
 
+.metric-card-icon svg {
+    color: var(--color-font);
+}
+
 .metric-card-title {
     font-size: 0.875rem;
     color: var(--color-metric-card-title);

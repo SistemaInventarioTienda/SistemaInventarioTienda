@@ -58,21 +58,25 @@ function HomePage() {
       </div>
       <div className="metric-grid">
         <MetricCard
+          onClick={() => navigate("/user")}
           title="Usuarios Totales"
           value={metrics.users}
           icon={<Users className="h-6 w-6" />}
         />
         <MetricCard
+          onClick={() => navigate("/clients")}
           title="Clientes Totales"
           value={metrics.clients}
           icon={<UserCircle className="h-6 w-6" />}
         />
         <MetricCard
+          onClick={() => navigate("/suppliers")}
           title="Proveedores Totales"
           value={metrics.suppliers}
           icon={<Truck className="h-6 w-6" />}
         />
         <MetricCard
+          onClick={() => navigate("/category")}
           title="Categorías Totales"
           value={metrics.categories}
           icon={<Tag className="h-6 w-6" />}

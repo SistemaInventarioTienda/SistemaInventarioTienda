@@ -9,6 +9,7 @@ import { toast } from "sonner";
 // Usar forwardRef para envolver el componente
 export const EntityPage = forwardRef(({
     entityName,
+    titlePage,
     entityMessage,
     columns,
     fields,
@@ -125,7 +126,7 @@ export const EntityPage = forwardRef(({
         <PageLayout>
             <div className="page-header">
                 <div>
-                    <h1>{entityName}</h1>
+                    <h1>{titlePage}</h1>
                     <p>{entityMessage}</p>
                 </div>
                 <Button className="add-btn" onClick={handleAdd}>

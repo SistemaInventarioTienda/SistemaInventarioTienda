@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from "react";
+import { validateGeneral } from "../schemas/validations/validateGeneral";
+import { validateSupplier } from "../schemas/validations/validateSupplier";
+import { validateProduct } from "../schemas/validations/validateProduct";
 
 export function useGenericFormLogic({
+    entityName,
     initialData = {},
     supplierTypes = [],
+    subcategoriesTypes = [],
     onSubmit,
     setErrorMessages,
 }) {
@@ -10,6 +15,7 @@ export function useGenericFormLogic({
     const [phones, setPhones] = useState(initialData?.telefonos || []);
     const [emails, setEmails] = useState(initialData?.correos || []);
     const [localSupplierTypes, setLocalSupplierTypes] = useState(supplierTypes);
+    const [localSubcategoriesTypes, setLocalSubcategoriesTypes] = useState(subcategoriesTypes);
     const [searchPersonWorker, setSearchPersonWorker] = useState(null);
     const [isCedulaValid, setIsCedulaValid] = useState(false);
     const [workerError, setWorkerError] = useState(false);
@@ -23,6 +29,7 @@ export function useGenericFormLogic({
             setEmails(initialData?.correos || []);
             initialLoaded.current = true;
             setLocalSupplierTypes(supplierTypes || []);
+            setLocalSubcategoriesTypes(subcategoriesTypes || []);
         }
     }, [initialData, supplierTypes]);
 
@@ -83,14 +90,22 @@ export function useGenericFormLogic({
     };
 
     const handleSubmit = async (e) => {
+        console.log("DATOS ENVIADOS", formData);
         e.preventDefault();
         setIsProcessing(true);
 
         try {
-            const estadoValue = parseInt(formData.estado, 10);
 
-            if (isNaN(estadoValue) || estadoValue === 0 || estadoValue === "") {
-                setErrorMessages(["Por favor, seleccione un estado válido."]);
+            let errors = validateGeneral(formData);
+
+            if (entityName === "Proveedor") {
+                errors = [...errors, ...validateSupplier(formData, phones, emails)];
+            } else if (entityName === "Producto") {
+                errors = [...errors, ...validateProduct(formData)];
+            }
+
+            if (errors.length > 0) {
+                setErrorMessages(errors);
                 setIsProcessing(false);
                 return;
             }
@@ -99,11 +114,12 @@ export function useGenericFormLogic({
                 ...formData,
                 telefonos: phones,
                 correos: emails,
-                estado: estadoValue,
+                estado: parseInt(formData.estado, 10),
             };
 
             await onSubmit(dataToSubmit);
         } catch (error) {
+            console.error("Error procesando el formulario:", error.message);
             setErrorMessages(["Error al procesar el formulario. Intente nuevamente."]);
         } finally {
             setIsProcessing(false);
@@ -115,6 +131,7 @@ export function useGenericFormLogic({
         phones,
         emails,
         localSupplierTypes,
+        localSubcategoriesTypes,
         isCedulaValid,
         workerError,
         handleChange,

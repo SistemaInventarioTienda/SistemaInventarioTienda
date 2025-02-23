@@ -14,6 +14,7 @@ import SupplierPage from './pages/SupplierPage';
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from './pages/SettingsPage';
+import ProductPage from './pages/ProductPage';
 import { Toaster } from "sonner";
 
 function App() {
@@ -41,7 +42,7 @@ function App() {
         <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
         <Toaster
           position="bottom-right"
-          visibleToasts={2}
+          visibleToasts={5}
           richColors
           closeButton
           theme={isDarkMode ? "dark" : "light"}
@@ -79,6 +80,7 @@ function AppContent({ isDarkMode, toggleDarkMode }) {
             {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage/>}/>
 
+            <Route path="product" element={<ProductPage />} />
           </Route>
         </Route>
       </Routes>
@@ -102,6 +104,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="profile" element={<ProfilePage />} />
             {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage/>}/>
+            <Route path="product" element={<ProductPage />} />
           </Routes>
         </main>
       </div>

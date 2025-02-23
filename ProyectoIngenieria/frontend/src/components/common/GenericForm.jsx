@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Input, InputFile, Select } from "./";
+import { Input, Textarea, InputFile, Select } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
 import { toast } from "sonner";
+import { API_URL_RESOURCES } from '../../config';
 import ModalConfirmation from "../modals/ModalConfirmation";
 function GenericForm({
     mode,
@@ -11,6 +12,7 @@ function GenericForm({
     initialData = {},
     entityName,
     supplierTypes = [],
+    subcategoriesTypes = [],
     onSubmit,
     onCancel,
 }) {
@@ -21,6 +23,7 @@ function GenericForm({
         phones,
         emails,
         localSupplierTypes,
+        localSubcategoriesTypes,
         isCedulaValid,
         workerError,
         handleChange,
@@ -30,8 +33,10 @@ function GenericForm({
         setEmails,
         isProcessing,
     } = useGenericFormLogic({
+        entityName,
         initialData,
         supplierTypes,
+        subcategoriesTypes,
         onSubmit,
         setErrorMessages,
     });
@@ -54,28 +59,57 @@ function GenericForm({
 
     // Manejador para seleccionar archivos
     const handleFileSelect = (file) => {
-        setFormData((prevData) => ({ ...prevData, foto: file }));
+        setFormData((prevData) => ({
+            ...prevData,
+            foto: file,
+            URL_IMAGEN: file ? null : prevData.URL_IMAGEN,
+        }));
     };
 
     // Renderizador de campos dinámicos
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";
 
+        if (field.type === "textarea") {
+            return (
+                <Textarea
+                    name={field.name}
+                    value={fieldValue}
+                    onChange={handleChange}
+                    required={field.required}
+                    readOnly={mode === "view"}
+                    placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                    className="full-width"
+                />
+            );
+        }
+
         if (field.type === "select") {
-            const options =
-                field.name === "tipoProveedor"
-                    ? [
-                        { value: "", label: "Seleccione el tipo de proveedor" },
-                        ...localSupplierTypes.map((type) => ({
-                            value: type.ID_TIPOPROVEEDOR,
-                            label: type.DSC_NOMBRE,
-                        })),
-                    ]
-                    : [
-                        { value: "0", label: "Seleccione el estado" },
-                        { value: 1, label: "Activo" },
-                        { value: 2, label: "Inactivo" },
-                    ];
+            let options = [];
+
+            if (field.name === "tipoProveedor") {
+                options = [
+                    { value: "", label: "Seleccione el tipo de proveedor" },
+                    ...localSupplierTypes.map((type) => ({
+                        value: type.ID_TIPOPROVEEDOR,
+                        label: type.DSC_NOMBRE,
+                    })),
+                ];
+            } else if (field.name === "SUBCATEGORIA") {
+                options = [
+                    { value: "", label: "Seleccione la subcategoría" },
+                    ...localSubcategoriesTypes.map((type) => ({
+                        value: type.ID_SUBCATEGORIA,
+                        label: type.DSC_NOMBRE,
+                    })),
+                ];
+            } else {
+                options = [
+                    { value: "0", label: "Seleccione el estado" },
+                    { value: 1, label: "Activo" },
+                    { value: 2, label: "Inactivo" },
+                ];
+            }
 
             return (
                 <Select
@@ -160,10 +194,11 @@ function GenericForm({
                     <InputFile
                         mode={mode}
                         name={fileField.name}
-                        label={`${entityName === "Cliente" ? "Foto del Cliente" : "Foto de Proveedor"}`}
+                        label={`${entityName === "Producto" ? "Imagen del Producto" : "Imagen"}`}
                         onFileSelect={handleFileSelect}
                         value={formData.foto}
                         required={fileField.required}
+                        resourcePath={fileField.resourcePath}
                     />
                 </div>
             )}

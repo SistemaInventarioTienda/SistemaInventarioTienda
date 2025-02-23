@@ -7,6 +7,7 @@ import handleApiCall from "../utils/handleApiCall";
 export default function ClientPage() {
     const {
         entityName,
+        titlePage,
         entityMessage,
         columns,
         fields,
@@ -45,6 +46,7 @@ export default function ClientPage() {
         <>
             <EntityPage
                 entityName={entityName}
+                titlePage={titlePage}
                 entityMessage={entityMessage}
                 columns={columns}
                 fields={fields}
