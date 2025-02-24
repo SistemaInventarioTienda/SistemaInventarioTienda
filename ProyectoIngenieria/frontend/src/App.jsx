@@ -4,6 +4,7 @@ import './App.css';
 import Navbar from "./components/layout/Navbar";
 import Sidebar from './components/layout/Sidebar';
 import { AuthProvider, useAuth } from "./context/authContext";
+import { AuthPermissionsProvider } from './context/authPermissions';
 import { ProtectedRoute } from "./routes";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import CategoryPage from "./pages/CategoryPage";
@@ -37,19 +38,21 @@ function App() {
   }, [isDarkMode]);
   return (
     <AuthProvider>
-      <HashRouter>
-        <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-        <Toaster
-          position="bottom-right"
-          visibleToasts={5}
-          richColors
-          closeButton
-          theme={isDarkMode ? "dark" : "light"}
-          toastOptions={{
-            className: 'custom-toaster',
-          }}
-        />
-      </HashRouter>
+      <AuthPermissionsProvider>
+        <HashRouter>
+          <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+          <Toaster
+            position="bottom-right"
+            visibleToasts={5}
+            richColors
+            closeButton
+            theme={isDarkMode ? "dark" : "light"}
+            toastOptions={{
+              className: 'custom-toaster',
+            }}
+          />
+        </HashRouter>
+      </AuthPermissionsProvider>
     </AuthProvider>
   );
 }
