@@ -1,0 +1,21 @@
+
+.grid {
+    display: grid;
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .gap-8 {
+    gap: 2rem; /* 32px de espacio entre elementos */
+  }
+
+
+.checkbox-input {
+    accent-color: rgb(40, 211, 143);
+    margin-right: 10px;
+}
+
+
+  
