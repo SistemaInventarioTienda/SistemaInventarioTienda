@@ -164,11 +164,12 @@ export const EntityPage = forwardRef(({
                             setItemsPerPage(Number(e.target.value));
                             setCurrentPage(1);
                         }}
-                    >
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={15}>15</option>
-                    </Select>
+                        options={[
+                            { value: 5, label: "5" },
+                            { value: 10, label: "10" },
+                            { value: 15, label: "15" },
+                        ]}
+                    />
                     <label htmlFor="itemsPerPage">por página</label>
                 </div>
             </div>

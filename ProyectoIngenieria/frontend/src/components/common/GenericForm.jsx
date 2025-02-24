@@ -114,17 +114,12 @@ function GenericForm({
             return (
                 <Select
                     name={field.name}
-                    value={fieldValue}
+                    value={formData[field.name] || ""}
                     onChange={handleChange}
+                    options={options}
                     required={field.required}
                     disabled={mode === "view"}
-                >
-                    {options.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </Select>
+                />
             );
         }
 

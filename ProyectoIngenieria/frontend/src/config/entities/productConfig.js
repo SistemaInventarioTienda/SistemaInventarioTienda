@@ -8,7 +8,7 @@ import {
 } from "../../api/product";
 
 import {
-    getAllSubcategories
+    getAllSubcategoriesTypes
 } from "../../api/subcategory";
 
 // Configuración principal de la entidad
@@ -34,13 +34,13 @@ export const productConfig = {
 
     // Configuración de campos del formulario
     fields: [
+        { name: "DSC_CODIGO_BARRAS", label: "Código de Barras", type: "text", required: true },
         { name: "DSC_NOMBRE", label: "Nombre del Producto", type: "text", required: true },
         { name: "DSC_DESCRIPTION", label: "Descripción", type: "textarea", required: true },
-        { name: "DSC_CODIGO_BARRAS", label: "Código de Barras", type: "text", required: true },
-        { name: "foto", type: "file", required: false, resourcePath: "images/products"},
+        { name: "SUBCATEGORIA", label: "Subcategoría del Producto", type: "select", required: true },
+        { name: "foto", type: "file", required: false, resourcePath: "images/products" },
         { name: "MON_VENTA", label: "Precio de Venta", type: "number", required: true },
         { name: "MON_COMPRA", label: "Precio de Compra", type: "number", required: true },
-        { name: "SUBCATEGORIA", label: "Subcategoría del Producto", type: "select", required: true },
         {
             name: "estado",
             label: "Estado",
@@ -55,7 +55,7 @@ export const productConfig = {
 
     // Funciones API específicas de la entidad
     api: {
-        fetchAllSubcategoriesTypes: getAllSubcategories,
+        fetchAllSubcategoriesTypes: getAllSubcategoriesTypes,
         fetchAll: getAllProducts,
         searchByName: searchProduct,
         create: registerProduct,

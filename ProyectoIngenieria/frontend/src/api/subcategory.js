@@ -18,6 +18,16 @@ export const getAllSubcategories = async (page, pageSize, orderByField, order) =
     }
 };
 
+export const getAllSubcategoriesTypes = async () => {
+    try {
+        const response = await axios.get(`/subcategory/subcategoriesTypes`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching subcategories types:', error.message);
+        throw error;
+    }
+}
+
 export const searchSubcategories = async (page, pageSize, searchTerm, orderByField, order) => {
     try {
         const response = await axios.get(`/subcategory/subcategories`, {

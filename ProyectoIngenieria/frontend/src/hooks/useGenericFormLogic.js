@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { validateGeneral } from "../schemas/validations/validateGeneral";
 import { validateSupplier } from "../schemas/validations/validateSupplier";
 import { validateProduct } from "../schemas/validations/validateProduct";
+import { validateClient } from "../schemas/validations/validateClient";
 
 export function useGenericFormLogic({
     entityName,
@@ -102,6 +103,8 @@ export function useGenericFormLogic({
                 errors = [...errors, ...validateSupplier(formData, phones, emails)];
             } else if (entityName === "Producto") {
                 errors = [...errors, ...validateProduct(formData)];
+            } else if (entityName === "Cliente") {
+                errors = [...errors, ...validateClient(phones)];
             }
 
             if (errors.length > 0) {
