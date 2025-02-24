@@ -17,6 +17,7 @@ const InputFile = ({
     const inputRef = useRef();
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(DEFAULT_IMAGE_URL);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         console.log("RESOURCE PATH", resourcePath);
@@ -89,6 +90,10 @@ const InputFile = ({
                     alt="Vista previa"
                     className="preview-image"
                     onError={handleImageError}
+                    style={{ cursor: preview !== DEFAULT_IMAGE_URL ? 'pointer' : 'default' }}
+                    onClick={() => {
+                        if (preview !== DEFAULT_IMAGE_URL) setShowModal(true);
+                    }}
                 />
                 <div className="file-info">
                     <p className="file-name">{selectedFile ? selectedFile.name : ""}</p>
@@ -117,6 +122,26 @@ const InputFile = ({
                     </>
                 )}
             </div>
+
+
+            {/* MODAL DEBE ESTAR DENTRO DEL RETURN */}
+            {showModal && (
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <img
+                            src={preview}
+                            alt="Vista previa completa"
+                            className="modal-image"
+                        />
+                        <Button
+                            onClick={() => setShowModal(false)}
+                            className="modal-close-btn"
+                        >
+                            Cerrar
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
