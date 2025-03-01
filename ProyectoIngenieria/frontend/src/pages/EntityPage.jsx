@@ -1,4 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from "react"; // Importar forwardRef y useImperativeHandle
+import { useNavigate } from "react-router-dom";
 import PageLayout from "../components/layout/PageLayout";
 import { Table, Pagination, Button, InputButton, Select } from "../components/common";
 import { ModalComponent, ModalConfirmation } from "../components/modals";
@@ -44,6 +45,7 @@ export const EntityPage = forwardRef(({
         toggleSortOrder,
     } = useEntityPage({ fetchAll, searchByValue: searchByName, entityKey, transformConfig });
 
+    const navigate = useNavigate();
     const [isModalOpen, setModalOpen] = React.useState(false);
     const [modalMode, setModalMode] = React.useState("add");
     const [modalData, setModalData] = React.useState(null);
@@ -74,6 +76,12 @@ export const EntityPage = forwardRef(({
         setModalOpen(true);
     };
 
+    const handleViewCredits = (rowData) => {
+        navigate("/credits", {
+            state: { clientData: rowData }
+        });
+    };
+
     const handleDeleteConfirmation = (rowData) => {
         setModalData(rowData);
         setConfirmationModalOpen(true);
@@ -84,11 +92,12 @@ export const EntityPage = forwardRef(({
         .reduce((acc, [actionKey, isEnabled]) => {
             if (isEnabled) {
                 acc[actionKey] =
-                    actionKey === "grantPermissions" ? handleView :
-                        actionKey === "edit" ? handleEdit :
-                            actionKey === "delete" ? handleDeleteConfirmation :
-                                actionKey === "view" ? handleView :
-                                    undefined;
+                    actionKey === "manageCredits" ? handleViewCredits :
+                        actionKey === "grantPermissions" ? handleView :
+                            actionKey === "edit" ? handleEdit :
+                                actionKey === "delete" ? handleDeleteConfirmation :
+                                    actionKey === "view" ? handleView :
+                                        undefined;
             }
             return acc;
         }, {});

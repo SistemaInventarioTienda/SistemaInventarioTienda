@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./routes";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import CategoryPage from "./pages/CategoryPage";
 import ClientPage from "./pages/ClientPage";
+import CreditPage from "./pages/CreditPage";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
 import SupplierPage from './pages/SupplierPage';
@@ -72,15 +73,7 @@ function AppContent({ isDarkMode, toggleDarkMode }) {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/*" element={<Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}>
-            <Route index element={<HomePage />} />
-            <Route path="user" element={<UserPage />} />
-            <Route path="category" element={<CategoryPage />} />
-            <Route path="clients" element={<ClientPage />} />
-            <Route path="suppliers" element={<SupplierPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="product" element={<ProductPage />} />
-          </Route>
+          <Route path="/*" element={<Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}></Route>
         </Route>
       </Routes>
     </div>
@@ -99,6 +92,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
             <Route path="clients" element={<ClientPage />} />
+            <Route path="credits" element={<CreditPage />} />
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="product" element={<ProductPage />} />
