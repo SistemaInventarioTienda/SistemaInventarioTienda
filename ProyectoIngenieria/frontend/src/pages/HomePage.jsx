@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import PageLayout from "../components/layout/PageLayout";
 import { MetricCard } from "../components/common";
-import { Users, UserCircle, Truck, Tag } from "lucide-react";
+import { Users, UserCircle, Truck, Tag, Box } from "lucide-react";
 import { userConfig } from "../config/entities/userConfig";
 import { clientConfig } from "../config/entities/clientConfig";
 import { supplierConfig } from "../config/entities/supplierConfig";
@@ -18,6 +18,7 @@ function HomePage() {
     users: 0,
     clients: 0,
     suppliers: 0,
+    categories: 0,
   });
 
   useEffect(() => {
@@ -80,6 +81,10 @@ function HomePage() {
           title="Categorías Totales"
           value={metrics.categories}
           icon={<Tag className="h-6 w-6" />}
+        />
+        <MetricCard
+          title="Productos Totales"
+          icon={<Box className="h-6 w-6" />}
         />
       </div>
     </PageLayout>
