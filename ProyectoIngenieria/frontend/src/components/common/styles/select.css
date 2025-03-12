@@ -21,9 +21,7 @@
     color: var(--color-font);
     cursor: pointer;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    position: relative;
 }
 
 .select:hover {
@@ -31,8 +29,8 @@
     opacity: 0.9;
 }
 
-.select-wrapper::after {
-    content: "▼";
+/* Estilo para el icono de la flecha */
+.select-arrow {
     position: absolute;
     top: 50%;
     right: 12px;
@@ -40,21 +38,64 @@
     pointer-events: none;
     color: var(--color-primary);
     font-size: 12px;
+    content: "▼";
 }
 
-.select option {
-    background-color: var(--color-card);
+/* Opciones personalizadas */
+.custom-options {
+    position: absolute;
+    width: 100%;
+    max-height: 180px;
+    overflow-y: auto;
+    background: var(--color-card);
+    border: 1px solid var(--color-primary);
+    border-radius: 16px;
+    margin-top: 4px;
+    z-index: 1000;
+}
+
+.custom-option {
+    padding: 8px 12px;
     color: var(--color-font);
-    padding: 8px;
+    transition: background 0.3s ease;
+    cursor: pointer;
 }
 
-.select option:checked {
-    background-color: var(--color-primary);
+.custom-option:hover {
+    background: var(--color-table-hover);
+}
+
+.custom-option.selected {
+    background: var(--color-primary);
     color: var(--color-font-secondary);
 }
 
-.select option:hover {
-    background-color: var(--color-table-hover);
+.select.disabled {
+    background-color: var(--color-input-readonly-background);
+    cursor: not-allowed;
+}
+
+.select.disabled .select-arrow {
+    opacity: 0.5;
+}
+
+/* scrollbar */
+.custom-options::-webkit-scrollbar {
+    width: 16px;
+}
+
+.custom-options::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+}
+
+.custom-options::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 4px solid var(--scrollbar-arrow-bg);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+    min-height: 40px;
 }
 
 /* Estilos responsivos */
@@ -64,7 +105,7 @@
         padding: 6px 10px;
     }
 
-    .select-wrapper::after {
+    .select-arrow {
         font-size: 10px;
     }
 }

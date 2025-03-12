@@ -1,10 +1,27 @@
-import React from "react";
+import React, { useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import { EntityPage } from "./EntityPage";
 import { clientConfig } from "../config/entities/clientConfig";
 import ClientForm from "./pagesForms/ClientForm";
 import handleApiCall from "../utils/handleApiCall";
-
+import { toast } from "sonner";
+import { usePermissions } from "../context/authPermissions";
 export default function ClientPage() {
+
+    const { permissions } = usePermissions();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (permissions && !permissions.clients) {
+            toast.error("No tienes permiso para acceder a Clientes");
+            navigate("/");
+        }
+    }, [permissions, navigate]);
+
+    if (!permissions || !permissions.clients) {
+        return null;
+    }
+
     const {
         entityName,
         titlePage,
