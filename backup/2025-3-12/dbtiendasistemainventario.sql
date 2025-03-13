@@ -384,8 +384,22 @@ CREATE TABLE `tsim_fechainiciosesion` (
     `FEC_ULTIMOINGRESO` datetime DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Volcado de datos para la tabla `tsim_estado`
+-- Estructura de tabla para la tabla `tsim_permiso`
+--
+
+DROP TABLE IF EXISTS `tsim_permiso`;
+
+CREATE TABLE `tsim_permiso` (
+    `ID_PERMISO` int(11) NOT NULL,
+    `DSC_NOMBRE` varchar(100) DEFAULT NULL,
+    `DSC_DESCRIPCION` varchar(255) DEFAULT NULL
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsim_permiso`
 --
 
 INSERT INTO
@@ -420,21 +434,6 @@ VALUES (
         'Página de reportes',
         'Se le permite el acceso a la página de reportes. Puede realizar acciones como: ver todos los reportes e información detallada, eliminar, agregar, modificar y descargar los reportes.'
     );
-
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `tsim_permiso`
---
-
-DROP TABLE IF EXISTS `tsim_permiso`;
-
-CREATE TABLE `tsim_permiso` (
-    `ID_PERMISO` int(11) NOT NULL,
-    `DSC_NOMBRE` varchar(100) DEFAULT NULL,
-    `DSC_DESCRIPCION` varchar(255) DEFAULT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -733,6 +732,54 @@ CREATE TABLE `tsit_permisousuario` (
     `FEC_CREADOEN` datetime DEFAULT NULL,
     `ESTADO` int(11) DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_permisousuario`
+--
+
+INSERT INTO
+    `dbtiendasistemainventario`.`tsit_permisousuario` (
+        `ID_USUARIO`,
+        `ID_PERMISO`,
+        `FEC_CREADOEN`,
+        `ESTADO`
+    )
+VALUES (
+        10,
+        1,
+        '2025-03-12 22:00:00',
+        1
+    ),
+    (
+        10,
+        2,
+        '2025-03-12 22:00:00',
+        1
+    ),
+    (
+        10,
+        3,
+        '2025-03-12 22:00:00',
+        1
+    ),
+    (
+        10,
+        4,
+        '2025-03-12 22:00:00',
+        1
+    ),
+    (
+        10,
+        5,
+        '2025-03-12 22:00:00',
+        1
+    ),
+    (
+        10,
+        6,
+        '2025-03-12 22:00:00',
+        1
+    );
 
 -- --------------------------------------------------------
 
