@@ -1,7 +1,8 @@
 import Category from "../models/category.model.js";
-import {validateRegisterCat,saveCategory,updateCategory,disableCategory} from    "../logic/category/category.logic.js"
+import Subcategory from "../models/subcategory.model.js";
+import { validateRegisterCat, saveCategory, updateCategory, disableCategory } from "../logic/category/category.logic.js"
 import { getDateCR } from "../libs/date.js";
-import {validateCategoryName} from "../logic/validateFields.logic.js";
+import { validateCategoryName } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
 
 
@@ -15,33 +16,33 @@ export const addCategory = async (req, res) => {
 
 
         const validateFields = validateCategoryName(req);
-        if(validateFields !== true) {
+        if (validateFields !== true) {
             return res.status(400).json({
                 message: validateFields,
             })
         }
-        
+
         const output = await validateRegisterCat(DSC_NOMBRE);
         if (output !== true) {
-          return res.status(400).json({
-            message: output,
-          })
+            return res.status(400).json({
+                message: output,
+            })
         }
 
 
-        const status = await saveCategory(DSC_NOMBRE,ESTADO);
+        const status = await saveCategory(DSC_NOMBRE, ESTADO);
         if (status) {
-          return res.status(201).json({
-            message: ['Se ha guardado con exito la categoria'],
-          })
-        }else{
+            return res.status(201).json({
+                message: ['Se ha guardado con exito la categoria'],
+            })
+        } else {
             return res.status(400).json({
                 message: ['Error al guardar la categoria'],
-              });
+            });
         }
 
 
-       
+
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -53,19 +54,19 @@ export const addCategory = async (req, res) => {
 export const UpdateCategory = async (req, res) => {
     try {
         const {
-            ID_CATEGORIA ,DSC_NOMBRE, ESTADO
+            ID_CATEGORIA, DSC_NOMBRE, ESTADO
         } = req.body;
 
         const validateFields = validateCategoryName(req);
-        if(validateFields !== true) {
+        if (validateFields !== true) {
             return res.status(400).json({
                 message: validateFields,
             })
         }
 
-        const status = await updateCategory(DSC_NOMBRE,ESTADO,ID_CATEGORIA);
-            
-       return UpdateCategoryResponse(status, res);
+        const status = await updateCategory(DSC_NOMBRE, ESTADO, ID_CATEGORIA);
+
+        return UpdateCategoryResponse(status, res);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -85,11 +86,11 @@ export const UpdateCategoryResponse = (status, res) => {
         return res.status(404).json({
             message: 'Clave no encontrada',
         });
-    }else if (status === -3) {
+    } else if (status === -3) {
         return res.status(400).json({
             message: 'El nombre ya se encuentra registrado',
         });
-    }else{
+    } else {
         return res.status(400).json({
             message: 'El nombre de la categoría ya existe o es inválido',
         });
@@ -115,7 +116,16 @@ export const getAllCategories = async (req, res) => {
             offset,
             order: [
                 [field, sortOrder],
-            ]
+            ],
+            include: [
+                {
+                    model: Subcategory,
+                    as: "subcategories",
+                    attributes: ['ID_CATEGORIA', 'ID_SUBCATEGORIA', 'DSC_NOMBRE', 'ESTADO'],
+                    exclude: ['FEC_MODIFICADOEN', 'FEC_CREADOEN'],
+                }
+            ],
+            distinct: true
         });
 
         if (rows.length === 0) {
@@ -168,9 +178,9 @@ export const searchCategories = async (req, res) => {
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            category: rows, 
-            buscar: DSC_NOMBRE, 
-            campo: orderByField, 
+            category: rows,
+            buscar: DSC_NOMBRE,
+            campo: orderByField,
             orden: order
         });
     } catch (error) {
@@ -199,5 +209,21 @@ export const DisableCategory = async (req, res) => {
                 details: error.message
             }
         });
+    }
+};
+
+export const getCategoriesWithSubcategories = async (req, res) => {
+    try {
+        const categories = await Category.findAll({
+            include: [{
+                model: Subcategory,
+                as: "subcategories",
+            }],
+            order: [["DSC_NOMBRE", "ASC"]]
+        });
+
+        res.json(categories);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

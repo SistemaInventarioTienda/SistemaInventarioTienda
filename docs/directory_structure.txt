@@ -6,6 +6,7 @@
 ||   |   ├── auth.controller.js
 ||   |   ├── category.controller.js
 ||   |   ├── client.controller.js
+||   |   ├── subcategory.controller.js
 ||   |   ├── supplier.controller.js
 ||   |   └── user.controller.js
 ||   ├── db.js
@@ -17,6 +18,8 @@
 ||   ├── logic
 ||   |   ├── category
 ||   |   |   └── category.logic.js
+||   |   ├── subcategory
+||   |   |   └── subcategory.logic.js
 ||   |   ├── supplier
 ||   |   |   └── supplier.logic.js
 ||   |   ├── user
@@ -30,6 +33,7 @@
 ||   |   ├── category.model.js
 ||   |   ├── client.model.js
 ||   |   ├── phoneClient.model.js
+||   |   ├── subcategory.model.js
 ||   |   ├── supplier.model.js
 ||   |   └── user.model.js
 ||   ├── package-lock.json
@@ -38,12 +42,14 @@
 ||   |   ├── auth.routes.js
 ||   |   ├── category.routes.js
 ||   |   ├── client.routes.js
+||   |   ├── subcategory.routes.js
 ||   |   ├── supplier.routes.js
 ||   |   └── user.routes.js
 ||   ├── schemas
 ||   |   ├── auth.schema.js
 ||   |   ├── category.schema.js
 ||   |   ├── client.schema.js
+||   |   ├── subcategory.schema.js
 ||   |   └── supplier.schema.js
 ||   ├── startUp4000_pm2_APISTienda.bat
 ||   └── utils
@@ -71,6 +77,7 @@
 |        |   ├── category.js
 |        |   ├── client.js
 |        |   ├── hacienda.js
+|        |   ├── subcategory.js
 |        |   ├── supplier.js
 |        |   └── user.js
 |        ├── App.css
@@ -92,7 +99,6 @@
 |        |   |   ├── Label.jsx
 |        |   |   ├── Message.jsx
 |        |   |   ├── MetricCard.jsx
-|        |   |   ├── ModalConfirmation.jsx
 |        |   |   ├── Pagination.jsx
 |        |   |   ├── Select.jsx
 |        |   |   ├── Spinner.jsx
@@ -104,10 +110,12 @@
 |        |   |   |   ├── InputWithIcon.css
 |        |   |   |   ├── metricCard.css
 |        |   |   |   ├── select.css
+|        |   |   |   ├── spinner.css
 |        |   |   |   └── table.css
 |        |   |   ├── Table.jsx
 |        |   |   └── Textarea.jsx
 |        |   ├── features
+|        |   |   ├── CategoryTable.jsx
 |        |   |   ├── ContactManager.jsx
 |        |   |   ├── styles
 |        |   |   |   ├── contactManager.css
@@ -131,13 +139,15 @@
 |        |   |   ├── ModalFooter.jsx
 |        |   |   ├── ModalHeader.jsx
 |        |   |   └── styles
-|        |   |       └── modal.css
+|        |   |       ├── modal.css
+|        |   |       └── modalConfirmation.css
 |        |   └── tasks
 |        |       └── TaskCard.jsx
 |        ├── config
 |        |   └── entities
 |        |       ├── categoryConfig.js
 |        |       ├── clientConfig.js
+|        |       ├── subcategoryConfig.js
 |        |       ├── supplierConfig.js
 |        |       └── userConfig.js
 |        ├── config.js
@@ -145,7 +155,9 @@
 |        |   └── authContext.jsx
 |        ├── hooks
 |        |   ├── useAlert.js
+|        |   ├── useContactManager.js
 |        |   ├── useEntityPage.js
+|        |   ├── useExpandableRows.js
 |        |   ├── useGenericFormLogic.js
 |        |   ├── usePagination.js
 |        |   ├── useSearch.js
@@ -170,9 +182,7 @@
 |        |   |   ├── LoginPage.css
 |        |   |   ├── Page.css
 |        |   |   └── profilePage.css
-|        |   ├── SupplierPage-old.jsx
 |        |   ├── SupplierPage.jsx
-|        |   ├── UserPage-old.jsx
 |        |   └── UserPage.jsx
 |        ├── routes.jsx
 |        ├── schemas

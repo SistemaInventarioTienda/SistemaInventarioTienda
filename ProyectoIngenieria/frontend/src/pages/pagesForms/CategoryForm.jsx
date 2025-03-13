@@ -1,6 +1,6 @@
 import React from 'react';
 import GenericForm from '../../components/common/GenericForm';
-import { categoryConfig } from "../../config/entities/categoryConfig";
+import { subcategoryConfig } from "../../config/entities/subcategoryConfig";
 
 function CategoryForm({ mode, initialData, onSubmit, onCancel }) {
 
@@ -9,7 +9,7 @@ function CategoryForm({ mode, initialData, onSubmit, onCancel }) {
             entityName={"Categoría"}
             mode={mode}
             initialData={initialData}
-            fields={categoryConfig.fields}
+            fields={subcategoryConfig.fields}
             onSubmit={onSubmit}
             onCancel={onCancel}
         />

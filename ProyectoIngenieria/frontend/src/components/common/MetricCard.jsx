@@ -1,8 +1,8 @@
 import "./styles/metricCard.css";
 
-function MetricCard({ title, value, icon }) {
+function MetricCard({ title, value, icon, onClick }) {
     return (
-        <div className="metric-card">
+        <div className="metric-card" onClick={onClick} style={{ cursor: "pointer" }}>
             <div className="metric-card-header">
                 <div className="metric-card-icon">{icon}</div>
             </div>

@@ -4,9 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../context/authContext';
 import { loginSchema } from '../schemas/auth';
-import { Card, Button, Spinner, InputWithIcon, Alert } from "../components/common";
+import { Card, Button, Spinner, InputWithIcon } from "../components/common";
 import { ShoppingBag, User, Lock, Eye, EyeOff } from 'lucide-react';
 import './styles/LoginPage.css';
+import { toast } from "sonner"; // Importa Sonner
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +15,6 @@ export function LoginPage() {
   const { register, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: zodResolver(loginSchema),
   });
-
   const { signin, errors: loginErrors, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,11 +26,9 @@ export function LoginPage() {
     } else {
       const storedRememberMe = localStorage.getItem('rememberMe') === 'true';
       setRememberMe(storedRememberMe);
-
       if (storedRememberMe) {
         const storedUsername = localStorage.getItem('username');
         const storedPassword = localStorage.getItem('password');
-
         if (storedUsername) {
           setValue('DSC_NOMBREUSUARIO', storedUsername);
         }
@@ -43,10 +41,8 @@ export function LoginPage() {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-
     try {
       await signin({ ...data, REMEMBERME: rememberMe });
-
       if (rememberMe) {
         localStorage.setItem('username', data.DSC_NOMBREUSUARIO);
         localStorage.setItem('password', data.DSC_CONTRASENIA);
@@ -56,16 +52,25 @@ export function LoginPage() {
         localStorage.removeItem('password');
         localStorage.setItem('rememberMe', 'false');
       }
-
       // Si el login es exitoso, redirigir al usuario
       navigate('/');
     } catch (error) {
-      // Si hay un error, mostrar la alerta
       console.error('Error during login:', error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Mostrar errores de autenticación con Sonner
+  useEffect(() => {
+    if (loginErrors && loginErrors.length > 0) {
+      console.log('Length', loginErrors.length);
+      loginErrors.forEach((error) => {
+        toast.error(error);
+      });
+      loginErrors.length = 0;
+    }
+  }, [loginErrors]);
 
   return (
     <div className="login-page-container">
@@ -77,7 +82,6 @@ export function LoginPage() {
             <h2 className="fw-bold text-primary-custom">Inicio de Sesión</h2>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
-
             <div className="mb-4">
               <InputWithIcon
                 id="usernameInput"
@@ -91,7 +95,6 @@ export function LoginPage() {
                 <div className="invalid-feedback d-block">{errors.DSC_NOMBREUSUARIO.message}</div>
               )}
             </div>
-
             <div className="mb-4">
               <InputWithIcon
                 id="passwordInput"
@@ -107,16 +110,6 @@ export function LoginPage() {
                 <div className="invalid-feedback d-block">{errors.DSC_CONTRASENIA.message}</div>
               )}
             </div>
-
-            {loginErrors && loginErrors.map((error, i) => (
-              <Alert
-                key={i}
-                type="error"
-                message={error}
-                duration={5000}
-                onClose={() => console.log(`Error ${i} cerrado`)}
-              />
-            ))}
             <hr />
             <div className="mb-3 form-check">
               <input

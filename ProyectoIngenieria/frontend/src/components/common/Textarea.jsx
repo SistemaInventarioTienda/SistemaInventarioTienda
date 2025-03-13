@@ -1,10 +1,10 @@
 import { forwardRef } from "react";
+import "./styles/textarea.css";
 
-export const Textarea = forwardRef((props, ref, rows = 2) => (
-  <textarea
-    {...props}
-    ref={ref}
-    className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md"
-    rows={rows}
-  />
+export const Textarea = forwardRef(({ className = "", wrapperClassName = "", ...props }, ref) => (
+  <div className={`textarea-wrapper ${wrapperClassName}`}>
+    <textarea {...props} ref={ref} className={`textarea ${className}`} />
+  </div>
 ));
+
+Textarea.displayName = "Textarea";

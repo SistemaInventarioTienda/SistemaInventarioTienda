@@ -2,14 +2,14 @@ import React from "react";
 import { EntityPage } from "./EntityPage";
 import { userConfig } from "../config/entities/userConfig";
 import UserForm from "./pagesForms/UserForm";
-import { Alert } from "../components/common";
-import useAlert from "../hooks/useAlert";
 import handleApiCall from "../utils/handleApiCall";
 import "./styles/Page.css";
 
 export default function UserPage() {
     const {
         entityName,
+        titlePage,
+        modalName,
         entityMessage,
         columns,
         fields,
@@ -20,17 +20,21 @@ export default function UserPage() {
         actions,
     } = userConfig;
 
-    const { alert, showAlert, hideAlert } = useAlert();
-
     // Lógica para manejar el submit
     const onSubmit = async (mode, data) => {
         try {
             const backendData = transformData.toBackend(data);
             console.log("backendData", backendData);
             if (mode === "add") {
-                await handleApiCall(() => api.create(backendData), "Cliente agregado exitosamente.", showAlert);
+                await handleApiCall(
+                    () => api.create(backendData),
+                    "Usuario agregado exitosamente."
+                );
             } else if (mode === "edit") {
-                await handleApiCall(() => api.update(backendData.DSC_CEDULA, backendData), "Cliente actualizado exitosamente.", showAlert);
+                await handleApiCall(
+                    () => api.update(backendData.DSC_CEDULA, backendData),
+                    "Usuario actualizado exitosamente."
+                );
             }
             return { success: true };
         } catch (error) {
@@ -42,6 +46,8 @@ export default function UserPage() {
         <>
             <EntityPage
                 entityName={entityName}
+                titlePage={titlePage}
+                modalName={modalName}
                 entityMessage={entityMessage}
                 columns={columns}
                 fields={fields}
@@ -55,16 +61,6 @@ export default function UserPage() {
                 transformConfig={transformConfig}
                 actions={actions}
             />
-            {alert.show && (
-                <div className="alert-container">
-                    <Alert
-                        type={alert.type}
-                        message={alert.message}
-                        duration={3000}
-                        onClose={hideAlert}
-                    />
-                </div>
-            )}
         </>
     );
 }

@@ -1,14 +1,30 @@
-import React from "react";
+import React, { useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import { EntityPage } from "./EntityPage";
 import { clientConfig } from "../config/entities/clientConfig";
 import ClientForm from "./pagesForms/ClientForm";
-import { Alert } from "../components/common";
-import useAlert from "../hooks/useAlert";
 import handleApiCall from "../utils/handleApiCall";
-
+import { toast } from "sonner";
+import { usePermissions } from "../context/authPermissions";
 export default function ClientPage() {
+
+    const { permissions } = usePermissions();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (permissions && !permissions.clients) {
+            toast.error("No tienes permiso para acceder a Clientes");
+            navigate("/");
+        }
+    }, [permissions, navigate]);
+
+    if (!permissions || !permissions.clients) {
+        return null;
+    }
+
     const {
         entityName,
+        titlePage,
         entityMessage,
         columns,
         fields,
@@ -19,23 +35,26 @@ export default function ClientPage() {
         actions,
     } = clientConfig;
 
-    const { alert, showAlert, hideAlert } = useAlert();
-
     // Lógica para manejar el submit
     const onSubmit = async (mode, data) => {
-        try {
-            // Convertir la imagen a base64 antes de enviar
-            const backendData = await clientConfig.transformData.toBackend(data); // <--- Esperar aquí
-            console.log("backendData", backendData);
 
+        try {
+            const backendData = await clientConfig.transformData.toBackend(data);
+            console.log("backendData", backendData);
             if (mode === "add") {
-                await handleApiCall(() => api.create(backendData), "Cliente agregado exitosamente.", showAlert);
+                await handleApiCall(
+                    () => api.create(backendData),
+                    "Cliente agregado exitosamente."
+                );
             } else if (mode === "edit") {
-                await handleApiCall(() => api.update(backendData.DSC_CEDULA, backendData), "Cliente actualizado exitosamente.", showAlert);
+                await handleApiCall(
+                    () => api.update(backendData.DSC_CEDULA, backendData),
+                    "Cliente actualizado exitosamente."
+                );
             }
             return { success: true };
         } catch (error) {
-            showAlert("error", "Error al procesar la imagen. Intente nuevamente.");
+            console.error("Error:", error);
             return { success: false };
         }
     };
@@ -44,6 +63,7 @@ export default function ClientPage() {
         <>
             <EntityPage
                 entityName={entityName}
+                titlePage={titlePage}
                 entityMessage={entityMessage}
                 columns={columns}
                 fields={fields}
@@ -57,16 +77,6 @@ export default function ClientPage() {
                 transformConfig={transformConfig}
                 actions={actions}
             />
-            {alert.show && (
-                <div className="alert-container">
-                    <Alert
-                        type={alert.type}
-                        message={alert.message}
-                        duration={3000}
-                        onClose={hideAlert}
-                    />
-                </div>
-            )}
         </>
     );
 }

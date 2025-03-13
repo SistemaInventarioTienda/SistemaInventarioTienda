@@ -26,7 +26,8 @@
 .custom-table th {
     background-color: var(--color-table-header);
     color: var(--color-primary);
-    font-style: semi-bold;
+    font-weight: 600;
+    /* Corregido: semi-bold no es válido en CSS */
 }
 
 .custom-table tr:last-child td {
@@ -34,6 +35,14 @@
 }
 
 .custom-table tr:hover td {
+    background-color: var(--color-table-hover);
+}
+
+.custom-table tr:not(.subcategories-container):not([data-expandable])>td {
+    transition: background-color 0.2s;
+}
+
+.custom-table tr:not(.subcategories-container):not([data-expandable]):hover>td {
     background-color: var(--color-table-hover);
 }
 
@@ -91,35 +100,127 @@ th:hover .chevron-icon {
     transform: scale(1.05);
 }
 
-.pagination {
+/* Nuevos estilos para subcategorías alineadas */
+
+.subcategory-row {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 7px;
-    margin-top: 16px;
+    gap: 8px;
+    width: 100%;
+    text-align: center;
 }
 
-.pagination button {
-    background-color: var(--color-pagination-bg);
+.expand-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
     border: none;
-    color: var(--color-font);
-    padding: 8px 12px;
+    padding: 4px;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    color: var(--color-font);
+    transition: transform 0.2s ease;
 }
 
-.pagination button:hover {
-    background-color: var(--color-pagination-hover-bg);
-    color: var(--color-pagination-hover-text);
+.expand-button:hover {
+    transform: scale(1.1);
 }
 
-.pagination .active {
-    background-color: var(--color-pagination-active-bg);
-    color: var(--color-pagination-active-text);
+.expand-button:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
 }
 
-/* Estilos responsivos */
+.chevron-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+}
+
+.category-name {
+    flex: 1;
+}
+
+.subcategories-wrapper {
+    padding: 1rem 2rem 1.5rem;
+    background-color: var(--color-metric-card-shadow);
+    margin: 0 1rem 1rem;
+    border-radius: 12px;
+}
+
+.subcategories-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-primary);
+}
+
+.subcategories-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.subcategories-list {
+    display: table;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+
+
+.subcategory-cell {
+    display: table-cell;
+    padding: 12px 0.5cap;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-primary-lighter);
+}
+
+.subcategory-cell.name {
+    text-align: center;
+    width: 33%;
+    padding-left: 2rem;
+}
+
+.subcategory-cell.status {
+    text-align: center;
+    width: 33%;
+}
+
+.subcategory-cell.actions {
+    text-align: center;
+    width: 33%;
+}
+
+.subcategory-indent {
+    display: inline-block;
+    width: 28px;
+}
+
+.add-subcategory-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.add-subcategory-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Estilos responsivos actualizados */
 @media (max-width: 1024px) {
     .custom-table {
         font-size: 0.9rem;
@@ -146,8 +247,30 @@ th:hover .chevron-icon {
         padding: 8px 10px;
     }
 
-    .actions-cell {
-        flex-wrap: wrap;
+    .subcategories-wrapper {
+        padding: 1rem;
+        margin: 0 0.5rem 0.5rem;
+    }
+
+    .subcategory-cell {
+        display: block;
+        width: 100% !important;
+        text-align: right !important;
+        padding: 8px;
+        position: relative;
+    }
+
+    .subcategory-cell::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 8px;
+        width: 45%;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .subcategory-cell.name {
+        padding-left: 8px;
     }
 
     .actions-cell .btn {
@@ -181,8 +304,45 @@ th:hover .chevron-icon {
         text-align: left;
         font-weight: 600;
     }
+}
 
-    .actions-cell {
-        justify-content: flex-start;
+@media (max-width: 480px) {
+    .subcategories-title {
+        font-size: 0.9rem;
     }
+
+    .add-subcategory-btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Estilos de paginación (se mantienen igual) */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    margin-top: 16px;
+    color: var(--color-font);
+}
+
+.pagination button {
+    background-color: var(--color-pagination-bg);
+    border: none;
+    color: var(--color-font);
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.pagination button:hover {
+    background-color: var(--color-pagination-hover-bg);
+    color: var(--color-pagination-hover-text);
+}
+
+.pagination .active {
+    background-color: var(--color-pagination-active-bg);
+    color: var(--color-pagination-active-text);
 }

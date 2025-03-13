@@ -11,12 +11,13 @@ import {
 // Configuración principal de la entidad
 export const categoryConfig = {
     // Nombre y descripción de la entidad
-    entityName: "Categorías",
+    entityName: "Categoría",
+    titlePage: "Categorías",
     entityMessage: "Gestión de categorías de los productos del sistema",
 
     // Identificador clave de la entidad
     entityKey: "category", // Clave única para identificar los datos de esta entidad
-
+    expandableKey: "subcategories", // Clave única para identificar el manejo de expadir las filas
     // Configuración de columnas para la tabla
     columns: [
         { field: "DSC_NOMBRE", label: "Nombre" },
@@ -44,8 +45,8 @@ export const categoryConfig = {
         fetchAll: getAllCategories,
         searchByName: searchCategoryByName,
         create: saveCategory,
-        update: updateCategory, 
-        delete: deleteCategory, 
+        update: updateCategory,
+        delete: deleteCategory,
     },
 
     // Transformaciones de datos

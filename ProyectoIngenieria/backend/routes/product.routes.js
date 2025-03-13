@@ -7,9 +7,9 @@ import { registerSchema, updateSchema } from "../schemas/product.schema.js";
 const router = Router();
 
 // Parte de autenticación de los usuarios del sistema
-router.post("/register", auth, validateSchema(registerSchema), registerProduct);
+router.post("/register", auth, /*validateSchema(registerSchema),*/ registerProduct);
 router.get("/all_product", auth, getAllProducts);
-router.put("/update_product/:id", auth, validateSchema(updateSchema), updateProduct);
+router.put("/update_product/:id", auth, /*validateSchema(updateSchema),*/ updateProduct);
 router.delete("/delete_product/:id", auth, deleteProduct);
 router.get("/searchProduct", auth, searchProduct)
 

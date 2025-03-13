@@ -11,7 +11,8 @@ import {
 // Configuración principal de la entidad
 export const userConfig = {
     // Nombre y descripción de la entidad
-    entityName: "Usuarios",
+    entityName: "Usuario",
+    titlePage: "Usuarios",
     entityMessage: "Gestión de usuarios del sistema",
 
     // Identificador clave de la entidad

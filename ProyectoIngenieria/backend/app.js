@@ -8,6 +8,7 @@ import userRoutes from "./routes/user.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import supplierRoutes from "./routes/supplier.routes.js";
 import clientRoutes from "./routes/client.routes.js";
+import subcategoryRoutes from "./routes/subcategory.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import shoppingRoutes from "./routes/shopping.routes.js";
 
@@ -31,10 +32,10 @@ app.use("/api/user", userRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/supplier", supplierRoutes);
 app.use("/api/client", clientRoutes);
+app.use("/api/subcategory", subcategoryRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/shopping", shoppingRoutes);
 app.use('/uploads', express.static('uploads'));
-
 
 if (process.env.NODE_ENV === "production") {
   const path = await import("path");

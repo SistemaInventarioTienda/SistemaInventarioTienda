@@ -1,13 +1,15 @@
-import React from "react";
+import React, { forwardRef, useImperativeHandle } from "react"; // Importar forwardRef y useImperativeHandle
 import PageLayout from "../components/layout/PageLayout";
-import { Table, Pagination, Button, InputButton, Select, Alert } from "../components/common";
+import { Table, Pagination, Button, InputButton, Select } from "../components/common";
 import { ModalComponent, ModalConfirmation } from "../components/modals";
 import { useEntityPage } from "../hooks/useEntityPage";
 import { Search, Plus } from "lucide-react";
+import { toast } from "sonner";
 
-
-export const EntityPage = ({
+// Usar forwardRef para envolver el componente
+export const EntityPage = forwardRef(({
     entityName,
+    titlePage,
     entityMessage,
     columns,
     fields,
@@ -20,7 +22,10 @@ export const EntityPage = ({
     transformData,
     transformConfig,
     actions = {},
-}) => {
+    expandableKey,
+    onAddSubcategory,
+    subcategoryActions,
+}, ref) => {
     const {
         data,
         filteredData,
@@ -43,7 +48,13 @@ export const EntityPage = ({
     const [modalMode, setModalMode] = React.useState("add");
     const [modalData, setModalData] = React.useState(null);
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
-    const [alert, setAlert] = React.useState({ show: false, message: "", type: "" });
+
+    // Exponer fetchData al componente padre usando useImperativeHandle
+    useImperativeHandle(ref, () => ({
+        fetchData: () => {
+            fetchData({ transformConfig });
+        }
+    }));
 
     const handleAdd = () => {
         setModalMode("add");
@@ -68,7 +79,6 @@ export const EntityPage = ({
         setConfirmationModalOpen(true);
     };
 
-
     const tableActions = Object.entries(actions)
         .filter(([actionKey, isEnabled]) => isEnabled)
         .reduce((acc, [actionKey, isEnabled]) => {
@@ -78,11 +88,10 @@ export const EntityPage = ({
                         actionKey === "edit" ? handleEdit :
                             actionKey === "delete" ? handleDeleteConfirmation :
                                 actionKey === "view" ? handleView :
-                                    undefined; // Por si llegan nuevas acciones en el futuro
+                                    undefined;
             }
             return acc;
         }, {});
-
 
     React.useEffect(() => {
         if (searchTerm.trim() === "") {
@@ -94,17 +103,9 @@ export const EntityPage = ({
         try {
             await onDelete(modalData);
             fetchData({ transformConfig });
-            setAlert({
-                show: true,
-                message: `${entityName} eliminado exitosamente.`,
-                type: "success",
-            });
+            toast.success(`${entityName} eliminado exitosamente.`);
         } catch (error) {
-            setAlert({
-                show: true,
-                message: error.response?.data?.message,
-                type: "error",
-            });
+            toast.error(error.response?.data?.message);
         } finally {
             setConfirmationModalOpen(false);
         }
@@ -113,6 +114,7 @@ export const EntityPage = ({
     const handleSearch = () => {
         fetchData({ resetPage: true, transformConfig });
     };
+
     const handleSort = (field) => {
         toggleSortOrder(field);
     };
@@ -124,7 +126,7 @@ export const EntityPage = ({
         <PageLayout>
             <div className="page-header">
                 <div>
-                    <h1>{entityName}</h1>
+                    <h1>{titlePage}</h1>
                     <p>{entityMessage}</p>
                 </div>
                 <Button className="add-btn" onClick={handleAdd}>
@@ -162,11 +164,12 @@ export const EntityPage = ({
                             setItemsPerPage(Number(e.target.value));
                             setCurrentPage(1);
                         }}
-                    >
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={15}>15</option>
-                    </Select>
+                        options={[
+                            { value: 5, label: "5" },
+                            { value: 10, label: "10" },
+                            { value: 15, label: "15" },
+                        ]}
+                    />
                     <label htmlFor="itemsPerPage">por página</label>
                 </div>
             </div>
@@ -177,6 +180,9 @@ export const EntityPage = ({
                 sortField={sortField}
                 sortOrder={sortOrder}
                 actions={tableActions}
+                expandableKey={expandableKey}
+                onAddSubcategory={onAddSubcategory}
+                subcategoryActions={subcategoryActions}
             />
             <Pagination
                 currentPage={currentPage}
@@ -205,8 +211,8 @@ export const EntityPage = ({
                             const response = await onSubmit(modalMode, formData);
                             console.log(response);
                             if (response && response.success) {
-                                await fetchData({ transformConfig }); 
-                                setModalOpen(false); 
+                                await fetchData({ transformConfig });
+                                setModalOpen(false);
                                 console.log("✅ Modal cerrado correctamente");
                             } else {
                                 console.error("❌ Error: Respuesta no exitosa", response);
@@ -223,15 +229,11 @@ export const EntityPage = ({
                 isOpen={isConfirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}
                 onConfirm={handleDelete}
+                entityName={entityName}
+                action="delete"
+                confirmButtonText="Eliminar"
+                cancelButtonText="Cancelar"
             />
-            {alert.show && (
-                <Alert
-                    type={alert.type}
-                    message={alert.message}
-                    duration={3000}
-                    onClose={() => setAlert({ ...alert, show: false })}
-                />
-            )}
         </PageLayout>
     );
-};
+});

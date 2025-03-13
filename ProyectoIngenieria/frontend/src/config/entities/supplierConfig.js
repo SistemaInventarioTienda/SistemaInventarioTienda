@@ -12,7 +12,8 @@ import {
 // Configuración principal de la entidad
 export const supplierConfig = {
     // Nombre y descripción de la entidad
-    entityName: "Proveedores",
+    entityName: "Proveedor",
+    titlePage: "Proveedores",
     entityMessage: "Gestión de proveedores del sistema",
 
     // Identificador clave de la entidad
@@ -32,8 +33,8 @@ export const supplierConfig = {
     // Configuración de campos del formulario
     fields: [
         { name: "nombre", label: "Nombre", type: "text", required: true },
-        { name: "direccion", label: "Dirección", type: "text", required: true },
-        { name: "cuentaBanco", label: "Cuenta Bancaria", type: "text", required: true },
+        { name: "direccion", label: "Dirección", type: "textarea", required: true },
+        { name: "cuentaBanco", label: "Cuenta Bancaria", type: "textarea", required: true },
         { name: "venta", label: "Descripción de Venta", type: "textarea", required: true },
         { name: "tipoProveedor", label: "Tipo de Proveedor", type: "select", required: true },
         {
