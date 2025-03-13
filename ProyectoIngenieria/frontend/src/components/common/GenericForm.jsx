@@ -43,15 +43,15 @@ function GenericForm({
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    useBarcodeScanner({
-        enabled: mode !== 'view',
-        onScan: (barcode) => {
-            setFormData(prev => ({
-                ...prev,
-                DSC_CODIGO_BARRAS: barcode
-            }));
-        }
-    });
+    // useBarcodeScanner({
+    //     enabled: mode !== 'view',
+    //     onScan: (barcode) => {
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             DSC_CODIGO_BARRAS: barcode
+    //         }));
+    //     }
+    // });
 
 
     useEffect(() => {

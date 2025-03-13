@@ -16,6 +16,8 @@ import SupplierPage from './pages/SupplierPage';
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProductPage from './pages/ProductPage';
+import SalePage from './pages/SalePage'
+import AddSalePage from './pages/AddSalePage';
 import { Toaster } from "sonner";
 
 function App() {
@@ -96,6 +98,8 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="product" element={<ProductPage />} />
+            <Route path="sales/history" element={<SalePage />} />
+            <Route path="sales/new" element={<AddSalePage />} />
           </Routes>
         </main>
       </div>

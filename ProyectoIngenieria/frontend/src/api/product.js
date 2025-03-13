@@ -3,6 +3,7 @@ import axios from './axios';
 export const getAllProducts = async (page, pageSize, orderByField, order) => {
     try {
         const response = await axios.get(`/product/all_product`, { params: { page, pageSize, orderByField, order } });
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching products:', error.message);
