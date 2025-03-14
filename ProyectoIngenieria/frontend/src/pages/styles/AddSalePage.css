@@ -77,16 +77,45 @@
     overflow-x: auto;
 }
 
-.sales-card-content > * {
+.sales-card-content>* {
     margin-bottom: 20px;
 }
 
+.sales-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: var(--color-card);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
 
-.sales-total {
-    color: var(--color-primary);
+.sales-summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    color: var(--color-font);
+    padding: 5px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.sales-summary-row:last-child {
+    border-bottom: none;
+}
+
+.sales-summary-total {
+    display: flex;
+    justify-content: space-between;
     font-size: 1.25rem;
     font-weight: 600;
-    text-align: center;
+    color: var(--color-primary);
+    padding-top: 10px;
+}
+
+.discount {
+    color: #dc2626;
+    font-weight: 500;
 }
 
 .complete-sale-btn {

@@ -44,9 +44,19 @@ export const salesConfig = {
         }),
 
         toBackend: (formData) => ({
-            FEC_VENTA: formData.FEC_VENTA,
+
             ID_CLIENTE: formData.ID_CLIENTE,
-            PRODUCTS_LIST: formData.PRODUCTS_LIST,
+            PORCENT_IMPUESTO: formData.PORCENT_IMPUESTO,
+            METODO_PAGO: formData.METODO_PAGO,
+            DSC_VENTA: formData.DSC_VENTA,
+            ESTADO_CREDITO: formData.ESTADO_CREDITO,
+            MONT_SUBTOTAL: formData.MONT_SUBTOTAL,
+            PORCENT_DESCUENTO: formData.PORCENT_DESCUENTO,
+            details_list : formData.PRODUCTS_LIST.map(product => ({
+                ID_PRODUCTO: product.id,
+                MONTO_UNITARIO: product.price,
+                CANTIDAD: product.quantity,
+            })),
             ESTADO: formData.ESTADO,
         }),
     },
