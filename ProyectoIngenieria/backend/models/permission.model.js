@@ -64,4 +64,4 @@ const PermissionUser = db.define('PermissionUser', {
 PermissionUser.belongsTo(User, { foreignKey: 'ID_USUARIO' });
 PermissionUser.belongsTo(Permission, { foreignKey: 'ID_PERMISO' });
 
-export default { Permission, PermissionUser };
+export { Permission, PermissionUser };
