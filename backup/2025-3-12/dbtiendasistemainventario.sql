@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-03-2025 a las 16:51:25
+-- Tiempo de generación: 13-03-2025 a las 20:34:27
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -709,7 +709,7 @@ INSERT INTO `tsit_usuario` (`ID_USUARIO`, `DSC_NOMBREUSUARIO`, `DSC_CONTRASENIA`
 
 CREATE TABLE IF NOT EXISTS `tsit_venta` (
   `ID_VENTA` int(11) NOT NULL AUTO_INCREMENT,
-  `ID_CLIENTE` int(11) NOT NULL,
+  `ID_CLIENTE` int(11) DEFAULT NULL,
   `FEC_VENTA` datetime NOT NULL,
   `PORCENT_IMPUESTO` double NOT NULL,
   `METODO_PAGO` varchar(100) NOT NULL,

@@ -12,7 +12,7 @@ const sale = db.define('sale',{
       },
       ID_CLIENTE: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: Client,
           key: 'ID_CLIENTE'
@@ -180,8 +180,8 @@ sale.hasMany(details,{
 });
 
 details.belongsTo(Product,{
-    foreignKey: 'ID_PRODUCT',
-    targetKey: 'ID_PRODUCTO'
+    foreignKey: 'ID_PRODUCTO',
+    targetKey: 'ID_PRODUCT'
   });
 
 Product.hasMany(details,{
@@ -211,4 +211,4 @@ credit.hasMany(payment,{
 });
 
 
-export default {sale,details,credit,payment};
+export  {sale,details,credit,payment};
