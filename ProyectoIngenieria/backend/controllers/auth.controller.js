@@ -6,6 +6,7 @@ import { createAccessToken } from "../libs/jwt.js";
 import { getDateCR } from '../libs/date.js';
 import { validateRegister } from "../logic/user/user.logic.js";
 import { validateRegisterUser } from "../logic/validateFields.logic.js";
+import { Permission, PermissionUser } from "../models/permission.model.js";
 
 export const register = async (req, res) => {
   try {
@@ -99,9 +100,28 @@ export const login = async (req, res) => {
       });
     }
 
+    const permissionsUser = await PermissionUser.findAll({
+      include: [
+        {
+          model: Permission,
+          as: 'Permission',
+          attributes: ['DSC_NOMBRE']
+        }
+      ],
+      where: {
+        ID_USUARIO: userFound.ID_USUARIO
+      },
+      raw: true,
+      nest: true
+    });
+
+    const leakedPermissions = permissionsUser.map(pu => ({ nombre: pu.Permission?.DSC_NOMBRE }));
+
+
     const token = await createAccessToken({
       id: userFound.DSC_CEDULA,
       username: userFound.DSC_NOMBREUSUARIO,
+      permissions: leakedPermissions
     },
       REMEMBERME ? '30d' : '1d'
     );
