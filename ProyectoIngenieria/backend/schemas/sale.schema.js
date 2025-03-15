@@ -52,12 +52,12 @@ ID_PRODUCTO: z
 .int()
 .positive({ message: "ID_PRODUCTO no válido" }),
 
-MONT_SUBTOTAL: z
+MONTO_UNITARIO: z
 .number({ required_error: "El monto es requerido" })
 .min(0, { message: "El monto debe ser un valor positivo" }),
 
 CANTIDAD: z
 .number()
 .int()
-.positive({ message: "La cantidad debe ser un número entero positivo" }),
+.positive({ message: "La cantidad debe ser un número entero positivo" }).min(1,{message: "La cantidad debe ser un numero mayor a 0"}),
 });

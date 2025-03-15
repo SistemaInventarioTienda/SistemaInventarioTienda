@@ -116,7 +116,7 @@ const credit = db.define('credit',{
         type: DataTypes.DATE,
         allowNull: false,
       },
-      MONT_PENDIENTE:{
+      MON_PENDIENTE:{
         type: DataTypes.DOUBLE,
         allowNull: false,
       },
