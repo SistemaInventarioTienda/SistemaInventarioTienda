@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { salesConfig } from "../config/entities/salesConfig";
 import { toast } from "sonner";
 
@@ -6,6 +6,8 @@ const useSaleForm = () => {
 
     const TAX_RATE = 13;
 
+    const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
+    const [confirmationCallback, setConfirmationCallback] = useState(null);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectedClient, setSelectedClient] = useState("");
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
@@ -70,6 +72,17 @@ const useSaleForm = () => {
     };
 
     const handleSubmit = () => {
+
+        if (selectedProducts.length === 0) {
+            toast.error("Debe seleccionar al menos un producto para realizar la venta.");
+            return;
+        }
+
+        if (!selectedPaymentMethod) {
+            toast.error("Debe seleccionar un método de pago.");
+            return;
+        }
+
         const { subtotal, discountAmount } = calculateTotal();
 
         const saleData = salesConfig.transformData.toBackend({
@@ -88,6 +101,15 @@ const useSaleForm = () => {
         return saleData;
     };
 
+    const handleSubmitWithConfirmation = () => {
+        if (!selectedClient || !note) {
+            console.log("dentro de confirmacion");
+            setConfirmationModalOpen(true);
+            setConfirmationCallback(() => handleSubmit);
+        } else {
+            handleSubmit();
+        }
+    };
 
     return {
         selectedProducts,
@@ -102,8 +124,11 @@ const useSaleForm = () => {
         addProduct,
         updateProductQuantity,
         removeProduct,
-        handleSubmit,
+        handleSubmit: handleSubmitWithConfirmation,
         calculateTotal,
+        setConfirmationModalOpen,
+        isConfirmationModalOpen,
+        confirmationCallback,
     };
 };
 

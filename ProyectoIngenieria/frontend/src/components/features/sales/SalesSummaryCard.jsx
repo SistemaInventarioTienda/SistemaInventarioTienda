@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Select, Button, Textarea, Input } from "../../common";
+import { ModalConfirmation } from "../../modals";
 import { useEntityPage } from "../../../hooks/useEntityPage";
 import { getClients } from "../../../api/client";
 
@@ -102,6 +103,17 @@ const SalesSummaryCard = ({ saleForm }) => {
                 >
                     Finalizar Compra
                 </Button>
+
+                <ModalConfirmation
+                    isOpen={saleForm.isConfirmationModalOpen}
+                    onClose={() => saleForm.setConfirmationModalOpen(false)}
+                    onConfirm={saleForm.confirmationCallback}
+                    entityName="venta"
+                    action="make_sale"
+                    customLabel="¿Estás seguro de realizar la venta sin seleccionar un cliente o agregar una nota?"
+                    confirmButtonText="Confirmar"
+                    cancelButtonText="Cancelar"
+                />
             </div>
         </div>
     );
