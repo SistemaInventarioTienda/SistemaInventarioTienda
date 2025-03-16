@@ -1,5 +1,6 @@
 import Client from "../models/client.model.js";
 import phoneClient from "../models/phoneClient.model.js";
+import {validateRegisterPhones} from '../logic/logClient/client.logic.js';
 import { getDateCR } from '../libs/date.js';
 import { Op } from 'sequelize';
 import { saveImage, deleteImage } from '../utils/fileManager.js';
@@ -42,6 +43,21 @@ export const registerClient = async (req, res) => {
       })
     }
 
+    const telefonosList = Array.from(
+      new Set(
+        Object.keys(telefonos)
+          .filter(key => key.startsWith('DSC_TELEFONO'))
+          .map(key => telefonos[key])
+      )
+    );
+    const numberValidation = await validateRegisterPhones(telefonosList);
+        if (numberValidation !== true) {
+            return res.status(400).json({
+                message: numberValidation,
+            });
+        }
+
+
     // Crear el cliente
     const creadoEn = await getDateCR();
     const newClient = new Client({
@@ -59,14 +75,7 @@ export const registerClient = async (req, res) => {
     const clientSaved = await newClient.save();
 
     if (clientSaved.ID_CLIENTE) {
-      const telefonosList = Array.from(
-        new Set(
-          Object.keys(telefonos)
-            .filter(key => key.startsWith('DSC_TELEFONO'))
-            .map(key => telefonos[key])
-        )
-      );
-
+  
       await phoneClient.bulkCreate(
         telefonosList.map(telefono => ({
           ID_CLIENTE: clientSaved.ID_CLIENTE,

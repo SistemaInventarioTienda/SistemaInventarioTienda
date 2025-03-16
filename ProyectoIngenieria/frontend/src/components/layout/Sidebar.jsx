@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
+import { useAuthPermissions } from '../../context/authPermissions';
 import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, ScanBarcode } from 'lucide-react';
 import SubMenu from './SubMenu';
 
@@ -8,6 +9,7 @@ import './styles/sidebar.css';
 
 const Sidebar = () => {
     const { isAuthenticated } = useAuth();
+    const { permissions } = useAuthPermissions();
     const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
 
@@ -46,9 +48,11 @@ const Sidebar = () => {
                 </button>
             </div>
             <ul className="list-unstyled">
-                {menuItems.map((item, index) => (
-                    <li key={item.path} style={{ marginBottom: index < menuItems.length - 1 ? '20px' : '0' }}>
-                        {item.subNav ? (<SubMenu item={item} collapsed={collapsed}/>) : (
+                {menuItems.map((item, index) =>
+                    permissions[item.key] ? (
+                        <li key={item.path} style={{ marginBottom: index < menuItems.length - 1 ? '20px' : '0' }}>
+                            
+                            {item.subNav ? (<SubMenu item={item} collapsed={collapsed}/>) : (
                             <Link
                             to={item.path}
                             className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
@@ -57,9 +61,9 @@ const Sidebar = () => {
                             {!collapsed && <span>{item.text}</span>}
                         </Link>
                         )}
-                        
-                    </li>
-                ))}
+                        </li>
+                    ) : null
+                )}
             </ul>
         </div >
     );

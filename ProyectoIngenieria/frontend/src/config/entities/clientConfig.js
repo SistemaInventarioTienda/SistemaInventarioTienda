@@ -36,7 +36,7 @@ export const clientConfig = {
         { name: "primerApellido", label: "Primer Apellido", type: "text", required: true },
         { name: "segundoApellido", label: "Segundo Apellido", type: "text", required: false },
         { name: "direccion", label: "Dirección", type: "textarea", required: false },
-        { name: "foto", type: "file", required: false },
+        //{ name: "foto", type: "file", required: false },
         {
             name: "estado",
             label: "Estado",
