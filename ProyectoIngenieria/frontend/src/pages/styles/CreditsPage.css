@@ -1,0 +1,200 @@
+.credits-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+.credits-card {
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.credits-card-fixed {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.credits-card-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid #eee;
+    background-color: var(--color-secondary);
+}
+
+.credits-card-title {
+    text-align: center;
+    color: var(--color-primary) !important;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.credits-card-description {
+    text-align: center;
+    font-size: 14px;
+    color: #6B7280;
+    margin: 4px 0 0;
+}
+
+.credits-card-content {
+    padding: 1.25rem;
+    background: var(--color-card);
+    flex-grow: 1;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.credits-card-footer {
+    padding: 1.25rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-card);
+}
+
+.credits-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.credits-info-item {
+    margin-bottom: 1rem;
+    color: var(--color-font);
+}
+
+.credits-info-label {
+    color: var(--color-primary) !important;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.credits-info-value {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* BADGES */
+.credits-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    display: inline-block;
+}
+
+.credits-badge-yellow {
+    background-color: #fbbf24;
+    color: white;
+}
+
+.credits-badge-green {
+    background-color: #22c55e;
+    color: white;
+}
+
+/* TABLA */
+.credits-table {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.credits-table th {
+    text-align: center;
+    padding: 0.75rem;
+    font-weight: 500;
+    color: var(--color-font);
+    border-bottom: 1px solid #eee;
+}
+
+.credits-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    color: var(--color-font);
+}
+
+/* PROGRESO */
+.credits-progress {
+    height: 0.5rem;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+
+.credits-progress-bar {
+    height: 100%;
+    background-color: #3b82f6;
+    transition: width 0.3s ease;
+}
+
+/* BOTONES */
+.credits-button {
+
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    border-radius: 16px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Botón primario */
+.credits-button-primary {
+    background-color: #111827;
+    color: white;
+}
+
+.credits-button-primary:hover {
+    background-color: #374151;
+}
+
+/* Botón editar */
+.credits-button-edit {
+    background-color: #007AFF;
+    color: white;
+}
+
+.credits-button-edit:hover {
+    background-color: #005BBB;
+}
+
+/* Botón outline */
+.credits-button-outline {
+    background-color: transparent;
+    border: 1px solid #e5e7eb;
+    color: var(--color-font);
+}
+
+.credits-button-outline:hover {
+    background-color: #f3f4f6;
+    color: black;
+}
+
+/* Iconos */
+.credits-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .credits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .credits-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}

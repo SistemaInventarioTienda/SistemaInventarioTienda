@@ -17,7 +17,7 @@ export const EntityPage = forwardRef(({
     searchByName,
     onSubmit,
     onDelete,
-    modalComponent: ModalFormComponent,
+    modalComponent: ModalFormComponent = () => null,
     entityKey,
     transformData,
     transformConfig,
@@ -189,42 +189,43 @@ export const EntityPage = forwardRef(({
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
             />
-            <ModalComponent
-                isOpen={isModalOpen}
-                title={
-                    modalMode === "add"
-                        ? `Agregar ${entityName}`
-                        : modalMode === "edit"
-                            ? `Editar ${entityName}`
-                            : `Información detallada`
-                }
-                mode={modalMode}
-                onClose={() => setModalOpen(false)}
-                entityName={entityName}
-            >
-                <ModalFormComponent
+            {ModalComponent && (
+                <ModalComponent
+                    isOpen={isModalOpen}
+                    title={
+                        modalMode === "add"
+                            ? `Agregar ${entityName}`
+                            : modalMode === "edit"
+                                ? `Editar ${entityName}`
+                                : `Información detallada`
+                    }
                     mode={modalMode}
-                    initialData={modalData}
-                    fields={fields}
-                    onSubmit={async (formData) => {
-                        try {
-                            const response = await onSubmit(modalMode, formData);
-                            console.log(response);
-                            if (response && response.success) {
-                                await fetchData({ transformConfig });
-                                setModalOpen(false);
-                                console.log("✅ Modal cerrado correctamente");
-                            } else {
-                                console.error("❌ Error: Respuesta no exitosa", response);
+                    onClose={() => setModalOpen(false)}
+                    entityName={entityName}
+                >
+                    <ModalFormComponent
+                        mode={modalMode}
+                        initialData={modalData}
+                        fields={fields}
+                        onSubmit={async (formData) => {
+                            try {
+                                const response = await onSubmit(modalMode, formData);
+                                console.log(response);
+                                if (response && response.success) {
+                                    await fetchData({ transformConfig });
+                                    setModalOpen(false);
+                                    console.log("✅ Modal cerrado correctamente");
+                                } else {
+                                    console.error("❌ Error: Respuesta no exitosa", response);
+                                }
+                            } catch (error) {
+                                console.error("❌ Error al guardar:", error);
                             }
-                        } catch (error) {
-                            console.error("❌ Error al guardar:", error);
-                        }
-                    }}
-                    onCancel={() => setModalOpen(false)}
-                />
-            </ModalComponent>
-
+                        }}
+                        onCancel={() => setModalOpen(false)}
+                    />
+                </ModalComponent>
+            )}
             <ModalConfirmation
                 isOpen={isConfirmationModalOpen}
                 onClose={() => setConfirmationModalOpen(false)}

@@ -11,6 +11,7 @@ const ModalConfirmation = ({
   message,
   confirmButtonText = "Eliminar",
   cancelButtonText = "Cancelar",
+  customLabel,
 }) => {
   if (!isOpen) return null;
 
@@ -18,13 +19,16 @@ const ModalConfirmation = ({
     add: "Agregar",
     edit: "Editar",
     delete: "Eliminar",
-    logout: "Cerrar Sesión"
+    logout: "Cerrar Sesión",
+    make_sale: "Realizar nueva"
   };
 
   const translatedAction = actionTranslations[action] || action;
 
-  // Mensaje por defecto si no se provee message
-  const defaultMessage = `¿Estás seguro que deseas ${translatedAction.toLowerCase()} este ${entityName?.toLowerCase() || ''}?`;
+  // Mensaje por defecto si no se provee message o customLabel
+  const defaultMessage = customLabel
+    ? customLabel
+    : `¿Estás seguro que deseas ${translatedAction.toLowerCase()} este ${entityName?.toLowerCase() || ''}?`;
 
   const handleConfirm = async (event) => {
     try {

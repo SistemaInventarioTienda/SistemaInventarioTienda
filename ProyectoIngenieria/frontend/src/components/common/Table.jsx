@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "./Button";
-import { Eye, SquarePen, Trash, KeyRound, ChevronDown, ChevronUp, ChevronRight, Plus } from "lucide-react";
+import { Eye, SquarePen, Trash, KeyRound, ChevronDown, ChevronUp, ChevronRight, Plus, DollarSign } from "lucide-react";
 import "./styles/table.css";
 
 const StatusPill = ({ status }) => {
@@ -11,6 +11,11 @@ const StatusPill = ({ status }) => {
 
 const ActionsCell = ({ actions, rowData }) => (
     <div className="actions-cell">
+        {actions.manageCredits && (
+            <ActionButton onClick={() => actions.manageCredits(rowData)} color="#28A745">
+                <DollarSign size={20} color="#FFFFFF" />
+            </ActionButton>
+        )}
         {actions.grantPermissions && (
             <ActionButton onClick={() => actions.grantPermissions(rowData)} color="#F9CB32">
                 <KeyRound size={20} color="#FFFFFF" />

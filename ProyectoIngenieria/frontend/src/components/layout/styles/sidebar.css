@@ -27,7 +27,7 @@
 }
 
 .sidebar.collapsed {
-    width: 80px;
+    width: 100px;
 }
 
 .main-content {
@@ -39,7 +39,7 @@
 }
 
 .sidebar.collapsed~.main-content {
-    margin-left: 80px;
+    margin-left: 100px;
 }
 
 /* Sidebar Header */
@@ -89,10 +89,14 @@
     justify-content: center;
 }
 
-.sidebar-link:hover,
 .sidebar-link.active {
     background-color: var(--color-card);
     color: var(--color-primary);
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-secondary);
 }
 
 .sidebar-link span {
@@ -103,7 +107,6 @@
 .sidebar.collapsed .sidebar-link span {
     display: none;
 }
-
 
 /* Scrollbar global para toda la aplicación  */
 .sidebar::-webkit-scrollbar {
@@ -122,6 +125,48 @@
 
 .sidebar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
+}
+
+/* Estilos del Submenú */
+.submenu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--color-card);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border-radius: 16px;
+}
+
+.submenu-header:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.submenu-container {
+    display: none;
+    flex-direction: column;
+    padding-left: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+.submenu-container.open {
+    display: flex;
+}
+
+.submenu-item {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.submenu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsivo */
