@@ -3,13 +3,12 @@ import axios from './axios';
 // Función para registrar una nueva venta
 export const registerSale = async (salesData) => {
     try {
-        const response = await axios.post('/sales/register', salesData);
+        const response = await axios.post('/sale/addSale', salesData);
         return response.data;
     } catch (error) {
         console.error('Error registrando la venta:', error.message);
         throw error;
     }
-    return "";
 };
 
 // Función para obtener todos las ventas
@@ -55,7 +54,7 @@ export const getAllSales = async (page, pageSize, orderByField, order) => {
 // Función para eliminar (desactivar) una venta
 export const deleteSale = async (id) => {
     try {
-        const response = await axios.delete(`/sales/delete_sales/${id}`);
+        const response = await axios.delete(`/sale/delete_sales/${id}`);
         return response.data;
     } catch (error) {
         console.error('Error eliminando la venta:', error.message);
@@ -66,7 +65,7 @@ export const deleteSale = async (id) => {
 // Función para buscar una venta
 export const searchSale = async (page, pageSize, termSearch, orderByField, order) => {
     try {
-        const response = await axios.get('/sales/search_sales', {
+        const response = await axios.get('/sale/search_sales', {
             params: { page, pageSize, termSearch, orderByField, order }
         });
         return response.data;

@@ -2,14 +2,22 @@ import { sale, details, credit } from "../models/sale.model.js";
 import { getDateCR } from "../libs/date.js";
 //import {  } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
-
+import Client from "../models/client.model.js"
 
 
 export const createSale = async (req, res) => {
     const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, details_list, FEC_VENCIMIENTO } = req.body;
 
     try {
+        let clientID = ID_CLIENTE && ID_CLIENTE > 0 ? ID_CLIENTE : null;
 
+        if (clientID) {
+            const client = await Client.findOne({ where: { DSC_CEDULA: ID_CLIENTE } });
+            if (!client) {
+                return res.status(400).json({ message: "Cliente no encontrado" });
+            }
+            clientID = client.ID_CLIENTE;
+        }
 
         let date = await getDateCR(); // probando validaciones de datos..
 
@@ -22,7 +30,7 @@ export const createSale = async (req, res) => {
 
 
         const crdSale = await sale.create({
-            ID_CLIENTE,
+            clientID,
             FEC_VENTA: date,
             PORCENT_IMPUESTO: porcentImpuesto,
             METODO_PAGO: metodoPago,
@@ -43,7 +51,7 @@ export const createSale = async (req, res) => {
                     MONT_UNITARIO: detailsProd.MONTO_UNITARIO,
                     CANTIDAD: detailsProd.CANTIDAD,
                 }));
-        */ 
+        */
 
         const idSale = crdSale.dataValues.ID_VENTA;
 
@@ -61,7 +69,7 @@ export const createSale = async (req, res) => {
             }
         }
 
-        if (estadoCredito && ID_CLIENTE>0) {
+        if (estadoCredito && ID_CLIENTE > 0) {
             await credit.create({
                 ID_VENTA: idSale,
                 FEC_ULTIMOPAGO: date,

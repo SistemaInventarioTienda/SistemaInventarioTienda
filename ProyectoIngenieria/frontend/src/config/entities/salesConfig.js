@@ -24,11 +24,6 @@ export const salesConfig = {
         { field: "actions", label: "Acciones" },
     ],
 
-    // Configuración de campos del formulario
-    fields: [
-
-    ],
-
     // Funciones API específicas de la entidad
     api: {
         fetchAll: getAllSales,
