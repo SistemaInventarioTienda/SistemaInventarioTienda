@@ -101,6 +101,7 @@ export const login = async (req, res) => {
     }
 
     const permissionsUser = await PermissionUser.findAll({
+      attributes: ['ESTADO'],
       include: [
         {
           model: Permission,
@@ -115,7 +116,7 @@ export const login = async (req, res) => {
       nest: true
     });
 
-    const leakedPermissions = permissionsUser.map(pu => ({ nombre: pu.Permission?.DSC_NOMBRE }));
+    const leakedPermissions = permissionsUser.map(pu => ({ nombre: pu.Permission?.DSC_NOMBRE, estado: pu.ESTADO ? true : false }));
 
 
     const token = await createAccessToken({
@@ -173,3 +174,47 @@ export const logout = async (req, res) => {
   });
   return res.sendStatus(200);
 };
+
+export const getAllPermission = async (req, res) => {
+  try {
+
+    const userId = req.params.id || req.user.id || null;
+    if(!userId) {
+      return res.status(400).json({message: "Usuario invalido."})
+    }
+
+    const userFound = await User.findOne({
+      where: {
+        DSC_CEDULA: userId,
+        ESTADO: 1
+      }
+    });
+    if (!userFound)
+      return res.status(400).json({
+        message: ["Usuario invalido."],
+      });
+
+    const permissionsUser = await PermissionUser.findAll({
+      attributes: ['ESTADO'],
+      include: [
+        {
+          model: Permission,
+          as: 'Permission',
+          attributes: ['DSC_NOMBRE']
+        }
+      ],
+      where: {
+        ID_USUARIO: userFound.ID_USUARIO
+      },
+      raw: true,
+      nest: true
+    });
+
+    const leakedPermissions = permissionsUser.map(pu => ({ nombre: pu.Permission?.DSC_NOMBRE, estado: pu.ESTADO ? true : false }));
+
+
+    return res.status(200).json({permissions : leakedPermissions})
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
