@@ -1,5 +1,6 @@
 import { sale, details, credit } from "../models/sale.model.js";
 import { getDateCR } from "../libs/date.js";
+import { validatedetailsProduct } from "../logic/sale/sale.logic.js"; 
 //import {  } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
 
@@ -10,6 +11,12 @@ export const createSale = async (req, res) => {
 
     try {
 
+        const validateDetails = await validatedetailsProduct(details_list);
+        if (validateDetails !== true) {
+            return res.status(400).json({
+                message: validateDetails,
+            });
+        }
 
         let date = await getDateCR(); // probando validaciones de datos..
 
