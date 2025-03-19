@@ -398,43 +398,6 @@ CREATE TABLE `tsim_permiso` (
     `DSC_DESCRIPCION` varchar(255) DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `tsim_permiso`
---
-
-INSERT INTO
-    `tsim_permiso`
-VALUES (
-        1,
-        'Página de usuarios',
-        'Se le permite el acceso a la página de usuarios. Puede realizar acciones como: ver todos los usuarios, eliminar, agregar, modificar y cambiar permisos.'
-    ),
-    (
-        2,
-        'Página de categorias',
-        'Se le permite el acceso a la página de categorias. Puede realizar acciones como: ver todas las categorias y sus subcategorias, eliminar, agregar y modificar.'
-    ),
-    (
-        3,
-        'Página de proveedores',
-        'Se le permite el acceso a la página de proveedores. Puede realizar acciones como: ver todos los proveedores e información detallada, eliminar, agregar y modificar.'
-    ),
-    (
-        4,
-        'Página de clientes',
-        'Se le permite el acceso a la página de clientes. Puede realizar acciones como: ver todos los clientes e información detallada, eliminar, agregar y modificar.'
-    ),
-    (
-        5,
-        'Página de compras',
-        'Se le permite el acceso a la página de compras. Puede realizar acciones como: ver todas las compras e información detallada, eliminar, agregar y modificar.'
-    ),
-    (
-        6,
-        'Página de reportes',
-        'Se le permite el acceso a la página de reportes. Puede realizar acciones como: ver todos los reportes e información detallada, eliminar, agregar, modificar y descargar los reportes.'
-    );
-
 -- --------------------------------------------------------
 
 --
@@ -732,54 +695,6 @@ CREATE TABLE `tsit_permisousuario` (
     `FEC_CREADOEN` datetime DEFAULT NULL,
     `ESTADO` int(11) DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `tsit_permisousuario`
---
-
-INSERT INTO
-    `dbtiendasistemainventario`.`tsit_permisousuario` (
-        `ID_USUARIO`,
-        `ID_PERMISO`,
-        `FEC_CREADOEN`,
-        `ESTADO`
-    )
-VALUES (
-        10,
-        1,
-        '2025-03-12 22:00:00',
-        1
-    ),
-    (
-        10,
-        2,
-        '2025-03-12 22:00:00',
-        1
-    ),
-    (
-        10,
-        3,
-        '2025-03-12 22:00:00',
-        1
-    ),
-    (
-        10,
-        4,
-        '2025-03-12 22:00:00',
-        1
-    ),
-    (
-        10,
-        5,
-        '2025-03-12 22:00:00',
-        1
-    ),
-    (
-        10,
-        6,
-        '2025-03-12 22:00:00',
-        1
-    );
 
 -- --------------------------------------------------------
 

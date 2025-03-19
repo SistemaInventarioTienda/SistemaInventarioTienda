@@ -406,33 +406,39 @@ INSERT INTO
     `tsim_permiso`
 VALUES (
         1,
-        'Página de usuarios',
+        'Usuarios',
         'Se le permite el acceso a la página de usuarios. Puede realizar acciones como: ver todos los usuarios, eliminar, agregar, modificar y cambiar permisos.'
     ),
     (
         2,
-        'Página de categorias',
+        'Categorias',
         'Se le permite el acceso a la página de categorias. Puede realizar acciones como: ver todas las categorias y sus subcategorias, eliminar, agregar y modificar.'
     ),
     (
         3,
-        'Página de proveedores',
+        'Proveedores',
         'Se le permite el acceso a la página de proveedores. Puede realizar acciones como: ver todos los proveedores e información detallada, eliminar, agregar y modificar.'
     ),
     (
         4,
-        'Página de clientes',
+        'Clientes',
         'Se le permite el acceso a la página de clientes. Puede realizar acciones como: ver todos los clientes e información detallada, eliminar, agregar y modificar.'
     ),
     (
         5,
-        'Página de compras',
+        'Compras',
         'Se le permite el acceso a la página de compras. Puede realizar acciones como: ver todas las compras e información detallada, eliminar, agregar y modificar.'
     ),
     (
         6,
-        'Página de reportes',
+        'Reportes',
         'Se le permite el acceso a la página de reportes. Puede realizar acciones como: ver todos los reportes e información detallada, eliminar, agregar, modificar y descargar los reportes.'
+    )
+    ,
+    (
+        7,
+        'Productos',
+        'Se le permite el acceso a la página de productos. Puede realizar acciones como: ver todos los productos, eliminar, agregar y modificar.'
     );
 
 -- --------------------------------------------------------
@@ -777,6 +783,12 @@ VALUES (
     (
         10,
         6,
+        '2025-03-12 22:00:00',
+        1
+    ),
+    (
+        10,
+        7,
         '2025-03-12 22:00:00',
         1
     );

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { EntityPage } from "./EntityPage";
 import { categoryConfig } from "../config/entities/categoryConfig";
 import { subcategoryConfig } from "../config/entities/subcategoryConfig";
@@ -6,9 +6,22 @@ import CategoryForm from "./pagesForms/CategoryForm";
 import SubcategoryForm from "./pagesForms/SubcategoryForm";
 import handleApiCall from "../utils/handleApiCall";
 import { ModalComponent, ModalConfirmation } from "../components/modals";
+import { usePermissions } from "../context/authPermissions";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function CategoryPage() {
     const entityPageRef = useRef(); // Crear una referencia a EntityPage
+    const { permissions } = usePermissions();
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (permissions && !permissions.categories) {
+            toast.error("No tienes permiso para acceder a categorias");
+            navigate("/");
+        }
+    }, [permissions, navigate]);
+
+
     const {
         entityName,
         titlePage,

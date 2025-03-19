@@ -4,6 +4,7 @@ import { validateUpdate } from "../logic/user/user.logic.js";
 import { validateUpdateUser } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
 import { decodedToken } from "../libs/jwt.js";
+import { Permission, PermissionUser } from "../models/permission.model.js";
 
 export const updateUser = async (req, res) => {
     try {
@@ -189,3 +190,55 @@ export const searchUser = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+
+export const assignPermission = async (req, res) => {
+    try {
+        const { PERMISSION_LIST } = req.body;
+
+        // Buscar usuario por cédula
+        const userFound = await User.findOne({
+            attributes: ['ID_USUARIO'],
+            where: { DSC_CEDULA: req.params.id }
+        });
+
+        if (!userFound) {
+            return res.status(404).json({ message: "Usuario inválido para asignar permiso." });
+        }
+
+        const permissionsBD = await Permission.findAll({
+            attributes: ['ID_PERMISO', 'DSC_NOMBRE']
+        });
+
+        if (permissionsBD.length === 0) {
+            return res.status(404).json({ message: "No hay permisos disponibles." });
+        }
+
+        const creadoEn = await getDateCR();
+        const permissionsToAssign = [];
+
+        for (const permission of PERMISSION_LIST) {
+            // Buscar coincidencia en la BD
+            const permissionFound = permissionsBD.find(p => p.DSC_NOMBRE === permission);
+
+            if (permissionFound) {
+                permissionsToAssign.push({
+                    ID_USUARIO: userFound.ID_USUARIO,
+                    ID_PERMISO: permissionFound.ID_PERMISO,
+                    FEC_CREADOEN: creadoEn,
+                    ESTADO: permission.estado
+                });
+            }
+        }
+
+        // Guardar todos los permisos en una sola operación
+        if (permissionsToAssign.length > 0) {
+            await PermissionUser.bulkCreate(permissionsToAssign);
+            return res.json({ message: "Permisos asignados al usuario." });
+        } else {
+            return res.status(400).json({ message: "Ningún permiso de la lista coincide con los permisos existentes." });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

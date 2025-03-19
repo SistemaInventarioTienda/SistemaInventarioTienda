@@ -1,8 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { EntityPage } from "./EntityPage";
 import { salesConfig } from "../config/entities/salesConfig";
-
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { usePermissions } from "../context/authPermissions";
 export default function SalePage() {
+
+    const { permissions } = usePermissions();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (permissions && !permissions.sales) {
+            toast.error("No tienes permiso para acceder a ventas");
+            navigate("/");
+        }
+    }, [permissions, navigate]);
+
     const {
         entityName,
         titlePage,
