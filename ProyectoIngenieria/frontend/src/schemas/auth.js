@@ -66,8 +66,8 @@ export const loginSchema = z.object({
   DSC_NOMBREUSUARIO: z.string({
     required_error: "El nombre de usuario es obligatorio.",
   })
-  .min(5, {
-    message: "El usuario debe tener al menos de 5 caracteres.",
+  .min(3, {
+    message: "El usuario debe tener al menos de 3 caracteres.",
   }),
   DSC_CONTRASENIA: z
     .string({
