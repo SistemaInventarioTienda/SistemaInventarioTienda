@@ -33,7 +33,7 @@ const ActionsCell = ({ actions, rowData }) => (
     </div>
 );
 
-const ProductTable = ({ selectedProducts, updateProductQuantity, removeProduct }) => {
+const ProductTable = ({ selectedProducts, updateProductQuantity, removeProduct, isViewMode = false }) => {
     const handleQuantityChange = (id, newQuantity) => {
         if (newQuantity < 1) return;
         updateProductQuantity(id, newQuantity);
@@ -48,7 +48,7 @@ const ProductTable = ({ selectedProducts, updateProductQuantity, removeProduct }
                         <th>Precio</th>
                         <th>Cantidad</th>
                         <th>Subtotal</th>
-                        <th>Acciones</th>
+                        {!isViewMode && <th>Acciones</th>} {/* Oculta acciones si está en modo vista */}
                     </tr>
                 </thead>
                 <tbody>
@@ -58,31 +58,37 @@ const ProductTable = ({ selectedProducts, updateProductQuantity, removeProduct }
                                 <td>{product.name}</td>
                                 <td>₡{product.price.toLocaleString()}</td>
                                 <td>
-                                    <Input
-                                        type="number"
-                                        min="1"
-                                        value={product.quantity}
-                                        onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value, 10) || 1)}
-                                        style={{ textAlign: "center" }}
-                                    />
+                                    {isViewMode ? ( // Si está en modo vista, solo muestra el número
+                                        product.quantity
+                                    ) : (
+                                        <Input
+                                            type="number"
+                                            min="1"
+                                            value={product.quantity}
+                                            onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value, 10) || 1)}
+                                            style={{ textAlign: "center" }}
+                                        />
+                                    )}
                                 </td>
                                 <td>₡{product.subtotal.toLocaleString()}</td>
-                                <td>
-                                    <ActionsCell
-                                        rowData={product}
-                                        actions={{
-                                            increment: (row) => handleQuantityChange(row.id, row.quantity + 1),
-                                            decrement: (row) => handleQuantityChange(row.id, row.quantity - 1),
-                                            delete: (row) => removeProduct(row.id),
-                                        }}
-                                    />
-                                </td>
+                                {!isViewMode && (
+                                    <td>
+                                        <ActionsCell
+                                            rowData={product}
+                                            actions={{
+                                                increment: (row) => handleQuantityChange(row.id, row.quantity + 1),
+                                                decrement: (row) => handleQuantityChange(row.id, row.quantity - 1),
+                                                delete: (row) => removeProduct(row.id),
+                                            }}
+                                        />
+                                    </td>
+                                )}
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={5} className="no-data-message">
-                                No hay productos seleccionados
+                            <td colSpan={isViewMode ? 4 : 5} className="no-data-message">
+                                No hay productos {isViewMode ? "en esta venta" : "seleccionados"}
                             </td>
                         </tr>
                     )}

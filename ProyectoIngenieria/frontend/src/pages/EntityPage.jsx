@@ -26,6 +26,8 @@ export const EntityPage = forwardRef(({
     expandableKey,
     onAddSubcategory,
     subcategoryActions,
+    action,
+    confirmButtonText,
 }, ref) => {
     const {
         data,
@@ -76,6 +78,7 @@ export const EntityPage = forwardRef(({
 
     const handleView = (rowData) => {
         setModalMode("view");
+        console.log("Modal view");
         setModalData(transformData ? transformData(rowData) : rowData);
         setModalOpen(true);
     };
@@ -189,6 +192,7 @@ export const EntityPage = forwardRef(({
                 expandableKey={expandableKey}
                 onAddSubcategory={onAddSubcategory}
                 subcategoryActions={subcategoryActions}
+                entityKey={entityKey}
             />
             <Pagination
                 currentPage={currentPage}
@@ -237,9 +241,8 @@ export const EntityPage = forwardRef(({
                 onClose={() => setConfirmationModalOpen(false)}
                 onConfirm={handleDelete}
                 entityName={entityName}
-                action="delete"
-                confirmButtonText="Eliminar"
-                cancelButtonText="Cancelar"
+                action={action}
+                confirmButtonText={confirmButtonText}
             />
         </PageLayout>
     );
