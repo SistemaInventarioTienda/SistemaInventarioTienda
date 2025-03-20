@@ -104,7 +104,7 @@ export const login = async (req, res) => {
 
     const userFound = await User.findOne({
       where: {
-        DSC_NOMBREUSUARIO: DSC_NOMBREUSUARIO.toLowerCase(),
+        DSC_NOMBREUSUARIO: DSC_NOMBREUSUARIO,
         ESTADO: 1
       }
     });
