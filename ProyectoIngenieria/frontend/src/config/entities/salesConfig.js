@@ -24,9 +24,16 @@ export const salesConfig = {
         { field: "actions", label: "Acciones" },
     ],
 
-    // Configuración de campos del formulario
     fields: [
-
+        { name: "ID_CLIENTE", label: "Cliente", type: "text" },
+        { name: "FEC_VENTA", label: "Fecha de venta", type: "text" },
+        { name: "METODO_PAGO", label: "Método de pago", type: "text" },
+        { name: "PORCENT_IMPUESTO", label: "Porcentaje de Impuesto", type: "text" },
+        { name: "PORCENT_DESCUENTO", label: "Porcentaje de Descuento", type: "text" },
+        { name: "MONT_SUBTOTAL", label: "Subtotal", type: "text" },
+        { name: "MON_TOTAL", label: "Total", type: "text" },
+        { name: "DSC_VENTA", label: "Descripción", type: "textarea" },
+        { name: "ESTADO", label: "Estado", type: "text" },
     ],
 
     // Funciones API específicas de la entidad
@@ -40,7 +47,20 @@ export const salesConfig = {
     // Transformaciones de datos
     transformData: {
         toFrontend: (sale) => ({
+            ID_CLIENTE: sale.ID_CLIENTE,
+            FEC_VENTA: sale.FEC_VENTA,
+            METODO_PAGO: sale.METODO_PAGO,
+            PORCENT_IMPUESTO: sale.PORCENT_IMPUESTO,
+            PORCENT_DESCUENTO: sale.PORCENT_DESCUENTO,
+            MONT_SUBTOTAL: sale.MONT_SUBTOTAL,
             MON_TOTAL: sale.MON_TOTAL,
+            DSC_VENTA: sale.DSC_VENTA,
+            ESTADO: sale.ESTADO,
+            // PRODUCTS_LIST: sale.details_list.map(product => ({
+            //     id: product.ID_PRODUCTO,
+            //     price: product.MONTO_UNITARIO,
+            //     quantity: product.CANTIDAD,
+            // })),
         }),
 
         toBackend: (formData) => ({
@@ -52,7 +72,7 @@ export const salesConfig = {
             ESTADO_CREDITO: formData.ESTADO_CREDITO,
             MONT_SUBTOTAL: formData.MONT_SUBTOTAL,
             PORCENT_DESCUENTO: formData.PORCENT_DESCUENTO,
-            details_list : formData.PRODUCTS_LIST.map(product => ({
+            details_list: formData.PRODUCTS_LIST.map(product => ({
                 ID_PRODUCTO: product.id,
                 MONTO_UNITARIO: product.price,
                 CANTIDAD: product.quantity,
@@ -62,12 +82,11 @@ export const salesConfig = {
     },
 
     transformConfig: {
-        ESTADO: (item) => (item.ESTADO === 1 ? "ACTIVO" : "ELIMINADA"),
+        ESTADO: (item) => (item.ESTADO === 1 ? "PAGADA" : "ANULADA"),
     },
 
     // Configuración de acciones permitidas
     actions: {
-        edit: true,
         delete: true,
         view: true,
     },

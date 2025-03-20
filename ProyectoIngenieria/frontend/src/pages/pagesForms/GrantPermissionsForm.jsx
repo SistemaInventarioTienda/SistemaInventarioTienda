@@ -4,8 +4,11 @@ import { Button } from "../../components/common";
 import Modal from "../../components/modals/Modal";
 import "../../pages/styles/GrantPermission.css";
 import { assignPermission } from "../../api/permission";
+import { useAuthPermissions } from "../../context/authPermissions";
 
 function GrantPermissionsForm({ isOpen, onClose, user }) {
+    const { loadPermissions } = useAuthPermissions();
+
     const modules = [
         { value: "user", label: "Usuarios" },
         { value: "product", label: "Productos" },
@@ -36,8 +39,8 @@ function GrantPermissionsForm({ isOpen, onClose, user }) {
 
             // Comparar newPermissions con previousPermissions
             if (JSON.stringify(newPermissions) !== JSON.stringify(previousPermissions.current)) {
-              setPermissions(newPermissions);
-              previousPermissions.current = newPermissions;
+                setPermissions(newPermissions);
+                previousPermissions.current = newPermissions;
             }
         }
     }, [user, modules]);
@@ -56,13 +59,12 @@ function GrantPermissionsForm({ isOpen, onClose, user }) {
         e.preventDefault();
 
         const permissionList = modules.map(module => ({
-          nombre: module.label,
-          estado: permissions[module.value],
-      }));
-        const response = await assignPermission(user, permissionList)
-        console.log(response)
+            nombre: module.label,
+            estado: permissions[module.value],
+        }));
+        await assignPermission(user, permissionList)
+        await loadPermissions();
         onClose();
-        window.location.reload();
     };
 
     return (

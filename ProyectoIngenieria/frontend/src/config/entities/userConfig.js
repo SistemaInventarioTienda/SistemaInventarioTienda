@@ -84,10 +84,8 @@ export const userConfig = {
             DSC_CORREO: formData.correo,
             DSC_TELEFONO: formData.telefono,
             DSC_NOMBREUSUARIO: formData.nombreUsuario,
-            //DSC_CONTRASENIA: formData.contrasena,
-            //CONFIRMARCONTRASENIA: formData.confirmarContrasena, -> Esto se debería hacer en cambiar contraseña
-            DSC_CONTRASENIA: 'adminadmin',
-            CONFIRMARCONTRASENIA: 'adminadmin',
+            DSC_CONTRASENIA: formData.contrasena,
+            CONFIRMARCONTRASENIA: formData.confirmarContrasena,
             ESTADO: formData.estado,
         }),
     },

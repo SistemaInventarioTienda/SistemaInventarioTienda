@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import handleApiCall from "../utils/handleApiCall";
 import { salesConfig } from "../config/entities/salesConfig";
 import { toast } from "sonner";
 
@@ -9,8 +10,9 @@ const useSaleForm = () => {
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
     const [confirmationCallback, setConfirmationCallback] = useState(null);
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const [selectedClient, setSelectedClient] = useState("");
+    const [selectedClient, setSelectedClient] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+    const [selectedSaleType, setSelectedSaleType] = useState(3);
     const [note, setNote] = useState("");
     const [discount, setDiscount] = useState(0);
 
@@ -71,7 +73,20 @@ const useSaleForm = () => {
         );
     };
 
-    const handleSubmit = () => {
+    const resetForm = () => {
+        setSelectedProducts([]);
+        setSelectedClient(null);
+        setSelectedPaymentMethod("");
+        setSelectedSaleType(3);
+        setNote("");
+        setDiscount(0);
+    };
+
+    const handleSubmit = async () => {
+        if (selectedSaleType === 3) {
+            toast.error("Debe seleccionar el tipo de venta (Contado o Crédito)");
+            return;
+        }
 
         if (selectedProducts.length === 0) {
             toast.error("Debe seleccionar al menos un producto para realizar la venta.");
@@ -86,11 +101,11 @@ const useSaleForm = () => {
         const { subtotal, discountAmount } = calculateTotal();
 
         const saleData = salesConfig.transformData.toBackend({
-            ID_CLIENTE: selectedClient,
+            ID_CLIENTE: selectedClient && selectedClient !== 0 ? Number(selectedClient) : null,
             PORCENT_IMPUESTO: TAX_RATE,
             METODO_PAGO: selectedPaymentMethod,
             DSC_VENTA: note,
-            ESTADO_CREDITO: 0,
+            ESTADO_CREDITO: Number(selectedSaleType),
             MONT_SUBTOTAL: subtotal,
             PORCENT_DESCUENTO: discountAmount,
             PRODUCTS_LIST: selectedProducts,
@@ -98,7 +113,16 @@ const useSaleForm = () => {
         });
 
         console.log("Datos de la venta:", JSON.stringify(saleData, null, 2));
-        return saleData;
+
+        try {
+            await handleApiCall(
+                () => salesConfig.api.create(saleData),
+                "Venta registrada exitosamente."
+            );
+            resetForm();
+        } catch (error) {
+            console.error("Error al registrar la venta:", error);
+        }
     };
 
     const handleSubmitWithConfirmation = () => {
@@ -115,10 +139,12 @@ const useSaleForm = () => {
         selectedProducts,
         selectedClient,
         selectedPaymentMethod,
+        selectedSaleType,
         note,
         discount,
         setSelectedClient,
         setSelectedPaymentMethod,
+        setSelectedSaleType,
         setNote,
         setDiscount,
         addProduct,

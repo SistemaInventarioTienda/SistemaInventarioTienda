@@ -19,6 +19,7 @@ const ModalConfirmation = ({
     add: "Agregar",
     edit: "Editar",
     delete: "Eliminar",
+    anulate: "Anular",
     logout: "Cerrar Sesión",
     make_sale: "Realizar nueva"
   };
@@ -68,7 +69,7 @@ const ModalConfirmation = ({
             </button>
             <button
               type="button"
-              className={`modal-confirmation-confirm-btn ${action === "delete" ? "danger" : "primary"
+              className={`modal-confirmation-confirm-btn ${action === "delete" || "anulate" ? "danger" : "primary"
                 }`}
               onClick={handleConfirm}
             >
