@@ -13,7 +13,7 @@ export const validateStockProduct = async (details_list) => {
 
 export const validatedetailsProduct = async (details_list) => {
     try {
-        const output = await verifyCantProduct(details_list);
+        const output = await verifyProduct(details_list);
         return (output !== false) ? output : true;
     } catch (error) {
         throw new Error(error.message);
@@ -25,23 +25,43 @@ export const validatedetailsProduct = async (details_list) => {
 async function validateStock(details_list) {
     const existingStock = await product.findAll({
         where: {
-            CANTIDAD: { [Op.lt]: details_list.CANTIDAD},
+            ID_PRODUCT: {
+                [Op.in]: details_list.map(detail => detail.ID_PRODUCTO)
+            },
+            [Op.or]: details_list.map(detail => ({
+                ID_PRODUCT: detail.ID_PRODUCTO,
+                CANTIDAD: {
+                    [Op.and]: [
+                        { [Op.lt]: detail.CANTIDAD },
+                        { [Op.ne]: null }
+                    ]
+                }
+            }))
         },
         attributes: ['DSC_NOMBRE']
     });
 
     if (existingStock.length > 0) {
-        const noStockProd = existingStock.map(details => details.CANTIDAD);
+        const noStockProd = existingStock.map(details => details.DSC_NOMBRE);
         return [`No hay Stock suficiente para: ${noStockProd.join(', ')}.`];
     }
 
-    return false;  
+    return false;
 }
 
 
-async function verifyCantProduct(details_list){
+async function verifyProduct(details_list) { //voy a probar some
+    if (details_list.some(details => details.CANTIDAD === 0)) {
+        return ['Algunos productos no tienen cantidad seleccionada.'];
+    }
 
-     const filter=details_list.filter(details=> details.CANTIDAD===0);
+    if (details_list.some(details => details.MONTO_UNITARIO <= 0)) {
+        return ['Algunos productos no tienen precio asignado.'];
+    }
 
-    return (filter.length > 0) ?[`Algunos productos no tienen cantidad seleccionada.`]:false ;
-} 
+    if (details_list.some(details => details.ID_PRODUCTO <= 0)) {
+        return ['No ha sido seleccionado ningun producto.'];
+    }
+
+    return false;
+}

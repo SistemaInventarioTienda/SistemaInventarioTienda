@@ -1,7 +1,8 @@
 import { sale, details, credit } from "../models/sale.model.js";
 import { getDateCR } from "../libs/date.js";
-import { validatedetailsProduct } from "../logic/sale/sale.logic.js"; 
+import { validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
 //import {  } from "../logic/validateFields.logic.js";
+import Product from "../models/product.model.js";
 import { Op } from 'sequelize';
 
 
@@ -15,6 +16,13 @@ export const createSale = async (req, res) => {
         if (validateDetails !== true) {
             return res.status(400).json({
                 message: validateDetails,
+            });
+        }
+
+        const validateStock = await validateStockProduct(details_list);
+        if (validateStock !== true) {
+            return res.status(400).json({
+                message: validateStock,
             });
         }
 
@@ -40,17 +48,7 @@ export const createSale = async (req, res) => {
         });
 
 
-        /*
-        //para realizar validacion
-         const productList = details_list
-                .filter(detailsProd => detailsProd.ID_PRODUCTO && detailsProd.MONTO_UNITARIO >= 0 && detailsProd.CANTIDAD > 0)
-                .map(detailsProd => ({
-                    ID_VENTA: idSale,
-                    ID_PRODUCTO: detailsProd.ID_PRODUCTO,
-                    MONT_UNITARIO: detailsProd.MONTO_UNITARIO,
-                    CANTIDAD: detailsProd.CANTIDAD,
-                }));
-        */ 
+
 
         const idSale = crdSale.dataValues.ID_VENTA;
 
@@ -68,7 +66,7 @@ export const createSale = async (req, res) => {
             }
         }
 
-        if (estadoCredito && ID_CLIENTE>0) {
+        if (estadoCredito && ID_CLIENTE > 0) {
             await credit.create({
                 ID_VENTA: idSale,
                 FEC_ULTIMOPAGO: date,
@@ -76,6 +74,30 @@ export const createSale = async (req, res) => {
                 MON_PENDIENTE: montSubtotal,
                 ESTADO_CREDITO: estadoCredito,
             });
+
+        }
+
+        if (details_list && Array.isArray(details_list) && details_list.length > 0) {
+
+            await Promise.all(details_list.map(async (detailsProd) => {
+
+                const product = await Product.findOne({
+                    where: { ID_PRODUCT: detailsProd.ID_PRODUCTO }
+                });
+
+                if (product) {
+                    const nuevaCantidad = product.CANTIDAD - detailsProd.CANTIDAD;
+
+                    await Product.update(
+                        { CANTIDAD: nuevaCantidad },
+                        {
+                            where: {
+                                ID_PRODUCT: detailsProd.ID_PRODUCTO
+                            }
+                        }
+                    );
+                }
+            }));
 
         }
 
