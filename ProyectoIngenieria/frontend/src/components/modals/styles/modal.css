@@ -47,6 +47,7 @@
     color: var(--color-primary);
     justify-content: space-between;
     border-bottom: 2px solid var(--color-primary);
+    margin-bottom: 1.5rem;
 }
 
 .offcanvas-header h2 {

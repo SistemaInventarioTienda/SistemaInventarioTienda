@@ -4,7 +4,7 @@ import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
 import { toast } from "sonner";
-import { API_URL_RESOURCES } from '../../config';
+import { useBarcodeScanner } from "../../hooks/useBarcodeScanner";
 import ModalConfirmation from "../modals/ModalConfirmation";
 function GenericForm({
     mode,
@@ -42,6 +42,17 @@ function GenericForm({
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // useBarcodeScanner({
+    //     enabled: mode !== 'view',
+    //     onScan: (barcode) => {
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             DSC_CODIGO_BARRAS: barcode
+    //         }));
+    //     }
+    // });
+
 
     useEffect(() => {
         if (errorMessages.length > 0) {

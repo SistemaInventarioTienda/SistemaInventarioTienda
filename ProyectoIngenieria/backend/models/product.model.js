@@ -35,6 +35,10 @@ const Product = db.define('Product', {
         type: DataTypes.DOUBLE,
         allowNull: true,
     },
+    CANTIDAD:{
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
     FEC_CREATED_AT: {
         type: DataTypes.DATE,
         allowNull: true,
