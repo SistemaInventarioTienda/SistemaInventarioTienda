@@ -203,6 +203,7 @@ export const registerProduct = [
                 URL_IMAGEN: imagePath,
                 MON_VENTA: salesAmount,
                 MON_COMPRA: purchaseAmount,
+                CANTIDAD: 0,
                 FEC_CREATED_AT: created_at,
                 ESTADO: 1,
                 ID_SUBCATEGORIA: SUBCATEGORIA,
