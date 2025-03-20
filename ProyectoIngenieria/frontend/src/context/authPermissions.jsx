@@ -12,31 +12,29 @@ export const useAuthPermissions = () => {
 
 export const AuthPermissionsProvider = ({ children }) => {
     const { user } = useAuth();
-    const [permissions, setPermissions] = useState([]);
+    const [permissions, setPermissions] = useState({});
     const [errors, setErrors] = useState([]);
 
-    useEffect(() => {
+    const loadPermissions = async () => {
         if (!user) return;
-
-        const loadPermissions = async (user) => {
-            try {
-                const userPermissions = await getMyPermission(user);
-                setPermissions(userPermissions);
-            } catch (error) {
-                console.error(error.response.data);
-                setErrors(error.response.data);
-            }
+        try {
+            const userPermissions = await getMyPermission(user);
+            setPermissions(userPermissions);
+        } catch (error) {
+            console.error(error.response?.data);
+            setErrors(error.response?.data);
         }
+    };
 
+    useEffect(() => {
         loadPermissions();
     }, [user]);
 
     return (
-        <AuthPermissionsContext.Provider value={{ permissions, errors }}>
+        <AuthPermissionsContext.Provider value={{ permissions, errors, loadPermissions }}>
             {children}
         </AuthPermissionsContext.Provider>
     );
-
 };
 
 export const usePermissions = () => {
