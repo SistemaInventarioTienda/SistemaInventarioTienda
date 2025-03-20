@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { EntityPage } from "./EntityPage";
 import { userConfig } from "../config/entities/userConfig";
 import UserForm from "./pagesForms/UserForm";
@@ -7,6 +7,7 @@ import "./styles/Page.css";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
 import { useNavigate } from "react-router-dom";
+import GrantPermissionsForm from "./pagesForms/GrantPermissionsForm";
 
 export default function UserPage() {
 
@@ -33,6 +34,16 @@ export default function UserPage() {
         transformConfig,
         actions,
     } = userConfig;
+
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+
+    // handle para permisos
+    const handleGrantPermission = async (user) => {
+        console.log("Otorgar permisos a:", user.DSC_CEDULA);
+        setSelectedUser(user);
+        setShowPermissionsModal(true);
+    };
 
     // Lógica para manejar el submit
     const onSubmit = async (mode, data) => {
@@ -73,7 +84,15 @@ export default function UserPage() {
                 entityKey={entityKey}
                 transformData={transformData.toFrontend}
                 transformConfig={transformConfig}
-                actions={actions}
+                actions={{
+                    ...userConfig.actions,
+                    grantPermissions: handleGrantPermission
+                }}
+            />
+            <GrantPermissionsForm
+                isOpen={showPermissionsModal}
+                onClose={() => setShowPermissionsModal(false)}
+                user={selectedUser}
             />
         </>
     );

@@ -1,11 +1,10 @@
 import axios from '../api/axios';
 
-export const getAllPermission = async () => {
+export const getMyPermission = async (user) => {
     try {
-        const response = await axios.get(`/auth/getmypermissions`);
+        const response = await axios.get(`/auth/getmypermissions`, user?.DSC_CEDULA ? user?.DSC_CEDULA : "");
         
         const result = mapRecords(response?.data?.permissions);
-        console.log(result)
         return result;
     } catch (error) {
         console.error('Error fetching permissions:', error.message);
@@ -27,3 +26,16 @@ function mapRecords(permissions) {
     };
     return resultado;
 }
+
+export const assignPermission = async (user, PERMISSION_LIST) => {
+    try {
+        const requestBody = {
+            PERMISSION_LIST: PERMISSION_LIST,
+        };
+        const response = await axios.put(`/user/assign_permission/${user?.DSC_CEDULA}`, requestBody);
+        return response;
+    } catch (error) {
+        console.error('Error fetching permissions:', error.message);
+        throw error;
+    }
+};

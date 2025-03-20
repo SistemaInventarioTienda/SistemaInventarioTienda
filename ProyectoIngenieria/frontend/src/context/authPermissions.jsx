@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./authContext";
-import { getAllPermission } from "../api/permission.js";
+import { getMyPermission } from "../api/permission.js";
 
 const AuthPermissionsContext = createContext();
 
@@ -20,7 +20,7 @@ export const AuthPermissionsProvider = ({ children }) => {
 
         const loadPermissions = async (user) => {
             try {
-                const userPermissions = await getAllPermission(user);
+                const userPermissions = await getMyPermission(user);
                 setPermissions(userPermissions);
             } catch (error) {
                 console.error(error.response.data);

@@ -93,7 +93,7 @@ export const EntityPage = forwardRef(({
         .reduce((acc, [actionKey, isEnabled]) => {
             if (isEnabled) {
                 acc[actionKey] =
-                    actionKey === "grantPermissions" ? handleView :
+                    actionKey === "grantPermissions" ? actions.grantPermissions :
                         actionKey === "edit" ? handleEdit :
                             actionKey === "delete" ? handleDeleteConfirmation :
                                 actionKey === "view" ? handleView :
