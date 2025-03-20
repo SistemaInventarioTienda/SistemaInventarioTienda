@@ -1,22 +1,29 @@
 import { sale, details, credit } from "../models/sale.model.js";
 import { getDateCR } from "../libs/date.js";
-//import {  } from "../logic/validateFields.logic.js";
-import { Op } from 'sequelize';
 import Client from "../models/client.model.js"
+import { validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
+import Product from "../models/product.model.js";
+import { Op } from 'sequelize';
+
 
 
 export const createSale = async (req, res) => {
     const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, details_list, FEC_VENCIMIENTO } = req.body;
 
     try {
-        let clientID = ID_CLIENTE && ID_CLIENTE > 0 ? ID_CLIENTE : null;
 
-        if (clientID) {
-            const client = await Client.findOne({ where: { DSC_CEDULA: ID_CLIENTE } });
-            if (!client) {
-                return res.status(400).json({ message: "Cliente no encontrado" });
-            }
-            clientID = client.ID_CLIENTE;
+        const validateDetails = await validatedetailsProduct(details_list);
+        if (validateDetails !== true) {
+            return res.status(400).json({
+                message: validateDetails,
+            });
+        }
+
+        const validateStock = await validateStockProduct(details_list);
+        if (validateStock !== true) {
+            return res.status(400).json({
+                message: validateStock,
+            });
         }
 
         let date = await getDateCR(); // probando validaciones de datos..
@@ -30,7 +37,7 @@ export const createSale = async (req, res) => {
 
 
         const crdSale = await sale.create({
-            clientID,
+            ID_CLIENTE,
             FEC_VENTA: date,
             PORCENT_IMPUESTO: porcentImpuesto,
             METODO_PAGO: metodoPago,
@@ -41,17 +48,6 @@ export const createSale = async (req, res) => {
         });
 
 
-        /*
-        //para realizar validacion
-         const productList = details_list
-                .filter(detailsProd => detailsProd.ID_PRODUCTO && detailsProd.MONTO_UNITARIO >= 0 && detailsProd.CANTIDAD > 0)
-                .map(detailsProd => ({
-                    ID_VENTA: idSale,
-                    ID_PRODUCTO: detailsProd.ID_PRODUCTO,
-                    MONT_UNITARIO: detailsProd.MONTO_UNITARIO,
-                    CANTIDAD: detailsProd.CANTIDAD,
-                }));
-        */
 
         const idSale = crdSale.dataValues.ID_VENTA;
 
@@ -77,6 +73,30 @@ export const createSale = async (req, res) => {
                 MON_PENDIENTE: montSubtotal,
                 ESTADO_CREDITO: estadoCredito,
             });
+
+        }
+
+        if (details_list && Array.isArray(details_list) && details_list.length > 0) {
+
+            await Promise.all(details_list.map(async (detailsProd) => {
+
+                const product = await Product.findOne({
+                    where: { ID_PRODUCT: detailsProd.ID_PRODUCTO }
+                });
+
+                if (product) {
+                    const nuevaCantidad = product.CANTIDAD - detailsProd.CANTIDAD;
+
+                    await Product.update(
+                        { CANTIDAD: nuevaCantidad },
+                        {
+                            where: {
+                                ID_PRODUCT: detailsProd.ID_PRODUCTO
+                            }
+                        }
+                    );
+                }
+            }));
 
         }
 
