@@ -3,7 +3,8 @@ import {
     updateUser,
     deleteUser,
     getAllUsers,
-    searchUser
+    searchUser,
+    assignPermission
 } from "../controllers/user.controller.js";
 import { auth } from "../middlewares/auth.middleware.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
@@ -15,5 +16,6 @@ router.get("/all_user", auth, getAllUsers);
 router.put("/update_user/:id", auth,  validateSchema(updateSchema), updateUser);
 router.delete("/delete_user/:id", auth, deleteUser);
 router.get("/searchUser", auth, searchUser)
+router.put("/assign_permission/:id", auth, assignPermission)
 
 export default router;
