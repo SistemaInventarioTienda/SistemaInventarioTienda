@@ -13,42 +13,20 @@ export const registerSale = async (salesData) => {
 
 // Función para obtener todos las ventas
 export const getAllSales = async (page, pageSize, orderByField, order) => {
-    return {
-        "total": 4,
-        "totalPages": 1,
-        "currentPage": 1,
-        "pageSize": 5,
-        "sales": [
-            {
-                "CLIENTE": "Aaron",
-                "PRODUCTO": "Zapatillas Nike Air Max",
-                "FEC_VENTA": "2025-03-10",
-                "MON_TOTAL": 120.50,
-                "ESTADO": 1
-            },
-            {
-                "CLIENTE": "Josue Emanuel",
-                "PRODUCTO": "Perfume Dior Sauvage",
-                "FEC_VENTA": "2025-03-09",
-                "MON_TOTAL": 85.99,
-                "ESTADO": 1
-            },
-            {
-                "CLIENTE": "Yeiler",
-                "PRODUCTO": "Bolso de cuero negro",
-                "FEC_VENTA": "2025-03-08",
-                "MON_TOTAL": 45.00,
-                "ESTADO": 0
-            },
-            {
-                "CLIENTE": "Anthony Daniel",
-                "PRODUCTO": "Chaqueta de invierno",
-                "FEC_VENTA": "2025-03-07",
-                "MON_TOTAL": 150.75,
-                "ESTADO": 1
+    try {
+        const response = await axios.get(`/sale/getSales`, {
+            params: {
+                page,
+                pageSize,
+                orderByField,
+                order
             }
-        ]
-    };
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching subcategories:', error.message);
+        throw error;
+    }
 };
 
 // Función para eliminar (desactivar) una venta
