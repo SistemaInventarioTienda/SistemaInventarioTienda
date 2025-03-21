@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-03-2025 a las 20:34:27
+-- Tiempo de generación: 21-03-2025 a las 18:31:45
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -311,20 +311,20 @@ CREATE TABLE IF NOT EXISTS `tsim_permiso` (
 --
 
 CREATE TABLE IF NOT EXISTS `tsim_producto` (
-  `ID_PRODUCT` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBRE` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_DESCRIPTION` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_CODIGO_BARRAS` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `URL_IMAGEN` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ID_PRODUCT` int(11) NOT NULL AUTO_INCREMENT,
+  `DSC_NOMBRE` varchar(100) DEFAULT NULL,
+  `DSC_DESCRIPTION` varchar(255) DEFAULT NULL,
+  `DSC_CODIGO_BARRAS` varchar(255) DEFAULT NULL,
+  `URL_IMAGEN` varchar(255) DEFAULT NULL,
   `MON_VENTA` double DEFAULT NULL,
   `MON_COMPRA` double DEFAULT NULL,
-  `CANTIDAD` int DEFAULT 0,
+  `CANTIDAD` int(11) DEFAULT 0,
   `FEC_CREATED_AT` datetime DEFAULT NULL,
   `FEC_UPDATE_AT` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  `ID_SUBCATEGORIA` int NOT NULL,
-  `UPDATED_BY_USER` int DEFAULT NULL,
-  `CREATED_BY_USER` int NOT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `ID_SUBCATEGORIA` int(11) NOT NULL,
+  `UPDATED_BY_USER` int(11) DEFAULT NULL,
+  `CREATED_BY_USER` int(11) NOT NULL,
   PRIMARY KEY (`ID_PRODUCT`),
   UNIQUE KEY `DSC_CODIGO_BARRAS` (`DSC_CODIGO_BARRAS`),
   KEY `logs_userCreated` (`CREATED_BY_USER`),
@@ -336,11 +336,9 @@ CREATE TABLE IF NOT EXISTS `tsim_producto` (
 -- Volcado de datos para la tabla `tsim_producto`
 --
 
-LOCK TABLES `tsim_producto` WRITE;
-/*!40000 ALTER TABLE `tsim_producto` DISABLE KEYS */;
-INSERT INTO `tsim_producto` VALUES (21,'Coca cola','Esta es con un recipiente de 1.5L','PROD202502190056154','image_not_found.png',2200,1950, 100, '2025-02-19 00:56:15',NULL,2,1,NULL,10);
-/*!40000 ALTER TABLE `tsim_producto` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `tsim_producto` (`ID_PRODUCT`, `DSC_NOMBRE`, `DSC_DESCRIPTION`, `DSC_CODIGO_BARRAS`, `URL_IMAGEN`, `MON_VENTA`, `MON_COMPRA`, `CANTIDAD`, `FEC_CREATED_AT`, `FEC_UPDATE_AT`, `ESTADO`, `ID_SUBCATEGORIA`, `UPDATED_BY_USER`, `CREATED_BY_USER`) VALUES
+(21, 'Coca cola', 'Esta es con un recipiente de 1.5L', 'PROD202502190056154', 'image_not_found.png', 2200, 1950, 100, '2025-02-19 00:56:15', NULL, 2, 1, NULL, 10);
+
 -- --------------------------------------------------------
 
 --
@@ -720,8 +718,10 @@ CREATE TABLE IF NOT EXISTS `tsit_venta` (
   `ESTADO_CREDITO` tinyint(1) NOT NULL,
   `MONT_SUBTOTAL` double NOT NULL,
   `PORCENT_DESCUENTO` double NOT NULL,
+  `ESTADO` int(11) NOT NULL,
   PRIMARY KEY (`ID_VENTA`),
-  KEY `ID_CLIENTE` (`ID_CLIENTE`)
+  KEY `ID_CLIENTE` (`ID_CLIENTE`),
+  KEY `ESTADO` (`ESTADO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -854,7 +854,8 @@ ALTER TABLE `tsit_usuario`
 -- Filtros para la tabla `tsit_venta`
 --
 ALTER TABLE `tsit_venta`
-  ADD CONSTRAINT `tsit_venta_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `tsit_venta_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `tsit_venta_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

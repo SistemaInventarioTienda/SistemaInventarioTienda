@@ -48,7 +48,11 @@ const sale = db.define('sale',{
         type: DataTypes.DOUBLE,
         allowNull: false,
         defaultValue: 0,
-      }
+      },
+      ESTADO: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    }
 },{
     timestamps: false,
     tableName: 'tsit_venta'

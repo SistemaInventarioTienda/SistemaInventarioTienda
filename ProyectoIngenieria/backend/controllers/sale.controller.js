@@ -46,6 +46,7 @@ export const createSale = async (req, res) => {
             ESTADO_CREDITO: estadoCredito,
             MONT_SUBTOTAL: montSubtotal,
             PORCENT_DESCUENTO: porcentDescuento,
+            ESTADO: 1
         });
 
 
