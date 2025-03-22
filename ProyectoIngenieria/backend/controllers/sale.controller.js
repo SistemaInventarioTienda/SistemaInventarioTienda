@@ -56,6 +56,7 @@ export const createSale = async (req, res) => {
             ESTADO_CREDITO: estadoCredito,
             MONT_SUBTOTAL: montSubtotal,
             PORCENT_DESCUENTO: porcentDescuento,
+            ESTADO: 1
         });
 
 
@@ -154,29 +155,36 @@ export const getAllSales = async (req, res) => {
             });
         }
 
+        const sales = await Promise.all(
+            rows.map(async (row) => {
+                const canCancel = !(await EightDaysHavePassed(row.FEC_VENTA));
+                return {
+                    ID_VENTA: row.ID_VENTA,
+                    ID_CLIENTE: row.ID_CLIENTE,
+                    DSC_NOMBRE: row.Client ? row.Client.DSC_NOMBRE : 'Anónimo',
+                    FEC_VENTA: row.FEC_VENTA,
+                    PORCENT_IMPUESTO: row.PORCENT_IMPUESTO,
+                    METODO_PAGO: row.METODO_PAGO,
+                    DSC_VENTA: row.DSC_VENTA,
+                    ESTADO_CREDITO: row.ESTADO_CREDITO,
+                    MONT_SUBTOTAL: row.MONT_SUBTOTAL,
+                    PORCENT_DESCUENTO: row.PORCENT_DESCUENTO,
+                    DETALLES: row.details.map((detalle) => ({
+                        ID_DETALLEVENTA: detalle.ID_DETALLEVENTA,
+                        ID_PRODUCTO: detalle.ID_PRODUCTO,
+                        MONT_UNITARIO: detalle.MONT_UNITARIO,
+                        CANTIDAD: detalle.CANTIDAD,
+                    })),
+                    CAN_CANCEL: canCancel,
+                };
+            })
+        );
         res.json({
             total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            sales: rows.map(row => ({
-                ID_VENTA: row.ID_VENTA,
-                ID_CLIENTE: row.ID_CLIENTE,
-                DSC_NOMBRE: row.Client ? row.Client.DSC_NOMBRE : 'Anónimo',
-                FEC_VENTA: row.FEC_VENTA,
-                PORCENT_IMPUESTO: row.PORCENT_IMPUESTO,
-                METODO_PAGO: row.METODO_PAGO,
-                DSC_VENTA: row.DSC_VENTA,
-                ESTADO_CREDITO: row.ESTADO_CREDITO,
-                MONT_SUBTOTAL: row.MONT_SUBTOTAL,
-                PORCENT_DESCUENTO: row.PORCENT_DESCUENTO,
-                DETALLES: row.details.map(detalle => ({
-                    ID_DETALLEVENTA: detalle.ID_DETALLEVENTA,
-                    ID_PRODUCTO: detalle.ID_PRODUCTO,
-                    MONT_UNITARIO: detalle.MONT_UNITARIO,
-                    CANTIDAD: detalle.CANTIDAD
-                }))
-            }))
+            sales: sales,
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -207,24 +215,47 @@ export const getSaleDetails = async (req, res) => {
         }
 
 
+        const sales = await Promise.all(
+            rows.map(async (row) => {
+                const canCancel = !(await EightDaysHavePassed(row.FEC_VENTA));
+                return {
+                    ID_VENTA: row.ID_VENTA,
+                    ID_CLIENTE: row.ID_CLIENTE,
+                    DSC_NOMBRE: row.Client ? row.Client.DSC_NOMBRE : 'Anónimo',
+                    FEC_VENTA: row.FEC_VENTA,
+                    PORCENT_IMPUESTO: row.PORCENT_IMPUESTO,
+                    METODO_PAGO: row.METODO_PAGO,
+                    DSC_VENTA: row.DSC_VENTA,
+                    ESTADO_CREDITO: row.ESTADO_CREDITO,
+                    MONT_SUBTOTAL: row.MONT_SUBTOTAL,
+                    PORCENT_DESCUENTO: row.PORCENT_DESCUENTO,
+                    DETALLES: row.details.map((detalle) => ({
+                        ID_DETALLEVENTA: detalle.ID_DETALLEVENTA,
+                        ID_PRODUCTO: detalle.ID_PRODUCTO,
+                        MONT_UNITARIO: detalle.MONT_UNITARIO,
+                        CANTIDAD: detalle.CANTIDAD,
+                    })),
+                    CAN_CANCEL: canCancel,
+                };
+            })
+        );
         res.json({
-            ID_VENTA: saleData.ID_VENTA,
-            DSC_NOMBRE: saleData.Client ? saleData.Client.DSC_NOMBRE : 'Anónimo',
-            FEC_VENTA: saleData.FEC_VENTA,
-            PORCENT_IMPUESTO: saleData.PORCENT_IMPUESTO,
-            METODO_PAGO: saleData.METODO_PAGO,
-            DSC_VENTA: saleData.DSC_VENTA,
-            ESTADO_CREDITO: saleData.ESTADO_CREDITO,
-            MONT_SUBTOTAL: saleData.MONT_SUBTOTAL,
-            PORCENT_DESCUENTO: saleData.PORCENT_DESCUENTO,
-            DETALLES: saleData.details.map(detalle => ({
-                ID_DETALLEVENTA: detalle.ID_DETALLEVENTA,
-                ID_PRODUCTO: detalle.ID_PRODUCTO,
-                MONT_UNITARIO: detalle.MONT_UNITARIO,
-                CANTIDAD: detalle.CANTIDAD
-            }))
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            sales: sales,
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+
+async function EightDaysHavePassed(dateSale) {
+    const currentDate = await getDateCR();
+
+    const eightDaysAgo = new Date(currentDate);
+    eightDaysAgo.setDate(eightDaysAgo.getDate() - 8);
+    
+    return dateSale <= eightDaysAgo;
+}
