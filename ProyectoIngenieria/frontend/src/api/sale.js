@@ -31,13 +31,13 @@ export const getAllSales = async (page, pageSize, orderByField, order) => {
 
 // Función para eliminar (desactivar) una venta
 export const deleteSale = async (id) => {
-    try {
-        const response = await axios.delete(`/sale/delete_sales/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error('Error eliminando la venta:', error.message);
-        throw error;
-    }
+    // try {
+    //     const response = await axios.delete(`/sale/delete_sales/${id}`);
+    //     return response.data;
+    // } catch (error) {
+    //     console.error('Error eliminando la venta:', error.message);
+    //     throw error;
+    // }
 };
 
 // Función para buscar una venta

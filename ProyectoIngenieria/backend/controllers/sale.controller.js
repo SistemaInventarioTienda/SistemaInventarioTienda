@@ -56,6 +56,7 @@ export const createSale = async (req, res) => {
             ESTADO_CREDITO: estadoCredito,
             MONT_SUBTOTAL: montSubtotal,
             PORCENT_DESCUENTO: porcentDescuento,
+            ESTADO: 1
         });
 
 
@@ -170,6 +171,7 @@ export const getAllSales = async (req, res) => {
                 ESTADO_CREDITO: row.ESTADO_CREDITO,
                 MONT_SUBTOTAL: row.MONT_SUBTOTAL,
                 PORCENT_DESCUENTO: row.PORCENT_DESCUENTO,
+                ESTADO: row.ESTADO,
                 DETALLES: row.details.map(detalle => ({
                     ID_DETALLEVENTA: detalle.ID_DETALLEVENTA,
                     ID_PRODUCTO: detalle.ID_PRODUCTO,

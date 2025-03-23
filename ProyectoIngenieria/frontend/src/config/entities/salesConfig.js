@@ -77,9 +77,17 @@ export const salesConfig = {
     },
 
     transformConfig: {
-        ESTADO: (item) => (item.ESTADO != 1 ? "PAGADA" : "ANULADA"),
+        ESTADO: (item) => (item.ESTADO === 1 ? "PAGADA" : "ANULADA"),
         FEC_VENTA: (item) => item.FEC_VENTA
-            ? new Date(item.FEC_VENTA).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })
+            ? new Date(item.FEC_VENTA).toLocaleDateString("es-ES", { 
+                day: "2-digit", 
+                month: "long", 
+                year: "numeric" 
+            }) + " " + new Date(item.FEC_VENTA).toLocaleTimeString("es-ES", { 
+                hour: "2-digit", 
+                minute: "2-digit", 
+                second: "2-digit" 
+            })
             : null,
     },
 
