@@ -40,8 +40,11 @@ const ActionsCell = ({ actions, rowData, entityKey }) => (
                 <SquarePen size={20} color="#FFFFFF" />
             </ActionButton>
         )}
-        {actions.delete && (
-            <ActionButton onClick={() => actions.delete(rowData)} color="#F44336">
+        {actions.delete && rowData.CAN_CANCEL && (
+            <ActionButton
+                onClick={() => actions.delete(rowData)}
+                color="#F44336"
+            >
                 {entityKey === "sales" ? (
                     <Ban size={20} color="#FFFFFF" />
                 ) : (

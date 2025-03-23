@@ -57,6 +57,7 @@ export const salesConfig = {
                 price: product.MONT_UNITARIO,
                 quantity: product.CANTIDAD,
             })) || [],
+            CAN_CANCEL: sale.CAN_CANCEL,
         }),
 
         toBackend: (formData) => ({
