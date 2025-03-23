@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { EntityPage } from "./EntityPage";
 import { supplierConfig } from "../config/entities/supplierConfig";
 import SupplierForm from "./pagesForms/SupplierForm";
 import { toast } from "sonner";
 import useAlert from "../hooks/useAlert";
 import handleApiCall from "../utils/handleApiCall";
-
+import { usePermissions } from "../context/authPermissions";
+import { useNavigate } from "react-router-dom";
 export default function SupplierPage() {
+
+    const { permissions } = usePermissions();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Verificar solo si los permisos ya se cargaron (home siempre existe)
+        if (permissions.home === undefined) return;
+
+        if (!permissions.user) {
+            toast.error("No tienes permiso para acceder a usuarios");
+            navigate("/");
+        }
+    }, [permissions, navigate]);
+
+
     const {
         entityName,
         titlePage,

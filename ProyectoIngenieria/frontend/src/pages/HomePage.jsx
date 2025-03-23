@@ -8,6 +8,7 @@ import { userConfig } from "../config/entities/userConfig";
 import { clientConfig } from "../config/entities/clientConfig";
 import { supplierConfig } from "../config/entities/supplierConfig";
 import { categoryConfig } from "../config/entities/categoryConfig";
+import { productConfig } from "../config/entities/productConfig";
 
 import "./styles/HomePage.css";
 
@@ -19,6 +20,7 @@ function HomePage() {
     clients: 0,
     suppliers: 0,
     categories: 0,
+    products: 0,
   });
 
   useEffect(() => {
@@ -35,12 +37,14 @@ function HomePage() {
         const clientsData = await clientConfig.api.fetchAll();
         const suppliersData = await supplierConfig.api.fetchAll();
         const categoriesData = await categoryConfig.api.fetchAll();
+        const productsData = await productConfig.api.fetchAll();
 
         setMetrics({
           users: usersData.total || 0,
           clients: clientsData.total || 0,
           suppliers: suppliersData.total || 0,
           categories: categoriesData.total || 0,
+          products: productsData.total || 0,
         });
       } catch (error) {
         console.error("Error fetching metrics:", error);
@@ -83,7 +87,9 @@ function HomePage() {
           icon={<Tag className="h-6 w-6" />}
         />
         <MetricCard
+          onClick={() => navigate("/category")}
           title="Productos Totales"
+          value={metrics.products}
           icon={<Box className="h-6 w-6" />}
         />
       </div>

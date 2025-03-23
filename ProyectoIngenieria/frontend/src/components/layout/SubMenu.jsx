@@ -1,48 +1,44 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const SubMenu = ({ item, collapsed }) => {
-  const [subnav, setSubnav] = useState(false);
+    const [subnav, setSubnav] = useState(false);
+    const location = useLocation();
 
-  const showSubnav = () => setSubnav(!subnav);
+    const showSubnav = () => setSubnav(!subnav);
 
-  return (
-    <>
-      {/* Enlace principal del ítem */}
-      <div
-        onClick={item.subNav && showSubnav}
-        className={`sidebar-link ${collapsed ? 'collapsed' : ''}`}
-        style={{ cursor: 'pointer' }}
-      >
-        <div>
-          <item.icon size={24} />
-          {!collapsed && <span>{item.text}</span>}
-        </div>
-        <div>
-          {!collapsed && item.subNav && subnav
-            ? item.iconOpened
-            : !collapsed && item.subNav
-            ? item.iconClosed
-            : null}
-        </div>
-      </div>
+    return (
+        <>
+            {/* Ítem principal del menú con toggle */}
+            <div
+                onClick={item.subNav && showSubnav}
+                className={`sidebar-link submenu-header ${subnav ? 'open' : ''}`}
+            >
+                <div>
+                    <item.icon size={24} />
+                    {!collapsed && <span>{item.text}</span>}
+                </div>
+                {!collapsed && item.subNav && (
+                    subnav ? <ChevronUp size={20} /> : <ChevronDown size={20} />
+                )}
+            </div>
 
-      {/* Submenú */}
-      {subnav &&
-        !collapsed &&
-        item.subNav.map((subItem, index) => (
-          <Link
-            to={subItem.path}
-            key={index}
-            className="sidebar-link submenu-item"
-            style={{ paddingLeft: '20px' }}
-          >
-            <subItem.icon size={24} />
-            <span>{subItem.text}</span>
-          </Link>
-        ))}
-    </>
-  );
+            {/* Ítems del submenú con animación */}
+            <div className={`submenu-container ${subnav ? 'open' : ''}`}>
+                {item.subNav.map((subItem, index) => (
+                    <Link
+                        to={subItem.path}
+                        key={index}
+                        className={`sidebar-link submenu-item ${location.pathname === subItem.path ? 'active' : ''}`}
+                    >
+                        <subItem.icon size={20} />
+                        <span>{subItem.text}</span>
+                    </Link>
+                ))}
+            </div>
+        </>
+    );
 };
 
 export default SubMenu;

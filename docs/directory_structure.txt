@@ -6,6 +6,7 @@
 ||   |   ├── auth.controller.js
 ||   |   ├── category.controller.js
 ||   |   ├── client.controller.js
+||   |   ├── product.controller.js
 ||   |   ├── subcategory.controller.js
 ||   |   ├── supplier.controller.js
 ||   |   └── user.controller.js
@@ -18,6 +19,8 @@
 ||   ├── logic
 ||   |   ├── category
 ||   |   |   └── category.logic.js
+||   |   ├── logClient
+||   |   |   └── client.logic.js
 ||   |   ├── subcategory
 ||   |   |   └── subcategory.logic.js
 ||   |   ├── supplier
@@ -33,6 +36,7 @@
 ||   |   ├── category.model.js
 ||   |   ├── client.model.js
 ||   |   ├── phoneClient.model.js
+||   |   ├── product.model.js
 ||   |   ├── subcategory.model.js
 ||   |   ├── supplier.model.js
 ||   |   └── user.model.js
@@ -42,6 +46,7 @@
 ||   |   ├── auth.routes.js
 ||   |   ├── category.routes.js
 ||   |   ├── client.routes.js
+||   |   ├── product.routes.js
 ||   |   ├── subcategory.routes.js
 ||   |   ├── supplier.routes.js
 ||   |   └── user.routes.js
@@ -49,9 +54,21 @@
 ||   |   ├── auth.schema.js
 ||   |   ├── category.schema.js
 ||   |   ├── client.schema.js
+||   |   ├── product.schema.js
 ||   |   ├── subcategory.schema.js
 ||   |   └── supplier.schema.js
 ||   ├── startUp4000_pm2_APISTienda.bat
+||   ├── uploads
+||   |   └── images
+||   |       ├── image_not_found.png
+||   |       └── products
+||   |           ├── image_not_found.png
+||   |           ├── PROD-1740193234893-765770361.jpeg
+||   |           ├── PROD-1740411941118-787330255.jpg
+||   |           ├── PROD-1740414546871-40700107.jpg
+||   |           ├── PROD-1740414622622-556700655.jpg
+||   |           ├── PROD-1740414668324-918975405.jpg
+||   |           └── PROD-1740414710765-371437577.jpg
 ||   └── utils
 ||       └── fileManager.js
 |└── frontend
@@ -77,6 +94,10 @@
 |        |   ├── category.js
 |        |   ├── client.js
 |        |   ├── hacienda.js
+|        |   ├── permission.js
+|        |   ├── product.js
+|        |   ├── products.js
+|        |   ├── sale.js
 |        |   ├── subcategory.js
 |        |   ├── supplier.js
 |        |   └── user.js
@@ -90,6 +111,12 @@
 |        |   |   ├── Button.jsx
 |        |   |   ├── ButtonLink.jsx
 |        |   |   ├── Card.jsx
+|        |   |   ├── clients
+|        |   |   |   ├── ClientInfoCard.jsx
+|        |   |   |   ├── CreditDetailsCard.jsx
+|        |   |   |   ├── index.js
+|        |   |   |   ├── PaymentHistoryTable.jsx
+|        |   |   |   └── PaymentProgressBar.jsx
 |        |   |   ├── GenericForm.jsx
 |        |   |   ├── index.js
 |        |   |   ├── Input.jsx
@@ -111,12 +138,16 @@
 |        |   |   |   ├── metricCard.css
 |        |   |   |   ├── select.css
 |        |   |   |   ├── spinner.css
-|        |   |   |   └── table.css
+|        |   |   |   ├── table.css
+|        |   |   |   └── textarea.css
 |        |   |   ├── Table.jsx
 |        |   |   └── Textarea.jsx
 |        |   ├── features
-|        |   |   ├── CategoryTable.jsx
 |        |   |   ├── ContactManager.jsx
+|        |   |   ├── sales
+|        |   |   |   ├── index.js
+|        |   |   |   ├── SalesDetailsCard.jsx
+|        |   |   |   └── SalesSummaryCard.jsx
 |        |   |   ├── styles
 |        |   |   |   ├── contactManager.css
 |        |   |   |   └── userMenu.css
@@ -127,10 +158,11 @@
 |        |   |   ├── Navbar.jsx
 |        |   |   ├── PageLayout.jsx
 |        |   |   ├── Sidebar.jsx
-|        |   |   └── styles
-|        |   |       ├── navbar.css
-|        |   |       ├── sidebar.css
-|        |   |       └── spinner.css
+|        |   |   ├── styles
+|        |   |   |   ├── navbar.css
+|        |   |   |   ├── sidebar.css
+|        |   |   |   └── spinner.css
+|        |   |   └── SubMenu.jsx
 |        |   ├── modals
 |        |   |   ├── index.js
 |        |   |   ├── Modal.jsx
@@ -147,37 +179,48 @@
 |        |   └── entities
 |        |       ├── categoryConfig.js
 |        |       ├── clientConfig.js
+|        |       ├── productConfig.js
+|        |       ├── salesConfig.js
 |        |       ├── subcategoryConfig.js
 |        |       ├── supplierConfig.js
 |        |       └── userConfig.js
 |        ├── config.js
 |        ├── context
-|        |   └── authContext.jsx
+|        |   ├── authContext.jsx
+|        |   └── authPermissions.jsx
 |        ├── hooks
 |        |   ├── useAlert.js
+|        |   ├── useBarcodeScanner.js
 |        |   ├── useContactManager.js
 |        |   ├── useEntityPage.js
-|        |   ├── useExpandableRows.js
 |        |   ├── useGenericFormLogic.js
 |        |   ├── usePagination.js
 |        |   ├── useSearch.js
 |        |   └── useSorting.js
 |        ├── index.js
 |        ├── pages
+|        |   ├── AddSalePage.jsx
 |        |   ├── CategoryPage.jsx
 |        |   ├── ClientPage.jsx
+|        |   ├── CreditPage.jsx
 |        |   ├── EntityPage.jsx
 |        |   ├── HomePage.jsx
 |        |   ├── LoginPage.jsx
 |        |   ├── pagesForms
 |        |   |   ├── CategoryForm.jsx
 |        |   |   ├── ClientForm.jsx
+|        |   |   ├── ProductForm.jsx
 |        |   |   ├── ProfileForm.jsx
+|        |   |   ├── SubcategoryForm.jsx
 |        |   |   ├── SupplierForm.jsx
 |        |   |   └── UserForm.jsx
+|        |   ├── ProductPage.jsx
 |        |   ├── ProfilePage.jsx
 |        |   ├── RegisterPage.jsx
+|        |   ├── SalePage.jsx
 |        |   ├── styles
+|        |   |   ├── AddSalePage.css
+|        |   |   ├── CreditsPage.css
 |        |   |   ├── HomePage.css
 |        |   |   ├── LoginPage.css
 |        |   |   ├── Page.css
@@ -186,6 +229,11 @@
 |        |   └── UserPage.jsx
 |        ├── routes.jsx
 |        ├── schemas
-|        |   └── auth.js
+|        |   ├── auth.js
+|        |   └── validations
+|        |       ├── validateClient.js
+|        |       ├── validateGeneral.js
+|        |       ├── validateProduct.js
+|        |       └── validateSupplier.js
 |        └── utils
 |            └── handleApiCall.js

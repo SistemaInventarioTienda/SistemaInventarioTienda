@@ -58,6 +58,23 @@ export const getAllProducts = async (req, res) => {
     }
 }
 
+export const getProductById = async (req, res) => {
+    try {
+        const product = await Product.findOne({
+            where: { ID_PRODUCT: req.params.id },
+            attributes: ['ID_PRODUCT', 'DSC_NOMBRE']
+        });
+
+        if (!product) {
+            return res.status(404).json({ message: "Producto no encontrado." });
+        }
+
+        res.json(product);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 export const searchProduct = async (req, res) => {
     try {
         // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
@@ -203,6 +220,7 @@ export const registerProduct = [
                 URL_IMAGEN: imagePath,
                 MON_VENTA: salesAmount,
                 MON_COMPRA: purchaseAmount,
+                CANTIDAD: 0,
                 FEC_CREATED_AT: created_at,
                 ESTADO: 1,
                 ID_SUBCATEGORIA: SUBCATEGORIA,

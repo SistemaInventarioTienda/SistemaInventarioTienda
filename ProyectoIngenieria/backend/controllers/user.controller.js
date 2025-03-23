@@ -4,6 +4,8 @@ import { validateUpdate } from "../logic/user/user.logic.js";
 import { validateUpdateUser } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
 import { decodedToken } from "../libs/jwt.js";
+import { Permission, PermissionUser } from "../models/permission.model.js";
+import { getDateCR } from '../libs/date.js';
 
 export const updateUser = async (req, res) => {
     try {
@@ -109,13 +111,14 @@ export const getAllUsers = async (req, res) => {
         const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
         const { count, rows } = await User.findAndCountAll({
             attributes: {
-                exclude: ['DSC_CONTRASENIA', 'ID_USUARIO', 'FEC_CREADOEN']
+                exclude: ['DSC_CONTRASENIA', 'FEC_CREADOEN']
             },
             limit,
             offset,
             order: [
                 [field, sortOrder],
-            ]
+            ],
+            raw:true
         });
 
 
@@ -125,12 +128,13 @@ export const getAllUsers = async (req, res) => {
             });
         }
 
-        res.json({
+        const newRows = await searchPermissions(rows);
+        return res.json({
             total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            users: rows
+            users: newRows
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -153,7 +157,7 @@ export const searchUser = async (req, res) => {
         const expectedMatch = { [Op.like]: `%${termSearch}%` };
         const { count, rows } = await User.findAndCountAll({
             attributes: {
-                exclude: ['DSC_CONTRASENIA', 'ID_USUARIO', 'FEC_CREADOEN']
+                exclude: ['DSC_CONTRASENIA', 'FEC_CREADOEN']
             },
             limit,
             offset,
@@ -177,15 +181,107 @@ export const searchUser = async (req, res) => {
                 message: "No se encontraron usuarios.",
             });
         }
+        const newRows = await searchPermissions(rows);
 
         res.json({
             total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            users: rows
+            users: newRows
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 }
+
+export const assignPermission = async (req, res) => {
+    try {
+        const { PERMISSION_LIST } = req.body;
+        if(!PERMISSION_LIST) return res.status(404).json({message : "Permisos no validos."})
+        // Buscar usuario por cédula
+        const userFound = await User.findOne({
+            attributes: ['ID_USUARIO'],
+            where: { DSC_CEDULA: req.params.id }
+        });
+
+        if (!userFound) {
+            return res.status(404).json({ message: "Usuario inválido para asignar permiso." });
+        }
+
+        const permissionsBD = await Permission.findAll({
+            attributes: ['ID_PERMISO', 'DSC_NOMBRE']
+        });
+
+        if (permissionsBD.length === 0) {
+            return res.status(404).json({ message: "No hay permisos disponibles." });
+        }
+
+        const creadoEn = await getDateCR();
+        const permissionsToAssign = [];
+
+        for (const permission of PERMISSION_LIST) {
+            // Buscar coincidencia en la BD
+            const permissionFound = permissionsBD.find(p => p.DSC_NOMBRE === permission.nombre);
+
+            if (permissionFound) {
+                permissionsToAssign.push({
+                    ID_USUARIO: userFound.ID_USUARIO,
+                    ID_PERMISO: permissionFound.ID_PERMISO,
+                    FEC_CREADOEN: creadoEn,
+                    ESTADO: permission.estado
+                });
+            }
+        }
+
+        // Eliminar permisos existentes del usuario
+        await PermissionUser.destroy({
+            where: {
+                ID_USUARIO: userFound.ID_USUARIO
+            }
+        });
+
+        // Insertar los nuevos permisos
+        if (permissionsToAssign.length > 0) {
+            await PermissionUser.bulkCreate(permissionsToAssign);
+            return res.json({ message: "Permisos asignados al usuario." });
+        } else {
+            return res.status(400).json({ message: "Ningún permiso de la lista coincide con los permisos existentes." });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const searchPermissions = async (rows) => {
+    const promises = rows.map(async (row) => {
+        const idUsuario = row.ID_USUARIO;
+        const permissionsUser = await PermissionUser.findAll({
+            attributes: ['ESTADO'],
+            include: [
+                {
+                    model: Permission,
+                    as: 'Permission',
+                    attributes: ['DSC_NOMBRE']
+                }
+            ],
+            where: {
+                ID_USUARIO: idUsuario
+            },
+            raw: true,
+            nest: true
+        });
+
+        const leakedPermissions = permissionsUser.map(pu => ({
+            nombre: pu.Permission?.DSC_NOMBRE,
+            estado: pu.ESTADO ? true : false
+        }));
+
+        row.permissions = leakedPermissions;
+        delete row.ID_USUARIO;
+        return row;
+    });
+
+    return Promise.all(promises);
+};

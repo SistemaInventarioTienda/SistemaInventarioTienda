@@ -24,10 +24,9 @@ export const productConfig = {
     // Configuración de columnas para la tabla
     columns: [
         { field: "DSC_NOMBRE", label: "Nombre" },
-        { field: "DSC_DESCRIPTION", label: "Descripción" },
-        { field: "DSC_CODIGO_BARRAS", label: "Código de Barras" },
         { field: "MON_VENTA", label: "Precio Venta" },
         { field: "MON_COMPRA", label: "Precio Compra" },
+        { field: "CANTIDAD", label: "Cantidad" },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" },
     ],
@@ -41,6 +40,7 @@ export const productConfig = {
         { name: "foto", type: "file", required: false, resourcePath: "images/products" },
         { name: "MON_VENTA", label: "Precio de Venta", type: "number", required: true },
         { name: "MON_COMPRA", label: "Precio de Compra", type: "number", required: true },
+        { name: "CANTIDAD", label: "Cantidad", type: "number", required: false },
         {
             name: "estado",
             label: "Estado",
@@ -73,6 +73,7 @@ export const productConfig = {
             foto: product.URL_IMAGEN,
             MON_VENTA: product.MON_VENTA,
             MON_COMPRA: product.MON_COMPRA,
+            CANTIDAD: product.CANTIDAD,
             estado: product.ESTADO === "ACTIVO" ? 1 : 2,
             ID_SUBCATEGORIA: product.subcategory?.ID_SUBCATEGORIA || "",
         }),

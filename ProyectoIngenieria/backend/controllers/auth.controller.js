@@ -6,6 +6,7 @@ import { createAccessToken } from "../libs/jwt.js";
 import { getDateCR } from '../libs/date.js';
 import { validateRegister } from "../logic/user/user.logic.js";
 import { validateRegisterUser } from "../logic/validateFields.logic.js";
+import { Permission, PermissionUser } from "../models/permission.model.js";
 
 export const register = async (req, res) => {
   try {
@@ -54,19 +55,39 @@ export const register = async (req, res) => {
 
     // saving the user in the database
     const userSaved = await newUser.save();
+    if (userSaved) {
+      const permissionsBD = await Permission.findAll({
+        attributes: ['ID_PERMISO']
+      });
 
-    // create access token
-    // const token = await createAccessToken({
-    //   id: userSaved.DSC_CEDULA,
-    //   username: userSaved.DSC_NOMBREUSUARIO,
-    // });
+      if (permissionsBD.length === 0) {
+        console.log("No hay permisos disponibles.");
+        return res.json({
+          id: userSaved.ID_USUARIO,
+          DSC_NOMBREUSUARIO: userSaved.DSC_NOMBREUSUARIO,
+          DSC_CORREO: userSaved.DSC_CORREO,
+        });
+      }
 
-    // res.cookie("token", token, {
-    //   httpOnly: process.env.NODE_ENV !== "development",
-    //   secure: true,
-    //   sameSite: "none",
-    // });
+      const creadoEn = await getDateCR();
+      const permissionsToAssign = [];
 
+      for (const permission of permissionsBD) {
+        permissionsToAssign.push({
+          ID_USUARIO: userSaved.ID_USUARIO,
+          ID_PERMISO: permission.ID_PERMISO,
+          FEC_CREADOEN: creadoEn,
+          ESTADO: 0
+        });
+      }
+
+      // Guardar todos los permisos en una sola operación
+      if (permissionsToAssign.length > 0) {
+        await PermissionUser.bulkCreate(permissionsToAssign);
+      } else {
+        console.log("Ningún permiso de la lista coincide con los permisos existentes.");
+      }
+    }
     res.json({
       id: userSaved.ID_USUARIO,
       DSC_NOMBREUSUARIO: userSaved.DSC_NOMBREUSUARIO,
@@ -83,7 +104,7 @@ export const login = async (req, res) => {
 
     const userFound = await User.findOne({
       where: {
-        DSC_NOMBREUSUARIO: DSC_NOMBREUSUARIO.toLowerCase(),
+        DSC_NOMBREUSUARIO: DSC_NOMBREUSUARIO,
         ESTADO: 1
       }
     });
@@ -99,9 +120,29 @@ export const login = async (req, res) => {
       });
     }
 
+    const permissionsUser = await PermissionUser.findAll({
+      attributes: ['ESTADO'],
+      include: [
+        {
+          model: Permission,
+          as: 'Permission',
+          attributes: ['DSC_NOMBRE']
+        }
+      ],
+      where: {
+        ID_USUARIO: userFound.ID_USUARIO
+      },
+      raw: true,
+      nest: true
+    });
+
+    const leakedPermissions = permissionsUser.map(pu => ({ nombre: pu.Permission?.DSC_NOMBRE, estado: pu.ESTADO ? true : false }));
+
+
     const token = await createAccessToken({
       id: userFound.DSC_CEDULA,
       username: userFound.DSC_NOMBREUSUARIO,
+      permissions: leakedPermissions
     },
       REMEMBERME ? '30d' : '1d'
     );
@@ -153,3 +194,47 @@ export const logout = async (req, res) => {
   });
   return res.sendStatus(200);
 };
+
+export const getAllPermission = async (req, res) => {
+  try {
+
+    const userId = req.params.id || req.user.id || null;
+    if (!userId) {
+      return res.status(400).json({ message: "Usuario invalido." })
+    }
+
+    const userFound = await User.findOne({
+      where: {
+        DSC_CEDULA: userId,
+        ESTADO: 1
+      }
+    });
+    if (!userFound)
+      return res.status(400).json({
+        message: ["Usuario invalido."],
+      });
+
+    const permissionsUser = await PermissionUser.findAll({
+      attributes: ['ESTADO'],
+      include: [
+        {
+          model: Permission,
+          as: 'Permission',
+          attributes: ['DSC_NOMBRE']
+        }
+      ],
+      where: {
+        ID_USUARIO: userFound.ID_USUARIO
+      },
+      raw: true,
+      nest: true
+    });
+
+    const leakedPermissions = permissionsUser.map(pu => ({ nombre: pu.Permission?.DSC_NOMBRE, estado: pu.ESTADO ? true : false }));
+
+
+    return res.status(200).json({ permissions: leakedPermissions })
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}

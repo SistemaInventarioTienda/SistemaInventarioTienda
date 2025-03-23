@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./routes";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import CategoryPage from "./pages/CategoryPage";
 import ClientPage from "./pages/ClientPage";
+import CreditPage from "./pages/CreditPage";
 import HomePage from "./pages/HomePage";
 import UserPage from "./pages/UserPage";
 import SupplierPage from './pages/SupplierPage';
@@ -16,6 +17,8 @@ import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from './pages/SettingsPage';
 import ProductPage from './pages/ProductPage';
+import SalePage from './pages/SalePage'
+import AddSalePage from './pages/AddSalePage';
 import { Toaster } from "sonner";
 
 function App() {
@@ -73,18 +76,7 @@ function AppContent({ isDarkMode, toggleDarkMode }) {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/*" element={<Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}>
-            <Route index element={<HomePage />} />
-            <Route path="user" element={<UserPage />} />
-            <Route path="category" element={<CategoryPage />} />
-            <Route path="clients" element={<ClientPage />} />
-            <Route path="suppliers" element={<SupplierPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            {/* ruta al componente de configuraciones */}
-            <Route path="settings" element={<SettingsPage/>}/>
-
-            <Route path="product" element={<ProductPage />} />
-          </Route>
+          <Route path="/*" element={<Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}></Route>
         </Route>
       </Routes>
     </div>
@@ -103,11 +95,14 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
             <Route path="clients" element={<ClientPage />} />
+            <Route path="credits" element={<CreditPage />} />
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage/>}/>
             <Route path="product" element={<ProductPage />} />
+            <Route path="sales/history" element={<SalePage />} />
+            <Route path="sales/new" element={<AddSalePage />} />
           </Routes>
         </main>
       </div>

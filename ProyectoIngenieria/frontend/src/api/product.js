@@ -3,6 +3,7 @@ import axios from './axios';
 export const getAllProducts = async (page, pageSize, orderByField, order) => {
     try {
         const response = await axios.get(`/product/all_product`, { params: { page, pageSize, orderByField, order } });
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching products:', error.message);
@@ -54,6 +55,16 @@ export const updateProduct = async (id, productData) => {
         return response.data;
     } catch (error) {
         console.error('Error updating user:', error.message);
+        throw error;
+    }
+};
+
+export const getProductById = async (id) => {
+    try {
+        const response = await axios.get(`/product/get_product/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error obteniendo el producto:', error.message);
         throw error;
     }
 };

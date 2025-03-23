@@ -1,4 +1,4 @@
-import React, { useEffect} from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { EntityPage } from "./EntityPage";
 import { clientConfig } from "../config/entities/clientConfig";
@@ -12,8 +12,11 @@ export default function ClientPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (permissions && !permissions.clients) {
-            toast.error("No tienes permiso para acceder a Clientes");
+        // Verificar solo si los permisos ya se cargaron (home siempre existe)
+        if (permissions.home === undefined) return;
+
+        if (!permissions.user) {
+            toast.error("No tienes permiso para acceder a usuarios");
             navigate("/");
         }
     }, [permissions, navigate]);
