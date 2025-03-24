@@ -8,7 +8,7 @@ import "./styles/Page.css";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
 import { useNavigate } from "react-router-dom";
-import GrantPermissionsForm from "./pagesForms/GrantPermissionsForm";
+
 
 export default function UserPage() {
 

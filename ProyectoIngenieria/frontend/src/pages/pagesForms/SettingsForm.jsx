@@ -6,6 +6,7 @@ import { NumberInput } from '../../components/common';
 import GenericForm from '../../components/common/GenericForm';
 
 
+
 // FileInput
 const SettingsForm = ({ initialData, handleSubmit }) => {
     
