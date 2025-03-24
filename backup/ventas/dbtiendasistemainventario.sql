@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-03-2025 a las 20:34:27
+-- Tiempo de generación: 24-03-2025 a las 01:43:47
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -107,6 +107,55 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllShoppings` (IN `p_field` V
         END ASC
 
     LIMIT p_limit OFFSET p_offset;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchSales` (IN `termSearch` VARCHAR(255), IN `page` INT, IN `pageSize` INT)   BEGIN
+    -- Calcular el offset para la paginación
+    DECLARE offset INT;
+    SET offset = (page - 1) * pageSize;
+
+    -- Consulta para obtener las ventas
+    SELECT 
+        CONCAT(
+            '[',
+            GROUP_CONCAT(
+                JSON_OBJECT(
+                    'ID_VENTA', v.ID_VENTA, 
+                    'ID_CLIENTE', v.ID_CLIENTE,
+                    'FEC_VENTA', v.FEC_VENTA,
+                    'PORCENT_IMPUESTO', v.PORCENT_IMPUESTO,
+                    'METODO_PAGO', v.METODO_PAGO,
+                    'DSC_VENTA', v.DSC_VENTA,
+                    'MONT_SUBTOTAL', v.MONT_SUBTOTAL,
+                    'PORCENT_DESCUENTO', v.PORCENT_DESCUENTO,
+                    'ESTADO', v.ESTADO,
+                    'DSC_CLIENTE_NOMBRE', c.DSC_NOMBRE,
+                    'DSC_CLIENTE_APELLIDO_UNO', c.DSC_APELLIDOUNO,
+                    'DSC_CLIENTE_APELLIDO_DOS', c.DSC_APELLIDODOS,
+                    'CANTIDAD', pd.CANTIDAD,
+                    'MONT_UNITARIO', pd.MONT_UNITARIO,
+                    'DSC_PRODUCTO_NOMBRE', p.DSC_NOMBRE,
+                    'MON_PRODUCTO_VENTA', p.MON_VENTA,
+                    'ID_PRODUCTO', p.ID_PRODUCT
+                )
+            ),
+            ']'
+        ) AS ResultadoJSON
+    FROM 
+        tsit_venta v
+    JOIN 
+        tsit_cliente c ON v.ID_CLIENTE = c.ID_CLIENTE
+    LEFT JOIN 
+        tsit_detalleventa pd ON v.ID_VENTA = pd.ID_VENTA
+    LEFT JOIN 
+        tsim_producto p ON pd.ID_PRODUCTO = p.ID_PRODUCT
+    WHERE 
+        (v.DSC_VENTA LIKE CONCAT('%', termSearch, '%') 
+        OR c.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%') 
+        OR c.DSC_APELLIDOUNO LIKE CONCAT('%', termSearch, '%') 
+        OR c.DSC_APELLIDODOS LIKE CONCAT('%', termSearch, '%') 
+        OR p.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%'))
+    LIMIT offset, pageSize;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_searchShoppings` (IN `p_field` VARCHAR(50), IN `p_sortOrder` VARCHAR(4), IN `p_limit` INTEGER, IN `p_offset` INTEGER, IN `p_expectedMatch` VARCHAR(255))   BEGIN
@@ -311,20 +360,20 @@ CREATE TABLE IF NOT EXISTS `tsim_permiso` (
 --
 
 CREATE TABLE IF NOT EXISTS `tsim_producto` (
-  `ID_PRODUCT` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBRE` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_DESCRIPTION` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_CODIGO_BARRAS` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `URL_IMAGEN` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ID_PRODUCT` int(11) NOT NULL AUTO_INCREMENT,
+  `DSC_NOMBRE` varchar(100) DEFAULT NULL,
+  `DSC_DESCRIPTION` varchar(255) DEFAULT NULL,
+  `DSC_CODIGO_BARRAS` varchar(255) DEFAULT NULL,
+  `URL_IMAGEN` varchar(255) DEFAULT NULL,
   `MON_VENTA` double DEFAULT NULL,
   `MON_COMPRA` double DEFAULT NULL,
-  `CANTIDAD` int DEFAULT 0,
+  `CANTIDAD` int(11) DEFAULT 0,
   `FEC_CREATED_AT` datetime DEFAULT NULL,
   `FEC_UPDATE_AT` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  `ID_SUBCATEGORIA` int NOT NULL,
-  `UPDATED_BY_USER` int DEFAULT NULL,
-  `CREATED_BY_USER` int NOT NULL,
+  `ESTADO` int(11) DEFAULT NULL,
+  `ID_SUBCATEGORIA` int(11) NOT NULL,
+  `UPDATED_BY_USER` int(11) DEFAULT NULL,
+  `CREATED_BY_USER` int(11) NOT NULL,
   PRIMARY KEY (`ID_PRODUCT`),
   UNIQUE KEY `DSC_CODIGO_BARRAS` (`DSC_CODIGO_BARRAS`),
   KEY `logs_userCreated` (`CREATED_BY_USER`),
@@ -336,11 +385,9 @@ CREATE TABLE IF NOT EXISTS `tsim_producto` (
 -- Volcado de datos para la tabla `tsim_producto`
 --
 
-LOCK TABLES `tsim_producto` WRITE;
-/*!40000 ALTER TABLE `tsim_producto` DISABLE KEYS */;
-INSERT INTO `tsim_producto` VALUES (21,'Coca cola','Esta es con un recipiente de 1.5L','PROD202502190056154','image_not_found.png',2200,1950, 100, '2025-02-19 00:56:15',NULL,2,1,NULL,10);
-/*!40000 ALTER TABLE `tsim_producto` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `tsim_producto` (`ID_PRODUCT`, `DSC_NOMBRE`, `DSC_DESCRIPTION`, `DSC_CODIGO_BARRAS`, `URL_IMAGEN`, `MON_VENTA`, `MON_COMPRA`, `CANTIDAD`, `FEC_CREATED_AT`, `FEC_UPDATE_AT`, `ESTADO`, `ID_SUBCATEGORIA`, `UPDATED_BY_USER`, `CREATED_BY_USER`) VALUES
+(21, 'Coca cola', 'Esta es con un recipiente de 1.5L', 'PROD202502190056154', 'image_not_found.png', 2200, 1950, 92, '2025-02-19 00:56:15', NULL, 2, 1, NULL, 10);
+
 -- --------------------------------------------------------
 
 --
@@ -531,7 +578,16 @@ CREATE TABLE IF NOT EXISTS `tsit_credito` (
   `ESTADO_CREDITO` tinyint(1) NOT NULL,
   PRIMARY KEY (`ID_CREDITO`),
   KEY `ID_VENTA` (`ID_VENTA`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_credito`
+--
+
+INSERT INTO `tsit_credito` (`ID_CREDITO`, `ID_VENTA`, `FEC_ULTIMOPAGO`, `FEC_VENCIMIENTO`, `MON_PENDIENTE`, `ESTADO_CREDITO`) VALUES
+(1, 1, '2025-03-21 11:39:38', '2025-04-29 18:00:00', 250, 1),
+(2, 2, '2025-03-23 13:26:47', '2025-04-29 18:00:00', 250, 1),
+(3, 3, '2025-03-23 18:38:09', '2025-04-29 18:00:00', 250, 1);
 
 -- --------------------------------------------------------
 
@@ -569,7 +625,16 @@ CREATE TABLE IF NOT EXISTS `tsit_detalleventa` (
   PRIMARY KEY (`ID_DETALLEVENTA`),
   KEY `ID_VENTA` (`ID_VENTA`),
   KEY `ID_PRODUCTO` (`ID_PRODUCTO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_detalleventa`
+--
+
+INSERT INTO `tsit_detalleventa` (`ID_DETALLEVENTA`, `ID_VENTA`, `ID_PRODUCTO`, `MONT_UNITARIO`, `CANTIDAD`) VALUES
+(1, 1, 21, 150, 3),
+(2, 2, 21, 75, 2),
+(3, 3, 21, 50, 3);
 
 -- --------------------------------------------------------
 
@@ -720,9 +785,20 @@ CREATE TABLE IF NOT EXISTS `tsit_venta` (
   `ESTADO_CREDITO` tinyint(1) NOT NULL,
   `MONT_SUBTOTAL` double NOT NULL,
   `PORCENT_DESCUENTO` double NOT NULL,
+  `ESTADO` int(11) NOT NULL,
   PRIMARY KEY (`ID_VENTA`),
-  KEY `ID_CLIENTE` (`ID_CLIENTE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `ID_CLIENTE` (`ID_CLIENTE`),
+  KEY `ESTADO` (`ESTADO`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_venta`
+--
+
+INSERT INTO `tsit_venta` (`ID_VENTA`, `ID_CLIENTE`, `FEC_VENTA`, `PORCENT_IMPUESTO`, `METODO_PAGO`, `DSC_VENTA`, `ESTADO_CREDITO`, `MONT_SUBTOTAL`, `PORCENT_DESCUENTO`, `ESTADO`) VALUES
+(1, 9, '2025-03-21 11:39:38', 13, 'Tarjeta', 'Descuento por temporada', 1, 250, 10, 1),
+(2, 9, '2025-03-23 13:26:47', 13, 'Tarjeta', 'Descuento por temporada', 1, 250, 10, 1),
+(3, 8, '2025-03-23 18:38:09', 13, 'Tarjeta', 'Hola', 1, 250, 10, 1);
 
 --
 -- Restricciones para tablas volcadas
@@ -854,7 +930,8 @@ ALTER TABLE `tsit_usuario`
 -- Filtros para la tabla `tsit_venta`
 --
 ALTER TABLE `tsit_venta`
-  ADD CONSTRAINT `tsit_venta_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `tsit_venta_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `tsit_venta_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

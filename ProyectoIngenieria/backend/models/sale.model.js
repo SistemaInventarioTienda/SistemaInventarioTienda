@@ -52,7 +52,7 @@ const sale = db.define('sale',{
       ESTADO: {
         type: DataTypes.INTEGER,
         allowNull: true,
-      }
+    }
 },{
     timestamps: false,
     tableName: 'tsit_venta'
