@@ -252,11 +252,99 @@ export const getSaleDetails = async (req, res) => {
     }
 };
 
+export const searchSales = async (req, res) => {
+    try {
+        const { page = 1, pageSize = 5, termSearch = 'Descuento' } = req.query;
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
+
+
+        const results = await db.query(
+            `CALL Sp_SearchSales(:termSearch, :page, :pageSize);`,
+            {
+                replacements: {
+                    termSearch: `%${termSearch}%`,
+                    page: parseInt(page),
+                    pageSize: limit,
+                },
+                type: db.QueryTypes.SELECT,
+            }
+        );
+
+
+        const parsedResults = JSON.parse(results[0][0].ResultadoJSON);
+
+
+        if (!parsedResults || parsedResults.length === 0) {
+            return res.status(204).json({
+                message: "No se encontraron ventas.",
+            });
+        }
+
+
+        const sales = [];
+
+        parsedResults.forEach((data) => {
+            if (data?.ID_VENTA) {
+                let sale = sales.find((s) => s.ID_VENTA === data.ID_VENTA);
+
+                if (!sale) {
+                    sale = {
+                        ID_VENTA: data.ID_VENTA,
+                        ID_CLIENTE: data.ID_CLIENTE,
+                        FEC_VENTA: data.FEC_VENTA,
+                        PORCENT_IMPUESTO: data.PORCENT_IMPUESTO,
+                        METODO_PAGO: data.METODO_PAGO,
+                        DSC_VENTA: data.DSC_VENTA,
+                        MONT_SUBTOTAL: data.MONT_SUBTOTAL,
+                        PORCENT_DESCUENTO: data.PORCENT_DESCUENTO,
+                        ESTADO: data.ESTADO,
+                        Client: {
+                            DSC_NOMBRE: data.DSC_CLIENTE_NOMBRE,
+                            DSC_APELLIDOUNO: data.DSC_CLIENTE_APELLIDO_UNO,
+                            DSC_APELLIDODOS: data.DSC_CLIENTE_APELLIDO_DOS,
+                        },
+                        details: [],
+                    };
+
+                    sales.push(sale);
+                }
+
+                if (data.ID_PRODUCTO) {
+                    sale.details.push({
+                        CANTIDAD: data.CANTIDAD,
+                        MONT_UNITARIO: data.MONT_UNITARIO,
+                        Product: {
+                            DSC_NOMBRE: data.DSC_PRODUCTO_NOMBRE,
+                            MON_VENTA: data.MON_PRODUCTO_VENTA,
+                            ID_PRODUCT: data.ID_PRODUCTO,
+                        },
+                    });
+                }
+            }
+        });
+
+
+        res.json({
+            total: sales.length,
+            totalPages: Math.ceil(sales.length / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            sales: sales.slice(offset, offset + limit),
+        });
+    } catch (error) {
+        console.error("Error al buscar ventas:", error);
+        return res.status(500).json({
+            message: "Error interno del servidor. Por favor, intenta de nuevo.",
+        });
+    }
+};
+
 async function EightDaysHavePassed(dateSale) {
     const currentDate = await getDateCR();
 
     const eightDaysAgo = new Date(currentDate);
     eightDaysAgo.setDate(eightDaysAgo.getDate() - 8);
-    
+
     return dateSale <= eightDaysAgo;
 }
