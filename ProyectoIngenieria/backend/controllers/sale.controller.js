@@ -5,7 +5,7 @@ import { validatedetailsProduct, validateStockProduct } from "../logic/sale/sale
 import Product from "../models/product.model.js";
 import Client from "../models/client.model.js";
 import { Op } from 'sequelize';
-
+import db from '../db.js';
 
 
 export const createSale = async (req, res) => {
@@ -287,7 +287,6 @@ export const searchSales = async (req, res) => {
         parsedResults.forEach((data) => {
             if (data?.ID_VENTA) {
                 let sale = sales.find((s) => s.ID_VENTA === data.ID_VENTA);
-
                 if (!sale) {
                     sale = {
                         ID_VENTA: data.ID_VENTA,
@@ -299,21 +298,24 @@ export const searchSales = async (req, res) => {
                         MONT_SUBTOTAL: data.MONT_SUBTOTAL,
                         PORCENT_DESCUENTO: data.PORCENT_DESCUENTO,
                         ESTADO: data.ESTADO,
+                        DSC_NOMBRE: data.DSC_CLIENTE_NOMBRE,
                         Client: {
                             DSC_NOMBRE: data.DSC_CLIENTE_NOMBRE,
                             DSC_APELLIDOUNO: data.DSC_CLIENTE_APELLIDO_UNO,
                             DSC_APELLIDODOS: data.DSC_CLIENTE_APELLIDO_DOS,
                         },
-                        details: [],
+                        DETALLES: [],
                     };
 
                     sales.push(sale);
                 }
 
                 if (data.ID_PRODUCTO) {
-                    sale.details.push({
+                    sale.DETALLES.push({
                         CANTIDAD: data.CANTIDAD,
                         MONT_UNITARIO: data.MONT_UNITARIO,
+                        DSC_NOMBRE: data.DSC_PRODUCTO_NOMBRE,
+                        ID_PRODUCTO: data.ID_PRODUCTO,
                         Product: {
                             DSC_NOMBRE: data.DSC_PRODUCTO_NOMBRE,
                             MON_VENTA: data.MON_PRODUCTO_VENTA,

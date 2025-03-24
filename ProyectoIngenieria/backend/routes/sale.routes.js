@@ -9,7 +9,7 @@ const router = Router();
 router.post("/addSale", validateSchema(saleSchema), createSale);
 router.get("/getSales", getAllSales);
 router.post("/getOnlySale", getSaleDetails);
-router.post("/searchSale", searchSales);
+router.get("/searchSale", searchSales);
 
 
 export default router;
