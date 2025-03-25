@@ -81,6 +81,14 @@ const SalesSummaryCard = ({ saleForm }) => {
                     placeholder="Agregar una nota o comentario"
                 />
 
+                <label className="sales-card-label">Impuesto de la venta</label>
+
+                <Input
+                    type="number"
+                    value={saleForm.taxRate}
+                    onChange={(e) => saleForm.setTaxRate(Number(e.target.value))}
+                />
+
                 <label className="sales-card-label">Descuento a aplicar (Opcional)</label>
 
                 <Input
@@ -103,7 +111,7 @@ const SalesSummaryCard = ({ saleForm }) => {
                         <span>₡{subtotalAfterDiscount}</span>
                     </div>
                     <div className="sales-summary-row">
-                        <span>Impuesto (13%):</span>
+                        <span>Impuesto {saleForm.taxRate}%:</span>
                         <span>₡{taxAmount}</span>
                     </div>
                     <div className="sales-summary-total">
