@@ -41,13 +41,23 @@ const ActionsCell = ({ actions, rowData, entityKey }) => (
             </ActionButton>
         )}
         {actions.delete && (
-            <ActionButton onClick={() => actions.delete(rowData)} color="#F44336">
-                {entityKey === "sales" ? (
-                    <Ban size={20} color="#FFFFFF" />
-                ) : (
-                    <Trash size={20} color="#FFFFFF" />
-                )}
-            </ActionButton>
+            entityKey === "sales"
+                ? rowData.CAN_CANCEL && (
+                    <ActionButton
+                        onClick={() => actions.delete(rowData)}
+                        color="#F44336"
+                    >
+                        <Ban size={20} color="#FFFFFF" />
+                    </ActionButton>
+                )
+                : (
+                    <ActionButton
+                        onClick={() => actions.delete(rowData)}
+                        color="#F44336"
+                    >
+                        <Trash size={20} color="#FFFFFF" />
+                    </ActionButton>
+                )
         )}
     </div>
 );

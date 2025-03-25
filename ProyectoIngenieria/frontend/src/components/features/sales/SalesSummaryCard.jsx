@@ -62,8 +62,8 @@ const SalesSummaryCard = ({ saleForm }) => {
                 <Select
                     options={[
                         { value: "", label: "Seleccione una opción válida" },
-                        { value: "sinpe", label: "Sinpe Movil" },
-                        { value: "efectivo", label: "Pago en efectivo" },
+                        { value: "Sinpe Movil", label: "Sinpe Movil" },
+                        { value: "Pago en efectivo", label: "Pago en efectivo" },
                     ]}
                     label="Seleccionar Método de Pago"
                     value={saleForm.selectedPaymentMethod}

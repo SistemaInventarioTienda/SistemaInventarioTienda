@@ -43,7 +43,7 @@ export const salesConfig = {
         toFrontend: (sale) => ({
             ID_VENTA: sale.ID_VENTA,
             ID_CLIENTE: sale.ID_CLIENTE,
-            DSC_NOMBRE: sale.DSC_NOMBRE,
+            DSC_NOMBRE: sale.DSC_NOMBRE || sale.Client?.DSC_NOMBRE || "Sin nombre",
             FEC_VENTA: sale.FEC_VENTA,
             PORCENT_IMPUESTO: sale.PORCENT_IMPUESTO,
             METODO_PAGO: sale.METODO_PAGO,
@@ -57,6 +57,7 @@ export const salesConfig = {
                 price: product.MONT_UNITARIO,
                 quantity: product.CANTIDAD,
             })) || [],
+            CAN_CANCEL: sale.CAN_CANCEL,
         }),
 
         toBackend: (formData) => ({
@@ -77,9 +78,17 @@ export const salesConfig = {
     },
 
     transformConfig: {
-        ESTADO: (item) => (item.ESTADO != 1 ? "PAGADA" : "ANULADA"),
+        ESTADO: (item) => (item.ESTADO === 1 ? "PAGADA" : "ANULADA"),
         FEC_VENTA: (item) => item.FEC_VENTA
-            ? new Date(item.FEC_VENTA).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })
+            ? new Date(item.FEC_VENTA).toLocaleDateString("es-ES", { 
+                day: "2-digit", 
+                month: "long", 
+                year: "numeric" 
+            }) + " " + new Date(item.FEC_VENTA).toLocaleTimeString("es-ES", { 
+                hour: "2-digit", 
+                minute: "2-digit", 
+                second: "2-digit" 
+            })
             : null,
     },
 
