@@ -15,3 +15,4 @@ export { default as Table } from "./Table";
 export { default as Pagination } from "./Pagination";
 export { default as InputButton } from "./InputButton";
 export { default as InputFile } from "./InputFile";
+export { default as NumberInput } from "./NumberInput";
