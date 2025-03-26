@@ -1,7 +1,6 @@
 import { sale, details, credit } from "../models/sale.model.js";
 import { getDateCR } from "../libs/date.js";
 import { validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
-//import {  } from "../logic/validateFields.logic.js";
 import Product from "../models/product.model.js";
 import Client from "../models/client.model.js";
 import { Op } from 'sequelize';
