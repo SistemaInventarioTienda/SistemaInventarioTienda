@@ -69,8 +69,7 @@ const ModalConfirmation = ({
             </button>
             <button
               type="button"
-              className={`modal-confirmation-confirm-btn ${action === "delete" || "anulate" ? "danger" : "primary"
-                }`}
+              className={`modal-confirmation-confirm-btn ${["delete", "anulate"].includes(action) ? "danger" : "primary"}`}
               onClick={handleConfirm}
             >
               {confirmButtonText}
