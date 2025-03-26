@@ -49,6 +49,14 @@ export const updateConfig = async (req) => {
   }
 };
 
+export const getAllConfigs = async (req) => {
+  try{
+    const allConfig = await Config.findAll();
+    return { success: true, data: allConfig };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
 // async function existNameAct(name, idToExclude) {
 //   const query = {
 //     where: {
