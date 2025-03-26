@@ -5,8 +5,6 @@ import { toast } from "sonner";
 
 const useSaleForm = () => {
 
-    const TAX_RATE = 13;
-
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
     const [confirmationCallback, setConfirmationCallback] = useState(null);
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -14,6 +12,7 @@ const useSaleForm = () => {
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
     const [selectedSaleType, setSelectedSaleType] = useState(3);
     const [note, setNote] = useState("");
+    const [taxRate, setTaxRate] = useState(0);
     const [discount, setDiscount] = useState(0);
 
     // Calcular el total de la venta
@@ -21,7 +20,7 @@ const useSaleForm = () => {
         const subtotal = selectedProducts.reduce((total, product) => total + product.subtotal, 0);
         const discountAmount = (subtotal * discount) / 100;
         const subtotalAfterDiscount = subtotal - discountAmount;
-        const taxAmount = (subtotalAfterDiscount * TAX_RATE) / 100;
+        const taxAmount = (subtotalAfterDiscount * taxRate) / 100;
         const total = subtotalAfterDiscount + taxAmount;
 
         return {
@@ -34,13 +33,17 @@ const useSaleForm = () => {
     };
 
     useEffect(() => {
-        if (discount < 1 || discount > 99) {
+        if (discount < 0 || discount > 100) {
             if (discount !== 0) {
                 setDiscount(0);
-                toast.error("El descuento debe estar entre 1% y 99%");
+                toast.error("El descuento debe estar entre 0% y 100%");
             }
         }
-    }, [discount])
+        if (taxRate < 0 || taxRate > 100) {
+            setTaxRate(0);
+            toast.error("El impuesto debe estar entre 0% y 100%");
+        }
+    }, [discount, taxRate])
 
     const addProduct = (product) => {
         setSelectedProducts((prevProducts) => {
@@ -75,11 +78,12 @@ const useSaleForm = () => {
 
     const resetForm = () => {
         setSelectedProducts([]);
+        setSelectedSaleType(3);
         setSelectedClient(null);
         setSelectedPaymentMethod("");
-        setSelectedSaleType(3);
         setNote("");
         setDiscount(0);
+        setTaxRate(0);
     };
 
     const handleSubmit = async () => {
@@ -102,7 +106,7 @@ const useSaleForm = () => {
 
         const saleData = salesConfig.transformData.toBackend({
             ID_CLIENTE: selectedClient && selectedClient !== 0 ? Number(selectedClient) : null,
-            PORCENT_IMPUESTO: TAX_RATE,
+            PORCENT_IMPUESTO: taxRate,
             METODO_PAGO: selectedPaymentMethod,
             DSC_VENTA: note,
             ESTADO_CREDITO: Number(selectedSaleType),
@@ -126,8 +130,7 @@ const useSaleForm = () => {
     };
 
     const handleSubmitWithConfirmation = () => {
-        if (!selectedClient || !note) {
-            console.log("dentro de confirmacion");
+        if (!selectedClient || !note || discount === 0) {
             setConfirmationModalOpen(true);
             setConfirmationCallback(() => handleSubmit);
         } else {
@@ -142,11 +145,13 @@ const useSaleForm = () => {
         selectedSaleType,
         note,
         discount,
+        taxRate,
         setSelectedClient,
         setSelectedPaymentMethod,
         setSelectedSaleType,
         setNote,
         setDiscount,
+        setTaxRate,
         addProduct,
         updateProductQuantity,
         removeProduct,
