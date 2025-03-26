@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "./Button";
-import { Eye, SquarePen, Trash, KeyRound, ChevronDown, ChevronUp, ChevronRight, Plus, DollarSign } from "lucide-react";
+import { Eye, SquarePen, Trash, Ban, KeyRound, ChevronDown, ChevronUp, ChevronRight, Plus, DollarSign } from "lucide-react";
 import "./styles/table.css";
 
-const StatusPill = ({ status }) => {
-    let parsedStatus = typeof status === "number" ? (status === 2 ? "Inactivo" : "Activo") : status;
-    const isActive = parsedStatus.toLowerCase() === "activo";
+const StatusPill = ({ status, entityKey }) => {
+    const statusMappings = {
+        default: { 1: "Activo", 2: "Inactivo" },
+        sales: { 1: "Pagada", 2: "Anulada" },
+    };
+    const selectedMap = statusMappings[entityKey] || statusMappings.default;
+
+    let parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
+    const isActive = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo");
+
     return <span className={`status-pill ${isActive ? "active" : "inactive"}`}>{parsedStatus}</span>;
 };
 
-const ActionsCell = ({ actions, rowData }) => (
+
+const ActionsCell = ({ actions, rowData, entityKey }) => (
+
     <div className="actions-cell">
         {actions.manageCredits && (
             <ActionButton onClick={() => actions.manageCredits(rowData)} color="#28A745">
@@ -32,9 +41,23 @@ const ActionsCell = ({ actions, rowData }) => (
             </ActionButton>
         )}
         {actions.delete && (
-            <ActionButton onClick={() => actions.delete(rowData)} color="#F44336">
-                <Trash size={20} color="#FFFFFF" />
-            </ActionButton>
+            entityKey === "sales"
+                ? rowData.CAN_CANCEL && (
+                    <ActionButton
+                        onClick={() => actions.delete(rowData)}
+                        color="#F44336"
+                    >
+                        <Ban size={20} color="#FFFFFF" />
+                    </ActionButton>
+                )
+                : (
+                    <ActionButton
+                        onClick={() => actions.delete(rowData)}
+                        color="#F44336"
+                    >
+                        <Trash size={20} color="#FFFFFF" />
+                    </ActionButton>
+                )
         )}
     </div>
 );
@@ -45,7 +68,7 @@ const ActionButton = ({ onClick, color, children }) => (
     </Button>
 );
 
-const Table = ({ columns, data, actions, onSort, sortField, sortOrder, expandableKey, onAddSubcategory, subcategoryActions }) => {
+const Table = ({ columns, data, actions, onSort, sortField, sortOrder, expandableKey, onAddSubcategory, subcategoryActions, entityKey }) => {
     const [expandedRows, setExpandedRows] = useState({});
 
     // Función para manejar el estado de las filas expandidas
@@ -79,16 +102,16 @@ const Table = ({ columns, data, actions, onSort, sortField, sortOrder, expandabl
                 <tbody>
                     {data.length > 0 ? (
                         data.map((row, rowIndex) => {
-                            const rowId = row.ID_CATEGORIA || `row-${rowIndex}`; // Usar ID_CATEGORIA como identificador único
+                            const rowId = row.ID_CATEGORIA || `row-${rowIndex}`;
                             return (
                                 <React.Fragment key={rowId}>
                                     <tr>
                                         {columns.map((column, colIndex) => (
                                             <td key={colIndex}>
                                                 {column.field === "ESTADO" ? (
-                                                    <StatusPill status={row[column.field]} />
+                                                    <StatusPill status={row[column.field]} entityKey={entityKey} />
                                                 ) : column.field === "actions" ? (
-                                                    <ActionsCell actions={actions} rowData={row} />
+                                                    <ActionsCell actions={actions} rowData={row} entityKey={entityKey} />
                                                 ) : isExpandableRow(row) && column.field === "DSC_NOMBRE" ? (
                                                     <ExpandableRow row={row} expanded={expandedRows[rowId]} toggleRow={() => toggleRow(rowId)} />
                                                 ) : (
@@ -103,6 +126,7 @@ const Table = ({ columns, data, actions, onSort, sortField, sortOrder, expandabl
                                             columns={columns}
                                             subcategoryActions={subcategoryActions}
                                             onAddSubcategory={onAddSubcategory}
+                                            entityKey={entityKey}
                                         />
                                     )}
                                 </React.Fragment>
@@ -130,7 +154,7 @@ const ExpandableRow = ({ row, expanded, toggleRow }) => (
     </div>
 );
 
-const SubcategoriesList = ({ row, columns, onAddSubcategory, subcategoryActions }) => (
+const SubcategoriesList = ({ row, columns, onAddSubcategory, subcategoryActions, entityKey }) => (
     <tr className="subcategories-container">
         <td colSpan={columns.length}>
             <div className="subcategories-wrapper">
@@ -162,6 +186,7 @@ const SubcategoriesList = ({ row, columns, onAddSubcategory, subcategoryActions 
                                             undefined
                                     }}
                                     rowData={sub}
+                                    entityKey={entityKey}
                                 />
                             </div>
                         </div>

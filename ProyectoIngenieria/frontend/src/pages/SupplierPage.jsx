@@ -13,8 +13,11 @@ export default function SupplierPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (permissions && !permissions.suppliers) {
-            toast.error("No tienes permiso para acceder a proveedores");
+        // Verificar solo si los permisos ya se cargaron (home siempre existe)
+        if (permissions.home === undefined) return;
+
+        if (!permissions.user) {
+            toast.error("No tienes permiso para acceder a usuarios");
             navigate("/");
         }
     }, [permissions, navigate]);

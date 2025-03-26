@@ -5,6 +5,7 @@ import { ModalComponent, ModalConfirmation } from "../components/modals";
 import { useEntityPage } from "../hooks/useEntityPage";
 import { Search, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 // Usar forwardRef para envolver el componente
 export const EntityPage = forwardRef(({
@@ -25,6 +26,8 @@ export const EntityPage = forwardRef(({
     expandableKey,
     onAddSubcategory,
     subcategoryActions,
+    action,
+    confirmButtonText,
 }, ref) => {
     const {
         data,
@@ -48,6 +51,7 @@ export const EntityPage = forwardRef(({
     const [modalMode, setModalMode] = React.useState("add");
     const [modalData, setModalData] = React.useState(null);
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
+    const navigate = useNavigate();
 
     // Exponer fetchData al componente padre usando useImperativeHandle
     useImperativeHandle(ref, () => ({
@@ -57,9 +61,13 @@ export const EntityPage = forwardRef(({
     }));
 
     const handleAdd = () => {
-        setModalMode("add");
-        setModalData({});
-        setModalOpen(true);
+        if (entityKey === "sales") {
+            navigate("/sales/new");
+        } else {
+            setModalMode("add");
+            setModalData({});
+            setModalOpen(true);
+        }
     };
 
     const handleEdit = (rowData) => {
@@ -70,6 +78,7 @@ export const EntityPage = forwardRef(({
 
     const handleView = (rowData) => {
         setModalMode("view");
+        console.log("Modal view");
         setModalData(transformData ? transformData(rowData) : rowData);
         setModalOpen(true);
     };
@@ -183,6 +192,7 @@ export const EntityPage = forwardRef(({
                 expandableKey={expandableKey}
                 onAddSubcategory={onAddSubcategory}
                 subcategoryActions={subcategoryActions}
+                entityKey={entityKey}
             />
             <Pagination
                 currentPage={currentPage}
@@ -231,9 +241,8 @@ export const EntityPage = forwardRef(({
                 onClose={() => setConfirmationModalOpen(false)}
                 onConfirm={handleDelete}
                 entityName={entityName}
-                action="delete"
-                confirmButtonText="Eliminar"
-                cancelButtonText="Cancelar"
+                action={action}
+                confirmButtonText={confirmButtonText}
             />
         </PageLayout>
     );

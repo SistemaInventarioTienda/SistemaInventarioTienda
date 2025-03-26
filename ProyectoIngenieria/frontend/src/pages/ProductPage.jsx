@@ -1,4 +1,4 @@
-import React, { useEffect} from "react";
+import React, { useEffect } from "react";
 import { EntityPage } from "./EntityPage";
 import { productConfig } from "../config/entities/productConfig.js";
 import ProductForm from "./pagesForms/ProductForm";
@@ -11,8 +11,11 @@ export default function ProductPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (permissions && !permissions.product) {
-            toast.error("No tienes permiso para acceder a productos");
+        // Verificar solo si los permisos ya se cargaron (home siempre existe)
+        if (permissions.home === undefined) return;
+
+        if (!permissions.user) {
+            toast.error("No tienes permiso para acceder a usuarios");
             navigate("/");
         }
     }, [permissions, navigate]);

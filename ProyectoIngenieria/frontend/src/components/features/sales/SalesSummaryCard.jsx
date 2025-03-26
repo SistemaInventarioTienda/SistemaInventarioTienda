@@ -20,10 +20,13 @@ const SalesSummaryCard = ({ saleForm }) => {
         fetchData();
     }, []);
 
-    const clientOptions = clients.map((client) => ({
-        value: client.DSC_CEDULA,
-        label: client.DSC_NOMBRE,
-    }));
+    const clientOptions = [
+        { value: null, label: "Sin Definir" },
+        ...clients.map(client => ({
+            value: client.DSC_CEDULA,
+            label: client.DSC_NOMBRE,
+        }))
+    ];
 
     return (
         <div className="sales-card sales-card-fixed">
@@ -31,6 +34,20 @@ const SalesSummaryCard = ({ saleForm }) => {
                 <h2 className="sales-card-title">Resumen de Venta</h2>
             </div>
             <div className="sales-card-content">
+
+                <label className="sales-card-label">Tipo de Venta</label>
+                <Select
+                    options={[
+                        { value: 3, label: "Seleccione una opción válida" },
+                        { value: 1, label: "Venta a crédito" },
+                        { value: 0, label: "Venta a contado" },
+                    ]}
+                    label="Seleccionar Tipo de Venta"
+                    value={saleForm.selectedSaleType}
+                    onChange={(e) => saleForm.setSelectedSaleType(Number(e.target.value))}
+                    name="saleType"
+                />
+
                 <label className="sales-card-label">
                     Cliente de la compra (Opcional)
                 </label>
@@ -38,15 +55,15 @@ const SalesSummaryCard = ({ saleForm }) => {
                     name="client"
                     options={clientOptions}
                     value={saleForm.selectedClient}
-                    onChange={(e) => saleForm.setSelectedClient(e.target.value)}
+                    onChange={(e) => saleForm.setSelectedClient(e.target.value === "null" ? null : e.target.value)}
                 />
 
                 <label className="sales-card-label">Método de pago</label>
                 <Select
                     options={[
                         { value: "", label: "Seleccione una opción válida" },
-                        { value: "sinpe", label: "Sinpe Movil" },
-                        { value: "efectivo", label: "Pago en efectivo" },
+                        { value: "Sinpe Movil", label: "Sinpe Movil" },
+                        { value: "Pago en efectivo", label: "Pago en efectivo" },
                     ]}
                     label="Seleccionar Método de Pago"
                     value={saleForm.selectedPaymentMethod}

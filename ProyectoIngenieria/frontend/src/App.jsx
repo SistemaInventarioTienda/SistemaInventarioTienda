@@ -15,6 +15,7 @@ import UserPage from "./pages/UserPage";
 import SupplierPage from './pages/SupplierPage';
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from './pages/SettingsPage';
 import ProductPage from './pages/ProductPage';
 import SalePage from './pages/SalePage'
 import AddSalePage from './pages/AddSalePage';
@@ -97,6 +98,8 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="credits" element={<CreditPage />} />
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            {/* ruta al componente de configuraciones */}
+            <Route path="settings" element={<SettingsPage/>}/>
             <Route path="product" element={<ProductPage />} />
             <Route path="sales/history" element={<SalePage />} />
             <Route path="sales/new" element={<AddSalePage />} />

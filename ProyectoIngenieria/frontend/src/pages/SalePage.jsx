@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { EntityPage } from "./EntityPage";
 import { salesConfig } from "../config/entities/salesConfig";
+import SaleForm from "./pagesForms/SaleForm";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
@@ -21,6 +22,7 @@ export default function SalePage() {
         titlePage,
         entityMessage,
         columns,
+        fields,
         entityKey,
         api,
         transformData,
@@ -35,13 +37,17 @@ export default function SalePage() {
                 titlePage={titlePage}
                 entityMessage={entityMessage}
                 columns={columns}
+                fields={fields}
                 fetchAll={api.fetchAll}
                 searchByName={api.searchByName}
                 onDelete={(sale) => api.delete(sale.ID_SALE)}
                 entityKey={entityKey}
+                modalComponent={SaleForm}
                 transformData={transformData?.toFrontend}
                 transformConfig={transformConfig}
                 actions={actions}
+                action={"Anular"}
+                confirmButtonText={"Anular"}
             />
         </>
     );

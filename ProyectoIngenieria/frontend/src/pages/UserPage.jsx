@@ -3,11 +3,12 @@ import { EntityPage } from "./EntityPage";
 import { userConfig } from "../config/entities/userConfig";
 import UserForm from "./pagesForms/UserForm";
 import handleApiCall from "../utils/handleApiCall";
+import GrantPermissionsForm from "./pagesForms/GrantPermissionsForm";
 import "./styles/Page.css";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
 import { useNavigate } from "react-router-dom";
-import GrantPermissionsForm from "./pagesForms/GrantPermissionsForm";
+
 
 export default function UserPage() {
 
@@ -15,12 +16,15 @@ export default function UserPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (permissions && !permissions.user) {
+        // Verificar solo si los permisos ya se cargaron (home siempre existe)
+        if (permissions.home === undefined) return;
+
+        if (!permissions.user) {
             toast.error("No tienes permiso para acceder a usuarios");
             navigate("/");
         }
     }, [permissions, navigate]);
-
+    
     const {
         entityName,
         titlePage,
@@ -94,6 +98,13 @@ export default function UserPage() {
                 onClose={() => setShowPermissionsModal(false)}
                 user={selectedUser}
             />
+
+            <GrantPermissionsForm
+                isOpen={showPermissionsModal}
+                onClose={() => setShowPermissionsModal(false)}
+                user={selectedUser}
+            />
+
         </>
     );
 }
