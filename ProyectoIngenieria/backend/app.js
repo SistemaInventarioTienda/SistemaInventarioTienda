@@ -14,6 +14,9 @@ import saleRoutes from "./routes/sale.routes.js";
 
 import shoppingRoutes from "./routes/shopping.routes.js";
 
+//nuevo
+import configRoutes from "./routes/config.routes.js";
+
 import { FRONTEND_URL } from "./config.js";
 
 const app = express();
@@ -38,6 +41,7 @@ app.use("/api/subcategory", subcategoryRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/sale", saleRoutes);
 app.use("/api/shopping", shoppingRoutes);
+app.use("/api/config", configRoutes); //ruta de config
 app.use('/uploads', express.static('uploads'));
 
 if (process.env.NODE_ENV === "production") {
