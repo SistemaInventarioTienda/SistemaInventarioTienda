@@ -5,12 +5,14 @@ import "./styles/inputNumber.css";
 
 const NumberInput = ({
   id,
-  min = 1,
-  max = 99,
-  initialValue = 1,
+  min,
+  max,
+  initialValue,
   onChange,
   label,
+  mode
 }) => {
+  //console.log("Valor inicial en componente [NumberInput]: ", initialValue);
   const { value, handleIncrement, handleDecrement, handleChange } =
     useNumberInput({
       min,

@@ -105,6 +105,8 @@ export function useGenericFormLogic({
                 errors = [...errors, ...validateProduct(formData)];
             } else if (entityName === "Cliente") {
                 errors = [...errors, ...validateClient(phones)];
+            } else if (entityName === "Ajuste"){
+                
             }
 
             if (errors.length > 0) {
