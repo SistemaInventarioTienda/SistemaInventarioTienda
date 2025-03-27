@@ -43,8 +43,84 @@ export const addPayment = async (req, res) => {
             if( creditId.MON_PENDIENTE ===0){
                 creditId.ESTADO_CREDITO = 0;
             }
+            creditId.FEC_ULTIMOPAGO=date;
             await creditId.save();
             res.status(201).json({ message: 'Abono registrado Correctamente' });   
+        }
+ 
+    } catch (error) {
+        res.status(500).json({ message: 'Error al realizar el abono del credito', error });
+    }
+};
+
+
+
+
+export const modifyPayment = async (req, res) => {
+    try {
+        const {MON_ABONADO} = req.body;
+        const date=await getDateCR();
+        const paymentObj = await payment.findOne({
+            where: { 
+                ID_ABONO: req.params.id
+            }
+        });
+        if(!paymentObj){
+            return res.status(404).json({
+                message: "El Abono seleccionado no se encuentra en el sistema."
+            })
+        }
+/*
+        const paymentDate = new Date(paymentObj.FEC_ABONO);
+        const now = new Date(date);
+        console.log(now)
+        const differenceInMinutes = (now - paymentDate) / (1000 * 60);
+        console.log(differenceInMinutes)
+//1440
+        if (differenceInMinutes > 30) {
+            return res.status(400).json({
+                message: "No se puede procesar el abono, han pasado más de 30 minutos desde el abono, ."
+            });
+        }
+*/
+        const creditId = await credit.findOne({
+            where: { 
+                ID_CREDITO: paymentObj.ID_CREDITO,
+                ESTADO_CREDITO: 1
+            }
+        });
+        if(!creditId){
+            return res.status(404).json({
+                message: "Credito no disponible para abonar."
+            })
+        }
+        
+        creditId.MON_PENDIENTE+=paymentObj.MON_ABONADO;
+       
+
+        if (MON_ABONADO > creditId.MON_PENDIENTE) {
+            return res.status(400).json({ message: 'El monto a rebajar es mayor que el saldo pendiente' });
+        }
+
+        if (MON_ABONADO <= 0) {
+            return res.status(400).json({ message: 'Monto no permitido' });
+        }
+
+       
+        paymentObj.FEC_ABONO=date;
+        paymentObj.MON_ABONADO=MON_ABONADO;
+
+
+        const addPay= paymentObj.save();
+
+        if (addPay) {
+            creditId.MON_PENDIENTE -= MON_ABONADO;
+            if( creditId.MON_PENDIENTE ===0){
+                creditId.ESTADO_CREDITO = 0;
+            }
+            creditId.FEC_ULTIMOPAGO=date;
+            await creditId.save();
+            res.status(201).json({ message: 'Abono actualizado correctamente' });   
         }
  
     } catch (error) {
