@@ -6,16 +6,21 @@ import "./styles/table.css";
 const StatusPill = ({ status, entityKey }) => {
     const statusMappings = {
         default: { 1: "Activo", 2: "Inactivo" },
-        sales: { 1: "Pagada", 2: "Anulada" },
+        sales: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
     };
+
     const selectedMap = statusMappings[entityKey] || statusMappings.default;
 
     let parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
-    const isActive = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo");
 
-    return <span className={`status-pill ${isActive ? "active" : "inactive"}`}>{parsedStatus}</span>;
+    let statusClass;
+    if (parsedStatus.toLowerCase() === "pendiente") {
+        statusClass = "pending";
+    } else {
+        statusClass = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo") ? "active" : "inactive";
+    }
+    return <span className={`status-pill ${statusClass}`}>{parsedStatus}</span>;
 };
-
 
 const ActionsCell = ({ actions, rowData, entityKey }) => (
 

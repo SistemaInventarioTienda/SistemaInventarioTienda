@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Select, Button, Textarea, Input } from "../../common";
+import { DatePickerComponent } from '../../features/sales';
 import { ModalConfirmation } from "../../modals";
 import { useEntityPage } from "../../../hooks/useEntityPage";
 import { getClients } from "../../../api/client";
@@ -47,6 +48,8 @@ const SalesSummaryCard = ({ saleForm }) => {
                     onChange={(e) => saleForm.setSelectedSaleType(Number(e.target.value))}
                     name="saleType"
                 />
+
+                <DatePickerComponent saleForm={saleForm} />
 
                 <label className="sales-card-label">
                     Cliente de la compra (Opcional)
@@ -140,7 +143,7 @@ const SalesSummaryCard = ({ saleForm }) => {
                     cancelButtonText="Cancelar"
                 />
             </div>
-        </div>
+        </div >
     );
 };
 

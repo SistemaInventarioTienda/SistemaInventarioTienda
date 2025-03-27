@@ -31,6 +31,7 @@
     "dayjs": "^1.11.13",
     "dayjs-plugin-utc": "^0.1.2",
     "electron-is-dev": "^3.0.1",
+    "flatpickr": "^4.6.13",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.452.0",
     "react": "^18.3.1",
