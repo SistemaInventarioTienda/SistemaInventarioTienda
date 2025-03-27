@@ -153,7 +153,7 @@ const payment = db.define('payment',{
         type: DataTypes.DATE,
         allowNull: false,
       },
-      MONT_ABONADO:{
+      MON_ABONADO:{
         type: DataTypes.DOUBLE,
         allowNull: false,
       }

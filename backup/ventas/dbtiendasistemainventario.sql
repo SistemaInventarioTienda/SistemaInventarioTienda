@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-03-2025 a las 01:43:47
+-- Tiempo de generación: 26-03-2025 a las 05:14:04
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -351,7 +351,21 @@ CREATE TABLE IF NOT EXISTS `tsim_permiso` (
   `DSC_NOMBRE` varchar(100) DEFAULT NULL,
   `DSC_DESCRIPCION` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID_PERMISO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsim_permiso`
+--
+
+INSERT INTO `tsim_permiso` (`ID_PERMISO`, `DSC_NOMBRE`, `DSC_DESCRIPCION`) VALUES
+(1, 'Usuarios', 'Se le permite el acceso a la página de usuarios. Puede realizar acciones como: ver todos los usuarios, eliminar, agregar, modificar y cambiar permisos.'),
+(2, 'Categorias', 'Se le permite el acceso a la página de categorias. Puede realizar acciones como: ver todas las categorias y sus subcategorias, eliminar, agregar y modificar.'),
+(3, 'Proveedores', 'Se le permite el acceso a la página de proveedores. Puede realizar acciones como: ver todos los proveedores e información detallada, eliminar, agregar y modificar.'),
+(4, 'Clientes', 'Se le permite el acceso a la página de clientes. Puede realizar acciones como: ver todos los clientes e información detallada, eliminar, agregar y modificar.'),
+(5, 'Compras', 'Se le permite el acceso a la página de compras. Puede realizar acciones como: ver todas las compras e información detallada, eliminar, agregar y modificar.'),
+(6, 'Reportes', 'Se le permite el acceso a la página de reportes. Puede realizar acciones como: ver todos los reportes e información detallada, eliminar, agregar, modificar y descargar los reportes.'),
+(7, 'Productos', 'Se le permite el acceso a la página de productos. Puede realizar acciones como: ver todos los productos, eliminar, agregar y modificar'),
+(8, 'Ventas', 'Se le permite el acceso a la página de ventas. Puede realizar acciones como: ver realizar una venta, anular venta.');
 
 -- --------------------------------------------------------
 
@@ -473,13 +487,24 @@ INSERT INTO `tsim_tipoproveedor` (`ID_TIPOPROVEEDOR`, `DSC_NOMBRE`, `FEC_CREADOE
 --
 
 CREATE TABLE IF NOT EXISTS `tsit_abono` (
-  `ID_ABONO` int(11) NOT NULL,
+  `ID_ABONO` int(11) NOT NULL AUTO_INCREMENT,
   `ID_CREDITO` int(11) NOT NULL,
   `FEC_ABONO` datetime NOT NULL,
   `MON_ABONADO` double NOT NULL,
   PRIMARY KEY (`ID_ABONO`),
   KEY `ID_CREDITO` (`ID_CREDITO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_abono`
+--
+
+INSERT INTO `tsit_abono` (`ID_ABONO`, `ID_CREDITO`, `FEC_ABONO`, `MON_ABONADO`) VALUES
+(1, 2, '2025-03-25 22:06:26', 100),
+(2, 2, '2025-03-25 22:08:29', 100),
+(3, 2, '2025-03-25 22:08:37', 50),
+(4, 1, '2025-03-25 22:10:47', 250),
+(5, 3, '2025-03-25 22:12:43', 250);
 
 -- --------------------------------------------------------
 
@@ -585,9 +610,9 @@ CREATE TABLE IF NOT EXISTS `tsit_credito` (
 --
 
 INSERT INTO `tsit_credito` (`ID_CREDITO`, `ID_VENTA`, `FEC_ULTIMOPAGO`, `FEC_VENCIMIENTO`, `MON_PENDIENTE`, `ESTADO_CREDITO`) VALUES
-(1, 1, '2025-03-21 11:39:38', '2025-04-29 18:00:00', 250, 1),
-(2, 2, '2025-03-23 13:26:47', '2025-04-29 18:00:00', 250, 1),
-(3, 3, '2025-03-23 18:38:09', '2025-04-29 18:00:00', 250, 1);
+(1, 1, '2025-03-21 11:39:38', '2025-04-29 18:00:00', 0, 1),
+(2, 2, '2025-03-23 13:26:47', '2025-04-29 18:00:00', 0, 1),
+(3, 3, '2025-03-23 18:38:09', '2025-04-29 18:00:00', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -651,7 +676,21 @@ CREATE TABLE IF NOT EXISTS `tsit_permisousuario` (
   PRIMARY KEY (`ID_PERMISOUSUARIO`),
   KEY `ID_USUARIO` (`ID_USUARIO`),
   KEY `ID_PERMISO` (`ID_PERMISO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tsit_permisousuario`
+--
+
+INSERT INTO `tsit_permisousuario` (`ID_PERMISOUSUARIO`, `ID_USUARIO`, `ID_PERMISO`, `FEC_CREADOEN`, `ESTADO`) VALUES
+(1, 10, 1, '2025-03-19 20:23:09', 1),
+(2, 10, 2, '2025-03-19 20:23:09', 1),
+(3, 10, 3, '2025-03-19 20:23:09', 1),
+(4, 10, 4, '2025-03-19 20:23:09', 1),
+(5, 10, 5, '2025-03-19 20:23:09', 1),
+(6, 10, 6, '2025-03-19 20:23:09', 1),
+(7, 10, 7, '2025-03-19 20:23:09', 1),
+(8, 10, 8, '2025-03-19 20:23:09', 1);
 
 -- --------------------------------------------------------
 
