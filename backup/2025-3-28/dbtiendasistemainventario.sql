@@ -60,7 +60,8 @@ CREATE TABLE IF NOT EXISTS `tsim_estado` (
 
 INSERT INTO `tsim_estado` (`ID_ESTADO`, `DSC_NOMBRE`, `DSC_PARA`, `FEC_CREADOEN`) VALUES
 (1, 'Activo', 'Lo que sea', '2024-10-12 17:53:52'),
-(2, 'Inactivo', 'Lo que sea x2', '2024-10-12 17:53:52');
+(2, 'Inactivo', 'Lo que sea x2', '2024-10-12 17:53:52'),
+(3, 'Pendiente', 'Estado \'Pendiente\' para las ventas a crédito', '2025-03-26 21:30:23');
 
 -- --------------------------------------------------------
 
