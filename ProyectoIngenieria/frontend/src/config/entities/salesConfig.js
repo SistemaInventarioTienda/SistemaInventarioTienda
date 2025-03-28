@@ -16,6 +16,7 @@ export const salesConfig = {
         { field: "DSC_NOMBRE", label: "Cliente" },
         { field: "FEC_VENTA", label: "Fecha de venta" },
         { field: "METODO_PAGO", label: "Método de pago" },
+        { field: "DSC_SALETYPE", label: "Tipo de venta" },
         { field: "MONT_SUBTOTAL", label: "Subtotal" },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" },
@@ -24,6 +25,7 @@ export const salesConfig = {
     fields: [
         { name: "DSC_NOMBRE", label: "Cliente", type: "text" },
         { name: "FEC_VENTA", label: "Fecha de venta", type: "text" },
+        { name: "DSC_SALETYPE", label: "Tipo de venta", type: "text" },
         { name: "METODO_PAGO", label: "Método de pago", type: "text" },
         { name: "PORCENT_IMPUESTO", label: "Porcentaje de Impuesto", type: "text" },
         { name: "PORCENT_DESCUENTO", label: "Porcentaje de Descuento", type: "text" },
@@ -51,6 +53,7 @@ export const salesConfig = {
             ESTADO_CREDITO: sale.ESTADO_CREDITO,
             MONT_SUBTOTAL: sale.MONT_SUBTOTAL,
             PORCENT_DESCUENTO: sale.PORCENT_DESCUENTO,
+            DSC_SALETYPE: sale.ESTADO_CREDITO === 0 ? "Venta a contado" : "Venta a crédito",
             ESTADO: sale.ESTADO,
             PRODUCTS_LIST: sale.DETALLES?.map(product => ({
                 id: product.ID_PRODUCTO,
@@ -73,21 +76,34 @@ export const salesConfig = {
                 MONTO_UNITARIO: product.price,
                 CANTIDAD: product.quantity,
             })) || [],
+            FEC_VENCIMIENTO: formData.FEC_VENCIMIENTO,
             ESTADO: formData.ESTADO,
         }),
     },
 
     transformConfig: {
-        ESTADO: (item) => (item.ESTADO === 1 ? "PAGADA" : "ANULADA"),
+        DSC_SALETYPE: (item) => (item.ESTADO_CREDITO === 0 ? "Venta a contado" : "Venta a crédito"),
+        ESTADO: (item) => {
+            switch (item.ESTADO) {
+                case 1:
+                    return "PAGADA";
+                case 2:
+                    return "ANULADA";
+                case 3:
+                    return "PENDIENTE";
+                default:
+                    return "DESCONOCIDO";
+            }
+        },
         FEC_VENTA: (item) => item.FEC_VENTA
-            ? new Date(item.FEC_VENTA).toLocaleDateString("es-ES", { 
-                day: "2-digit", 
-                month: "long", 
-                year: "numeric" 
-            }) + " " + new Date(item.FEC_VENTA).toLocaleTimeString("es-ES", { 
-                hour: "2-digit", 
-                minute: "2-digit", 
-                second: "2-digit" 
+            ? new Date(item.FEC_VENTA).toLocaleDateString("es-ES", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }) + " " + new Date(item.FEC_VENTA).toLocaleTimeString("es-ES", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
             })
             : null,
     },

@@ -8,7 +8,7 @@ import db from '../db.js';
 
 
 export const createSale = async (req, res) => {
-    const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, details_list, FEC_VENCIMIENTO } = req.body;
+    const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, ESTADO, details_list, FEC_VENCIMIENTO } = req.body;
 
     try {
 
@@ -55,7 +55,7 @@ export const createSale = async (req, res) => {
             ESTADO_CREDITO: estadoCredito,
             MONT_SUBTOTAL: montSubtotal,
             PORCENT_DESCUENTO: porcentDescuento,
-            ESTADO: 1
+            ESTADO: ESTADO,
         });
 
 
