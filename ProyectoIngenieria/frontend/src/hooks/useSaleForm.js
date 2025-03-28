@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import handleApiCall from "../utils/handleApiCall";
-import { salesConfig } from "../config/entities/salesConfig";
+import handleApiCall from '../utils/handleApiCall';
+import { salesConfig } from '../config/entities/salesConfig';
 import { toast } from "sonner";
-
+import { validateSale } from '../schemas/validations/validateSale';
 const useSaleForm = () => {
 
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
@@ -11,6 +11,7 @@ const useSaleForm = () => {
     const [selectedClient, setSelectedClient] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
     const [selectedSaleType, setSelectedSaleType] = useState(3);
+    const [creditDueDate, setCreditDueDate] = useState(null);
     const [note, setNote] = useState("");
     const [taxRate, setTaxRate] = useState(0);
     const [discount, setDiscount] = useState(0);
@@ -87,22 +88,25 @@ const useSaleForm = () => {
     };
 
     const handleSubmit = async () => {
-        if (selectedSaleType === 3) {
-            toast.error("Debe seleccionar el tipo de venta (Contado o Crédito)");
-            return;
-        }
 
-        if (selectedProducts.length === 0) {
-            toast.error("Debe seleccionar al menos un producto para realizar la venta.");
-            return;
-        }
+        const validationErrors = validateSale({
+            selectedSaleType,
+            selectedClient,
+            creditDueDate,
+            selectedProducts,
+            selectedPaymentMethod,
+            taxRate,
+            discount
+        });
 
-        if (!selectedPaymentMethod) {
-            toast.error("Debe seleccionar un método de pago.");
+        if (validationErrors.length > 0) {
+            validationErrors.forEach(error => toast.error(error));
             return;
         }
 
         const { subtotal, discountAmount } = calculateTotal();
+
+        const ESTADO = selectedSaleType === 1 ? 3 : 1;
 
         const saleData = salesConfig.transformData.toBackend({
             ID_CLIENTE: selectedClient && selectedClient !== 0 ? Number(selectedClient) : null,
@@ -113,7 +117,8 @@ const useSaleForm = () => {
             MONT_SUBTOTAL: subtotal,
             PORCENT_DESCUENTO: discountAmount,
             PRODUCTS_LIST: selectedProducts,
-            ESTADO: 1,
+            FEC_VENCIMIENTO: creditDueDate,
+            ESTADO: ESTADO, 
         });
 
         console.log("Datos de la venta:", JSON.stringify(saleData, null, 2));
@@ -160,6 +165,8 @@ const useSaleForm = () => {
         setConfirmationModalOpen,
         isConfirmationModalOpen,
         confirmationCallback,
+        creditDueDate,
+        setCreditDueDate,
     };
 };
 
