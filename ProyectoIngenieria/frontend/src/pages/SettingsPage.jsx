@@ -11,10 +11,11 @@ function SettingsPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [initialData, setInitialData] = useState(null);
+  const [empresaID, setEmpresaID] = useState(null);
 
 
   // const response = await handleApiCallSetting(() => {settingConfig.api.fetchAll(), "Datos Cargados Correctamente"});
-  console.log("Settings Page: ", settingConfig.api.fetchAll());
+  //console.log("Settings Page: ", settingConfig.api.fetchAll());
 
   useEffect(() => {
     document.title = "Perfil";
@@ -38,6 +39,7 @@ function SettingsPage() {
           //console.log("Datos transformados:", frontendData);
     
           setInitialData(frontendData);
+          setEmpresaID(data[0].ID_EMPRESA); // Debug
         } else {
           console.error("La respuesta del backend no contiene datos válidos.");
         }
@@ -48,29 +50,48 @@ function SettingsPage() {
     fetchInitialData();
   }, [isAuthenticated, navigate]);
 
-  const onSubmit = async (mode, data) => {
+  const {
+    entityName,
+    titlePage,
+    entityMessage,
+    fields,
+    api,
+    transformData,
+    actions,
+  }= settingConfig;
+
+
+
+  const onSubmit = async (data) => {
     try {
-      const backendData = await settingConfig.transformData.toBackend(data);
-      const formDataObj = {};
+      const updateData = {
+        ...data,
+        id: empresaID
+      };
+      console.log("onSubmit en SettingPage",updateData);
+      const backendData = await settingConfig.transformData.toBackend(updateData);
+      console.log("Datos transformados para el backend:", backendData);
+      
+      // const formDataObj = {};
 
-      for (const [key, value] of backendData.entries()) {
-        formDataObj[key] = value;
-      }
-      //console.log("Datos enviados al backend:", formDataObj);
+      // for (const [key, value] of Object.entries(backendData)) {
+      //   formDataObj[key] = value;
+      // }
+      console.log("Datos enviados al BACKEND:", backendData);
 
-      if (mode === "edit") {
-        const settingId = parseInt(backendData.get("ID_EMPRESA"), 10);
+        //const settingId = parseInt(backendData.get("ID_EMPRESA"), 10);
         await handleApiCallSetting(
-          () => settingConfig.api.update(settingId, backendData),
+          () => api.update(backendData),
           "Configuracion Actualizada Correctamente."
         );
-      }
       return { success: true };
     } catch (error) {
       console.error("Error:", error);
             return { success: false };
     }
   };
+
+  
 
   console.log("Datos Inicializados: ", initialData);
   if (!initialData) {
@@ -87,6 +108,7 @@ function SettingsPage() {
       <div className="card-body-settings">
         <SettingsForm 
           initialData={initialData}
+          fields= {fields}
           onSubmit={onSubmit}
         />
       </div>

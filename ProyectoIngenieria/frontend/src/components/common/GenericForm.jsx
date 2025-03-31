@@ -18,6 +18,8 @@ function GenericForm({
     onCancel,
 }) {
 
+    //console.log("onSubmit recibido en GenericForm:", onSubmit);
+
     const [errorMessages, setErrorMessages] = useState([]);
     const {
         formData,
@@ -145,17 +147,17 @@ function GenericForm({
         // Agregar soporte para NumberInput
     if (field.type === "numberinput") {
         //console.log("Valor de rango en GenericForm: ", formData[field.type]); //Debug
-        return (
-            <NumberInput
-                id={field.name}
-                min={field.min}
-                max={field.max}
-                initialValue={formData[field.name]}
-                onChange={(id, newValue) => handleChange(id, newValue)}
-                mode={mode}
-                label={field.label}
-            />
-        );
+        // return (
+        //     <NumberInput
+        //         id={field.name}
+        //         min={field.min}
+        //         max={field.max}
+        //         initialValue={formData[field.name]}
+        //         onChange={(id, newValue) => handleChange(id, newValue)}
+        //         mode={mode}
+        //         label={field.label}
+        //     />
+        // );
     }
 
         const isBlocked = isCedulaValid && ["nombre", "primerApellido", "segundoApellido"].includes(field.name);

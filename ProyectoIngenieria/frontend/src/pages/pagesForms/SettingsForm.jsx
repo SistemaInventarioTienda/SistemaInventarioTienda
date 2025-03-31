@@ -1,21 +1,21 @@
 //SettingsForm.jsx
 import React from 'react';
 import GenericForm from '../../components/common/GenericForm';
-import { settingConfig } from '../../config/entities/settingConfig';
+//import { settingConfig } from '../../config/entities/settingConfig';
 
 
 
 // FileInput
-const SettingsForm = ({ initialData, onSubmit, onCancel }) => {
+const SettingsForm = ({ initialData, fields, onSubmit, onCancel }) => {
     
-
+    //console.log("onSubmit recibido en SettingsForm:", onSubmit);
     
     return(
         <GenericForm
             entityName={"Ajuste"}
             mode="edit"
             initialData={initialData}
-            fields={settingConfig.fields}
+            fields={fields}
             onSubmit={onSubmit}
             onCancel={onCancel}
         />

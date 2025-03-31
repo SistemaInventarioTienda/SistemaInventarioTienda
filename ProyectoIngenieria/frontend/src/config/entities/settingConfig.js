@@ -71,7 +71,28 @@ export const settingConfig = {
     },
 
     toBackend: async (formData) => {
+      if (!formData) {
+        throw new Error("formData es undefined");
+      }
+
+      const requiredFields = [
+        "id",
+        "rango",
+        "nombre",
+        "telefono",
+        "correo",
+        "direccion",
+        "eslogan",
+      ];
+      const missingFields = requiredFields.filter((field) => !formData[field]);
+
+      if (missingFields.length > 0) {
+        throw new Error(
+          `Campos faltantes en formData: ${missingFields.join(", ")}`
+        );
+      }
       const data = {
+        ID_EMPRESA: formData.id,
         DSC_RANGO_STOCK: formData.rango,
         DSC_NOMBRE: formData.nombre,
         NUM_TELEFONO: formData.telefono,
@@ -90,4 +111,4 @@ export const settingConfig = {
   },
 };
 
-console.log("Settings Configurations: ", settingConfig.api.fetchAll());
+//console.log("Settings Configurations: ", settingConfig.api.fetchAll());
