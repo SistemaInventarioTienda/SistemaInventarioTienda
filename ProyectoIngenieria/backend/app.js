@@ -15,6 +15,9 @@ import creditRoutes from "./routes/credit.routes.js";
 
 import shoppingRoutes from "./routes/shopping.routes.js";
 
+//nuevo
+import configRoutes from "./routes/config.routes.js";
+
 import { FRONTEND_URL } from "./config.js";
 
 const app = express();
@@ -39,6 +42,7 @@ app.use("/api/subcategory", subcategoryRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/sale", saleRoutes);
 app.use("/api/shopping", shoppingRoutes);
+app.use("/api/config", configRoutes);
 app.use("/api/credit", creditRoutes);
 app.use('/uploads', express.static('uploads'));
 

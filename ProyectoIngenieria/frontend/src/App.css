@@ -55,6 +55,8 @@
   --color-status-pill-active-text: #4CAF50;
   --color-status-pill-inactive-bg: #FFEBEE;
   --color-status-pill-inactive-text: #F44336;
+  --color-status-pill-pending-bg: #FFEBEE;
+  --color-status-pill-pending-text: #FF9800;
   /* Pagination - Light Mode */
   --color-pagination-bg: #f1f1f1;
   --color-pagination-hover-bg: #05004E;
@@ -119,6 +121,8 @@
   --color-status-pill-active-text: #66bb6a;
   --color-status-pill-inactive-bg: rgba(244, 67, 54, 0.15);
   --color-status-pill-inactive-text: #ef5350;
+  --color-status-pill-pending-bg: #303030;
+  --color-status-pill-pending-text: #FFB74D;
   /* Pagination - Dark Mode */
   --color-pagination-bg: #252538;
   --color-pagination-hover-bg: #4a6bff;
