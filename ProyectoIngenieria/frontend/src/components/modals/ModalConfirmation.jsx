@@ -21,7 +21,8 @@ const ModalConfirmation = ({
     delete: "Eliminar",
     anulate: "Anular",
     logout: "Cerrar Sesión",
-    make_sale: "Realizar nueva"
+    make_sale: "Realizar nueva",
+    make_purchase: "Realizar nueva"
   };
 
   const translatedAction = actionTranslations[action] || action;

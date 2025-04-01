@@ -34,7 +34,7 @@ const Sidebar = () => {
                 { path: '/sales/new', icon: ScanBarcode, text: 'Nueva Venta' }
             ]
         },
-        { key: 'shopping', path: '/shopping', icon: FileText, text: 'Compras' },
+        { key: 'shopping', path: '/shopping/new', icon: FileText, text: 'Compras' },
         { key: 'reports', path: '/reports', icon: BarChart2, text: 'Reportes' },
     ];
 

@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { default as useSaleForm } from '../hooks/useSaleForm';
+import useShoppingForm from '../hooks/useShoppingForm';
 import PageLayout from "../components/layout/PageLayout";
-import { SalesDetailsCard, SalesSummaryCard } from "../components/features/sales";
+import { ShoppingDetailsCard, ShoppingSummaryCard } from "../components/features/shoppings";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
-import "./styles/AddSalePage.css"
+import "./styles/AddShopppingPage.css"
 
-const AddSalePage = () => {
-    const saleForm = useSaleForm();
+
+const AddShoppingPage = () => {
+    const shoppingForm = useShoppingForm();
     const { permissions } = usePermissions();
     const navigate = useNavigate();
 
@@ -16,7 +17,7 @@ const AddSalePage = () => {
         if (permissions.home === undefined) return;
 
         if (!permissions.user) {
-            toast.error("No tienes permiso para acceder a ventas");
+            toast.error("No tienes permiso para acceder a compras");
             navigate("/");
         }
     }, [permissions, navigate]);
@@ -26,15 +27,15 @@ const AddSalePage = () => {
             <div className="page-header">
                 <div>
                     <h1>Nueva Venta</h1>
-                    <p>Seleccione o digite los datos correspondientes para realizar una nueva venta</p>
+                    <p>Seleccione o digite los datos correspondientes para realizar una nueva compra</p>
                 </div>
             </div>
             <div className="sales-grid">
-                <SalesDetailsCard saleForm={saleForm} />
-                <SalesSummaryCard saleForm={saleForm} />
+                <ShoppingDetailsCard shoppingForm={shoppingForm} />
+                <ShoppingSummaryCard shoppingForm={shoppingForm} />
             </div>
         </PageLayout>
     );
 };
 
-export default AddSalePage;
+export default AddShoppingPage;
