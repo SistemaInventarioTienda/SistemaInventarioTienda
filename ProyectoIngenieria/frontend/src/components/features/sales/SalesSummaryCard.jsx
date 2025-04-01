@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Select, Button, Textarea, Input } from "../../common";
+import { DatePickerComponent } from '../../features/sales';
 import { ModalConfirmation } from "../../modals";
 import { useEntityPage } from "../../../hooks/useEntityPage";
 import { getClients } from "../../../api/client";
@@ -48,6 +49,8 @@ const SalesSummaryCard = ({ saleForm }) => {
                     name="saleType"
                 />
 
+                <DatePickerComponent saleForm={saleForm} />
+
                 <label className="sales-card-label">
                     Cliente de la compra (Opcional)
                 </label>
@@ -62,8 +65,8 @@ const SalesSummaryCard = ({ saleForm }) => {
                 <Select
                     options={[
                         { value: "", label: "Seleccione una opción válida" },
-                        { value: "sinpe", label: "Sinpe Movil" },
-                        { value: "efectivo", label: "Pago en efectivo" },
+                        { value: "Sinpe Movil", label: "Sinpe Movil" },
+                        { value: "Pago en efectivo", label: "Pago en efectivo" },
                     ]}
                     label="Seleccionar Método de Pago"
                     value={saleForm.selectedPaymentMethod}
@@ -79,6 +82,14 @@ const SalesSummaryCard = ({ saleForm }) => {
                     style={{ height: '100px' }}
                     className="sales-textarea"
                     placeholder="Agregar una nota o comentario"
+                />
+
+                <label className="sales-card-label">Impuesto de la venta</label>
+
+                <Input
+                    type="number"
+                    value={saleForm.taxRate}
+                    onChange={(e) => saleForm.setTaxRate(Number(e.target.value))}
                 />
 
                 <label className="sales-card-label">Descuento a aplicar (Opcional)</label>
@@ -103,7 +114,7 @@ const SalesSummaryCard = ({ saleForm }) => {
                         <span>₡{subtotalAfterDiscount}</span>
                     </div>
                     <div className="sales-summary-row">
-                        <span>Impuesto (13%):</span>
+                        <span>Impuesto {saleForm.taxRate}%:</span>
                         <span>₡{taxAmount}</span>
                     </div>
                     <div className="sales-summary-total">
@@ -132,7 +143,7 @@ const SalesSummaryCard = ({ saleForm }) => {
                     cancelButtonText="Cancelar"
                 />
             </div>
-        </div>
+        </div >
     );
 };
 

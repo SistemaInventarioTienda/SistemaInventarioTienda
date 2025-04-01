@@ -87,7 +87,7 @@ function HomePage() {
           icon={<Tag className="h-6 w-6" />}
         />
         <MetricCard
-          onClick={() => navigate("/category")}
+          onClick={() => navigate("/product")}
           title="Productos Totales"
           value={metrics.products}
           icon={<Box className="h-6 w-6" />}

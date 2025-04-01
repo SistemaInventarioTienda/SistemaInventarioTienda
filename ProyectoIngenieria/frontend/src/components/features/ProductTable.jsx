@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Input } from "../common";
 import { Plus, Minus, Trash } from "lucide-react";
 import "./styles/productTable.css";
-
+import { getProductById } from '../../api/product';
 const ActionButton = ({ onClick, color, children }) => (
     <Button
         className="btn me-3 p-0"
@@ -34,6 +34,28 @@ const ActionsCell = ({ actions, rowData }) => (
 );
 
 const ProductTable = ({ selectedProducts, updateProductQuantity, removeProduct, isViewMode = false }) => {
+    const [productNames, setProductNames] = useState({});
+    useEffect(() => {
+        // En tu useEffect
+        const fetchProductNames = async () => {
+            const names = {};
+            for (const product of selectedProducts) {
+                try {
+                    const data = await getProductById(product.id);
+                    names[product.id] = data.DSC_NOMBRE;
+                } catch (error) {
+                    console.error("Error obteniendo nombre del producto:", error);
+                    names[product.id] = "Producto no encontrado";
+                }
+            }
+            setProductNames(names);
+        };
+
+        if (isViewMode) {
+            fetchProductNames();
+        }
+    }, [selectedProducts, isViewMode]);
+
     const handleQuantityChange = (id, newQuantity) => {
         if (newQuantity < 1) return;
         updateProductQuantity(id, newQuantity);
@@ -48,43 +70,55 @@ const ProductTable = ({ selectedProducts, updateProductQuantity, removeProduct, 
                         <th>Precio</th>
                         <th>Cantidad</th>
                         <th>Subtotal</th>
-                        {!isViewMode && <th>Acciones</th>} {/* Oculta acciones si está en modo vista */}
+                        {!isViewMode && <th>Acciones</th>}
                     </tr>
                 </thead>
                 <tbody>
                     {selectedProducts.length > 0 ? (
-                        selectedProducts.map((product) => (
-                            <tr key={product.id}>
-                                <td>{product.name}</td>
-                                <td>₡{product.price.toLocaleString()}</td>
-                                <td>
-                                    {isViewMode ? ( // Si está en modo vista, solo muestra el número
-                                        product.quantity
-                                    ) : (
-                                        <Input
-                                            type="number"
-                                            min="1"
-                                            value={product.quantity}
-                                            onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value, 10) || 1)}
-                                            style={{ textAlign: "center" }}
-                                        />
-                                    )}
-                                </td>
-                                <td>₡{product.subtotal.toLocaleString()}</td>
-                                {!isViewMode && (
+                        selectedProducts.map((product) => {
+                            const price = product.price || 0;
+                            const quantity = product.quantity || 0;
+                            const subtotal = product.subtotal ?? price * quantity;
+
+                            return (
+                                <tr key={product.id}>
                                     <td>
-                                        <ActionsCell
-                                            rowData={product}
-                                            actions={{
-                                                increment: (row) => handleQuantityChange(row.id, row.quantity + 1),
-                                                decrement: (row) => handleQuantityChange(row.id, row.quantity - 1),
-                                                delete: (row) => removeProduct(row.id),
-                                            }}
-                                        />
+                                        {isViewMode
+                                            ? productNames[product.id]
+                                            : product.name || "Sin nombre"}
                                     </td>
-                                )}
-                            </tr>
-                        ))
+                                    <td>₡{price.toLocaleString()}</td>
+                                    <td>
+                                        {isViewMode ? (
+                                            quantity
+                                        ) : (
+                                            <Input
+                                                type="number"
+                                                min="1"
+                                                value={quantity}
+                                                onChange={(e) =>
+                                                    handleQuantityChange(product.id, parseInt(e.target.value, 10) || 1)
+                                                }
+                                                style={{ textAlign: "center" }}
+                                            />
+                                        )}
+                                    </td>
+                                    <td>₡{subtotal.toLocaleString()}</td>
+                                    {!isViewMode && (
+                                        <td>
+                                            <ActionsCell
+                                                rowData={product}
+                                                actions={{
+                                                    increment: (row) => handleQuantityChange(row.id, row.quantity + 1),
+                                                    decrement: (row) => handleQuantityChange(row.id, row.quantity - 1),
+                                                    delete: (row) => removeProduct(row.id),
+                                                }}
+                                            />
+                                        </td>
+                                    )}
+                                </tr>
+                            );
+                        })
                     ) : (
                         <tr>
                             <td colSpan={isViewMode ? 4 : 5} className="no-data-message">

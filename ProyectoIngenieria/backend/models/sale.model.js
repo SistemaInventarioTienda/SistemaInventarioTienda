@@ -48,7 +48,11 @@ const sale = db.define('sale',{
         type: DataTypes.DOUBLE,
         allowNull: false,
         defaultValue: 0,
-      }
+      },
+      ESTADO: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    }
 },{
     timestamps: false,
     tableName: 'tsit_venta'
@@ -149,7 +153,7 @@ const payment = db.define('payment',{
         type: DataTypes.DATE,
         allowNull: false,
       },
-      MONT_ABONADO:{
+      MON_ABONADO:{
         type: DataTypes.DOUBLE,
         allowNull: false,
       }

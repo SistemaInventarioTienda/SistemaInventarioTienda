@@ -58,3 +58,13 @@ export const updateProduct = async (id, productData) => {
         throw error;
     }
 };
+
+export const getProductById = async (id) => {
+    try {
+        const response = await axios.get(`/product/get_product/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error obteniendo el producto:', error.message);
+        throw error;
+    }
+};

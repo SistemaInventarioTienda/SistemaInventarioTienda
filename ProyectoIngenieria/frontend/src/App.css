@@ -55,6 +55,8 @@
   --color-status-pill-active-text: #4CAF50;
   --color-status-pill-inactive-bg: #FFEBEE;
   --color-status-pill-inactive-text: #F44336;
+  --color-status-pill-pending-bg: #FFEBEE;
+  --color-status-pill-pending-text: #FF9800;
   /* Pagination - Light Mode */
   --color-pagination-bg: #f1f1f1;
   --color-pagination-hover-bg: #05004E;
@@ -71,58 +73,66 @@
 
 .dark-mode {
   /* Main Theme Colors - Dark Mode */
-  --color-primary: #6b63ff;
-  --color-secondary: #1a1a2e;
-  --color-card: #242438;
-  --color-font: #ffffff;
-  --color-font-secondary: #ffffff;
-  /* Status Colors remain the same for consistency */
+  --color-primary: #4a6bff;
+  --color-secondary: #1e1e2d;
+  --color-card: #2d2d42;
+  --color-font: #f0f0f0;
+  --color-font-secondary: #e0e0e0;
+  /* Status Colors - Dark Mode */
+  --color-error: #F44336;
+  --color-warning: #F9CB32;
+  --color-info: #007AFF;
+  --color-success: #4CAF50;
   /* UI Element Colors - Dark Mode */
-  --color-overlay: rgba(0, 0, 0, 0.8);
-  --color-border: #363651;
-  --color-icon-button: #6b63ff;
+  --color-overlay: rgba(0, 0, 0, 0.75);
+  --color-border: #3f3f5c;
+  --color-icon-button: #4a6bff;
   --color-icon: #FFFFFF;
-  --color-toggle-btn-hover: rgba(107, 99, 255, 0.1);
+  --color-toggle-btn-hover: rgba(74, 107, 255, 0.15);
   /* Navigation & Sidebar Colors - Dark Mode */
-  --color-offcanvas: #242438;
-  --color-offcanvas-border: #363651;
+  --color-offcanvas: #20203a;
+  --color-offcanvas-border: #3f3f5c;
   /* Table Colors - Dark Mode */
-  --color-table-hover: rgba(107, 99, 255, 0.1);
-  --color-table-header: #1a1a2e;
-  --color-table-background: #242438;
+  --color-table-hover: rgba(74, 107, 255, 0.15);
+  --color-table-header: #20203a;
+  --color-table-background: #2d2d42;
   /* Form Elements - Dark Mode */
-  --color-input-background: #1a1a2e;
-  --color-input-border: #363651;
-  --color-button-hover: #5750ff;
-  --color-input-readonly-background: #2C2F33;
+  --color-input-background: #252538;
+  --color-input-border: #3f3f5c;
+  --color-button-hover: #3a5aee;
+  --color-input-readonly-background: #32324d;
   /* File Upload Elements - Dark Mode */
-  --color-file-btn-hover: rgba(107, 99, 255, 0.1);
-  --color-file-btn-border: #6b63ff;
-  --color-file-btn-text: #ffffff;
-  --color-selected-file-border: #6b63ff;
-  --color-selected-file-background: #1a1a2e;
-  --color-selected-file-text: #ffffff;
-  --color-selected-file-icon: #6b63ff;
+  --color-file-btn-hover: rgba(74, 107, 255, 0.15);
+  --color-file-btn-border: #4a6bff;
+  --color-file-btn-text: #f0f0f0;
+  --color-selected-file-border: #4a6bff;
+  --color-selected-file-background: #252538;
+  --color-selected-file-text: #f0f0f0;
+  --color-selected-file-icon: #4a6bff;
   /* Metric Cards - Dark Mode */
-  --color-metric-card-background: #242438;
-  --color-metric-card-shadow: rgba(0, 0, 0, 0.3);
-  --color-metric-card-hover-shadow: rgba(0, 0, 0, 0.4);
-  --color-metric-card-icon-background: #1a1a2e;
-  --color-metric-card-title: #a0aec0;
-  --color-metric-card-value: #ffffff;
+  --color-metric-card-background: #2d2d42;
+  --color-metric-card-shadow: rgba(0, 0, 0, 0.25);
+  --color-metric-card-hover-shadow: rgba(74, 107, 255, 0.2);
+  --color-metric-card-icon-background: #252538;
+  --color-metric-card-title: #b0b7c4;
+  --color-metric-card-value: #f0f0f0;
   /* Status Pills - Dark Mode */
-  --color-status-pill-active-bg: rgba(76, 175, 80, 0.2);
-  --color-status-pill-inactive-bg: rgba(244, 67, 54, 0.2);
+  --color-status-pill-active-bg: rgba(76, 175, 80, 0.15);
+  --color-status-pill-active-text: #66bb6a;
+  --color-status-pill-inactive-bg: rgba(244, 67, 54, 0.15);
+  --color-status-pill-inactive-text: #ef5350;
+  --color-status-pill-pending-bg: #303030;
+  --color-status-pill-pending-text: #FFB74D;
   /* Pagination - Dark Mode */
-  --color-pagination-bg: #1a1a2e;
-  --color-pagination-hover-bg: #6b63ff;
+  --color-pagination-bg: #252538;
+  --color-pagination-hover-bg: #4a6bff;
   --color-pagination-hover-text: #fff;
-  --color-pagination-active-bg: #6b63ff;
+  --color-pagination-active-bg: #4a6bff;
   --color-pagination-active-text: #fff;
   /* Scrollbar variables - Dark Mode */
-  --scrollbar-track: rgba(255, 255, 255, 0.1);
-  --scrollbar-thumb: rgba(255, 255, 255, 0.3);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.5);
+  --scrollbar-track: rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb: rgba(74, 107, 255, 0.3);
+  --scrollbar-thumb-hover: rgba(74, 107, 255, 0.5);
   --scrollbar-arrow: var(--color-font);
   --scrollbar-arrow-bg: var(--color-card);
 }

@@ -1,5 +1,4 @@
-// Configuración de la entidad "Compras"
-
+import { getProductById } from "../../api/product";
 import {
     getAllSales,
     searchSale,
@@ -7,36 +6,34 @@ import {
     deleteSale,
 } from "../../api/sale";
 
-// Configuración principal de la entidad
 export const salesConfig = {
     entityName: "Venta",
     titlePage: "Ventas",
     entityMessage: "Gestión de las ventas de la tienda",
-    entityKey: "sales", // Clave única para identificar los datos de esta entidad
+    entityKey: "sales",
 
-    // Configuración de columnas para la tabla
     columns: [
-        { field: "CLIENTE", label: "Cliente" },
-        { field: "PRODUCTO", label: "Producto" },
+        { field: "DSC_NOMBRE", label: "Cliente" },
         { field: "FEC_VENTA", label: "Fecha de venta" },
-        { field: "MON_TOTAL", label: "Total" },
+        { field: "METODO_PAGO", label: "Método de pago" },
+        { field: "DSC_SALETYPE", label: "Tipo de venta" },
+        { field: "MONT_SUBTOTAL", label: "Subtotal" },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" },
     ],
 
     fields: [
-        { name: "ID_CLIENTE", label: "Cliente", type: "text" },
+        { name: "DSC_NOMBRE", label: "Cliente", type: "text" },
         { name: "FEC_VENTA", label: "Fecha de venta", type: "text" },
+        { name: "DSC_SALETYPE", label: "Tipo de venta", type: "text" },
         { name: "METODO_PAGO", label: "Método de pago", type: "text" },
         { name: "PORCENT_IMPUESTO", label: "Porcentaje de Impuesto", type: "text" },
         { name: "PORCENT_DESCUENTO", label: "Porcentaje de Descuento", type: "text" },
         { name: "MONT_SUBTOTAL", label: "Subtotal", type: "text" },
-        { name: "MON_TOTAL", label: "Total", type: "text" },
         { name: "DSC_VENTA", label: "Descripción", type: "textarea" },
         { name: "ESTADO", label: "Estado", type: "text" },
     ],
 
-    // Funciones API específicas de la entidad
     api: {
         fetchAll: getAllSales,
         searchByName: searchSale,
@@ -44,27 +41,29 @@ export const salesConfig = {
         delete: deleteSale,
     },
 
-    // Transformaciones de datos
     transformData: {
         toFrontend: (sale) => ({
+            ID_VENTA: sale.ID_VENTA,
             ID_CLIENTE: sale.ID_CLIENTE,
+            DSC_NOMBRE: sale.DSC_NOMBRE || sale.Client?.DSC_NOMBRE || "Sin nombre",
             FEC_VENTA: sale.FEC_VENTA,
-            METODO_PAGO: sale.METODO_PAGO,
             PORCENT_IMPUESTO: sale.PORCENT_IMPUESTO,
-            PORCENT_DESCUENTO: sale.PORCENT_DESCUENTO,
-            MONT_SUBTOTAL: sale.MONT_SUBTOTAL,
-            MON_TOTAL: sale.MON_TOTAL,
+            METODO_PAGO: sale.METODO_PAGO,
             DSC_VENTA: sale.DSC_VENTA,
+            ESTADO_CREDITO: sale.ESTADO_CREDITO,
+            MONT_SUBTOTAL: sale.MONT_SUBTOTAL,
+            PORCENT_DESCUENTO: sale.PORCENT_DESCUENTO,
+            DSC_SALETYPE: sale.ESTADO_CREDITO === 0 ? "Venta a contado" : "Venta a crédito",
             ESTADO: sale.ESTADO,
-            // PRODUCTS_LIST: sale.details_list.map(product => ({
-            //     id: product.ID_PRODUCTO,
-            //     price: product.MONTO_UNITARIO,
-            //     quantity: product.CANTIDAD,
-            // })),
+            PRODUCTS_LIST: sale.DETALLES?.map(product => ({
+                id: product.ID_PRODUCTO,
+                price: product.MONT_UNITARIO,
+                quantity: product.CANTIDAD,
+            })) || [],
+            CAN_CANCEL: sale.CAN_CANCEL,
         }),
 
         toBackend: (formData) => ({
-
             ID_CLIENTE: formData.ID_CLIENTE,
             PORCENT_IMPUESTO: formData.PORCENT_IMPUESTO,
             METODO_PAGO: formData.METODO_PAGO,
@@ -72,20 +71,43 @@ export const salesConfig = {
             ESTADO_CREDITO: formData.ESTADO_CREDITO,
             MONT_SUBTOTAL: formData.MONT_SUBTOTAL,
             PORCENT_DESCUENTO: formData.PORCENT_DESCUENTO,
-            details_list: formData.PRODUCTS_LIST.map(product => ({
+            details_list: formData.PRODUCTS_LIST?.map(product => ({
                 ID_PRODUCTO: product.id,
                 MONTO_UNITARIO: product.price,
                 CANTIDAD: product.quantity,
-            })),
+            })) || [],
+            FEC_VENCIMIENTO: formData.FEC_VENCIMIENTO,
             ESTADO: formData.ESTADO,
         }),
     },
 
     transformConfig: {
-        ESTADO: (item) => (item.ESTADO === 1 ? "PAGADA" : "ANULADA"),
+        DSC_SALETYPE: (item) => (item.ESTADO_CREDITO === 0 ? "Venta a contado" : "Venta a crédito"),
+        ESTADO: (item) => {
+            switch (item.ESTADO) {
+                case 1:
+                    return "PAGADA";
+                case 2:
+                    return "ANULADA";
+                case 3:
+                    return "PENDIENTE";
+                default:
+                    return "DESCONOCIDO";
+            }
+        },
+        FEC_VENTA: (item) => item.FEC_VENTA
+            ? new Date(item.FEC_VENTA).toLocaleDateString("es-ES", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }) + " " + new Date(item.FEC_VENTA).toLocaleTimeString("es-ES", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            })
+            : null,
     },
 
-    // Configuración de acciones permitidas
     actions: {
         delete: true,
         view: true,

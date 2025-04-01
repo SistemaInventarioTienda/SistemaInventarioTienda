@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Input, Textarea, InputFile, Select } from "./";
+import { Input, Textarea, InputFile, Select, NumberInput } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
 import { toast } from "sonner";
-import { useBarcodeScanner } from "../../hooks/useBarcodeScanner";
+// import { useBarcodeScanner } from "../../hooks/useBarcodeScanner";
 import ModalConfirmation from "../modals/ModalConfirmation";
+
 function GenericForm({
     mode,
     fields,
@@ -16,6 +17,8 @@ function GenericForm({
     onSubmit,
     onCancel,
 }) {
+
+    //console.log("onSubmit recibido en GenericForm:", onSubmit);
 
     const [errorMessages, setErrorMessages] = useState([]);
     const {
@@ -42,6 +45,8 @@ function GenericForm({
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    // const [quantity, setQuantity] = useState(1);
+
 
     // useBarcodeScanner({
     //     enabled: mode !== 'view',
@@ -76,6 +81,11 @@ function GenericForm({
             URL_IMAGEN: file ? null : prevData.URL_IMAGEN,
         }));
     };
+
+    //useState para componente de rango
+    // const handleQuantityChange = (newValue) => {
+    //     setQuantity(newValue);
+    //     };
 
     // Renderizador de campos dinámicos
     const renderField = (field) => {
@@ -133,6 +143,22 @@ function GenericForm({
                 />
             );
         }
+
+        // Agregar soporte para NumberInput
+    if (field.type === "numberinput") {
+        //console.log("Valor de rango en GenericForm: ", formData[field.type]); //Debug
+        // return (
+        //     <NumberInput
+        //         id={field.name}
+        //         min={field.min}
+        //         max={field.max}
+        //         initialValue={formData[field.name]}
+        //         onChange={(id, newValue) => handleChange(id, newValue)}
+        //         mode={mode}
+        //         label={field.label}
+        //     />
+        // );
+    }
 
         const isBlocked = isCedulaValid && ["nombre", "primerApellido", "segundoApellido"].includes(field.name);
 
@@ -193,6 +219,7 @@ function GenericForm({
                     />
                 </div>
             )}
+
 
             {/* Renderizar el campo de archivo al final */}
             {fileField && (
