@@ -13,6 +13,9 @@ const UserMenu = ({ isOpen }) => {
     const goToUserProfile = () => {
         navigate('/profile');
     };
+    const goToSettingProfile = () => {
+        navigate('/settings');
+    };
 
     const handleLogout = () => {
         setConfirmationModalOpen(true);
@@ -35,7 +38,7 @@ const UserMenu = ({ isOpen }) => {
                     <span className="dropdown-item" onClick={goToUserProfile}>
                         <User size={16} className="icon" /> Perfil
                     </span>
-                    <span className="dropdown-item" onClick={() => {/* futuro */ }}>
+                    <span className="dropdown-item" onClick={ goToSettingProfile }>
                         <Settings size={16} className="icon" /> Configuración
                     </span>
                     <button onClick={handleLogout} className="dropdown-item">
