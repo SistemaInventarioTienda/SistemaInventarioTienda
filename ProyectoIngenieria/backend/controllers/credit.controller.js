@@ -153,7 +153,7 @@ export const getAllPaymentByCredit = async (req, res) => {
             include: [
                 {
                     model: sale, 
-                    attributes: ['ID_VENTA'],
+                    attributes: ['ID_VENTA'], 
                     include: [
                         {
                             model: Client,
@@ -163,27 +163,53 @@ export const getAllPaymentByCredit = async (req, res) => {
                 },
                 {
                     model: payment,
-                    attributes: ['ID_ABONO','FEC_ABONO', 'MON_ABONADO'],
+                    attributes: ['ID_ABONO', 'FEC_ABONO', 'MON_ABONADO'],
                 }
             ],
             distinct: true
         });
 
-        if (rows.length === 0) {
+        const updatedRows = await Promise.all(rows.map(async (row) => {
+            const updatedPayments = await Promise.all(row.payments.map(async (payment) => {
+                const paymentDate = new Date(payment.FEC_ABONO);
+                const disableCancelButton = await ThirtyMinutesHavePassed(paymentDate);
+
+                return {
+                    ...payment.toJSON(),
+                    BTN_CANCEL:disableCancelButton, 
+                };
+            }));
+
+            return {
+                ...row.toJSON(),
+                payments: updatedPayments 
+            };
+        }));
+
+        if (updatedRows.length === 0) {
             return res.status(204).json({
                 message: "No se encontraron abonos realizados.",
             });
         }
 
-       
         res.json({
             total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            sales: rows,
+            sales: updatedRows, 
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
+async function ThirtyMinutesHavePassed(dateSale) {
+    const currentDate = await getDateCR();
+
+    const thirtyMinutesAgo = new Date(currentDate);
+    thirtyMinutesAgo.setMinutes(thirtyMinutesAgo.getMinutes() - 30);
+
+    return dateSale <= thirtyMinutesAgo;
+}
