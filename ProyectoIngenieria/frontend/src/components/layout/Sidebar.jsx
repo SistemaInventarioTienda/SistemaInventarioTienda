@@ -34,7 +34,17 @@ const Sidebar = () => {
                 { path: '/sales/new', icon: ScanBarcode, text: 'Nueva Venta' }
             ]
         },
-        { key: 'shopping', path: '/shopping', icon: FileText, text: 'Compras' },
+        {
+            key: 'shopping',
+            text: 'Compras',
+            icon: FileText,
+            iconOpened: <ChevronDown size={24} />,
+            iconClosed: <ChevronUp size={24} />,
+            subNav: [
+                { path: '/shopping/history', icon: FileText, text: 'Historial de compras' },
+                { path: '/shopping/new', icon: ScanBarcode, text: 'Nueva Compra' }
+            ]
+        },
         { key: 'reports', path: '/reports', icon: BarChart2, text: 'Reportes' },
     ];
 

@@ -194,6 +194,32 @@ export const deleteSupplier = async (req, res) => {
     }
 };
 
+export const getAllSupplierWithoutPagination = async (req, res) => {
+    try {
+        const suppliers = await Supplier.findAll({ 
+            attributes: { exclude: ['FEC_MODIFICADOEN', 'ID_PROVEEDOR'] },
+            include: [
+                {
+                    model: numberSupplier,
+                    attributes: ['DSC_TELEFONO'],
+                },
+                {
+                    model: mailSupplier,
+                    attributes: ['DSC_CORREO'],
+                },
+                {
+                    model: supplierType,
+                    attributes: ['DSC_NOMBRE']
+                }
+            ],
+        });
+
+        res.status(200).json({ suppliers });
+    } catch (error) {
+        console.error('Error al obtener los proveedores sin paginación:', error);
+        res.status(500).json({ message: 'Error desconocido', error });
+    }
+};
 
 export const getAllSupplierTypes = async (req, res) => {
     try {

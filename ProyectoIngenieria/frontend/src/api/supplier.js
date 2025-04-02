@@ -12,7 +12,7 @@ export const registerSupplier = async (supplierData) => {
     }
 };
 
-//funcion para obtener todos los proveedores.
+//funcion para obtener todos los proveedores. (con páginación)
 export const getSuppliers = async (page, pageSize, orderByField, order) => {
     try {
         const response = await axios.get('supplier/suppliers', {
@@ -24,6 +24,19 @@ export const getSuppliers = async (page, pageSize, orderByField, order) => {
         throw error;
     }
 };
+
+
+//funcion para obtener todos los proveedores. (sin paginación)
+export const getAllSuppliersWithoutPagination = async () => {
+    try {
+        const response = await axios.get('supplier/suppliersWithoutPag');
+        return response.data;
+    } catch (error) {
+        console.error('Error obteniendo los proveedores:', error.message);
+        throw error;
+    }
+};
+
 
 //funcion para eliminar un proveedor
 export const deleteSupplier = async (IDENTIFICADOR_PROVEEDOR) => {
