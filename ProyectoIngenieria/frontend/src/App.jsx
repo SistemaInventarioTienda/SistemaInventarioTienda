@@ -19,6 +19,8 @@ import SettingsPage from './pages/SettingsPage';
 import ProductPage from './pages/ProductPage';
 import SalePage from './pages/SalePage'
 import AddSalePage from './pages/AddSalePage';
+import CreditSalePage from './pages/CreditSalePage';
+
 import { Toaster } from "sonner";
 
 function App() {
@@ -95,12 +97,14 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
             <Route path="clients" element={<ClientPage />} />
-            <Route path="credits" element={<CreditPage />} />
+            
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage/>}/>
             <Route path="product" element={<ProductPage />} />
+            <Route path="sales/credit" element= {<CreditSalePage/>}></Route>
+            <Route path="credits" element={<CreditPage />} />
             <Route path="sales/history" element={<SalePage />} />
             <Route path="sales/new" element={<AddSalePage />} />
           </Routes>

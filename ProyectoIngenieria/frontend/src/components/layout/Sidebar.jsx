@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { useAuthPermissions } from '../../context/authPermissions';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, ScanBarcode } from 'lucide-react';
+import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, ScanBarcode, CreditCard } from 'lucide-react';
 import SubMenu from './SubMenu';
 import './styles/sidebar.css';
 
@@ -30,6 +30,7 @@ const Sidebar = () => {
             iconOpened: <ChevronDown size={24} />,
             iconClosed: <ChevronUp size={24} />,
             subNav: [
+                { path: 'sales/credit', icon: CreditCard, text: 'Credito' },
                 { path: '/sales/history', icon: FileText, text: 'Historial de ventas' },
                 { path: '/sales/new', icon: ScanBarcode, text: 'Nueva Venta' }
             ]
@@ -70,3 +71,4 @@ const Sidebar = () => {
 }
 
 export default Sidebar;
+
