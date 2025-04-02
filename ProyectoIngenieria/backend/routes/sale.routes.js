@@ -6,10 +6,10 @@ import { saleSchema, detailSchema } from "../schemas/sale.schema.js";
 
 const router = Router();
 
-router.post("/addSale", validateSchema(saleSchema), createSale);
-router.get("/getSales", getAllSales);
-router.post("/getOnlySale", getSaleDetails);
-router.get("/searchSale", searchSales);
+router.post("/addSale",auth , validateSchema(saleSchema), createSale);
+router.get("/getSales",auth ,getAllSales);
+router.post("/getOnlySale",auth, getSaleDetails);
+router.get("/searchSale",auth ,searchSales);
 
 
 export default router;
