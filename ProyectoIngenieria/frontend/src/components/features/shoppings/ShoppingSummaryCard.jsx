@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Select, Button, Textarea } from "../../common";
+import { DatePicker, Select, Button, Textarea } from "../../common";
 import { User } from "lucide-react";
 import { useEntityPage } from "../../../hooks/useEntityPage";
 import { getSuppliers } from "../../../api/supplier";
@@ -29,7 +29,6 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
         }))
     ];
 
-    const { total } = shoppingForm.calculateTotal();
 
     return (
         <div className="shoppings-card shoppings-card-fixed">
@@ -70,6 +69,18 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
                     name="paymentMethod"
                 />
 
+                <DatePicker
+                    label="Fecha de recepción de productos"
+                    value={shoppingForm.productReceiptDate}
+                    onChange={(date) => shoppingForm.setProductReceiptDate(date.toISOString().split("T")[0])}
+                    allowPastDates={true}
+                    className="input"
+                    placeholder="Seleccione fecha de recepción"
+                    dateFormat="d/m/Y"
+                    firstDayOfWeek={1}
+                    required
+                />
+
                 <label className="shoppings-card-label">
                     Nota o comentario
                 </label>
@@ -80,9 +91,11 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
                     placeholder="Agregar una nota o comentario"
                 />
 
-                <div className="shoppings-summary-total">
-                    <span>Total:</span>
-                    <span>₡{total}</span>
+                <div className="shoppings-summary">
+                    <div className="shoppings-summary-total">
+                        <span>Subtotal:</span>
+                        <span>₡{shoppingForm.total.toFixed(2)}</span>
+                    </div>
                 </div>
 
                 <Button

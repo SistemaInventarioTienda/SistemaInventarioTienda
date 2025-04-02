@@ -60,12 +60,13 @@ export const shoppingConfig = {
             DSC_METODO_PAGO: formData.DSC_METODO_PAGO,
             DSC_COMPRA: formData.DSC_COMPRA,
             PRODUCTS_LIST: formData.PRODUCTS_LIST?.map(product => ({
+                DSC_CODIGO_BARRAS: product.barcode,
                 MON_PRECIO_COMPRA: product.price,
                 MON_CANTIDAD: product.quantity,
             })) || [],
             MON_TOTAL: formData.MON_TOTAL,
+            FEC_ENTRADA: formData.FEC_ENTRADA,
             FEC_COMPRA: new Date().toISOString(),
-            FEC_ENTRADA: new Date().toISOString(),
         }),
     },
 

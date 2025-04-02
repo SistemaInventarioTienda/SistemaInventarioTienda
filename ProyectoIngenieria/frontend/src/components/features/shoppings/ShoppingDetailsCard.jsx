@@ -19,6 +19,7 @@ const ShoppingDetailsCard = ({ shoppingForm }) => {
             id: product.ID_PRODUCT,
             name: product.DSC_NOMBRE,
             price: product.MON_COMPRA,
+            barcode: product.DSC_CODIGO_BARRAS,
             quantity: 1,
             subtotal: product.MON_COMPRA,
         });

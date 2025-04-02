@@ -11,29 +11,20 @@ const useShoppingForm = () => {
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
     const [note, setNote] = useState("");
-    const [taxRate, setTaxRate] = useState(0);
-    const [discount, setDiscount] = useState(0);
+    const [productReceiptDate, setProductReceiptDate] = useState(null);
+    const [total, setTotal] = useState(0);
 
     const calculateTotal = () => {
-        const subtotal = selectedProducts.reduce((total, product) => total + product.subtotal, 0);
-        const discountAmount = (subtotal * discount) / 100;
-        const subtotalAfterDiscount = subtotal - discountAmount;
-        const taxAmount = (subtotalAfterDiscount * taxRate) / 100;
-        const total = subtotalAfterDiscount + taxAmount;
+        const subtotal = selectedProducts.reduce((total, product) =>
+            total + (product.price * product.quantity), 0);
 
-        return { subtotal, discountAmount, subtotalAfterDiscount, taxAmount, total };
+        setTotal(subtotal);
+        return { total: subtotal };
     };
 
     useEffect(() => {
-        if (discount < 0 || discount > 100) {
-            setDiscount(0);
-            toast.error("El descuento debe estar entre 0% y 100%");
-        }
-        if (taxRate < 0 || taxRate > 100) {
-            setTaxRate(0);
-            toast.error("El impuesto debe estar entre 0% y 100%");
-        }
-    }, [discount, taxRate]);
+        calculateTotal();
+    }, [selectedProducts]);
 
     const addProduct = (product) => {
         setSelectedProducts((prevProducts) => {
@@ -71,16 +62,16 @@ const useShoppingForm = () => {
         setSelectedSupplier(null);
         setSelectedPaymentMethod("");
         setNote("");
-        setDiscount(0);
-        setTaxRate(0);
+        setProductReceiptDate(null);
     };
 
     const handleSubmit = async () => {
-        console.log("selectedSupplier", selectedSupplier);
+
         const validationErrors = validateShopping({
             selectedSupplier,
             selectedPaymentMethod,
             selectedProducts,
+            productReceiptDate,
         });
 
         if (validationErrors.length > 0) {
@@ -95,7 +86,8 @@ const useShoppingForm = () => {
             DSC_METODO_PAGO: selectedPaymentMethod,
             DSC_COMPRA: note,
             PRODUCTS_LIST: selectedProducts,
-            MON_TOTAL: total
+            MON_TOTAL: total,
+            FEC_ENTRADA: productReceiptDate,
         });
 
         try {
@@ -110,7 +102,7 @@ const useShoppingForm = () => {
     };
 
     const handleSubmitWithConfirmation = () => {
-        if (!selectedSupplier || !note || discount === 0) {
+        if (!selectedSupplier || !note) {
             setConfirmationModalOpen(true);
             setConfirmationCallback(() => handleSubmit);
         } else {
@@ -123,13 +115,9 @@ const useShoppingForm = () => {
         selectedSupplier,
         selectedPaymentMethod,
         note,
-        discount,
-        taxRate,
         setSelectedSupplier,
         setSelectedPaymentMethod,
         setNote,
-        setDiscount,
-        setTaxRate,
         addProduct,
         updateProductQuantity,
         removeProduct,
@@ -138,6 +126,9 @@ const useShoppingForm = () => {
         setConfirmationModalOpen,
         isConfirmationModalOpen,
         confirmationCallback,
+        productReceiptDate,
+        setProductReceiptDate,
+        total,
     };
 };
 

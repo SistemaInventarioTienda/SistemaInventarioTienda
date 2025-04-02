@@ -63,6 +63,8 @@ export const EntityPage = forwardRef(({
     const handleAdd = () => {
         if (entityKey === "sales") {
             navigate("/sales/new");
+        } else if (entityKey === "shopping") {
+            navigate("shopping/new");
         } else {
             setModalMode("add");
             setModalData({});

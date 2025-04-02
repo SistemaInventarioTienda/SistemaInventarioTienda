@@ -5,7 +5,7 @@ import PageLayout from "../components/layout/PageLayout";
 import { ShoppingDetailsCard, ShoppingSummaryCard } from "../components/features/shoppings";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
-import "./styles/AddShopppingPage.css"
+import "./styles/AddShoppingPage.css"
 
 
 const AddShoppingPage = () => {
@@ -26,7 +26,7 @@ const AddShoppingPage = () => {
         <PageLayout>
             <div className="page-header">
                 <div>
-                    <h1>Nueva Venta</h1>
+                    <h1>Nueva Compra</h1>
                     <p>Seleccione o digite los datos correspondientes para realizar una nueva compra</p>
                 </div>
             </div>

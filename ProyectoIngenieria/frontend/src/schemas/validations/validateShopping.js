@@ -16,13 +16,9 @@ export const validateShopping = (shoppingData) => {
         errors.push("Debe seleccionar un método de pago");
     }
 
-    // Validar porcentajes
-    if (shoppingData.taxRate < 0 || shoppingData.taxRate > 100) {
-        errors.push("El impuesto debe estar entre 0% y 100%");
-    }
-
-    if (shoppingData.discount < 0 || shoppingData.discount > 100) {
-        errors.push("El descuento debe estar entre 0% y 100%");
+    // Validación de fecha de recepción
+    if (!shoppingData.productReceiptDate) {
+        errors.push("Debe especificar la fecha en que se recibieron los productos en inventario");
     }
 
     return errors;
