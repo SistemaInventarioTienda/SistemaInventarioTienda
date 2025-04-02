@@ -5,10 +5,12 @@ import ProductForm from "./pagesForms/ProductForm";
 import handleApiCall from "../utils/handleApiCall";
 import { usePermissions } from "../context/authPermissions";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
 export default function ProductPage() {
     const { permissions } = usePermissions();
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         // Verificar solo si los permisos ya se cargaron (home siempre existe)
@@ -49,6 +51,15 @@ export default function ProductPage() {
                     () => api.create(backendData),
                     "Producto agregado exitosamente."
                 );
+
+                if (location.state?.returnTo) {
+                    navigate(location.state.returnTo.pathname, {
+                        state: {
+                            ...location.state.returnTo.state,
+                        },
+                        replace: true
+                    });
+                }
             } else if (mode === "edit") {
                 const productId = parseInt(backendData.get("ID_PRODUCT"), 10);
                 await handleApiCall(
@@ -80,6 +91,7 @@ export default function ProductPage() {
                 transformData={transformData.toFrontend}
                 transformConfig={transformConfig}
                 actions={actions}
+                initialModalOpen={location.state?.openProductModal || false}
             />
         </>
     );

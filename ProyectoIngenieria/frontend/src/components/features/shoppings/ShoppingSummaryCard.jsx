@@ -1,15 +1,16 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { DatePicker, Select, Button, Textarea } from "../../common";
 import { User } from "lucide-react";
 import { useEntityPage } from "../../../hooks/useEntityPage";
-import { getSuppliers } from "../../../api/supplier";
+import { getAllSuppliersWithoutPagination } from "../../../api/supplier";
 import { ModalConfirmation } from "../../modals";
 
 const ShoppingSummaryCard = ({ shoppingForm }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { filteredData: suppliers, fetchData } = useEntityPage({
-        fetchAll: getSuppliers,
+        fetchAll: getAllSuppliersWithoutPagination,
         entityKey: "suppliers",
         transformConfig: {
             IDENTIFICADOR_PROVEEDOR: (item) => item.IDENTIFICADOR_PROVEEDOR,
@@ -21,14 +22,17 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (location.state?.shouldRefreshSuppliers) {
+            fetchData();
+            navigate(location.pathname, { state: {}, replace: true });
+        }
+    }, [location.state]);
 
-    const supplierOptions = [
-        ...suppliers.map(supplier => ({
-            value: supplier.IDENTIFICADOR_PROVEEDOR,
-            label: supplier.DSC_NOMBRE,
-        }))
-    ];
-
+    const supplierOptions = suppliers.map(supplier => ({
+        value: supplier.IDENTIFICADOR_PROVEEDOR,
+        label: supplier.DSC_NOMBRE,
+    }));
 
     return (
         <div className="shoppings-card shoppings-card-fixed">
@@ -49,7 +53,26 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
                 <Button
                     className="add-btn"
                     style={{ marginTop: '1rem', marginBottom: '1rem', width: '100%', borderRadius: '16px' }}
-                    onClick={() => navigate('/suppliers', { state: { openSupplierModal: true } })}
+                    onClick={() => {
+                        sessionStorage.setItem('shoppingFormState', JSON.stringify({
+                            selectedProducts: shoppingForm.selectedProducts,
+                            selectedSupplier: shoppingForm.selectedSupplier,
+                            selectedPaymentMethod: shoppingForm.selectedPaymentMethod,
+                            productReceiptDate: shoppingForm.productReceiptDate,
+                            note: shoppingForm.note,
+                            total: shoppingForm.total
+                        }));
+
+                        navigate('/suppliers', {
+                            state: {
+                                openSupplierModal: true,
+                                returnTo: {
+                                    pathname: '/shopping/new',
+                                    state: { fromSupplier: true }
+                                },
+                            }
+                        });
+                    }}
                 >
                     <User size={18} />
                     Nuevo Proveedor
@@ -105,7 +128,6 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
                 >
                     Finalizar Compra
                 </Button>
-
 
                 <ModalConfirmation
                     isOpen={shoppingForm.isConfirmationModalOpen}

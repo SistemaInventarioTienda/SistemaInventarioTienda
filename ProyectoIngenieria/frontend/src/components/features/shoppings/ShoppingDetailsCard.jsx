@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { SearchSelect } from '../../common';
-import { searchProduct, registerProduct } from '../../../api/product';
+import { searchProduct } from '../../../api/product';
 import ProductTable from '../../features/ProductTable';
 import { toast } from 'sonner';
 import { Button } from '../../common';
@@ -11,8 +11,6 @@ const ShoppingDetailsCard = ({ shoppingForm }) => {
     const navigate = useNavigate();
     const barcodeBuffer = useRef('');
     const timeoutId = useRef(null);
-    const [showProductCreation, setShowProductCreation] = useState(false);
-    const [newProductBarcode, setNewProductBarcode] = useState('');
 
     const handleSelectProduct = async (product) => {
         shoppingForm.addProduct({
@@ -23,24 +21,6 @@ const ShoppingDetailsCard = ({ shoppingForm }) => {
             quantity: 1,
             subtotal: product.MON_COMPRA,
         });
-    };
-
-    const handleCreateProduct = async () => {
-        try {
-            const newProduct = await registerProduct({
-                DSC_CODIGO_BARRAS: newProductBarcode,
-                DSC_NOMBRE: `Nuevo Producto ${newProductBarcode}`,
-                MON_COMPRA: 0,
-                MON_VENTA: 0,
-                CANT_STOCK: 0
-            });
-
-            toast.success("Producto creado exitosamente");
-            setShowProductCreation(false);
-            handleSelectProduct(newProduct);
-        } catch (error) {
-            toast.error("Error al crear el producto");
-        }
     };
 
     useEffect(() => {
@@ -58,9 +38,6 @@ const ShoppingDetailsCard = ({ shoppingForm }) => {
                         if (data.products?.length > 0) {
                             handleSelectProduct(data.products[0]);
                             toast.success(`Producto ${code} agregado`);
-                        } else {
-                            setNewProductBarcode(code);
-                            setShowProductCreation(true);
                         }
                     })
                     .catch(console.error);
@@ -100,20 +77,32 @@ const ShoppingDetailsCard = ({ shoppingForm }) => {
 
                     <Button
                         className="add-btn"
-                        onClick={() => navigate('/product', { state: { openProductModal: true } })}
-                        style={{ borderRadius: '8px' }}
+                        style={{ marginTop: '1rem', marginBottom: '1rem', width: '100%', borderRadius: '16px' }}
+                        onClick={() => {
+                            sessionStorage.setItem('shoppingFormState', JSON.stringify({
+                                selectedProducts: shoppingForm.selectedProducts,
+                                selectedSupplier: shoppingForm.selectedSupplier,
+                                selectedPaymentMethod: shoppingForm.selectedPaymentMethod,
+                                productReceiptDate: shoppingForm.productReceiptDate,
+                                note: shoppingForm.note,
+                                total: shoppingForm.total
+                            }));
+
+                            navigate('/product', {
+                                state: {
+                                    openProductModal: true,
+                                    returnTo: {
+                                        pathname: '/shopping/new',
+                                        state: { fromProduct: true }
+                                    },
+                                }
+                            });
+                        }}
                     >
                         <Box size={18} />
                         Nuevo Producto
                     </Button>
                 </div>
-
-                {showProductCreation && (
-                    <div className="product-creation-alert">
-                        <p>¿Desea crear un nuevo producto con código {newProductBarcode}?</p>
-                        <Button onClick={handleCreateProduct}>Crear Producto</Button>
-                    </div>
-                )}
 
                 <ProductTable
                     selectedProducts={shoppingForm.selectedProducts}

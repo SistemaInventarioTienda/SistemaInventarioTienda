@@ -4,15 +4,25 @@ import { shoppingConfig } from '../config/entities/shoppingConfig.js';
 import { toast } from "sonner";
 import { validateShopping } from '../schemas/validations/validateShopping.js';
 
-const useShoppingForm = () => {
-    const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
+export default function useShoppingForm(initialState) {
+
+    const [selectedProducts, setSelectedProducts] = useState(initialState?.selectedProducts || []);
+    const [selectedSupplier, setSelectedSupplier] = useState(initialState?.selectedSupplier || "");
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(initialState?.selectedPaymentMethod || "");
+    const [productReceiptDate, setProductReceiptDate] = useState(initialState?.productReceiptDate || "");
+    const [note, setNote] = useState(initialState?.note || "");
+    const [total, setTotal] = useState(initialState?.total || 0);
+    const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [confirmationCallback, setConfirmationCallback] = useState(null);
-    const [selectedProducts, setSelectedProducts] = useState([]);
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
-    const [note, setNote] = useState("");
-    const [productReceiptDate, setProductReceiptDate] = useState(null);
-    const [total, setTotal] = useState(0);
+
+    const initialize = (newState) => {
+        setSelectedProducts(newState.selectedProducts || []);
+        setSelectedSupplier(newState.selectedSupplier || "");
+        setSelectedPaymentMethod(newState.selectedPaymentMethod || "");
+        setProductReceiptDate(newState.productReceiptDate || "");
+        setNote(newState.note || "");
+        setTotal(newState.total || 0);
+    };
 
     const calculateTotal = () => {
         const subtotal = selectedProducts.reduce((total, product) =>
@@ -111,6 +121,7 @@ const useShoppingForm = () => {
     };
 
     return {
+        initialize,
         selectedProducts,
         selectedSupplier,
         selectedPaymentMethod,
@@ -131,5 +142,3 @@ const useShoppingForm = () => {
         total,
     };
 };
-
-export default useShoppingForm;
