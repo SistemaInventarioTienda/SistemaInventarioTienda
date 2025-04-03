@@ -17,7 +17,7 @@ const StatusPill = ({ status, entityKey }) => {
     if (parsedStatus.toLowerCase() === "pendiente") {
         statusClass = "pending";
     } else {
-        statusClass = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo") ? "active" : "inactive";
+        statusClass = parsedStatus.toLowerCase() === (entityKey === "sales" || "shopping" ? "pagada" : "activo") ? "active" : "inactive";
     }
     return <span className={`status-pill ${statusClass}`}>{parsedStatus}</span>;
 };

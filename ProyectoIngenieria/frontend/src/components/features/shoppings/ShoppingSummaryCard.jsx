@@ -104,16 +104,6 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
                     required
                 />
 
-                <label className="shoppings-card-label">
-                    Nota o comentario
-                </label>
-                <Textarea
-                    value={shoppingForm.note}
-                    onChange={(e) => shoppingForm.setNote(e.target.value)}
-                    style={{ height: '100px', marginBottom: '1rem' }}
-                    placeholder="Agregar una nota o comentario"
-                />
-
                 <div className="shoppings-summary">
                     <div className="shoppings-summary-total">
                         <span>Subtotal:</span>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { useAuthPermissions } from '../../context/authPermissions';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, ScanBarcode } from 'lucide-react';
+import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, ScanBarcode, ShoppingBag, ClipboardList, PlusCircle, PackagePlus } from 'lucide-react';
 import SubMenu from './SubMenu';
 import './styles/sidebar.css';
 
@@ -26,23 +26,23 @@ const Sidebar = () => {
         {
             key: 'sales',
             text: 'Ventas',
-            icon: ShoppingCart,
+            icon: ShoppingBag,
             iconOpened: <ChevronDown size={24} />,
             iconClosed: <ChevronUp size={24} />,
             subNav: [
-                { path: '/sales/history', icon: FileText, text: 'Historial de ventas' },
-                { path: '/sales/new', icon: ScanBarcode, text: 'Nueva Venta' }
+                { path: '/sales/history', icon: ClipboardList, text: 'Historial de ventas' },
+                { path: '/sales/new', icon: PlusCircle, text: 'Nueva Venta' }
             ]
         },
         {
             key: 'shopping',
             text: 'Compras',
-            icon: FileText,
+            icon: ShoppingCart,
             iconOpened: <ChevronDown size={24} />,
             iconClosed: <ChevronUp size={24} />,
             subNav: [
-                { path: '/shopping/history', icon: FileText, text: 'Historial de compras' },
-                { path: '/shopping/new', icon: ScanBarcode, text: 'Nueva Compra' }
+                { path: '/shopping/history', icon: ClipboardList, text: 'Historial de compras' },
+                { path: '/shopping/new', icon: PackagePlus, text: 'Nueva Compra' }
             ]
         },
         { key: 'reports', path: '/reports', icon: BarChart2, text: 'Reportes' },

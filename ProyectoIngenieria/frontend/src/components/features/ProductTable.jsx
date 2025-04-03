@@ -35,26 +35,42 @@ const ActionsCell = ({ actions, rowData }) => (
 
 const ProductTable = ({ selectedProducts, updateProductQuantity, removeProduct, isViewMode = false }) => {
     const [productNames, setProductNames] = useState({});
+    console.log(selectedProducts);
     useEffect(() => {
-        // En tu useEffect
         const fetchProductNames = async () => {
-            const names = {};
+            const names = { ...productNames };
+            let needsUpdate = false;
+
             for (const product of selectedProducts) {
+                if (product.name || names[product.id]) continue;
+
                 try {
                     const data = await getProductById(product.id);
                     names[product.id] = data.DSC_NOMBRE;
+                    needsUpdate = true;
                 } catch (error) {
                     console.error("Error obteniendo nombre del producto:", error);
                     names[product.id] = "Producto no encontrado";
+                    needsUpdate = true;
                 }
             }
-            setProductNames(names);
+
+            if (needsUpdate) {
+                setProductNames(names);
+            }
         };
 
         if (isViewMode) {
             fetchProductNames();
         }
     }, [selectedProducts, isViewMode]);
+
+    // Función para obtener el nombre a mostrar
+    const getDisplayName = (product) => {
+        if (product.name) return product.name;
+        if (productNames[product.id]) return productNames[product.id];
+        return isViewMode ? "Cargando..." : "Sin nombre";
+    };
 
     const handleQuantityChange = (id, newQuantity) => {
         if (newQuantity < 1) return;
@@ -82,11 +98,7 @@ const ProductTable = ({ selectedProducts, updateProductQuantity, removeProduct, 
 
                             return (
                                 <tr key={product.id}>
-                                    <td>
-                                        {isViewMode
-                                            ? productNames[product.id]
-                                            : product.name || "Sin nombre"}
-                                    </td>
+                                    <td>{getDisplayName(product)}</td>
                                     <td>₡{price.toLocaleString()}</td>
                                     <td>
                                         {isViewMode ? (
