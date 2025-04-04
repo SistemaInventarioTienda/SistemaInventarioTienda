@@ -197,7 +197,7 @@ export const getAllPaymentByCredit = async (req, res) => {
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            sales: updatedRows, 
+            credit: updatedRows, 
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
