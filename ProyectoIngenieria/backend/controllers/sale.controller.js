@@ -253,7 +253,7 @@ export const getSaleDetails = async (req, res) => {
 
 export const searchSales = async (req, res) => {
     try {
-        const { page = 1, pageSize = 5, termSearch = 'Descuento' } = req.query;
+        const { page = 1, pageSize = 5, termSearch = '' } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 

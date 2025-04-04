@@ -1,8 +1,8 @@
 import { credit, payment,sale } from "../models/sale.model.js";
 import Client from "../models/client.model.js";
+import phoneClient from "../models/phoneClient.model.js";
 import { getDateCR } from "../libs/date.js";
-import { and, DATE } from "sequelize";
-
+import db from '../db.js';
 
 
 
@@ -154,12 +154,18 @@ export const getAllPaymentByCredit = async (req, res) => {
             include: [
                 {
                     model: sale, 
-                    attributes: ['ID_VENTA'], 
+                    attributes: ['ID_VENTA','DSC_VENTA','PORCENT_IMPUESTO','MONT_SUBTOTAL','PORCENT_DESCUENTO'], 
                     include: [
                         {
                             model: Client,
-                            attributes: ['DSC_NOMBRE']
-                        }
+                            attributes: ['ID_CLIENTE','DSC_NOMBRE','DSC_APELLIDOUNO','DSC_APELLIDODOS'],
+                            include:[
+                                {
+                                    model: phoneClient,
+                                    attributes:['DSC_TELEFONO']
+                                },
+                            ]
+                        },
                     ]
                 },
                 {
@@ -228,3 +234,80 @@ async function getStatusCredi(MON_PENDIENTE, FEC_VENCIMIENTO) {
     return 1;
 }
 
+
+export const getAllPaymentByCreditByFilter = async (req, res) => {
+    try {
+        const {
+            page = 1,
+            pageSize = 5,
+            termSearch = '',
+        } = req.query;
+
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
+     
+        const [results] = await db.query(
+            `CALL Sp_SearchCredits(:termSearch, :page, :pageSize)`,
+            {
+                replacements: {
+                    termSearch: `%${termSearch}%`,
+                    page: parseInt(page),
+                    pageSize: limit,
+                }
+            }
+        );
+
+        console.log(results.ResultadoJSON);
+      
+        if (!results.ResultadoJSON) {
+            return res.status(404).json({
+                message: "No se encontraron resultados.",
+            });
+        }
+
+        const toJson= JSON.parse(results.ResultadoJSON);
+
+        const rows = toJson.map(item => ({
+            ...item,
+            payments: typeof item.payments === 'string' ? JSON.parse(item.payments) : item.payments
+        }));
+
+        const updatedRows = await Promise.all(rows.map(async (row) => {
+            const creditStatus = await getStatusCredi(row.MON_PENDIENTE, new Date(row.FEC_VENCIMIENTO));
+            const updatedPayments = await Promise.all(row.payments.map(async (payment) => {
+                const paymentDate = new Date(payment.FEC_ABONO);
+                const disableCancelButton = await ThirtyMinutesHavePassed(paymentDate);
+
+                return {
+                    ...payment,
+                    BTN_CANCEL: disableCancelButton,
+                };
+            }));
+
+            return {
+                ...row,
+                ESTADO_CREDITO: creditStatus,
+                payments: updatedPayments
+            };
+        }));
+
+        if (updatedRows.length === 0) {
+            return res.status(204).json({
+                message: "No se encontraron abonos realizados.",
+            });
+        }
+
+   
+        res.json({
+            total: updatedRows.length, 
+            totalPages: Math.ceil(updatedRows.length / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            credit: updatedRows,
+        });
+
+    } catch (error) {
+        console.error('Error al obtener créditos con abonos:', error);
+        return res.status(500).json({ message: error.message });
+    }
+};
