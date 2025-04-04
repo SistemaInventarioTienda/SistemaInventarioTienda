@@ -1,6 +1,7 @@
 import { credit, payment,sale } from "../models/sale.model.js";
 import Client from "../models/client.model.js";
 import { getDateCR } from "../libs/date.js";
+import { and, DATE } from "sequelize";
 
 
 
@@ -170,20 +171,22 @@ export const getAllPaymentByCredit = async (req, res) => {
             distinct: true
         });
 
-        const updatedRows = await Promise.all(rows.map(async (row) => {
+            const updatedRows = await Promise.all(rows.map(async (row) => {
+            const creditStatus = await getStatusCredi(row.MON_PENDIENTE,new Date( row.FEC_VENCIMIENTO));
             const updatedPayments = await Promise.all(row.payments.map(async (payment) => {
                 const paymentDate = new Date(payment.FEC_ABONO);
                 const disableCancelButton = await ThirtyMinutesHavePassed(paymentDate);
 
                 return {
                     ...payment.toJSON(),
-                    BTN_CANCEL:disableCancelButton, 
+                    BTN_CANCEL: disableCancelButton,
                 };
             }));
 
             return {
                 ...row.toJSON(),
-                payments: updatedPayments 
+                ESTADO_CREDITO: creditStatus, 
+                payments: updatedPayments
             };
         }));
 
@@ -198,7 +201,7 @@ export const getAllPaymentByCredit = async (req, res) => {
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            credit: updatedRows, 
+            credit: updatedRows,
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -214,3 +217,15 @@ async function ThirtyMinutesHavePassed(dateSale) {
 
     return dateSale <= thirtyMinutesAgo;
 }
+
+
+
+
+async function getStatusCredi(MON_PENDIENTE, FEC_VENCIMIENTO) {
+    const fechaActual = new Date(await getDateCR());
+
+    if (MON_PENDIENTE <= 0) return 2;
+    if (fechaActual < FEC_VENCIMIENTO) return 0;
+    return 1;
+}
+
