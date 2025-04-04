@@ -33,25 +33,32 @@ export default function CreditSalePage() {
     actions
   } = creditConfig; // Falta crear el archivo creditConfig desde esta ruta: ../config/entities
 
+  console.log("EntityName: ",entityName,"\ntitlePage", titlePage, "\nEntityMessage: ",entityMessage);
+  //console.log("fetchAll: ",api.fetchAll);
   //Logica para manejar el envio de datos al y desde el formulario.
-  const onSubmit = async (mode , data) => {
-    try {
+  // const onSubmit = async (mode , data) => {
+  //   try {
         
-    } catch (error) {
-        console.log('Error desde CreditSalePage: ', error);
-        return { success: false }
-    }
-  };
+  //   } catch (error) {
+  //       console.log('Error desde CreditSalePage: ', error);
+  //       return { success: false }
+  //   }
+  // };
 
   return (
     <>
       {/* <CreditPage /> */}
       <EntityPage
-      //entityNage={entityName}
+      entityName={entityName}
       titlePage = {titlePage}
       entityMessage= {entityMessage}
       columns= {columns}
-      fields={fields}
+      // fields={fields}
+      entityKey={entityKey}
+      fetchAll={api.fetchAll}
+      transformData={transformData.toFrontend}
+      transformConfig={transformConfig}
+      actions={actions}
       //searchByName= {api.}
       />
     </>

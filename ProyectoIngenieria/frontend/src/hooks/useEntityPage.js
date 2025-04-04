@@ -44,11 +44,15 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey, transformCon
                 ? await searchByValue(page, itemsPerPage, term, sortField, sortOrder)
                 : await fetchAll(page, itemsPerPage, sortField, sortOrder);
 
+            //console.log("Datos Recibidos del Back en [useEntityPage]: ", response);
+
             const items = response[entityKey] || [];
 
+            //console.log("Datos extraídos usando entityKey:", items); // Log aquí
             const transformedData = items.map(item =>
                 applyTransformations(item, transformConfig)
             );
+            console.log("Datos transformados: ",transformedData)
             //console.log("transformed", transformedData);
             setData(transformedData);
             setFilteredData(transformedData);

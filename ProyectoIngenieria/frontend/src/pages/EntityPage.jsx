@@ -88,6 +88,7 @@ export const EntityPage = forwardRef(({
         setConfirmationModalOpen(true);
     };
 
+    console.log("Datos FILTRADOS: ",filteredData);
     const tableActions = Object.entries(actions)
         .filter(([actionKey, isEnabled]) => isEnabled)
         .reduce((acc, [actionKey, isEnabled]) => {

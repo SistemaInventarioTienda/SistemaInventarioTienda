@@ -1,24 +1,23 @@
 //import { updateCategory } from "../../api/category";
-import { getAllCredits, addPayment, modifyPayment } from "../../api/credit"; //Falta importar los demas endpoints
+import { getAllCredits, addPayment, modifyPayment, formatDate } from "../../api/credit"; //Falta importar los demas endpoints
 
 export const creditConfig = {
 
     entityName: "Crédito",
     titlePage: "Créditos",
     entityMessage: "Gestión de los créditos de clientes",
-    entityKey: "credits",
+    entityKey: "sales",
     expandibleKey: "payments",
 
     columns: [
-        {field: "DSC_NOMBRE", label: "Nombre"},
-        {field: "MON_PENDIENTE", label: "Monto Pendiente"},
-        {field: "FEC_ULTIMOPAGO", label: "Fecha ultimo pago"},
-        {field: "FEC_VENCIMIENTO", label: "Fecha vencimiento"},
-        {field: "ESTADO_CREDITO", label: "Estado"},
-        {field: "actions", label: "Acciones"},
-        // {field: "", label: ""},
-    ],
-    //Campos para el formulario
+        { field: "DSC_NOMBRE", label: "Nombre" },
+        { field: "MON_PENDIENTE", label: "Monto Pendiente" },
+        { field: "FEC_ULTIMOPAGO", label: "Fecha último pago" },
+        { field: "FEC_VENCIMIENTO", label: "Fecha vencimiento" },
+        { field: "ESTADO_CREDITO", label: "Estado" },
+        { field: "actions", label: "Acciones" },
+      ],
+    //NOTA: Campos para el formulario
     fields: [
         {name: "", label: "", type: "", required: true},
     ],
@@ -31,31 +30,56 @@ export const creditConfig = {
     },
 
     transformData: {
-        toFrontend: (credit) =>({
-            //valores para mostrar en front
+        toFrontend: (credit) => ({
             id: credit.ID_CREDITO,
-            nombre: credit.sale?.Client?.DSC_NOMBRE || "Sin cliente",
+            nombre: credit.sale?.Client?.DSC_NOMBRE || "Sin cliente", // Este campo ya está transformado
             mon_pendiente: credit.MON_PENDIENTE,
             fec_ultimoPago: credit.FEC_ULTIMOPAGO,
             fec_vencimiento: credit.FEC_VENCIMIENTO,
             estado_credito: credit.ESTADO_CREDITO,
             payments: credit.payments?.map((payments) => ({
-                id_abono: payments.ID_ABONO,
-                fec_abono: payments.FEC_ABONO,
-                mon_abono: payments.MON_ABONADO,
-                
-            })),
-        }),
+              id_abono: payments.ID_ABONO,
+              fec_abono: payments.FEC_ABONO,
+              mon_abono: payments.MON_ABONADO,
+              btn_cancel: payments.BTN_CANCEL,
+            })) || [],
+          }),
         toBackend: async (formData) => {
-            //transformar los datos para enviar al backend
-        }
+            return {
+                ID_CREDITO: formData.id,
+                ID_VENTA: formData.idVenta,
+                MON_PENDIENTE: formData.mon_pendiente,
+                FEC_ULTIMOPAGO: formData.fec_ultimoPago,
+                FEC_VENCIMIENTO: formData.fec_vencimiento,
+                ESTADO_CREDITO: formData.estado_credito,
+                payments: formData.payments.map((payment) => ({
+                    ID_ABONO: payment.id_abono,
+                    FEC_ABONO: payment.fec_abono,
+                    MON_ABONADO: payment.mon_abono,
+                    BTN_CANCEL: payment.btn_cancel, // Incluye btn_cancel si el backend lo necesita
+                })),
+            };
+        },
     },
+    // Transformaciones específicas de campos individuales
     transformConfig: {
-        Estado: (item) => (item.ESTADO === 1 ? "ACTIVO" : "INCACTIVO"),
-    },
+        ESTADO_CREDITO: (item) => {
+          if (item.ESTADO_CREDITO === 0) return "ACTIVO";
+          if (item.ESTADO_CREDITO === 1) return "MOROSO";
+          if (item.ESTADO_CREDITO === 2) return "CANCELADO";
+          return "DESCONOCIDO"; // Valor predeterminado si no coincide con ningún caso
+        },
+        DSC_NOMBRE: (item) => item.sale?.Client?.DSC_NOMBRE || "Sin cliente",
+        MON_PENDIENTE: (item) => item.MON_PENDIENTE,
+        FEC_ULTIMOPAGO: (item) => formatDate(item.FEC_ULTIMOPAGO),
+        FEC_VENCIMIENTO: (item) => formatDate(item.FEC_VENCIMIENTO),
+      },
+    // Configuración de acciones permitidas
     actions: {
         edit: true,
-        delete: true,
+        //delete: true,
+        //grantPermissions: true,
         view: true,
+        manageCredits: true,
     }
 };

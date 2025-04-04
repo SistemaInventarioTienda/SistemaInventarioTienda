@@ -143,7 +143,8 @@ export const getAllPaymentByCredit = async (req, res) => {
         const offset = (parseInt(page) - 1) * limit;
 
         const field = ['FEC_VENCIMIENTO', 'ESTADO_CREDITO', 'MON_PENDIENTE','FEC_ULTIMOPAGO'].includes(orderByField) ? orderByField : 'FEC_VENTA';
-        const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+        //const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+        const sortOrder = typeof order === 'string' && (order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc') ? order : 'asc';
 
         const { count, rows } = await credit.findAndCountAll({
             attributes: { exclude: [] },
