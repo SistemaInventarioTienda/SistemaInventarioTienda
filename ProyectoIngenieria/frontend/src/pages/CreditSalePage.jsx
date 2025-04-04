@@ -42,7 +42,7 @@ export default function CreditSalePage() {
     }
   };
 
-  console.log("EntityName: ",entityName,"\ntitlePage", titlePage, "\nEntityMessage: ",entityMessage);
+  //console.log("EntityName: ",entityName,"\ntitlePage", titlePage, "\nEntityMessage: ",entityMessage);
   //console.log("fetchAll: ",api.fetchAll);
   //Logica para manejar el envio de datos al y desde el formulario.
   // const onSubmit = async (mode , data) => {

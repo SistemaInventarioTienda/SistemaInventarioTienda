@@ -6,7 +6,7 @@ export const creditConfig = {
     entityName: "Crédito",
     titlePage: "Créditos",
     entityMessage: "Gestión de los créditos de clientes",
-    entityKey: "credits",
+    entityKey: "credit",
     expandibleKey: "payments",
 
     columns: [
@@ -64,10 +64,16 @@ export const creditConfig = {
     // Transformaciones específicas de campos individuales
     transformConfig: {
         ESTADO_CREDITO: (item) => {
-          if (item.ESTADO_CREDITO === 0) return "ACTIVO";
-          if (item.ESTADO_CREDITO === 1) return "MOROSO";
-          if (item.ESTADO_CREDITO === 2) return "CANCELADO";
-          return "DESCONOCIDO"; // Valor predeterminado si no coincide con ningún caso
+          switch(item.ESTADO_CREDITO){
+            case 1: 
+              return "ACTIVO";
+            case 2:
+              return "MOROSO";
+            case 3:
+              return "CANCELADO";
+            default: 
+              return "DESCONOCIDO"; // Valor predeterminado si no coincide con ningún caso
+          }
         },
         DSC_NOMBRE: (item) => item.sale?.Client?.DSC_NOMBRE || "Sin cliente",
         MON_PENDIENTE: (item) => item.MON_PENDIENTE,
@@ -76,10 +82,10 @@ export const creditConfig = {
       },
     // Configuración de acciones permitidas
     actions: {
-        edit: true,
-        //delete: true,
-        //grantPermissions: true,
-        view: true,
+        // edit: true,
+        // //delete: true,
+        // //grantPermissions: true,
+        // view: true,
         manageCredits: true,
     }
 };
