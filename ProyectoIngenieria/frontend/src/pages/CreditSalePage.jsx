@@ -33,6 +33,15 @@ export default function CreditSalePage() {
     actions
   } = creditConfig; // Falta crear el archivo creditConfig desde esta ruta: ../config/entities
 
+  const enhancedActions = {
+    ...actions,
+    manageCreditsHandler : (creditData) => {
+      navigate(`/credits`,{
+        state: { credit: creditData }
+      });
+    }
+  };
+
   console.log("EntityName: ",entityName,"\ntitlePage", titlePage, "\nEntityMessage: ",entityMessage);
   //console.log("fetchAll: ",api.fetchAll);
   //Logica para manejar el envio de datos al y desde el formulario.
@@ -58,7 +67,7 @@ export default function CreditSalePage() {
       fetchAll={api.fetchAll}
       transformData={transformData.toFrontend}
       transformConfig={transformConfig}
-      actions={actions}
+      actions={enhancedActions}
       //searchByName= {api.}
       />
     </>

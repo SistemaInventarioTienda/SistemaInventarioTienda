@@ -6,7 +6,7 @@ export const creditConfig = {
     entityName: "Crédito",
     titlePage: "Créditos",
     entityMessage: "Gestión de los créditos de clientes",
-    entityKey: "sales",
+    entityKey: "credits",
     expandibleKey: "payments",
 
     columns: [

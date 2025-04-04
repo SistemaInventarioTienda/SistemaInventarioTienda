@@ -94,6 +94,11 @@ export const EntityPage = forwardRef(({
         .reduce((acc, [actionKey, isEnabled]) => {
             if (isEnabled) {
                 acc[actionKey] =
+                actionKey === "manageCredits" ? (rowData) => {
+                    if (actions.manageCreditsHandler) {
+                        actions.manageCreditsHandler(rowData);
+                    }
+                } :
                     actionKey === "grantPermissions" ? actions.grantPermissions :
                         actionKey === "edit" ? handleEdit :
                             actionKey === "delete" ? handleDeleteConfirmation :
