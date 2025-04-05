@@ -95,6 +95,7 @@ export const EntityPage = forwardRef(({
             if (isEnabled) {
                 acc[actionKey] =
                 actionKey === "manageCredits" ? (rowData) => {
+                    console.log("Estamos en tableActions: ",rowData);
                     if (actions.manageCreditsHandler) {
                         actions.manageCreditsHandler(rowData);
                     }

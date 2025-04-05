@@ -37,7 +37,7 @@ export default function CreditSalePage() {
     ...actions,
     manageCreditsHandler : (creditData) => {
       navigate(`/credits`,{
-        state: { credit: creditData }
+        state: { creditInfo: creditData }
       });
     }
   };

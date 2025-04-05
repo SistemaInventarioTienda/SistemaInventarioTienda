@@ -47,15 +47,15 @@ const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
                     </div>
                 </div>
 
-                <div className="credits-info-item" style={{ marginTop: "1.5rem" }}>
+                {/* <div className="credits-info-item" style={{ marginTop: "1.5rem" }}>
                     <h3 className="credits-info-label">Descripción</h3>
                     <p className="credits-info-value">{credit.description}</p>
-                </div>
+                </div> */}
             </div>
             <div className="credits-card-footer">
-                <button className="credits-button credits-button-outline">
+                {/* <button className="credits-button credits-button-outline">
                     <Printer className="credits-icon" /> Imprimir
-                </button>
+                </button> */}
                 <div>
                     <button className="credits-button credits-button-edit" style={{ marginRight: "0.5rem" }}>
                         <Pencil className="credits-icon" /> Editar

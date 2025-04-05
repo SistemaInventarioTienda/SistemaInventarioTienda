@@ -2,7 +2,7 @@ import { User, CreditCard, Smartphone, CheckCircle, AlertTriangle } from "lucide
 import PaymentProgressBar from "./PaymentProgressBar";
 
 const ClientInfoCard = ({ client, credit }) => {
-    const totalAmount = credit.amount || 0;
+    const totalAmount = credit.pendingAmount || 0;
     const paid = client.paid || 0;
     const pending = Math.max(totalAmount - paid, 0); // Calculamos lo pendiente
 
