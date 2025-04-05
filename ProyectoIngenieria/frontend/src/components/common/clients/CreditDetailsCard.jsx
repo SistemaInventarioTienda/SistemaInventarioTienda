@@ -57,9 +57,9 @@ const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
                     <Printer className="credits-icon" /> Imprimir
                 </button> */}
                 <div>
-                    <button className="credits-button credits-button-edit" style={{ marginRight: "0.5rem" }}>
+                    {/* <button className="credits-button credits-button-edit" style={{ marginRight: "0.5rem" }}>
                         <Pencil className="credits-icon" /> Editar
-                    </button>
+                    </button> */}
                     <button className="credits-button credits-button-primary" onClick={onRegisterPayment}>
                         <DollarSign className="credits-icon" /> Registrar Pago
                     </button>

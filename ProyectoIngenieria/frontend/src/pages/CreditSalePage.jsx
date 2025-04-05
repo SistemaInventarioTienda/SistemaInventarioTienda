@@ -5,7 +5,7 @@ import handleApiCall from "../utils/handleApiCall";
 import { usePermissions } from "../context/authPermissions";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import CreditPage from "./CreditPage";
+//import CreditPage from "./CreditPage";
 
 export default function CreditSalePage() {
   const { permissions } = usePermissions();
@@ -37,7 +37,9 @@ export default function CreditSalePage() {
     ...actions,
     manageCreditsHandler : (creditData) => {
       navigate(`/credits`,{
-        state: { creditInfo: creditData }
+        state: { creditInfo: creditData,
+           fields: creditConfig.fields,
+         }
       });
     }
   };
@@ -68,7 +70,7 @@ export default function CreditSalePage() {
       transformData={transformData.toFrontend}
       transformConfig={transformConfig}
       actions={enhancedActions}
-      //searchByName= {api.}
+      searchByName= {api.searchByName}
       />
     </>
   );

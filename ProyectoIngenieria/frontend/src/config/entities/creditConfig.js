@@ -1,5 +1,5 @@
 //import { updateCategory } from "../../api/category";
-import { getAllCredits, addPayment, modifyPayment, formatDate } from "../../api/credit"; //Falta importar los demas endpoints
+import { getAllCredits, addPayment, modifyPayment, formatDate, searchCredits } from "../../api/credit"; //Falta importar los demas endpoints
 
 export const creditConfig = {
 
@@ -19,14 +19,16 @@ export const creditConfig = {
       ],
     //NOTA: Campos para el formulario
     fields: [
-        {name: "", label: "", type: "", required: true},
+        {name: "FEC_ABONO", label: "Fecha de abono", type: "text", required: true},
+        {name: "MON_ABONADO", label: "Monto abonado", type: "text", required: true},
+        // {name: "btn_cancel", label: "Botón cancelar", type: "button", required: true},
     ],
     api: {
         //Faltan las demas funciones del API
         fetchAll: getAllCredits,
         create: addPayment,
         update: modifyPayment,
-        /*searchByName: searchCredits,*/
+        searchByName: searchCredits,
     },
 
     transformData: {
@@ -64,15 +66,13 @@ export const creditConfig = {
     // Transformaciones específicas de campos individuales
     transformConfig: {
         ESTADO_CREDITO: (item) => {
-          switch(item.ESTADO_CREDITO){
-            case 1: 
-              return "ACTIVO";
-            case 2:
-              return "MOROSO";
-            case 3:
-              return "CANCELADO";
-            default: 
-              return "DESCONOCIDO"; // Valor predeterminado si no coincide con ningún caso
+
+          if (item.MON_PENDIENTE === 0) {
+            return "CANCELADO";
+          }else if (item.ESTADO_CREDITO <= 1){
+            return "ACTIVO";
+          } else{ 
+            return "MOROSO";
           }
         },
         DSC_NOMBRE: (item) => item.sale?.Client?.DSC_NOMBRE || "Sin cliente",

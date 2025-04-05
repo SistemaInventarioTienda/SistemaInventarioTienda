@@ -7,6 +7,8 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
     const [subcategoriesTypes, setSubcategoriesTypes] = useState([]);
     const [formData, setFormData] = useState(null);
 
+    console.log("MODE: ", mode);
+
     useEffect(() => {
         async function fetchSubcategoriesTypes() {
             try {

@@ -2,9 +2,14 @@ import React, { useEffect, useRef } from "react";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
+// import GenericDatePicker from "../sales/GenericDatePicker.jsx";
+
 const DatePickerComponent = ({ saleForm }) => {
     const datePickerRef = useRef(null);
     const flatpickrInstance = useRef(null);
+    // const handleDateChange = (date) => {
+    //     saleForm.setCreditDueDate(date);
+    // };
 
     useEffect(() => {
         if (saleForm.selectedSaleType === 1 && datePickerRef.current) {
@@ -38,6 +43,11 @@ const DatePickerComponent = ({ saleForm }) => {
                         className="input"
                         placeholder="Selecciona una fecha"
                     />
+                    {/* <GenericDatePicker
+                        onDateChange={handleDateChange}
+                        minDate="today"
+                        placeholder="Selecciona una fecha"
+                    /> */}
                 </div>
             )}
         </>

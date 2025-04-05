@@ -37,12 +37,14 @@ export const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     return date.toLocaleDateString("es-ES", { day: "numeric", month: "numeric", year: "numeric" });
   };
-// export const searchCredits = async (page, pageSize, termSearch, orderByField, order) => {
-//     try {
-//         const response = await axios.get(``, {params: {page, pageSize, termSearch, orderByField, order}});//Falta la ruta del endpoint.
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error fetching credits in searchCredits: ', error.message);
-//         throw error;
-//     }
-// };
+
+
+export const searchCredits = async (page, pageSize, termSearch, orderByField, order) => {
+    try {
+        const response = await axios.get(`/credit/getpaymentByFilter`, {params: {page, pageSize, termSearch, orderByField, order}});//Falta la ruta del endpoint.
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching credits in searchCredits: ', error.message);
+        throw error;
+    }
+};
