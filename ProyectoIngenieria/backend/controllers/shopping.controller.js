@@ -230,6 +230,9 @@ export const deleteShopping = async (req, res) => {
         }
 
         const currentDate = await getDateCR();
+        if (EightDaysHavePassed(shopping.FEC_COMPRA)) {
+            return res.status(404).json({ message: "El tiempo para anular la venta ha expirado." });
+        }
         await shopping.update(
             {
                 ESTADO: 2,
@@ -254,13 +257,13 @@ async function EightDaysHavePassed(dateShopping) {
 
     const currentDateMidnight = new Date(currentDate);
     currentDateMidnight.setHours(0, 0, 0, 0);
-    
+
     const eightDaysAgo = new Date(currentDateMidnight);
     eightDaysAgo.setDate(eightDaysAgo.getDate() - 8);
 
     const shoppingDate = new Date(dateShopping);
     shoppingDate.setHours(0, 0, 0, 0);
-    
+
     return shoppingDate <= eightDaysAgo;
 }
 
