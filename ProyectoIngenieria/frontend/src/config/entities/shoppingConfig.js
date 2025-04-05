@@ -35,20 +35,28 @@ export const shoppingConfig = {
     },
 
     transformData: {
-        toFrontend: (shopping) => ({
-            ID_COMPRA: shopping.ID_COMPRA,
-            PROVEEDOR: shopping.PROVEEDOR || "Sin proveedor",
-            FEC_COMPRA: shopping.FEC_COMPRA,
-            DSC_METODO_PAGO: shopping.DSC_METODO_PAGO,
-            MON_TOTAL: shopping.MON_TOTAL,
-            ESTADO: shopping.ESTADO,
-            PRODUCTS_LIST: shopping.PRODUCTS_LISTS?.map(product => ({
-                name: product.DSC_NOMBRE,
-                quantity: product.MON_CANTIDAD,
-                price: product.MON_PRECIO_COMPRA,
-            })) || [],
-            CAN_CANCEL: shopping.CAN_CANCEL,
-        }),
+        toFrontend: (shopping) => {
+            const products = shopping.PRODUCTS_LISTS || [];
+
+            const total = products.reduce((acc, product) => {
+                return acc + (product.MON_CANTIDAD * product.MON_PRECIO_COMPRA);
+            }, 0);
+
+            return {
+                ID_COMPRA: shopping.ID_COMPRA,
+                PROVEEDOR: shopping.PROVEEDOR || "Sin proveedor",
+                FEC_COMPRA: shopping.FEC_COMPRA,
+                DSC_METODO_PAGO: shopping.DSC_METODO_PAGO,
+                MON_TOTAL: total,
+                ESTADO: shopping.ESTADO,
+                PRODUCTS_LIST: products.map(product => ({
+                    name: product.DSC_NOMBRE,
+                    quantity: product.MON_CANTIDAD,
+                    price: product.MON_PRECIO_COMPRA,
+                })),
+                CAN_CANCEL: shopping.CAN_CANCEL,
+            };
+        },
 
         toBackend: (formData) => ({
             ID_PROVEEDOR: formData.ID_PROVEEDOR,

@@ -41,7 +41,7 @@ export default function ShoppingPage() {
                 fields={fields}
                 fetchAll={api.fetchAll}
                 searchByName={api.searchByName}
-                onDelete={(shopping) => api.delete(shopping.ID_SALE)}
+                onDelete={(shopping) => api.delete(shopping.ID_COMPRA)}
                 entityKey={entityKey}
                 modalComponent={ShoppingForm}
                 transformData={transformData?.toFrontend}
