@@ -44,7 +44,7 @@ export const searchShopping = async (page, pageSize, termSearch, orderByField, o
         });
         return response.data;
     } catch (error) {
-        console.error('Error buscando el Shoppinge:', error.message);
+        console.error('Error buscando el Shopping:', error.message);
         throw error;
     }
 };

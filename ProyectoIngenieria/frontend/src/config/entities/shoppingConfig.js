@@ -47,6 +47,7 @@ export const shoppingConfig = {
                 quantity: product.MON_CANTIDAD,
                 price: product.MON_PRECIO_COMPRA,
             })) || [],
+            CAN_CANCEL: shopping.CAN_CANCEL,
         }),
 
         toBackend: (formData) => ({
@@ -70,10 +71,6 @@ export const shoppingConfig = {
                 day: "2-digit",
                 month: "long",
                 year: "numeric"
-            }) + " " + new Date(item.FEC_COMPRA).toLocaleTimeString("es-ES", {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
             })
             : null,
         ESTADO: (item) => {

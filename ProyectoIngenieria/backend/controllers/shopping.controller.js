@@ -31,12 +31,24 @@ export const getAllShoppings = async (req, res) => {
 
         const total = totalResults[0]?.total || 0;
 
+        const cleanedResults = clearShoppingDetails(results);
+
+        const shoppingsResults = await Promise.all(
+            Object.values(cleanedResults).map(async (shopping) => {
+                const canCancel = !(await EightDaysHavePassed(shopping.FEC_COMPRA));
+                return {
+                    ...shopping,
+                    CAN_CANCEL: canCancel
+                };
+            })
+        );
+
         res.json({
             total,
             totalPages: Math.ceil(total / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            shopping: clearShoppingDetails(results)
+            shopping: shoppingsResults
         });
 
     } catch (error) {
@@ -79,12 +91,24 @@ export const searchShopping = async (req, res) => {
             });
         }
 
+        const cleanedResults = clearShoppingDetails(results);
+
+        const shoppingsResults = await Promise.all(
+            Object.values(cleanedResults).map(async (shopping) => {
+                const canCancel = !(await EightDaysHavePassed(shopping.FEC_COMPRA));
+                return {
+                    ...shopping,
+                    CAN_CANCEL: canCancel
+                };
+            })
+        );
+
         res.json({
             total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            shopping: clearShoppingDetails(results)
+            shopping: shoppingsResults
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -223,7 +247,22 @@ export const deleteShopping = async (req, res) => {
     }
 }
 
+//======================== REGISTRO DE PRODUCTOS ======================== 
 
+async function EightDaysHavePassed(dateShopping) {
+    const currentDate = await getDateCR();
+
+    const currentDateMidnight = new Date(currentDate);
+    currentDateMidnight.setHours(0, 0, 0, 0);
+    
+    const eightDaysAgo = new Date(currentDateMidnight);
+    eightDaysAgo.setDate(eightDaysAgo.getDate() - 8);
+
+    const shoppingDate = new Date(dateShopping);
+    shoppingDate.setHours(0, 0, 0, 0);
+    
+    return shoppingDate <= eightDaysAgo;
+}
 
 //======================== REGISTRO DE PRODUCTOS ========================
 
