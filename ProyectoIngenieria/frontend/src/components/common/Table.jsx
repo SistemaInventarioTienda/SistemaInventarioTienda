@@ -7,6 +7,7 @@ const StatusPill = ({ status, entityKey }) => {
     const statusMappings = {
         default: { 1: "Activo", 2: "Inactivo" },
         sales: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
+        shopping: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
     };
 
     const selectedMap = statusMappings[entityKey] || statusMappings.default;
@@ -14,10 +15,14 @@ const StatusPill = ({ status, entityKey }) => {
     let parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
 
     let statusClass;
-    if (parsedStatus.toLowerCase() === "pendiente") {
+    const lowerStatus = parsedStatus.toLowerCase();
+
+    if (lowerStatus === "pendiente") {
         statusClass = "pending";
+    } else if (lowerStatus === "anulada" || lowerStatus === "inactivo") {
+        statusClass = "inactive";
     } else {
-        statusClass = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo") ? "active" : "inactive";
+        statusClass = "active";
     }
     return <span className={`status-pill ${statusClass}`}>{parsedStatus}</span>;
 };
@@ -46,7 +51,7 @@ const ActionsCell = ({ actions, rowData, entityKey }) => (
             </ActionButton>
         )}
         {actions.delete && (
-            entityKey === "sales"
+            entityKey === "sales" || entityKey === "shopping"
                 ? rowData.CAN_CANCEL && (
                     <ActionButton
                         onClick={() => actions.delete(rowData)}

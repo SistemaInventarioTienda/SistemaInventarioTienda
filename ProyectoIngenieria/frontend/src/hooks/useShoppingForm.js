@@ -10,7 +10,6 @@ export default function useShoppingForm(initialState) {
     const [selectedSupplier, setSelectedSupplier] = useState(initialState?.selectedSupplier || "");
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(initialState?.selectedPaymentMethod || "");
     const [productReceiptDate, setProductReceiptDate] = useState(initialState?.productReceiptDate || "");
-    const [note, setNote] = useState(initialState?.note || "");
     const [total, setTotal] = useState(initialState?.total || 0);
     const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [confirmationCallback, setConfirmationCallback] = useState(null);
@@ -20,7 +19,6 @@ export default function useShoppingForm(initialState) {
         setSelectedSupplier(newState.selectedSupplier || "");
         setSelectedPaymentMethod(newState.selectedPaymentMethod || "");
         setProductReceiptDate(newState.productReceiptDate || "");
-        setNote(newState.note || "");
         setTotal(newState.total || 0);
     };
 
@@ -71,7 +69,6 @@ export default function useShoppingForm(initialState) {
         setSelectedProducts([]);
         setSelectedSupplier(null);
         setSelectedPaymentMethod("");
-        setNote("");
         setProductReceiptDate(null);
     };
 
@@ -94,7 +91,6 @@ export default function useShoppingForm(initialState) {
         const shoppingData = shoppingConfig.transformData.toBackend({
             ID_PROVEEDOR: selectedSupplier,
             DSC_METODO_PAGO: selectedPaymentMethod,
-            DSC_COMPRA: note,
             PRODUCTS_LIST: selectedProducts,
             MON_TOTAL: total,
             FEC_ENTRADA: productReceiptDate,
@@ -112,7 +108,7 @@ export default function useShoppingForm(initialState) {
     };
 
     const handleSubmitWithConfirmation = () => {
-        if (!selectedSupplier || !note) {
+        if (!selectedSupplier) {
             setConfirmationModalOpen(true);
             setConfirmationCallback(() => handleSubmit);
         } else {
@@ -125,10 +121,8 @@ export default function useShoppingForm(initialState) {
         selectedProducts,
         selectedSupplier,
         selectedPaymentMethod,
-        note,
         setSelectedSupplier,
         setSelectedPaymentMethod,
-        setNote,
         addProduct,
         updateProductQuantity,
         removeProduct,

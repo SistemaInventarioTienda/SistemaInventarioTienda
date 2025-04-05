@@ -21,6 +21,7 @@ import SalePage from './pages/SalePage'
 import AddSalePage from './pages/AddSalePage';
 import AddShoppingPage from './pages/AddShoppingPage';
 import { Toaster } from "sonner";
+import ShoppingPage from './pages/ShoppingPage';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -104,6 +105,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="product" element={<ProductPage />} />
             <Route path="sales/history" element={<SalePage />} />
             <Route path="sales/new" element={<AddSalePage />} />
+            <Route path="shopping/history" element={<ShoppingPage />} />
             <Route path="shopping/new" element={<AddShoppingPage />} />
           </Routes>
         </main>

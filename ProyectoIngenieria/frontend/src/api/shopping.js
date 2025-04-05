@@ -17,7 +17,7 @@ export const getAllShoppings = async (page, pageSize, orderByField, order) => {
         const response = await axios.get('/shopping/all_shoppings', {
             params: { page, pageSize, orderByField, order }
         });
-        console.log("response", response);
+        console.log("response", response.data.shopping);
         return response.data;
     } catch (error) {
         console.error('Error obteniendo las compras:', error.message);
@@ -44,7 +44,7 @@ export const searchShopping = async (page, pageSize, termSearch, orderByField, o
         });
         return response.data;
     } catch (error) {
-        console.error('Error buscando el Shoppinge:', error.message);
+        console.error('Error buscando el Shopping:', error.message);
         throw error;
     }
 };

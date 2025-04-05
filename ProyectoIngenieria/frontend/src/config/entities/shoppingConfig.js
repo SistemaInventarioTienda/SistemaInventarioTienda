@@ -9,25 +9,22 @@ export const shoppingConfig = {
     entityName: "Compra",
     titlePage: "Compras",
     entityMessage: "Gestión de las compras de la tienda",
-    entityKey: "purchases",
+    entityKey: "shopping",
 
     columns: [
-        { field: "DSC_NOMBRE", label: "Proveedor" },
+        { field: "PROVEEDOR", label: "Proveedor" },
         { field: "FEC_COMPRA", label: "Fecha de compra" },
-        { field: "METODO_PAGO", label: "Método de pago" },
-        { field: "MONT_SUBTOTAL", label: "Subtotal" },
+        { field: "DSC_METODO_PAGO", label: "Método de pago" },
+        { field: "MON_TOTAL", label: "Total" },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" },
     ],
 
     fields: [
-        { name: "DSC_NOMBRE", label: "Proveedor", type: "text" },
+        { name: "PROVEEDOR", label: "Proveedor", type: "text" },
         { name: "FEC_COMPRA", label: "Fecha de compra", type: "text" },
-        { name: "METODO_PAGO", label: "Método de pago", type: "text" },
-        { name: "PORCENT_IMPUESTO", label: "Impuesto (%)", type: "number" },
-        { name: "PORCENT_DESCUENTO", label: "Descuento (%)", type: "number" },
-        { name: "MONT_SUBTOTAL", label: "Subtotal", type: "number" },
-        { name: "DSC_COMPRA", label: "Descripción", type: "textarea" },
+        { name: "DSC_METODO_PAGO", label: "Método de pago", type: "text" },
+        { name: "MON_TOTAL", label: "Total", type: "number" },
     ],
 
     api: {
@@ -38,22 +35,28 @@ export const shoppingConfig = {
     },
 
     transformData: {
-        toFrontend: (purchase) => ({
-            ID_COMPRA: purchase.ID_COMPRA,
-            ID_PROVEEDOR: purchase.ID_PROVEEDOR,
-            DSC_NOMBRE: purchase.DSC_NOMBRE || purchase.Supplier?.DSC_NOMBRE || "Sin nombre",
-            FEC_COMPRA: purchase.FEC_COMPRA,
-            PORCENT_IMPUESTO: purchase.PORCENT_IMPUESTO,
-            METODO_PAGO: purchase.METODO_PAGO,
-            DSC_COMPRA: purchase.DSC_COMPRA,
-            MONT_SUBTOTAL: purchase.MONT_SUBTOTAL,
-            PORCENT_DESCUENTO: purchase.PORCENT_DESCUENTO,
-            PRODUCTS_LIST: purchase.DETALLES?.map(product => ({
-                id: product.ID_PRODUCTO,
-                price: product.MON_COMPRA,
-                quantity: product.CANTIDAD,
-            })) || [],
-        }),
+        toFrontend: (shopping) => {
+            const products = shopping.PRODUCTS_LISTS || [];
+
+            const total = products.reduce((acc, product) => {
+                return acc + (product.MON_CANTIDAD * product.MON_PRECIO_COMPRA);
+            }, 0);
+
+            return {
+                ID_COMPRA: shopping.ID_COMPRA,
+                PROVEEDOR: shopping.PROVEEDOR || "Sin proveedor",
+                FEC_COMPRA: shopping.FEC_COMPRA,
+                DSC_METODO_PAGO: shopping.DSC_METODO_PAGO,
+                MON_TOTAL: total,
+                ESTADO: shopping.ESTADO,
+                PRODUCTS_LIST: products.map(product => ({
+                    name: product.DSC_NOMBRE,
+                    quantity: product.MON_CANTIDAD,
+                    price: product.MON_PRECIO_COMPRA,
+                })),
+                CAN_CANCEL: shopping.CAN_CANCEL,
+            };
+        },
 
         toBackend: (formData) => ({
             ID_PROVEEDOR: formData.ID_PROVEEDOR,
@@ -76,12 +79,21 @@ export const shoppingConfig = {
                 day: "2-digit",
                 month: "long",
                 year: "numeric"
-            }) + " " + new Date(item.FEC_COMPRA).toLocaleTimeString("es-ES", {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
             })
             : null,
+        ESTADO: (item) => {
+            const estado = parseInt(item.ESTADO, 10);
+            switch (estado) {
+                case 1:
+                    return "PAGADA";
+                case 2:
+                    return "ANULADA";
+                case 3:
+                    return "PENDIENTE";
+                default:
+                    return "DESCONOCIDO";
+            }
+        },
     },
 
     actions: {
