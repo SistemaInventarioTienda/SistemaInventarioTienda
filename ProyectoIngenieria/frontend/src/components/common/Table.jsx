@@ -8,6 +8,7 @@ const StatusPill = ({ status, entityKey }) => {
         default: { 1: "Activo", 2: "Inactivo" },
         sales: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
         credit: {1: "Activo", 2: "Moroso", 3: "Cancelado"},
+        shopping: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
     };
 
     const selectedMap = statusMappings[entityKey] || statusMappings.default;
@@ -15,13 +16,21 @@ const StatusPill = ({ status, entityKey }) => {
     let parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
 
     let statusClass;
-    if (parsedStatus.toLowerCase() === "pendiente") {
+    const lowerStatus = parsedStatus.toLowerCase();
+
+    if (lowerStatus === "pendiente") {
         statusClass = "pending";
     } else if (entityKey === "credit") {
         // Clases específicas para credit
         statusClass = parsedStatus.toLowerCase() === (entityKey === "credit" ? "activo" : "activo") ? "active" : "inactive";
     }else {
         statusClass = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo") ? "active" : "inactive";
+    } 
+    
+    if (lowerStatus === "anulada" || lowerStatus === "inactivo") {
+        statusClass = "inactive";
+    } else {
+        statusClass = "active";
     }
 
     console.log("Hola amigo por aqui: ",statusClass);
@@ -52,7 +61,7 @@ const ActionsCell = ({ actions, rowData, entityKey }) => (
             </ActionButton>
         )}
         {actions.delete && (
-            entityKey === "sales"
+            entityKey === "sales" || entityKey === "shopping"
                 ? rowData.CAN_CANCEL && (
                     <ActionButton
                         onClick={() => actions.delete(rowData)}

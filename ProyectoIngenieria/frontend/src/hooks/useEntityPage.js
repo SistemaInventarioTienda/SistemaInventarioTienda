@@ -25,7 +25,7 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey, transformCon
         } else if (currentPage || itemsPerPage || sortField || sortOrder) {
             fetchData({ transformConfig });
         }
-    }, [isAuthenticated, navigate, currentPage, itemsPerPage, sortField, sortOrder]);    
+    }, [isAuthenticated, navigate, currentPage, itemsPerPage, sortField, sortOrder]);
 
     const fetchData = async ({
         resetPage = false,
@@ -44,11 +44,8 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey, transformCon
                 ? await searchByValue(page, itemsPerPage, term, sortField, sortOrder)
                 : await fetchAll(page, itemsPerPage, sortField, sortOrder);
 
-            //console.log("Datos Recibidos del Back en [useEntityPage]: ", response);
-
-            const items = response[entityKey] || [];
-
-            //console.log("Datos extraídos usando entityKey:", items); // Log aquí
+            const items = response[entityKey] ? Object.values(response[entityKey]) : [];
+            
             const transformedData = items.map(item =>
                 applyTransformations(item, transformConfig)
             );
@@ -68,18 +65,18 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey, transformCon
     // Función genérica para aplicar transformaciones
     const applyTransformations = (item, config) => {
         if (!config || typeof config !== "object") return item;
-    
+
         const transformedItem = { ...item };
-    
+
         Object.entries(config).forEach(([key, transformRule]) => {
             if (typeof transformRule === "function") {
                 transformedItem[key] = transformRule(item);
             }
         });
-    
+
         return transformedItem;
     };
-    
+
     return {
         filteredData,
         currentPage,

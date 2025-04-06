@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
 import { EntityPage } from "./EntityPage";
-import { salesConfig } from "../config/entities/salesConfig";
-import SaleForm from "./pagesForms/SaleForm";
+import { shoppingConfig } from "../config/entities/shoppingConfig";
+import ShoppingForm from "./pagesForms/ShoppingForm.jsx";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
-export default function SalePage() {
+
+export default function ShoppingPage() {
 
     const { permissions } = usePermissions();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (permissions && !permissions.sales) {
+        if (permissions && !permissions.shopping) {
             toast.error("No tienes permiso para acceder a ventas");
             navigate("/");
         }
@@ -28,7 +29,7 @@ export default function SalePage() {
         transformData,
         transformConfig,
         actions,
-    } = salesConfig;
+    } = shoppingConfig;
 
     return (
         <>
@@ -40,9 +41,9 @@ export default function SalePage() {
                 fields={fields}
                 fetchAll={api.fetchAll}
                 searchByName={api.searchByName}
-                onDelete={(sale) => api.delete(sale.ID_VENTA)}
+                onDelete={(shopping) => api.delete(shopping.ID_COMPRA)}
                 entityKey={entityKey}
-                modalComponent={SaleForm}
+                modalComponent={ShoppingForm}
                 transformData={transformData?.toFrontend}
                 transformConfig={transformConfig}
                 actions={actions}

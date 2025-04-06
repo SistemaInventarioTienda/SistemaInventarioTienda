@@ -19,9 +19,9 @@ import SettingsPage from './pages/SettingsPage';
 import ProductPage from './pages/ProductPage';
 import SalePage from './pages/SalePage'
 import AddSalePage from './pages/AddSalePage';
-import CreditSalePage from './pages/CreditSalePage';
-
+import AddShoppingPage from './pages/AddShoppingPage';
 import { Toaster } from "sonner";
+import ShoppingPage from './pages/ShoppingPage';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -101,12 +101,14 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             {/* ruta al componente de configuraciones */}
-            <Route path="settings" element={<SettingsPage/>}/>
+            <Route path="settings" element={<SettingsPage />} />
             <Route path="product" element={<ProductPage />} />
             <Route path="sales/credit" element= {<CreditSalePage/>}></Route>
             <Route path="credits" element={<CreditPage />} />
             <Route path="sales/history" element={<SalePage />} />
             <Route path="sales/new" element={<AddSalePage />} />
+            <Route path="shopping/history" element={<ShoppingPage />} />
+            <Route path="shopping/new" element={<AddShoppingPage />} />
           </Routes>
         </main>
       </div>

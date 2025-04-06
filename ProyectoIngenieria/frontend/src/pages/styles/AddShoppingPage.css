@@ -1,10 +1,10 @@
-.sales-grid {
+.shoppings-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1.5rem;
 }
 
-.sales-card {
+.shoppings-card {
     padding: 1.5rem;
     overflow: hidden;
     border-radius: 16px;
@@ -12,29 +12,30 @@
     display: flex;
     flex-direction: column;
     background-color: var(--color-secondary);
+    height: fit-content;
 }
 
-.sales-card-fixed {
-    height: 100%;
+.shoppings-card-fixed {
+    height: auto;
     display: flex;
     flex-direction: column;
 }
 
-.sales-card-header {
+.shoppings-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
 }
 
-.sales-card-title {
+.shoppings-card-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--color-primary);
     margin: 0;
 }
 
-.sales-card-label {
+.shoppings-card-label {
     display: block;
     font-weight: 500;
     margin-bottom: 8px;
@@ -42,11 +43,11 @@
     color: var(--color-font);
 }
 
-.sales-input-section {
+.shoppings-input-section {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .search-input {
@@ -71,17 +72,12 @@
     cursor: pointer;
 }
 
-.sales-card-content {
+.shoppings-card-content {
     flex-grow: 1;
     width: 100%;
-    overflow-x: auto;
 }
 
-.sales-card-content>* {
-    margin-bottom: 20px;
-}
-
-.sales-summary {
+.shoppings-summary {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -89,9 +85,10 @@
     border-radius: 10px;
     background-color: var(--color-card);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
 }
 
-.sales-summary-row {
+.shoppings-summary-row {
     display: flex;
     justify-content: space-between;
     font-size: 1rem;
@@ -100,11 +97,11 @@
     border-bottom: 1px solid #e2e8f0;
 }
 
-.sales-summary-row:last-child {
+.shoppings-summary-row:last-child {
     border-bottom: none;
 }
 
-.sales-summary-total {
+.shoppings-summary-total {
     display: flex;
     justify-content: space-between;
     font-size: 1.25rem;
@@ -113,12 +110,7 @@
     padding-top: 10px;
 }
 
-.discount {
-    color: #dc2626;
-    font-weight: 500;
-}
-
-.complete-sale-btn {
+.complete-shopping-btn {
     background-color: #0f172a;
     color: white;
     border: none;
@@ -204,4 +196,23 @@
 .action-button.delete {
     background-color: #ef4444;
     color: white;
+}
+
+/* Responsive styles */
+@media (min-width: 768px) {
+    .shoppings-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+
+    .shoppings-card-fixed {
+        position: sticky;
+        top: 1.5rem;
+        height: calc(100vh - 3rem);
+        overflow-y: auto;
+    }
+
+    .shoppings-card-fixed::-webkit-scrollbar {
+        width: 0;
+        background: transparent;
+    }
 }
