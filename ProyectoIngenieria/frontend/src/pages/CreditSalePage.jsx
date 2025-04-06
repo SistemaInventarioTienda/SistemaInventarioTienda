@@ -39,6 +39,7 @@ export default function CreditSalePage() {
       navigate(`/credits`,{
         state: { creditInfo: creditData,
            fields: creditConfig.fields,
+           entityName: creditConfig.entityName,
          }
       });
     }

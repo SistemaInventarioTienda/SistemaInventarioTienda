@@ -1,17 +1,35 @@
+import { useState } from "react";
 import PageLayout from "../components/layout/PageLayout";
 import { useLocation } from "react-router-dom";
-
+import { ModalComponent, ModalConfirmation } from "../components/modals";
+//import Modal from "../components/modals/Modal"; // Asegúrate de importar el Modal
 import { ClientInfoCard, CreditDetailsCard, PaymentHistoryTable } from "../components/common/clients/";
+import PaymentForm from "../pages/pagesForms/PaymentForm";
+
 import "./styles/CreditsPage.css"
 
 
 const CreditPage = () => {
 
-    const location = useLocation();
-    const { creditInfo, fields } = location.state || {}; // Obtenemos el estado pasado
+    //constantes para manejar los estados del modal.
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState("add");
+    const [modalData, setModalData] = useState(null);
+    //const [isConfirmationModalOpen, setConfirmationModalOpen]= useState(false);
 
+    const location = useLocation();
+    const { creditInfo, fields, entityName } = location.state || {}; // Obtenemos el estado pasado
+
+    const handleAdd = () => {
+        // Abre el modal para agregar un nuevo pago
+        setModalMode("add");
+        setModalData({});
+        setModalOpen(true);
+        console.log("Presionando boton..");
+    };
+    //console.log("Estado del modal:", isModalOpen);
     //console.log("Datos recibidos a [CREDITPAGE]:", creditInfo);
-    console.log("Campos recibidos a [CREDITPAGE]:", fields);
+    //console.log("Fields recibidos a [CREDITPAGE]:", fields);
 
     const subTotal = creditInfo?.sale?.MONT_SUBTOTAL;
     const credit = {
@@ -40,8 +58,6 @@ const CreditPage = () => {
         pending: creditInfo.MON_PENDIENTE,
     }
 
-    // const payments = [{ date: "2023-07-25", amount: 30000, type: "PARCIAL" }]
-
     const formatDate = (isoDate) => {
         if (!isoDate) return ""; // Manejo de valores nulos o vacíos
         const date = new Date(isoDate);
@@ -60,7 +76,9 @@ const CreditPage = () => {
                 <div>
                     <CreditDetailsCard 
                     credit={credit} 
+                    onRegisterPayment={handleAdd} 
                     />
+                    
                 </div>
                 <div>
                     <ClientInfoCard 
@@ -70,7 +88,23 @@ const CreditPage = () => {
                 <div style={{ gridColumn: '1 / -1' }}>
                     <PaymentHistoryTable payments={payments} />
                 </div>
+                
             </div>
+            
+            <ModalComponent
+            isOpen={isModalOpen}
+            title={`Agregar Abono`} 
+            onClose={() => setModalOpen(false)}
+            entityName={entityName}
+            mode={modalMode}
+            >
+                <PaymentForm
+                fields={fields}
+                initialData={creditInfo}
+                onCancel={() => {console.log('Cancelled')}}
+            />
+            </ModalComponent>
+            
         </PageLayout>
     )
 }
