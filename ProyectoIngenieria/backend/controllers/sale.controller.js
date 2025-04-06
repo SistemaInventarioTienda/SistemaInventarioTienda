@@ -1,10 +1,10 @@
-import { sale, details, credit } from "../models/sale.model.js";
+import { sale, details, credit ,db} from "../models/sale.model.js";
 import { getDateCR } from "../libs/date.js";
 import { validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
 import Product from "../models/product.model.js";
 import Client from "../models/client.model.js";
 import { Op } from 'sequelize';
-import db from '../db.js';
+
 
 
 export const createSale = async (req, res) => {
@@ -253,7 +253,7 @@ export const getSaleDetails = async (req, res) => {
 
 export const searchSales = async (req, res) => {
     try {
-        const { page = 1, pageSize = 5, termSearch = 'Descuento' } = req.query;
+        const { page = 1, pageSize = 5, termSearch = '' } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
@@ -349,3 +349,58 @@ async function EightDaysHavePassed(dateSale) {
 
     return dateSale <= eightDaysAgo;
 }
+
+
+export const deleteSale = async (req, res) => {
+
+    try {
+        const id = req.params.id;
+
+        const saleFound =await sale.findOne({ where: { ID_VENTA: id }})
+
+        if(!saleFound){
+            return res.status(400).json({ message: "Venta no encontrada" });
+        }
+
+       if(await EightDaysHavePassed(new Date(saleFound.FEC_VENTA))){
+        return res.status(400).json({ message: "No se puede anular la venta, dias excedidos." });
+       }
+
+
+        saleFound.ESTADO=2;
+        saleFound.save();
+        await db.transaction(async (t) => {
+            const productList = await details.findAll({
+              where: { ID_VENTA: id },
+              attributes: ['ID_PRODUCTO', 'CANTIDAD'],
+              include: [{
+                model: Product,
+                attributes: ['ID_PRODUCT', 'CANTIDAD']
+              }],
+              transaction: t
+            });
+          
+            for (const item of productList) {
+              const cantidadDevuelta = item.CANTIDAD;
+              const producto = item.Product;
+          
+              if (producto) {
+                await Product.update(
+                  {
+                    CANTIDAD: producto.CANTIDAD + cantidadDevuelta
+                  },
+                  {
+                    where: { ID_PRODUCT: producto.ID_PRODUCT },
+                    transaction: t
+                  }
+                );
+              }
+            }
+          });
+
+        res.status(201).json({ message: 'Venta Eliminada Correctamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al realizar la venta', error });
+    }
+};
