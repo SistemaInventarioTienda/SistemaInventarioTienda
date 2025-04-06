@@ -41,9 +41,9 @@ const DatePicker = ({
 
     useEffect(() => {
         if (flatpickrInstance.current) {
-            flatpickrInstance.current.setDate(value);
+            flatpickrInstance.current.setDate(value, false, dateFormat);
         }
-    }, [value]);
+    }, [value, dateFormat]);
 
     return (
         <div className="custom-flatpickr">
