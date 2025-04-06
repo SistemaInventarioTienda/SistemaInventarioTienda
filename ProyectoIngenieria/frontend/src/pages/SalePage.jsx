@@ -40,7 +40,7 @@ export default function SalePage() {
                 fields={fields}
                 fetchAll={api.fetchAll}
                 searchByName={api.searchByName}
-                onDelete={(sale) => api.delete(sale.ID_SALE)}
+                onDelete={(sale) => api.delete(sale.ID_VENTA)}
                 entityKey={entityKey}
                 modalComponent={SaleForm}
                 transformData={transformData?.toFrontend}
