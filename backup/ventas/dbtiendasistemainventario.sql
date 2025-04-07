@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-04-2025 a las 01:46:22
+-- Tiempo de generación: 07-04-2025 a las 02:54:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -27,7 +27,6 @@ DELIMITER $$
 --
 -- Procedimientos
 --
-DROP PROCEDURE IF EXISTS `sp_getAllShoppings`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllShoppings` (IN `p_field` VARCHAR(50), IN `p_sortOrder` VARCHAR(4), IN `p_limit` INT, IN `p_offset` INT)   BEGIN
 
 
@@ -110,7 +109,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllShoppings` (IN `p_field` V
     LIMIT p_limit OFFSET p_offset;
 END$$
 
-DROP PROCEDURE IF EXISTS `Sp_SearchCredits`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchCredits` (IN `termSearch` VARCHAR(255), IN `page` INT, IN `pageSize` INT)   BEGIN
     DECLARE offset INT;
 
@@ -198,7 +196,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchCredits` (IN `termSearch` 
         
 END$$
 
-DROP PROCEDURE IF EXISTS `Sp_SearchSales`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchSales` (IN `termSearch` VARCHAR(255), IN `page` INT, IN `pageSize` INT)   BEGIN
     DECLARE offset INT;
     SET offset = (page - 1) * pageSize;
@@ -276,7 +273,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchSales` (IN `termSearch` VA
     LIMIT offset, pageSize;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_searchShoppings`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_searchShoppings` (IN `p_field` VARCHAR(50), IN `p_sortOrder` VARCHAR(4), IN `p_limit` INTEGER, IN `p_offset` INTEGER, IN `p_expectedMatch` VARCHAR(255))   BEGIN
 
     SELECT 
@@ -381,7 +377,6 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `tsim_categoria`
 --
 
-DROP TABLE IF EXISTS `tsim_categoria`;
 CREATE TABLE IF NOT EXISTS `tsim_categoria` (
   `ID_CATEGORIA` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_NOMBRE` varchar(100) DEFAULT NULL,
@@ -414,7 +409,6 @@ INSERT INTO `tsim_categoria` (`ID_CATEGORIA`, `DSC_NOMBRE`, `FEC_CREADOEN`, `FEC
 -- Estructura de tabla para la tabla `tsim_empresa`
 --
 
-DROP TABLE IF EXISTS `tsim_empresa`;
 CREATE TABLE IF NOT EXISTS `tsim_empresa` (
   `ID_EMPRESA` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_NOMBRE` varchar(50) DEFAULT NULL,
@@ -431,7 +425,6 @@ CREATE TABLE IF NOT EXISTS `tsim_empresa` (
 -- Estructura de tabla para la tabla `tsim_estado`
 --
 
-DROP TABLE IF EXISTS `tsim_estado`;
 CREATE TABLE IF NOT EXISTS `tsim_estado` (
   `ID_ESTADO` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_NOMBRE` varchar(100) DEFAULT NULL COMMENT 'Activo, inactivo, suspendido',
@@ -454,7 +447,6 @@ INSERT INTO `tsim_estado` (`ID_ESTADO`, `DSC_NOMBRE`, `DSC_PARA`, `FEC_CREADOEN`
 -- Estructura de tabla para la tabla `tsim_fechainiciosesion`
 --
 
-DROP TABLE IF EXISTS `tsim_fechainiciosesion`;
 CREATE TABLE IF NOT EXISTS `tsim_fechainiciosesion` (
   `ID_FECHAINICIOSESION` int(11) NOT NULL AUTO_INCREMENT,
   `ID_USUARIO` int(11) DEFAULT NULL,
@@ -469,7 +461,6 @@ CREATE TABLE IF NOT EXISTS `tsim_fechainiciosesion` (
 -- Estructura de tabla para la tabla `tsim_permiso`
 --
 
-DROP TABLE IF EXISTS `tsim_permiso`;
 CREATE TABLE IF NOT EXISTS `tsim_permiso` (
   `ID_PERMISO` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_NOMBRE` varchar(100) DEFAULT NULL,
@@ -497,7 +488,6 @@ INSERT INTO `tsim_permiso` (`ID_PERMISO`, `DSC_NOMBRE`, `DSC_DESCRIPCION`) VALUE
 -- Estructura de tabla para la tabla `tsim_producto`
 --
 
-DROP TABLE IF EXISTS `tsim_producto`;
 CREATE TABLE IF NOT EXISTS `tsim_producto` (
   `ID_PRODUCT` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_NOMBRE` varchar(100) DEFAULT NULL,
@@ -518,14 +508,16 @@ CREATE TABLE IF NOT EXISTS `tsim_producto` (
   KEY `logs_userCreated` (`CREATED_BY_USER`),
   KEY `logs_userUpdated` (`UPDATED_BY_USER`),
   KEY `ID_SUBCATEGORIA` (`ID_SUBCATEGORIA`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `tsim_producto`
 --
 
 INSERT INTO `tsim_producto` (`ID_PRODUCT`, `DSC_NOMBRE`, `DSC_DESCRIPTION`, `DSC_CODIGO_BARRAS`, `URL_IMAGEN`, `MON_VENTA`, `MON_COMPRA`, `CANTIDAD`, `FEC_CREATED_AT`, `FEC_UPDATE_AT`, `ESTADO`, `ID_SUBCATEGORIA`, `UPDATED_BY_USER`, `CREATED_BY_USER`) VALUES
-(21, 'Coca cola', 'Esta es con un recipiente de 1.5L', 'PROD202502190056154', 'image_not_found.png', 2200, 1950, 80, '2025-02-19 00:56:15', NULL, 2, 1, NULL, 10);
+(21, 'Coca cola', 'Esta es con un recipiente de 1.5L', 'PROD202502190056154', 'image_not_found.png', 2200, 1950, 85, '2025-02-19 00:56:15', NULL, 2, 1, NULL, 10),
+(22, 'Pan', 'se come', '123456789098', 'PROD-1743883019275-614985473.jpg', 1800, 1600, 100, '2025-04-05 13:56:59', NULL, 1, 1, NULL, 10),
+(23, 'agua', 'tomar', '56365834568345683', 'PROD-1743883067799-369579279.jpg', 1800, 1000, 100, '2025-04-05 13:57:47', NULL, 1, 1, NULL, 10);
 
 -- --------------------------------------------------------
 
@@ -533,7 +525,6 @@ INSERT INTO `tsim_producto` (`ID_PRODUCT`, `DSC_NOMBRE`, `DSC_DESCRIPTION`, `DSC
 -- Estructura de tabla para la tabla `tsim_rol`
 --
 
-DROP TABLE IF EXISTS `tsim_rol`;
 CREATE TABLE IF NOT EXISTS `tsim_rol` (
   `ID_ROL` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_NOMBRE` varchar(50) DEFAULT NULL COMMENT 'SuperAdmin, Administrador, ventas, etc',
@@ -556,7 +547,6 @@ INSERT INTO `tsim_rol` (`ID_ROL`, `DSC_NOMBRE`, `DSC_DESCRIPCION`, `ESTADO`) VAL
 -- Estructura de tabla para la tabla `tsim_subcategoria`
 --
 
-DROP TABLE IF EXISTS `tsim_subcategoria`;
 CREATE TABLE IF NOT EXISTS `tsim_subcategoria` (
   `ID_SUBCATEGORIA` int(11) NOT NULL AUTO_INCREMENT,
   `ID_CATEGORIA` int(11) DEFAULT NULL,
@@ -582,7 +572,6 @@ INSERT INTO `tsim_subcategoria` (`ID_SUBCATEGORIA`, `ID_CATEGORIA`, `DSC_NOMBRE`
 -- Estructura de tabla para la tabla `tsim_tipoproveedor`
 --
 
-DROP TABLE IF EXISTS `tsim_tipoproveedor`;
 CREATE TABLE IF NOT EXISTS `tsim_tipoproveedor` (
   `ID_TIPOPROVEEDOR` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_NOMBRE` varchar(255) DEFAULT NULL,
@@ -614,7 +603,6 @@ INSERT INTO `tsim_tipoproveedor` (`ID_TIPOPROVEEDOR`, `DSC_NOMBRE`, `FEC_CREADOE
 -- Estructura de tabla para la tabla `tsit_abono`
 --
 
-DROP TABLE IF EXISTS `tsit_abono`;
 CREATE TABLE IF NOT EXISTS `tsit_abono` (
   `ID_ABONO` int(11) NOT NULL AUTO_INCREMENT,
   `ID_CREDITO` int(11) NOT NULL,
@@ -642,7 +630,6 @@ INSERT INTO `tsit_abono` (`ID_ABONO`, `ID_CREDITO`, `FEC_ABONO`, `MON_ABONADO`) 
 -- Estructura de tabla para la tabla `tsit_cliente`
 --
 
-DROP TABLE IF EXISTS `tsit_cliente`;
 CREATE TABLE IF NOT EXISTS `tsit_cliente` (
   `ID_CLIENTE` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_CEDULA` varchar(15) NOT NULL,
@@ -676,7 +663,6 @@ INSERT INTO `tsit_cliente` (`ID_CLIENTE`, `DSC_CEDULA`, `DSC_NOMBRE`, `DSC_APELL
 -- Estructura de tabla para la tabla `tsit_compras`
 --
 
-DROP TABLE IF EXISTS `tsit_compras`;
 CREATE TABLE IF NOT EXISTS `tsit_compras` (
   `ID_COMPRA` int(11) NOT NULL AUTO_INCREMENT,
   `FEC_COMPRA` date NOT NULL,
@@ -701,7 +687,6 @@ CREATE TABLE IF NOT EXISTS `tsit_compras` (
 -- Estructura de tabla para la tabla `tsit_correoproveedor`
 --
 
-DROP TABLE IF EXISTS `tsit_correoproveedor`;
 CREATE TABLE IF NOT EXISTS `tsit_correoproveedor` (
   `ID_CORREOPROVEEDOR` int(11) NOT NULL AUTO_INCREMENT,
   `ID_PROVEEDOR` int(11) DEFAULT NULL,
@@ -727,7 +712,6 @@ INSERT INTO `tsit_correoproveedor` (`ID_CORREOPROVEEDOR`, `ID_PROVEEDOR`, `DSC_C
 -- Estructura de tabla para la tabla `tsit_credito`
 --
 
-DROP TABLE IF EXISTS `tsit_credito`;
 CREATE TABLE IF NOT EXISTS `tsit_credito` (
   `ID_CREDITO` int(11) NOT NULL AUTO_INCREMENT,
   `ID_VENTA` int(11) NOT NULL,
@@ -755,7 +739,6 @@ INSERT INTO `tsit_credito` (`ID_CREDITO`, `ID_VENTA`, `FEC_ULTIMOPAGO`, `FEC_VEN
 -- Estructura de tabla para la tabla `tsit_detalles_compras`
 --
 
-DROP TABLE IF EXISTS `tsit_detalles_compras`;
 CREATE TABLE IF NOT EXISTS `tsit_detalles_compras` (
   `ID_DETALLE_COMPRA` int(11) NOT NULL AUTO_INCREMENT,
   `FEC_UPDATE_AT` date DEFAULT NULL,
@@ -777,7 +760,6 @@ CREATE TABLE IF NOT EXISTS `tsit_detalles_compras` (
 -- Estructura de tabla para la tabla `tsit_detalleventa`
 --
 
-DROP TABLE IF EXISTS `tsit_detalleventa`;
 CREATE TABLE IF NOT EXISTS `tsit_detalleventa` (
   `ID_DETALLEVENTA` int(11) NOT NULL AUTO_INCREMENT,
   `ID_VENTA` int(11) NOT NULL,
@@ -787,7 +769,7 @@ CREATE TABLE IF NOT EXISTS `tsit_detalleventa` (
   PRIMARY KEY (`ID_DETALLEVENTA`),
   KEY `ID_VENTA` (`ID_VENTA`),
   KEY `ID_PRODUCTO` (`ID_PRODUCTO`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `tsit_detalleventa`
@@ -801,7 +783,10 @@ INSERT INTO `tsit_detalleventa` (`ID_DETALLEVENTA`, `ID_VENTA`, `ID_PRODUCTO`, `
 (5, 5, 21, 2200, 1),
 (6, 6, 21, 2200, 1),
 (7, 7, 21, 20000, 10),
-(8, 8, 21, 2200, 1);
+(8, 8, 21, 2200, 1),
+(9, 9, 21, 2200, 3),
+(10, 9, 22, 1800, 5),
+(11, 9, 23, 1800, 10);
 
 -- --------------------------------------------------------
 
@@ -809,7 +794,6 @@ INSERT INTO `tsit_detalleventa` (`ID_DETALLEVENTA`, `ID_VENTA`, `ID_PRODUCTO`, `
 -- Estructura de tabla para la tabla `tsit_permisousuario`
 --
 
-DROP TABLE IF EXISTS `tsit_permisousuario`;
 CREATE TABLE IF NOT EXISTS `tsit_permisousuario` (
   `ID_PERMISOUSUARIO` int(11) NOT NULL AUTO_INCREMENT,
   `ID_USUARIO` int(11) DEFAULT NULL,
@@ -849,7 +833,6 @@ INSERT INTO `tsit_permisousuario` (`ID_PERMISOUSUARIO`, `ID_USUARIO`, `ID_PERMIS
 -- Estructura de tabla para la tabla `tsit_proveedor`
 --
 
-DROP TABLE IF EXISTS `tsit_proveedor`;
 CREATE TABLE IF NOT EXISTS `tsit_proveedor` (
   `ID_PROVEEDOR` int(11) NOT NULL AUTO_INCREMENT,
   `IDENTIFICADOR_PROVEEDOR` varchar(255) DEFAULT NULL,
@@ -881,7 +864,6 @@ INSERT INTO `tsit_proveedor` (`ID_PROVEEDOR`, `IDENTIFICADOR_PROVEEDOR`, `DSC_NO
 -- Estructura de tabla para la tabla `tsit_telefonocliente`
 --
 
-DROP TABLE IF EXISTS `tsit_telefonocliente`;
 CREATE TABLE IF NOT EXISTS `tsit_telefonocliente` (
   `ID_TELEFONOCLIENTE` int(11) NOT NULL AUTO_INCREMENT,
   `ID_CLIENTE` int(11) DEFAULT NULL,
@@ -911,7 +893,6 @@ INSERT INTO `tsit_telefonocliente` (`ID_TELEFONOCLIENTE`, `ID_CLIENTE`, `DSC_TEL
 -- Estructura de tabla para la tabla `tsit_telefonoproveedor`
 --
 
-DROP TABLE IF EXISTS `tsit_telefonoproveedor`;
 CREATE TABLE IF NOT EXISTS `tsit_telefonoproveedor` (
   `ID_TELEFONOPROVEEDOR` int(11) NOT NULL AUTO_INCREMENT,
   `ID_PROVEEDOR` int(11) DEFAULT NULL,
@@ -937,7 +918,6 @@ INSERT INTO `tsit_telefonoproveedor` (`ID_TELEFONOPROVEEDOR`, `ID_PROVEEDOR`, `D
 -- Estructura de tabla para la tabla `tsit_usuario`
 --
 
-DROP TABLE IF EXISTS `tsit_usuario`;
 CREATE TABLE IF NOT EXISTS `tsit_usuario` (
   `ID_USUARIO` int(11) NOT NULL AUTO_INCREMENT,
   `DSC_NOMBREUSUARIO` varchar(255) DEFAULT NULL,
@@ -970,7 +950,6 @@ INSERT INTO `tsit_usuario` (`ID_USUARIO`, `DSC_NOMBREUSUARIO`, `DSC_CONTRASENIA`
 -- Estructura de tabla para la tabla `tsit_venta`
 --
 
-DROP TABLE IF EXISTS `tsit_venta`;
 CREATE TABLE IF NOT EXISTS `tsit_venta` (
   `ID_VENTA` int(11) NOT NULL AUTO_INCREMENT,
   `ID_CLIENTE` int(11) DEFAULT NULL,
@@ -985,21 +964,22 @@ CREATE TABLE IF NOT EXISTS `tsit_venta` (
   PRIMARY KEY (`ID_VENTA`),
   KEY `ID_CLIENTE` (`ID_CLIENTE`),
   KEY `ESTADO` (`ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `tsit_venta`
 --
 
 INSERT INTO `tsit_venta` (`ID_VENTA`, `ID_CLIENTE`, `FEC_VENTA`, `PORCENT_IMPUESTO`, `METODO_PAGO`, `DSC_VENTA`, `ESTADO_CREDITO`, `MONT_SUBTOTAL`, `PORCENT_DESCUENTO`, `ESTADO`) VALUES
-(1, 9, '2025-03-21 11:39:38', 13, 'Tarjeta', 'Descuento por temporada', 1, 250, 10, 1),
-(2, 9, '2025-03-23 13:26:47', 13, 'Tarjeta', 'Descuento por temporada', 1, 250, 10, 1),
+(1, 9, '2025-04-02 11:39:38', 13, 'Tarjeta', 'Descuento por temporada', 1, 250, 10, 1),
+(2, 9, '2025-04-05 13:26:47', 13, 'Tarjeta', 'Descuento por temporada', 1, 250, 10, 2),
 (3, 8, '2025-03-23 18:38:09', 13, 'Tarjeta', 'Hola', 1, 250, 10, 1),
 (4, 6, '2025-03-26 21:03:58', 13, 'Sinpe Movil', 'Gracias por la visita, vuelva pronto', 0, 2200, 0, 1),
 (5, 7, '2025-03-26 21:05:00', 13, 'Sinpe Movil', 'Gracias por la visita, vuelva pronto', 1, 2200, 0, 1),
 (6, 7, '2025-03-26 21:05:10', 13, 'Sinpe Movil', 'Gracias por la visita, vuelva pronto', 1, 2200, 0, 1),
 (7, 6, '2025-03-26 21:10:25', 13, 'Tarjeta', 'Compra de productos electrónicos', 1, 50000, 10, 1),
-(8, 6, '2025-03-27 11:01:36', 13, 'Pago en efectivo', 'Hola', 0, 2200, 220, 1);
+(8, 6, '2025-03-27 11:01:36', 13, 'Pago en efectivo', 'Hola', 0, 2200, 220, 1),
+(9, 6, '2025-04-05 14:01:08', 13, 'Pago en efectivo', 'Gracias por comprar', 0, 33600, 3360, 2);
 
 --
 -- Restricciones para tablas volcadas
