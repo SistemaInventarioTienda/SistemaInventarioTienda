@@ -97,7 +97,11 @@ export function useGenericFormLogic({
 
         try {
 
-            let errors = validateGeneral(formData);
+            let errors =[]; 
+            
+            if (entityName!== 'Ajuste') {
+                errors = validateGeneral(formData);
+            }
 
             if (entityName === "Proveedor") {
                 errors = [...errors, ...validateSupplier(formData, phones, emails)];
@@ -105,7 +109,11 @@ export function useGenericFormLogic({
                 errors = [...errors, ...validateProduct(formData)];
             } else if (entityName === "Cliente") {
                 errors = [...errors, ...validateClient(phones)];
-            }
+            } 
+            
+            // else if (entityName === "Ajuste"){
+                
+            // }
 
             if (errors.length > 0) {
                 setErrorMessages(errors);
@@ -118,8 +126,17 @@ export function useGenericFormLogic({
                 telefonos: phones,
                 correos: emails,
                 estado: parseInt(formData.estado, 10),
+                rango: parseInt(formData.rango, 10)
             };
-
+            
+            // Elimina el campo estado si es un ajuste y no se ha seleccionado un estado
+            if (entityName === "Ajuste" && !formData.estado) {
+                delete dataToSubmit.correos;
+                delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
+                delete dataToSubmit.estado; // Elimina el campo estado si no existe
+            }
+            console.log("Datos para Actualizar: ",dataToSubmit);
+            console.log("AQUI: ",onSubmit); 
             await onSubmit(dataToSubmit);
         } catch (error) {
             console.error("Error procesando el formulario:", error.message);

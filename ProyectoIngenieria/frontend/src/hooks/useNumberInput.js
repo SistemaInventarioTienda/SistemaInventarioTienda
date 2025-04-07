@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 
-const useNumberInput = ({ min = 1, max = 99, initialValue = 1, onChange }) => {
+const useNumberInput = ({ min , max , initialValue , onChange }) => {
   const [value, setValue] = useState(initialValue);
 
+
+  console.log("Estado interno de useNumberInput:", value); // Debug
   // Función para incrementar el valor
   const handleIncrement = () => {
     if (value < max) {
@@ -28,7 +30,7 @@ const useNumberInput = ({ min = 1, max = 99, initialValue = 1, onChange }) => {
     const newValue = parseInt(event.target.value, 10);
     if (!isNaN(newValue) && newValue >= min && newValue <= max) {
       setValue(newValue);
-      if (onChange) onChange(newValue); // Notifica al padre
+      if (onChange) onChange(newValue); // Notifica al padre del cambio realizado
     }
   };
 
