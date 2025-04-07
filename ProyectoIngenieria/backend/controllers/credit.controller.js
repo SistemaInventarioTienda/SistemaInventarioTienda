@@ -260,7 +260,7 @@ export const getAllPaymentByCreditByFilter = async (req, res) => {
         console.log(results.ResultadoJSON);
       
         if (!results.ResultadoJSON) {
-            return res.status(404).json({
+            return res.status(204).json({
                 message: "No se encontraron resultados.",
             });
         }
