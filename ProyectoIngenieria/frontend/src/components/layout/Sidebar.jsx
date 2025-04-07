@@ -30,6 +30,7 @@ const Sidebar = () => {
             iconOpened: <ChevronDown size={24} />,
             iconClosed: <ChevronUp size={24} />,
             subNav: [
+                { path: 'sales/credit', icon: CreditCard, text: 'Credito' },
                 { path: '/sales/history', icon: ClipboardList, text: 'Historial de ventas' },
                 { path: '/sales/new', icon: PlusCircle, text: 'Nueva Venta' }
             ]
@@ -41,9 +42,7 @@ const Sidebar = () => {
             iconOpened: <ChevronDown size={24} />,
             iconClosed: <ChevronUp size={24} />,
             subNav: [
-                { path: 'sales/credit', icon: CreditCard, text: 'Credito' },
-                { path: '/sales/history', icon: FileText, text: 'Historial de ventas' },
-                { path: '/sales/new', icon: ScanBarcode, text: 'Nueva Venta' },
+                
                 { path: '/shopping/history', icon: ClipboardList, text: 'Historial de compras' },
                 { path: '/shopping/new', icon: PackagePlus, text: 'Nueva Compra' }
             ]

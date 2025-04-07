@@ -19,8 +19,8 @@ export const creditConfig = {
       ],
     //NOTA: Campos para el formulario
     fields: [
-        {name: "FEC_ABONO", label: "Fecha de abono", type: "text", required: true},
-        {name: "MON_ABONADO", label: "Monto abonado", type: "text", required: true},
+        {name: "FEC_ABONO", label: "Fecha de abono", type: "date", required: true},
+        {name: "MON_ABONADO", label: "Monto abonado", type: "number", required: true},
         // {name: "btn_cancel", label: "Botón cancelar", type: "button", required: true},
     ],
     api: {
@@ -48,18 +48,7 @@ export const creditConfig = {
           }),
         toBackend: async (formData) => {
             return {
-                ID_CREDITO: formData.id,
-                ID_VENTA: formData.idVenta,
-                MON_PENDIENTE: formData.mon_pendiente,
-                FEC_ULTIMOPAGO: formData.fec_ultimoPago,
-                FEC_VENCIMIENTO: formData.fec_vencimiento,
-                ESTADO_CREDITO: formData.estado_credito,
-                payments: formData.payments.map((payment) => ({
-                    ID_ABONO: payment.id_abono,
-                    FEC_ABONO: payment.fec_abono,
-                    MON_ABONADO: payment.mon_abono,
-                    BTN_CANCEL: payment.btn_cancel, // Incluye btn_cancel si el backend lo necesita
-                })),
+              MON_ABONADO: formData.MON_ABONADO,
             };
         },
     },

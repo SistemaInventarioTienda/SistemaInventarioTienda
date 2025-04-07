@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { EntityPage } from "./EntityPage";
 import { creditConfig } from "../config/entities/creditConfig.js";
-import handleApiCall from "../utils/handleApiCall";
+
 import { usePermissions } from "../context/authPermissions";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +33,8 @@ export default function CreditSalePage() {
     actions
   } = creditConfig; // Falta crear el archivo creditConfig desde esta ruta: ../config/entities
 
+  
+
   const enhancedActions = {
     ...actions,
     manageCreditsHandler : (creditData) => {
@@ -40,23 +42,13 @@ export default function CreditSalePage() {
         state: { creditInfo: creditData,
            fields: creditConfig.fields,
            entityName: creditConfig.entityName,
+           
          }
       });
     }
   };
 
-  //console.log("EntityName: ",entityName,"\ntitlePage", titlePage, "\nEntityMessage: ",entityMessage);
-  //console.log("fetchAll: ",api.fetchAll);
-  //Logica para manejar el envio de datos al y desde el formulario.
-  // const onSubmit = async (mode , data) => {
-  //   try {
-        
-  //   } catch (error) {
-  //       console.log('Error desde CreditSalePage: ', error);
-  //       return { success: false }
-  //   }
-  // };
-
+  
   return (
     <>
       {/* <CreditPage /> */}

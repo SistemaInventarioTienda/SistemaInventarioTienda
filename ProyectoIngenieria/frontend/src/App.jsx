@@ -22,6 +22,7 @@ import AddSalePage from './pages/AddSalePage';
 import AddShoppingPage from './pages/AddShoppingPage';
 import { Toaster } from "sonner";
 import ShoppingPage from './pages/ShoppingPage';
+import CreditSalePage from './pages/CreditSalePage';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {

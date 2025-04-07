@@ -7,7 +7,7 @@ const StatusPill = ({ status, entityKey }) => {
     const statusMappings = {
         default: { 1: "Activo", 2: "Inactivo" },
         sales: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
-        credit: {1: "Activo", 2: "Moroso", 3: "Cancelado"},
+        credit: {1: "Activo", 2: "Cancelado", 3: "Moroso"},
         shopping: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
     };
 
@@ -27,7 +27,7 @@ const StatusPill = ({ status, entityKey }) => {
         statusClass = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo") ? "active" : "inactive";
     } 
     
-    if (lowerStatus === "anulada" || lowerStatus === "inactivo") {
+    if (lowerStatus === "anulada" || lowerStatus === "inactivo" || lowerStatus === "Cancelado") {
         statusClass = "inactive";
     } else {
         statusClass = "active";
