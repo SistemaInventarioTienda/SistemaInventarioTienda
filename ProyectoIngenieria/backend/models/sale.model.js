@@ -215,4 +215,4 @@ credit.hasMany(payment,{
 });
 
 
-export  {sale,details,credit,payment};
+export  {sale,details,credit,payment,db};
