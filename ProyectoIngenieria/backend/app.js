@@ -12,7 +12,7 @@ import subcategoryRoutes from "./routes/subcategory.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import saleRoutes from "./routes/sale.routes.js";
 import creditRoutes from "./routes/credit.routes.js";
-
+import transactionRoutes from "./routes/transaction.routes.js";
 import shoppingRoutes from "./routes/shopping.routes.js";
 
 //nuevo
@@ -45,6 +45,7 @@ app.use("/api/shopping", shoppingRoutes);
 app.use("/api/config", configRoutes);
 app.use("/api/credit", creditRoutes);
 app.use('/uploads', express.static('uploads'));
+app.use('/api/transaction', transactionRoutes);
 
 if (process.env.NODE_ENV === "production") {
   const path = await import("path");
