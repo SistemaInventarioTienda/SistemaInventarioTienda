@@ -52,7 +52,7 @@ const SalesSummaryCard = ({ saleForm }) => {
                     <DatePicker
                         label="Fecha de Vencimiento del Crédito"
                         value={saleForm.creditDueDate}
-                        onChange={(date) => saleForm.setCreditDueDate(date.toISOString().split("T")[0])}
+                        onChange={(date) => saleForm.setCreditDueDate(date)}
                         allowPastDates={false}
                         className="input"
                         placeholder="Selecciona una fecha"

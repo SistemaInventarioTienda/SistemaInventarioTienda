@@ -95,7 +95,7 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
                 <DatePicker
                     label="Fecha de recepción de productos"
                     value={shoppingForm.productReceiptDate}
-                    onChange={(date) => shoppingForm.setProductReceiptDate(date.toISOString().split("T")[0])}
+                    onChange={(date) => shoppingForm.setProductReceiptDate(date)}
                     allowPastDates={true}
                     className="input"
                     placeholder="Seleccione fecha de recepción"

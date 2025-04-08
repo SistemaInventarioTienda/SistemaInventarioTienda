@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { useAuthPermissions } from '../../context/authPermissions';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, ScanBarcode, ShoppingBag, ClipboardList, PlusCircle, PackagePlus } from 'lucide-react';
+import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, ScanBarcode, CreditCard, ShoppingBag, ClipboardList, PlusCircle, PackagePlus} from 'lucide-react';
 import SubMenu from './SubMenu';
 import './styles/sidebar.css';
 
@@ -30,6 +30,7 @@ const Sidebar = () => {
             iconOpened: <ChevronDown size={24} />,
             iconClosed: <ChevronUp size={24} />,
             subNav: [
+                { path: 'sales/credit', icon: CreditCard, text: 'Credito' },
                 { path: '/sales/history', icon: ClipboardList, text: 'Historial de ventas' },
                 { path: '/sales/new', icon: PlusCircle, text: 'Nueva Venta' }
             ]
@@ -41,6 +42,7 @@ const Sidebar = () => {
             iconOpened: <ChevronDown size={24} />,
             iconClosed: <ChevronUp size={24} />,
             subNav: [
+                
                 { path: '/shopping/history', icon: ClipboardList, text: 'Historial de compras' },
                 { path: '/shopping/new', icon: PackagePlus, text: 'Nueva Compra' }
             ]
@@ -80,3 +82,4 @@ const Sidebar = () => {
 }
 
 export default Sidebar;
+

@@ -99,11 +99,18 @@ export const EntityPage = forwardRef(({
         setConfirmationModalOpen(true);
     };
 
+    console.log("Datos FILTRADOS: ",filteredData);
     const tableActions = Object.entries(actions)
         .filter(([actionKey, isEnabled]) => isEnabled)
         .reduce((acc, [actionKey, isEnabled]) => {
             if (isEnabled) {
                 acc[actionKey] =
+                actionKey === "manageCredits" ? (rowData) => {
+                    console.log("Estamos en tableActions: ",rowData);
+                    if (actions.manageCreditsHandler) {
+                        actions.manageCreditsHandler(rowData);
+                    }
+                } :
                     actionKey === "grantPermissions" ? actions.grantPermissions :
                         actionKey === "edit" ? handleEdit :
                             actionKey === "delete" ? handleDeleteConfirmation :
