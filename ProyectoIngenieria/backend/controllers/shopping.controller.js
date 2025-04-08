@@ -230,7 +230,7 @@ export const deleteShopping = async (req, res) => {
         }
 
         const currentDate = await getDateCR();
-        if (EightDaysHavePassed(shopping.FEC_COMPRA)) {
+        if (!EightDaysHavePassed(shopping.FEC_COMPRA)) {
             return res.status(404).json({ message: "El tiempo para anular la venta ha expirado." });
         }
         await shopping.update(
