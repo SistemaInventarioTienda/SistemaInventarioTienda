@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Input, Textarea, InputFile, Select } from "./";
+import { Input, Textarea, InputFile, Select, NumberInput, DatePicker } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
 import { toast } from "sonner";
-import { useBarcodeScanner } from "../../hooks/useBarcodeScanner";
+// import { useBarcodeScanner } from "../../hooks/useBarcodeScanner";
 import ModalConfirmation from "../modals/ModalConfirmation";
+
 function GenericForm({
     mode,
     fields,
@@ -16,6 +17,8 @@ function GenericForm({
     onSubmit,
     onCancel,
 }) {
+
+    //console.log("onSubmit recibido en GenericForm:", onSubmit);
 
     const [errorMessages, setErrorMessages] = useState([]);
     const {
@@ -42,6 +45,8 @@ function GenericForm({
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    // const [quantity, setQuantity] = useState(1);
+    const [formValues, setFormValues] = useState(initialData);
 
     // useBarcodeScanner({
     //     enabled: mode !== 'view',
@@ -53,7 +58,7 @@ function GenericForm({
     //     }
     // });
 
-
+    
     useEffect(() => {
         if (errorMessages.length > 0) {
             errorMessages.forEach((msg) => toast.error(msg));
@@ -77,6 +82,14 @@ function GenericForm({
         }));
     };
 
+    const handleDatePickerChange = (fieldName, date) => {
+        setFormValues({ ...formValues, [fieldName]: date });
+    };
+    //useState para componente de rango
+    // const handleQuantityChange = (newValue) => {
+    //     setQuantity(newValue);
+    //     };
+
     // Renderizador de campos dinámicos
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";
@@ -91,6 +104,20 @@ function GenericForm({
                     readOnly={mode === "view"}
                     placeholder={`Ingrese ${field.label.toLowerCase()}`}
                     className="full-width"
+                />
+            );
+        }
+
+        if (field.type === "date") {
+            return (
+                <DatePicker
+                //label={field.label} // Pasa la etiqueta del campo
+                placeholder={field.placeholder || "Selecciona una fecha"}
+                value={formValues[field.name]} // Valor inicial del DatePicker
+                onChange={(date) => handleDatePickerChange(field.name, date)} // Maneja cambios
+                allowPastDates={field.allowPastDates || false} // Permite fechas pasadas
+                dateFormat={field.dateFormat || "d/m/Y"} // Formato de fecha
+                enableTime={field.enableTime || false} // Habilita selección de hora
                 />
             );
         }
@@ -133,6 +160,8 @@ function GenericForm({
                 />
             );
         }
+
+        // Agregar soporte para NumberInput
 
         const isBlocked = isCedulaValid && ["nombre", "primerApellido", "segundoApellido"].includes(field.name);
 
@@ -193,6 +222,7 @@ function GenericForm({
                     />
                 </div>
             )}
+
 
             {/* Renderizar el campo de archivo al final */}
             {fileField && (

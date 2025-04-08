@@ -1,6 +1,9 @@
 import { Printer, Pencil, DollarSign, Calendar, Clock, Wallet, Coins } from "lucide-react";
 
 const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
+
+    //console.log("credito: ", credit);
+
     return (
         <div className="credits-card credits-card-fixed">
             <div className="credits-card-header">
@@ -47,19 +50,19 @@ const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
                     </div>
                 </div>
 
-                <div className="credits-info-item" style={{ marginTop: "1.5rem" }}>
+                {/* <div className="credits-info-item" style={{ marginTop: "1.5rem" }}>
                     <h3 className="credits-info-label">Descripción</h3>
                     <p className="credits-info-value">{credit.description}</p>
-                </div>
+                </div> */}
             </div>
             <div className="credits-card-footer">
-                <button className="credits-button credits-button-outline">
+                {/* <button className="credits-button credits-button-outline">
                     <Printer className="credits-icon" /> Imprimir
-                </button>
+                </button> */}
                 <div>
-                    <button className="credits-button credits-button-edit" style={{ marginRight: "0.5rem" }}>
+                    {/* <button className="credits-button credits-button-edit" style={{ marginRight: "0.5rem" }}>
                         <Pencil className="credits-icon" /> Editar
-                    </button>
+                    </button> */}
                     <button className="credits-button credits-button-primary" onClick={onRegisterPayment}>
                         <DollarSign className="credits-icon" /> Registrar Pago
                     </button>

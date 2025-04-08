@@ -78,6 +78,11 @@ th:hover .chevron-icon {
     color: var(--color-status-pill-inactive-text);
 }
 
+.status-pill.pending {
+    background-color: var(--color-status-pill-pending-bg);
+    color: var(--color-status-pill-pending-text);
+}
+
 .actions-cell {
     display: flex;
     gap: 8px;

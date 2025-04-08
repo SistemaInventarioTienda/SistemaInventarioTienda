@@ -21,7 +21,8 @@ const ModalConfirmation = ({
     delete: "Eliminar",
     anulate: "Anular",
     logout: "Cerrar Sesión",
-    make_sale: "Realizar nueva"
+    make_sale: "Realizar nueva",
+    make_purchase: "Realizar nueva"
   };
 
   const translatedAction = actionTranslations[action] || action;
@@ -69,8 +70,7 @@ const ModalConfirmation = ({
             </button>
             <button
               type="button"
-              className={`modal-confirmation-confirm-btn ${action === "delete" || "anulate" ? "danger" : "primary"
-                }`}
+              className={`modal-confirmation-confirm-btn ${["delete", "anulate"].includes(action) ? "danger" : "primary"}`}
               onClick={handleConfirm}
             >
               {confirmButtonText}
