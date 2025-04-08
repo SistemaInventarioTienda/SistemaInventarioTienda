@@ -8,48 +8,54 @@ import db from '../db.js';
 
 export const getAllShoppings = async (req, res) => {
     try {
-        // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
         const { page = 1, pageSize = 5, orderByField = 'FEC_CREATED_AT', order = 'desc' } = req.query;
         const limit = parseInt(pageSize);
         const offset = (parseInt(page) - 1) * limit;
 
-        const field = (
-            orderByField === 'FEC_COMPRA' || orderByField === 'FEC_ENTRADA' || orderByField === 'MON_TOTAL' ||
-            orderByField === 'DSC_METODO_PAGO' || orderByField === 'PROVEEDOR' || orderByField === 'PRODUCTO'
-        ) ? orderByField : 'FEC_CREATED_AT';
+        const field = ['FEC_COMPRA', 'FEC_ENTRADA', 'MON_TOTAL', 'DSC_METODO_PAGO', 'PROVEEDOR'].includes(orderByField)
+            ? orderByField
+            : 'FEC_CREATED_AT';
 
         const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
 
-        const [results] = await db.query(
+        const [results, totalResults] = await db.query(
             'CALL sp_getAllShoppings(:field, :sortOrder, :limit, :offset)',
             {
-                replacements: {
-                    field: field,
-                    sortOrder: sortOrder,
-                    limit: limit,
-                    offset: offset
-                },
+                replacements: { field, sortOrder, limit, offset },
                 type: QueryTypes.SELECT
             });
 
-        const count = Object.keys(results).length;
-        if (count === 0) {
-            return res.status(204).json({
-                message: "No se encontraron compras.",
-            });
+        if (!results || results.length === 0) {
+            return res.status(204).json({ message: "No se encontraron compras." });
         }
 
+        const total = totalResults[0]?.total || 0;
+
+        const cleanedResults = clearShoppingDetails(results);
+
+        const shoppingsResults = await Promise.all(
+            Object.values(cleanedResults).map(async (shopping) => {
+                const canCancel = !(await EightDaysHavePassed(shopping.FEC_COMPRA));
+                return {
+                    ...shopping,
+                    CAN_CANCEL: canCancel
+                };
+            })
+        );
+
         res.json({
-            total: count,
-            totalPages: Math.ceil(count / limit),
+            total,
+            totalPages: Math.ceil(total / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            shopping: clearShoppingDetails(results)
+            shopping: shoppingsResults
         });
+
     } catch (error) {
+        console.error("Error en getAllShoppings:", error);
         return res.status(500).json({ message: error.message });
     }
-}
+};
 
 export const searchShopping = async (req, res) => {
     try {
@@ -85,12 +91,24 @@ export const searchShopping = async (req, res) => {
             });
         }
 
+        const cleanedResults = clearShoppingDetails(results);
+
+        const shoppingsResults = await Promise.all(
+            Object.values(cleanedResults).map(async (shopping) => {
+                const canCancel = !(await EightDaysHavePassed(shopping.FEC_COMPRA));
+                return {
+                    ...shopping,
+                    CAN_CANCEL: canCancel
+                };
+            })
+        );
+
         res.json({
             total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            shopping: clearShoppingDetails(results)
+            shopping: shoppingsResults
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -212,6 +230,9 @@ export const deleteShopping = async (req, res) => {
         }
 
         const currentDate = await getDateCR();
+        if (!EightDaysHavePassed(shopping.FEC_COMPRA)) {
+            return res.status(404).json({ message: "El tiempo para anular la venta ha expirado." });
+        }
         await shopping.update(
             {
                 ESTADO: 2,
@@ -229,7 +250,22 @@ export const deleteShopping = async (req, res) => {
     }
 }
 
+//======================== REGISTRO DE PRODUCTOS ======================== 
 
+async function EightDaysHavePassed(dateShopping) {
+    const currentDate = await getDateCR();
+
+    const currentDateMidnight = new Date(currentDate);
+    currentDateMidnight.setHours(0, 0, 0, 0);
+
+    const eightDaysAgo = new Date(currentDateMidnight);
+    eightDaysAgo.setDate(eightDaysAgo.getDate() - 8);
+
+    const shoppingDate = new Date(dateShopping);
+    shoppingDate.setHours(0, 0, 0, 0);
+
+    return shoppingDate <= eightDaysAgo;
+}
 
 //======================== REGISTRO DE PRODUCTOS ========================
 

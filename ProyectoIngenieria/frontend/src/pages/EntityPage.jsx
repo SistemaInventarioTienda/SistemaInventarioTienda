@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle } from "react"; // Importar forwardRef y useImperativeHandle
+import React, { useEffect, forwardRef, useImperativeHandle } from "react"; // Importar forwardRef y useImperativeHandle
 import PageLayout from "../components/layout/PageLayout";
 import { Table, Pagination, Button, InputButton, Select } from "../components/common";
 import { ModalComponent, ModalConfirmation } from "../components/modals";
@@ -28,6 +28,7 @@ export const EntityPage = forwardRef(({
     subcategoryActions,
     action,
     confirmButtonText,
+    initialModalOpen = false,
 }, ref) => {
     const {
         data,
@@ -60,9 +61,19 @@ export const EntityPage = forwardRef(({
         }
     }));
 
+    useEffect(() => {
+        if (initialModalOpen) {
+            setModalMode("add");
+            setModalData({});
+            setModalOpen(true);
+        }
+    }, [initialModalOpen]);
+
     const handleAdd = () => {
         if (entityKey === "sales") {
             navigate("/sales/new");
+        } else if (entityKey === "shopping") {
+            navigate("/shopping/new");
         } else {
             setModalMode("add");
             setModalData({});
@@ -88,11 +99,18 @@ export const EntityPage = forwardRef(({
         setConfirmationModalOpen(true);
     };
 
+    console.log("Datos FILTRADOS: ",filteredData);
     const tableActions = Object.entries(actions)
         .filter(([actionKey, isEnabled]) => isEnabled)
         .reduce((acc, [actionKey, isEnabled]) => {
             if (isEnabled) {
                 acc[actionKey] =
+                actionKey === "manageCredits" ? (rowData) => {
+                    console.log("Estamos en tableActions: ",rowData);
+                    if (actions.manageCreditsHandler) {
+                        actions.manageCreditsHandler(rowData);
+                    }
+                } :
                     actionKey === "grantPermissions" ? actions.grantPermissions :
                         actionKey === "edit" ? handleEdit :
                             actionKey === "delete" ? handleDeleteConfirmation :

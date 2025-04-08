@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { Select, Button, Textarea, Input } from "../../common";
-import { DatePickerComponent } from '../../features/sales';
+import { useEffect } from "react";
+import { DatePicker, Select, Button, Textarea, Input } from "../../common";
 import { ModalConfirmation } from "../../modals";
 import { useEntityPage } from "../../../hooks/useEntityPage";
 import { getClients } from "../../../api/client";
@@ -49,7 +48,18 @@ const SalesSummaryCard = ({ saleForm }) => {
                     name="saleType"
                 />
 
-                <DatePickerComponent saleForm={saleForm} />
+                {saleForm.selectedSaleType === 1 && (
+                    <DatePicker
+                        label="Fecha de Vencimiento del Crédito"
+                        value={saleForm.creditDueDate}
+                        onChange={(date) => saleForm.setCreditDueDate(date)}
+                        allowPastDates={false}
+                        className="input"
+                        placeholder="Selecciona una fecha"
+                        dateFormat="d/m/Y"
+                        firstDayOfWeek={1}
+                    />
+                )}
 
                 <label className="sales-card-label">
                     Cliente de la compra (Opcional)

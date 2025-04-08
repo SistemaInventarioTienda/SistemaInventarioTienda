@@ -7,6 +7,8 @@ const StatusPill = ({ status, entityKey }) => {
     const statusMappings = {
         default: { 1: "Activo", 2: "Inactivo" },
         sales: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
+        credit: {1: "Activo", 2: "Cancelado", 3: "Moroso"},
+        shopping: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
     };
 
     const selectedMap = statusMappings[entityKey] || statusMappings.default;
@@ -14,11 +16,24 @@ const StatusPill = ({ status, entityKey }) => {
     let parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
 
     let statusClass;
-    if (parsedStatus.toLowerCase() === "pendiente") {
+    const lowerStatus = parsedStatus.toLowerCase();
+
+    if (lowerStatus === "pendiente") {
         statusClass = "pending";
-    } else {
+    } else if (entityKey === "credit") {
+        // Clases específicas para credit
+        statusClass = parsedStatus.toLowerCase() === (entityKey === "credit" ? "activo" : "activo") ? "active" : "inactive";
+    }else {
         statusClass = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo") ? "active" : "inactive";
+    } 
+    
+    if (lowerStatus === "anulada" || lowerStatus === "inactivo" || lowerStatus === "Cancelado") {
+        statusClass = "inactive";
+    } else {
+        statusClass = "active";
     }
+
+    console.log("Hola amigo por aqui: ",statusClass);
     return <span className={`status-pill ${statusClass}`}>{parsedStatus}</span>;
 };
 
@@ -46,7 +61,7 @@ const ActionsCell = ({ actions, rowData, entityKey }) => (
             </ActionButton>
         )}
         {actions.delete && (
-            entityKey === "sales"
+            entityKey === "sales" || entityKey === "shopping"
                 ? rowData.CAN_CANCEL && (
                     <ActionButton
                         onClick={() => actions.delete(rowData)}
@@ -113,7 +128,9 @@ const Table = ({ columns, data, actions, onSort, sortField, sortOrder, expandabl
                                     <tr>
                                         {columns.map((column, colIndex) => (
                                             <td key={colIndex}>
-                                                {column.field === "ESTADO" ? (
+                                                {column.field === "ESTADO_CREDITO"? (
+                                                    <StatusPill status={row[column.field]} entityKey={entityKey} />
+                                                )  : column.field === "ESTADO"? (
                                                     <StatusPill status={row[column.field]} entityKey={entityKey} />
                                                 ) : column.field === "actions" ? (
                                                     <ActionsCell actions={actions} rowData={row} entityKey={entityKey} />
