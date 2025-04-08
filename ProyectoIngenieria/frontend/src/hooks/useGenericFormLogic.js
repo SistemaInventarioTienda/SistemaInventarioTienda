@@ -126,6 +126,7 @@ export function useGenericFormLogic({
       let dataToSubmit = {};
       if (entityName === "Abono") {
         dataToSubmit = {
+          ID_CREDITO: formData.ID_CREDITO,
           MON_ABONADO: formData.MON_ABONADO, // Solo este campo es necesario para el abono
         };
       } else {
@@ -138,15 +139,8 @@ export function useGenericFormLogic({
         };
       }
 
-      // const dataToSubmit = {
-      //     ...formData,
-      //     telefonos: phones,
-      //     correos: emails,
-      //     estado: parseInt(formData.estado, 10),
-      //     rango: parseInt(formData.rango, 10)
-      // };
       console.log("Estado en useGenericForm: ", formData.estado);
-      console.log("Datos de formulario: ", formData);
+      //console.log("ID del credito: ", formData.ID_CREDITO);
       // Elimina el campo estado si es un ajuste y no se ha seleccionado un estado
       if (entityName === "Ajuste" && !formData.estado) {
         delete dataToSubmit.correos;

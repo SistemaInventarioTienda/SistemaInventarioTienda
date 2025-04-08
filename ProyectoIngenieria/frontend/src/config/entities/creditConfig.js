@@ -1,5 +1,5 @@
 //import { updateCategory } from "../../api/category";
-import { getAllCredits, addPayment, modifyPayment, formatDate, searchCredits } from "../../api/credit"; //Falta importar los demas endpoints
+import { getAllCredits, addPayment, modifyPayment, formatDate, searchCredits, getCreditById } from "../../api/credit"; //Falta importar los demas endpoints
 
 export const creditConfig = {
 
@@ -19,7 +19,7 @@ export const creditConfig = {
       ],
     //NOTA: Campos para el formulario
     fields: [
-        {name: "FEC_ABONO", label: "Fecha de abono", type: "date", required: true},
+        // {name: "FEC_ABONO", label: "Fecha de abono", type: "date", required: true},
         {name: "MON_ABONADO", label: "Monto abonado", type: "number", required: true},
         // {name: "btn_cancel", label: "Botón cancelar", type: "button", required: true},
     ],
@@ -29,6 +29,7 @@ export const creditConfig = {
         create: addPayment,
         update: modifyPayment,
         searchByName: searchCredits,
+        getCreditById: getCreditById,
     },
 
     transformData: {
@@ -47,7 +48,9 @@ export const creditConfig = {
             })) || [],
           }),
         toBackend: async (formData) => {
+            console.log("FormData de creditConfig.js: ", formData);
             return {
+              ID_CREDITO: formData.ID_CREDITO,
               MON_ABONADO: formData.MON_ABONADO,
             };
         },
@@ -58,7 +61,7 @@ export const creditConfig = {
 
           if (item.MON_PENDIENTE === 0) {
             return "CANCELADO";
-          }else if (item.ESTADO_CREDITO <= 1){
+          }else if (item.ESTADO_CREDITO === 1){
             return "ACTIVO";
           } else{ 
             return "MOROSO";

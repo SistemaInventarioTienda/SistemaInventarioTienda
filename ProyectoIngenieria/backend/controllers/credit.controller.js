@@ -16,6 +16,7 @@ export const addPayment = async (req, res) => {
                 ESTADO_CREDITO: 1
             }
         });
+        console.log('ID del credito por parametro [Controller]',req.params.id);
 
         if (!creditId) {
             return res.status(404).json({
@@ -134,8 +135,53 @@ export const modifyPayment = async (req, res) => {
 };
 
 
+export const getCreditById = async (req, res) => {
+    try {
+        // Validar que el ID sea un número
+        const creditID = req.params.id;
+        if (!creditID || isNaN(creditID)) {
+            return res.status(400).json({ message: "ID de crédito inválido" });
+        }
 
+        // Obtener el crédito con sus relaciones
+        const response = await credit.findOne({
+            where: { ID_CREDITO: creditID },
+            include: [
+                {
+                    model: sale,
+                    attributes: ['ID_VENTA', 'DSC_VENTA', 'PORCENT_IMPUESTO', 'MONT_SUBTOTAL', 'PORCENT_DESCUENTO'],
+                    include: [
+                        {
+                            model: Client,
+                            attributes: ['ID_CLIENTE', 'DSC_NOMBRE', 'DSC_APELLIDOUNO', 'DSC_APELLIDODOS'],
+                            include: [
+                                {
+                                    model: phoneClient,
+                                    attributes: ['DSC_TELEFONO']
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    model: payment,
+                    attributes: ['ID_ABONO', 'FEC_ABONO', 'MON_ABONADO']
+                }
+            ]
+        });
 
+        // Verificar si el crédito existe
+        if (!response) {
+            return res.status(404).json({ message: "Crédito no encontrado" });
+        }
+
+        // Devolver el crédito con sus relaciones
+        res.status(200).json(response);
+    } catch (error) {
+        console.error("Error al obtener el crédito:", error.message);
+        res.status(500).json({ message: "Error al obtener el crédito", error: error.message });
+    }
+};
 
 export const getAllPaymentByCredit = async (req, res) => {
     try {
