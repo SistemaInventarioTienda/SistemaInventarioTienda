@@ -277,12 +277,33 @@ export const getAllPaymentByCredit = async (req, res) => {
           row.MON_PENDIENTE,
           new Date(row.FEC_VENCIMIENTO)
         );
-        const updatedPayments = await Promise.all(
-          row.payments.map(async (payment) => {
-            const paymentDate = new Date(payment.FEC_ABONO);
-            const disableCancelButton = await ThirtyMinutesHavePassed(
-              paymentDate
-            );
+
+        console.log(results.ResultadoJSON);
+      
+        if (!results.ResultadoJSON) {
+            return res.status(204).json({
+                message: "No se encontraron resultados.",
+            });
+        }
+
+        const toJson= JSON.parse(results.ResultadoJSON);
+
+        const rows = toJson.map(item => ({
+            ...item,
+            payments: typeof item.payments === 'string' ? JSON.parse(item.payments) : item.payments
+        }));
+
+        const updatedRows = await Promise.all(rows.map(async (row) => {
+            const creditStatus = await getStatusCredi(row.MON_PENDIENTE, new Date(row.FEC_VENCIMIENTO));
+            const updatedPayments = await Promise.all(row.payments.map(async (payment) => {
+                const paymentDate = new Date(payment.FEC_ABONO);
+                const disableCancelButton = await ThirtyMinutesHavePassed(paymentDate);
+
+                return {
+                    ...payment,
+                    BTN_CANCEL: disableCancelButton,
+                };
+            }));
 
             return {
               ...payment.toJSON(),
