@@ -7,33 +7,34 @@ const StatusPill = ({ status, entityKey }) => {
     const statusMappings = {
         default: { 1: "Activo", 2: "Inactivo" },
         sales: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
-        credit: {1: "Activo", 2: "Cancelado", 3: "Moroso"},
         shopping: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
+        credit: { 1: "Activo", 2: "Cancelado", 3: "Moroso" },
     };
 
     const selectedMap = statusMappings[entityKey] || statusMappings.default;
-
-    let parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
-
-    let statusClass;
+    const parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
     const lowerStatus = parsedStatus.toLowerCase();
 
-    if (lowerStatus === "pendiente") {
-        statusClass = "pending";
-    } else if (entityKey === "credit") {
-        // Clases específicas para credit
-        statusClass = parsedStatus.toLowerCase() === (entityKey === "credit" ? "activo" : "activo") ? "active" : "inactive";
-    }else {
-        statusClass = parsedStatus.toLowerCase() === (entityKey === "sales" ? "pagada" : "activo") ? "active" : "inactive";
-    } 
-    
-    if (lowerStatus === "anulada" || lowerStatus === "inactivo" || lowerStatus === "Cancelado") {
-        statusClass = "inactive";
+    let statusClass = "active"; // default
+
+    if (entityKey === "credit") {
+        if (lowerStatus === "moroso") {
+            statusClass = "inactive";
+        } else if (lowerStatus === "cancelado") {
+            statusClass = "pending";
+        } else {
+            statusClass = "active";
+        }
     } else {
-        statusClass = "active";
+        if (["pendiente"].includes(lowerStatus)) {
+            statusClass = "pending";
+        } else if (["anulada", "inactivo"].includes(lowerStatus)) {
+            statusClass = "inactive";
+        } else {
+            statusClass = "active";
+        }
     }
 
-    console.log("Hola amigo por aqui: ",statusClass);
     return <span className={`status-pill ${statusClass}`}>{parsedStatus}</span>;
 };
 
