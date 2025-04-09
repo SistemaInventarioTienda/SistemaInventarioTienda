@@ -108,11 +108,17 @@ const CreditPage = () => {
         return total + (payment.MON_ABONADO || 0);
     }, 0) || 0;
 
-    const fullName = creditInfo.DSC_NOMBRE+" "+creditInfo?.sale?.Client.DSC_APELLIDOUNO+" "+creditInfo?.sale?.Client.DSC_APELLIDODOS;
+    let firsName = creditInfo.DSC_NOMBRE || "";
+    let lastName1 = creditInfo?.sale?.Client.DSC_APELLIDOUNO || "";
+    let lastName2 = creditInfo?.sale?.Client.DSC_APELLIDODOS || "";
+    const fullName = `${firsName} ${lastName1} ${lastName2}`.trim();
+
+    let phoneNumber = creditInfo.sale?.Client.TelefonoClientes[0].DSC_TELEFONO;
+
     const client = {
         name: fullName,
         id: "119160537",//Falta este campo
-        phone: "60900809",//Falta este campo
+        phone:phoneNumber,//Falta este campo
         paid: paid,
         pending: creditInfo.MON_PENDIENTE,
     }

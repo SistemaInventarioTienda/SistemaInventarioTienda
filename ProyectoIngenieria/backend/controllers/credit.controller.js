@@ -14,7 +14,12 @@ export const addPayment = async (req, res) => {
             where: {
                 ID_CREDITO: req.params.id,
                 ESTADO_CREDITO: 1
-            }
+            },
+            include: [
+                {
+                    model:sale
+                }
+            ]
         });
         console.log('ID del credito por parametro [Controller]',req.params.id);
 
@@ -43,8 +48,17 @@ export const addPayment = async (req, res) => {
 
         if (addPay) {
             creditId.MON_PENDIENTE -= MON_ABONADO;
-            if (creditId.MON_PENDIENTE === 0) {
-                creditId.ESTADO_CREDITO = 0;
+            creditId.ESTADO_CREDITO = 0
+
+            console.log("Venta del credito: ", creditId.sale);
+            // if (creditId.MON_PENDIENTE === 0) {
+            //     creditId.ESTADO_CREDITO = 0;
+            // }
+            if (creditId.sale) {
+                await sale.update(
+                    {ESTADO: 1 },
+                    { where: {ID_VENTA: creditId.sale.ID_VENTA}}
+                );
             }
             creditId.FEC_ULTIMOPAGO = date;
             await creditId.save();
