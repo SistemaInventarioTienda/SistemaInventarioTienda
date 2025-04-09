@@ -49,16 +49,13 @@ export const addPayment = async (req, res) => {
 
     if (addPay) {
       creditId.MON_PENDIENTE -= MON_ABONADO;
-      creditId.ESTADO_CREDITO = 0;
-
-      console.log("Venta del credito: ", creditId.sale);
-      
-      if (creditId.sale) {
-        if (creditId.MON_PENDIENTE === 0) {
-          await sale.update(
-            { ESTADO: 1 },
-            { where: { ID_VENTA: creditId.sale.ID_VENTA } }
-          );
+      if(creditId.MON_PENDIENTE === 0){
+        creditId.ESTADO_CREDITO = 0;
+        // Actualizar el estado de la venta a 1
+        const saleToUpdate = await sale.findByPk(creditId.ID_VENTA);
+        if(saleToUpdate){
+            saleToUpdate.ESTADO = 1;
+            await saleToUpdate.save();
         }
       }
       creditId.FEC_ULTIMOPAGO = date;
