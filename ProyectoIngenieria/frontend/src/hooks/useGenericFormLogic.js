@@ -3,6 +3,7 @@ import { validateGeneral } from "../schemas/validations/validateGeneral";
 import { validateSupplier } from "../schemas/validations/validateSupplier";
 import { validateProduct } from "../schemas/validations/validateProduct";
 import { validateClient } from "../schemas/validations/validateClient";
+import { validateTransaction } from "../schemas/validations/validateTransaction";
 
 export function useGenericFormLogic({
   entityName,
@@ -101,7 +102,7 @@ export function useGenericFormLogic({
     try {
       let errors = [];
 
-      if (entityName !== "Ajuste" && entityName !== "Abono") {
+      if (entityName !== "Ajuste" && entityName !== "Abono" && entityName !== "Transaccion") {
         errors = validateGeneral(formData);
       } 
 
@@ -111,6 +112,8 @@ export function useGenericFormLogic({
         errors = [...errors, ...validateProduct(formData)];
       } else if (entityName === "Cliente") {
         errors = [...errors, ...validateClient(phones)];
+      }else if (entityName === "Transaccion"){
+        errors = [...errors, ...validateTransaction(formData)];
       }
 
       // else if (entityName === "Ajuste"){
@@ -156,7 +159,15 @@ export function useGenericFormLogic({
         delete dataToSubmit.correos;
         delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
         delete dataToSubmit.estado;
+      }else if (entityName === "Transaccion" && !formData.estado) {
+        delete dataToSubmit.correos;
+        delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
+        delete dataToSubmit.estado;
+        delete dataToSubmit.rango;
       }
+
+
+
       console.log("Data to submit: ", dataToSubmit);
       await onSubmit(dataToSubmit);
     } catch (error) {
