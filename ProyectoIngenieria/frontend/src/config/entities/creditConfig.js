@@ -59,12 +59,12 @@ export const creditConfig = {
     transformConfig: {
         ESTADO_CREDITO: (item) => {
 
-          if (item.MON_PENDIENTE === 0) {
-            return "CANCELADO";
-          }else if (item.ESTADO_CREDITO === 1){
+          if (item.ESTADO_CREDITO === 0) {
             return "ACTIVO";
-          } else{ 
+          }else if (item.ESTADO_CREDITO === 1){
             return "MOROSO";
+          } else{ 
+            return "CANCELADO";
           }
         },
         DSC_NOMBRE: (item) => item.sale?.Client?.DSC_NOMBRE || "Sin cliente",

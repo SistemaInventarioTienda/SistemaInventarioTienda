@@ -3,6 +3,7 @@ import { validateGeneral } from "../schemas/validations/validateGeneral";
 import { validateSupplier } from "../schemas/validations/validateSupplier";
 import { validateProduct } from "../schemas/validations/validateProduct";
 import { validateClient } from "../schemas/validations/validateClient";
+import { validatePayment } from "../schemas/validations/validatePayment";
 
 export function useGenericFormLogic({
   entityName,
@@ -100,6 +101,7 @@ export function useGenericFormLogic({
     console.log("formData: ", formData);
     try {
       let errors = [];
+      
 
       if (entityName !== "Ajuste" && entityName !== "Abono") {
         errors = validateGeneral(formData);
@@ -111,6 +113,8 @@ export function useGenericFormLogic({
         errors = [...errors, ...validateProduct(formData)];
       } else if (entityName === "Cliente") {
         errors = [...errors, ...validateClient(phones)];
+      } else if (entityName === "Abono"){
+        errors = [...errors, ...validatePayment(formData)];
       }
 
       // else if (entityName === "Ajuste"){

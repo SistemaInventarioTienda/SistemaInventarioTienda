@@ -8,7 +8,7 @@ const StatusPill = ({ status, entityKey }) => {
         default: { 1: "Activo", 2: "Inactivo" },
         sales: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
         shopping: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
-        credit: { 1: "Activo", 2: "Cancelado", 3: "Moroso" },
+        credit: { 0:"Activo", 1:"Moroso", 2:  "Cancelado"},
     };
 
     const selectedMap = statusMappings[entityKey] || statusMappings.default;
