@@ -205,93 +205,44 @@ export const getCreditById = async (req, res) => {
 };
 
 export const getAllPaymentByCredit = async (req, res) => {
-  try {
-    const {
-      page = 1,
-      pageSize = 5,
-      orderByField = "FEC_VENCIMIENTO",
-      order = "desc",
-    } = req.query;
-    const limit = parseInt(pageSize);
-    const offset = (parseInt(page) - 1) * limit;
+    try {
+        const { page = 1, pageSize = 5, orderByField = 'FEC_VENCIMIENTO', order = 'desc' } = req.query;
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
 
-    const field = [
-      "FEC_VENCIMIENTO",
-      "ESTADO_CREDITO",
-      "MON_PENDIENTE",
-      "FEC_ULTIMOPAGO",
-    ].includes(orderByField)
-      ? orderByField
-      : "FEC_VENTA";
-    //const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
-    const sortOrder =
-      typeof order === "string" &&
-      (order.toLowerCase() === "asc" || order.toLowerCase() === "desc")
-        ? order
-        : "asc";
+        const field = ['FEC_VENCIMIENTO', 'ESTADO_CREDITO', 'MON_PENDIENTE', 'FEC_ULTIMOPAGO'].includes(orderByField) ? orderByField : 'FEC_VENTA';
+        //const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+        const sortOrder = typeof order === 'string' && (order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc') ? order : 'asc';
 
-    const { count, rows } = await credit.findAndCountAll({
-      attributes: { exclude: [] },
-      limit,
-      offset,
-      order: [[field, sortOrder]],
-      include: [
-        {
-          model: sale,
-          attributes: [
-            "ID_VENTA",
-            "DSC_VENTA",
-            "PORCENT_IMPUESTO",
-            "MONT_SUBTOTAL",
-            "PORCENT_DESCUENTO",
-          ],
-          include: [
-            {
-              model: Client,
-              attributes: [
-                "ID_CLIENTE",
-                "DSC_NOMBRE",
-                "DSC_APELLIDOUNO",
-                "DSC_APELLIDODOS",
-              ],
-              include: [
+        const { count, rows } = await credit.findAndCountAll({
+            attributes: { exclude: [] },
+            limit,
+            offset,
+            order: [[field, sortOrder]],
+            include: [
                 {
-                  model: phoneClient,
-                  attributes: ["DSC_TELEFONO"],
+                    model: sale,
+                    attributes: ['ID_VENTA', 'DSC_VENTA', 'PORCENT_IMPUESTO', 'MONT_SUBTOTAL', 'PORCENT_DESCUENTO'],
+                    include: [
+                        {
+                            model: Client,
+                            attributes: ['ID_CLIENTE', 'DSC_NOMBRE', 'DSC_APELLIDOUNO', 'DSC_APELLIDODOS'],
+                            include: [
+                                {
+                                    model: phoneClient,
+                                    attributes: ['DSC_TELEFONO']
+                                },
+                            ]
+                        },
+                    ]
                 },
-              ],
-            },
-          ],
-        },
-        {
-          model: payment,
-          attributes: ["ID_ABONO", "FEC_ABONO", "MON_ABONADO"],
-        },
-      ],
-      distinct: true,
-    });
-
-    const updatedRows = await Promise.all(
-      rows.map(async (row) => {
-        const creditStatus = await getStatusCredi(
-          row.MON_PENDIENTE,
-          new Date(row.FEC_VENCIMIENTO)
-        );
-
-        console.log(results.ResultadoJSON);
-      
-        if (!results.ResultadoJSON) {
-            return res.status(204).json({
-                message: "No se encontraron resultados.",
-            });
-        }
-
-        const toJson= JSON.parse(results.ResultadoJSON);
-
-        const rows = toJson.map(item => ({
-            ...item,
-            payments: typeof item.payments === 'string' ? JSON.parse(item.payments) : item.payments
-        }));
+                {
+                    model: payment,
+                    attributes: ['ID_ABONO', 'FEC_ABONO', 'MON_ABONADO'],
+                }
+            ],
+            distinct: true
+        });
 
         const updatedRows = await Promise.all(rows.map(async (row) => {
             const creditStatus = await getStatusCredi(row.MON_PENDIENTE, new Date(row.FEC_VENCIMIENTO));
@@ -300,42 +251,34 @@ export const getAllPaymentByCredit = async (req, res) => {
                 const disableCancelButton = await ThirtyMinutesHavePassed(paymentDate);
 
                 return {
-                    ...payment,
+                    ...payment.toJSON(),
                     BTN_CANCEL: disableCancelButton,
                 };
             }));
 
             return {
-              ...payment.toJSON(),
-              BTN_CANCEL: disableCancelButton,
+                ...row.toJSON(),
+                ESTADO_CREDITO: creditStatus,
+                payments: updatedPayments
             };
-          })
-        );
+        }));
 
-        return {
-          ...row.toJSON(),
-          ESTADO_CREDITO: creditStatus,
-          payments: updatedPayments,
-        };
-      })
-    );
+        if (updatedRows.length === 0) {
+            return res.status(204).json({
+                message: "No se encontraron abonos realizados.",
+            });
+        }
 
-    if (updatedRows.length === 0) {
-      return res.status(204).json({
-        message: "No se encontraron abonos realizados.",
-      });
+        res.json({
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            credit: updatedRows,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
-
-    res.json({
-      total: count,
-      totalPages: Math.ceil(count / limit),
-      currentPage: parseInt(page),
-      pageSize: limit,
-      credit: updatedRows,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
 };
 
 async function ThirtyMinutesHavePassed(dateSale) {
