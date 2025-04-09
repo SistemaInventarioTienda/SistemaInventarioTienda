@@ -90,6 +90,7 @@ function GenericForm({
     //     setQuantity(newValue);
     //     };
 
+    console.log("Datos Iniciales en GenericForm:", initialData);
     // Renderizador de campos dinámicos
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";

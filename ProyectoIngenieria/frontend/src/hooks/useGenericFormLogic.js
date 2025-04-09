@@ -3,6 +3,7 @@ import { validateGeneral } from "../schemas/validations/validateGeneral";
 import { validateSupplier } from "../schemas/validations/validateSupplier";
 import { validateProduct } from "../schemas/validations/validateProduct";
 import { validateClient } from "../schemas/validations/validateClient";
+import { validatePayment } from "../schemas/validations/validatePayment";
 
 export function useGenericFormLogic({
   entityName,
@@ -100,6 +101,7 @@ export function useGenericFormLogic({
     console.log("formData: ", formData);
     try {
       let errors = [];
+      
 
       if (entityName !== "Ajuste" && entityName !== "Abono") {
         errors = validateGeneral(formData);
@@ -111,6 +113,8 @@ export function useGenericFormLogic({
         errors = [...errors, ...validateProduct(formData)];
       } else if (entityName === "Cliente") {
         errors = [...errors, ...validateClient(phones)];
+      } else if (entityName === "Abono"){
+        errors = [...errors, ...validatePayment(formData)];
       }
 
       // else if (entityName === "Ajuste"){
@@ -126,6 +130,7 @@ export function useGenericFormLogic({
       let dataToSubmit = {};
       if (entityName === "Abono") {
         dataToSubmit = {
+          ID_CREDITO: formData.ID_CREDITO,
           MON_ABONADO: formData.MON_ABONADO, // Solo este campo es necesario para el abono
         };
       } else {
@@ -138,15 +143,8 @@ export function useGenericFormLogic({
         };
       }
 
-      // const dataToSubmit = {
-      //     ...formData,
-      //     telefonos: phones,
-      //     correos: emails,
-      //     estado: parseInt(formData.estado, 10),
-      //     rango: parseInt(formData.rango, 10)
-      // };
       console.log("Estado en useGenericForm: ", formData.estado);
-      console.log("Datos de formulario: ", formData);
+      //console.log("ID del credito: ", formData.ID_CREDITO);
       // Elimina el campo estado si es un ajuste y no se ha seleccionado un estado
       if (entityName === "Ajuste" && !formData.estado) {
         delete dataToSubmit.correos;
