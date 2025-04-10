@@ -156,10 +156,12 @@ export const EntityPage = forwardRef(({
                     <h1>{titlePage}</h1>
                     <p>{entityMessage}</p>
                 </div>
-                <Button className="add-btn" onClick={handleAdd}>
+                {entityKey !== "credit" && (
+                    <Button className="add-btn" onClick={handleAdd}>
                     <Plus size={20} />
                     Agregar {entityName}
                 </Button>
+                )}
             </div>
             <div className="page-controls">
                 <div className="search-container">

@@ -136,7 +136,7 @@ export const registerShopping = async (req, res) => {
         // creating the product
         const currentDate = await getDateCR();
         const isValid = validateregister({
-            FEC_COMPRA: FEC_COMPRA,
+            FEC_COMPRA: currentDate,
             FEC_ENTRADA: FEC_ENTRADA,
             DSC_METODO_PAGO: DSC_METODO_PAGO,
             ID_PROVEEDOR: ID_PROVEEDOR,
@@ -160,7 +160,7 @@ export const registerShopping = async (req, res) => {
 
 
         const newShopping = new Shopping({
-            FEC_COMPRA: FEC_COMPRA,
+            FEC_COMPRA: currentDate,
             FEC_ENTRADA: FEC_ENTRADA,
             FEC_CREATED_AT: currentDate,
             ESTADO: 1,
