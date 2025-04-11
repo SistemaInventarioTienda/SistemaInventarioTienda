@@ -126,7 +126,8 @@ const CreditPage = () => {
 
 
     const payments = creditInfo?.payments?.map(payment => ({
-        date: formatDate(payment.FEC_ABONO), // Formatear la fecha
+      id: payment.ID_ABONO, // ID del abono
+      date: formatDate(payment.FEC_ABONO), // Formatear la fecha
         amount: payment.MON_ABONADO || 0,   // Monto abonado
         type: "PARCIAL"                      // Tipo fijo ("PARCIAL")
     })) || [];
@@ -147,7 +148,12 @@ const CreditPage = () => {
                     credit={credit} />
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
-                    <PaymentHistoryTable payments={payments} />
+                    <PaymentHistoryTable 
+                    payments={payments}
+                    creditConfig={creditConfig}
+                    fetchCreditData={fetchCreditData}
+                    pendingAmount= {creditInfo.MON_PENDIENTE}
+                     />
                 </div>
                 
             </div>
