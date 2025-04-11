@@ -8,6 +8,9 @@ export const createTransaction = async (req, res) => {
         return res.status(400).json({message : "Todos los campos son requeridos"})
     }
 
+    if ( isNaN(Number(MONTO_PAGO)) || isNaN(Number(ESTADO)))
+        return res.status(400).json({ message: "El método de pago y el estado deben ser números válidos" });
+
     const created_at = await getDateCR();
     const transaction = new Transaction({
         FEC_TRANSACCION: created_at,
