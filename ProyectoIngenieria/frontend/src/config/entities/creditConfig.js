@@ -51,6 +51,7 @@ export const creditConfig = {
             console.log("FormData de creditConfig.js: ", formData);
             return {
               ID_CREDITO: formData.ID_CREDITO,
+              ID_ABONO: formData.ID_ABONO,
               MON_ABONADO: formData.MON_ABONADO,
             };
         },
@@ -74,7 +75,7 @@ export const creditConfig = {
       },
     // Configuración de acciones permitidas
     actions: {
-        // edit: true,
+        //edit: true,
         // //delete: true,
         // //grantPermissions: true,
         // view: true,
