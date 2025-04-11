@@ -36,7 +36,46 @@ export const deleteTransaction = async (req, res) => {
 }
 
 export const getAllTransactions = async (req, res) => {
-    return res.status(200).json({ message: "Funciona" })
+    try {
+        // Obtén los parámetros de paginación de la solicitud (página y cantidad por página)
+        const { page = 1, pageSize = 5, orderByField = 'FEC_TRANSACCION', order = 'asc' } = req.query;
+        const limit = parseInt(pageSize);
+        const offset = (parseInt(page) - 1) * limit;
+
+        const field = (
+            orderByField === 'METODO_PAGO' || orderByField === 'DSC_TRANSACCION' || orderByField === 'TIPO_TRANSACCION' || orderByField === 'ESTADO' 
+        ) ? orderByField : 'FEC_TRANSACCION';
+
+        const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+        const { count, rows } = await Transaction.findAndCountAll({
+            attributes: {
+                exclude: ['ID_TRANSACCION']
+            },
+            limit,
+            offset,
+            order: [
+                [field, sortOrder],
+            ],
+            raw:true
+        });
+
+
+        if (rows.length === 0) {
+            return res.status(204).json({
+                message: "No se encontraron transacciones.",
+            });
+        }
+
+        res.json({
+            total: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            pageSize: limit,
+            transaction: rows
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 }
 
 export const searchTransaction = async (req, res) => {
