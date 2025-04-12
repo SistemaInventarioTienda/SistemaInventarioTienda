@@ -65,7 +65,7 @@ export default function Transferencias() {
                 entityMessage={entityMessage}
                 columns={columns}
                 fields={fields}
-                fetchAll={() => Promise.resolve([])}
+                fetchAll={api.fetchAll}
                 searchByName={() => Promise.resolve([])}
                 onSubmit={onSubmit}
                 onDelete={(transaction) => api.delete(transaction.ID_TRANSACCION)}
