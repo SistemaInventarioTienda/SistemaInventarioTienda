@@ -8,5 +8,6 @@ const router = Router();
 // Parte de administración de usuarios
 router.post("/create_transaction", auth, validateSchema(registerSchema), createTransaction);
 router.get("/get_all_transaction", auth, getAllTransactions);
+router.get("/search_transaction", searchTransaction);
 
 export default router;
