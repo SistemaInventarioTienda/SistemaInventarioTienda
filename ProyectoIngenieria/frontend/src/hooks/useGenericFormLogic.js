@@ -133,6 +133,7 @@ export function useGenericFormLogic({
       let dataToSubmit = {};
       if (entityName === "Abono") {
         dataToSubmit = {
+          ID_ABONO: formData.ID_ABONO,
           ID_CREDITO: formData.ID_CREDITO,
           MON_ABONADO: formData.MON_ABONADO, // Solo este campo es necesario para el abono
         };

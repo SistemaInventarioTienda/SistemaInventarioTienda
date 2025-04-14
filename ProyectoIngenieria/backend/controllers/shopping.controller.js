@@ -5,6 +5,7 @@ import Details_Shopping from '../models/shopping_details.model.js';
 import { getDateCR } from '../libs/date.js';
 import { QueryTypes } from 'sequelize';
 import db from '../db.js';
+import Product from '../models/product.model.js';   
 
 export const getAllShoppings = async (req, res) => {
     try {
@@ -190,6 +191,16 @@ export const registerShopping = async (req, res) => {
                 const detailsSaved = await newDetail.save();
                 if (detailsSaved) {
                     sumTotal = sumTotal + product.MON_PRECIO_COMPRA
+                    const productFound = await Product.findOne({
+                        attributes: ['ID_PRODUCT', 'CANTIDAD'],
+                        where: {
+                            DSC_CODIGO_BARRAS: product.DSC_CODIGO_BARRAS
+                        }
+                    })
+                    if(productFound) {
+                        productFound.CANTIDAD = productFound.CANTIDAD + product.MON_CANTIDAD
+                        productFound.save();
+                    }
                 }
 
             } catch (err) {

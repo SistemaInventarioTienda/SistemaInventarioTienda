@@ -26,8 +26,10 @@ export const registerSchema = z.object({
             message: "El metodo de pago en que se va a pagar debe tener minimo 3 caracteres."
         }),
     ESTADO: z
-        .string({
+        .number({
             required_error: "El estado de la transacción es obligatorio.",
+        }).min(0, {
+            required_error: "El estado debe ser un numero."
         }),
 });
 

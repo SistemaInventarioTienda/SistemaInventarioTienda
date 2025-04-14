@@ -35,7 +35,7 @@ export const addPayment = async (id, paymentData) => {
 
 export const modifyPayment = async (id, paymentData) => {
     try {
-        const response = await axios.put(`/credit/registerPayMod/${id}`);
+        const response = await axios.put(`/credit/registerPayMod/${id}`,paymentData);
         return response.data;
     } catch (error) {
         console.error('Error registering payment: ', error.message);
