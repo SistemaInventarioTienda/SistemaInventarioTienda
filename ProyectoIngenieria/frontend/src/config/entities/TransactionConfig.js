@@ -24,7 +24,7 @@ export const TransactionConfig = {
         { field: "METODO_PAGO", label: "Metodo de pago" },
         { field: "MONTO_PAGO", label: "Monto" },
         { field: "DSC_TRANSACCION", label: "Descripcion" },
-        { field: "TIPO_TRANSACCION", label: "Tipo de transaccion" },
+        { field: "TIPO_TRANSACCION", label: "Metodo de pago saliente" },
         { field: "ESTADO", label: "Estado" },
     ],
 
@@ -46,7 +46,7 @@ export const TransactionConfig = {
         { name: "DSC_TRANSACCION", label: "Descripcion", type: "textarea", required: true },
         {
             name: "TIPO_TRANSACCION",
-            label: "Tipo de Transaccion",
+            label: "Metodo de pago saliente",
             type: "select",
             required: true,
             options: [
@@ -92,6 +92,12 @@ export const TransactionConfig = {
  
     transformConfig: {
         ESTADO: (item) => (item.ESTADO === 1 ? "ACTIVO" : "INACTIVO"),
+        FEC_TRANSACCION: (item) => item.FEC_TRANSACCION
+        ? new Date(item.FEC_TRANSACCION).toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        }) : null,
     },
 
     // Configuración de acciones permitidas
