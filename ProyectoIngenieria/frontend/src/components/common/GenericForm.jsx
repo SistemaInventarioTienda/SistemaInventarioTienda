@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Textarea, InputFile, Select, NumberInput } from "./";
+import { Input, Textarea, InputFile, Select, NumberInput, DatePicker } from "./";
 import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
@@ -46,7 +46,7 @@ function GenericForm({
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     // const [quantity, setQuantity] = useState(1);
-
+    const [formValues, setFormValues] = useState(initialData);
 
     // useBarcodeScanner({
     //     enabled: mode !== 'view',
@@ -58,7 +58,7 @@ function GenericForm({
     //     }
     // });
 
-
+    
     useEffect(() => {
         if (errorMessages.length > 0) {
             errorMessages.forEach((msg) => toast.error(msg));
@@ -82,11 +82,15 @@ function GenericForm({
         }));
     };
 
+    const handleDatePickerChange = (fieldName, date) => {
+        setFormValues({ ...formValues, [fieldName]: date });
+    };
     //useState para componente de rango
     // const handleQuantityChange = (newValue) => {
     //     setQuantity(newValue);
     //     };
 
+    console.log("Datos Iniciales en GenericForm:", initialData);
     // Renderizador de campos dinámicos
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";
@@ -101,6 +105,20 @@ function GenericForm({
                     readOnly={mode === "view"}
                     placeholder={`Ingrese ${field.label.toLowerCase()}`}
                     className="full-width"
+                />
+            );
+        }
+
+        if (field.type === "date") {
+            return (
+                <DatePicker
+                //label={field.label} // Pasa la etiqueta del campo
+                placeholder={field.placeholder || "Selecciona una fecha"}
+                value={formValues[field.name]} // Valor inicial del DatePicker
+                onChange={(date) => handleDatePickerChange(field.name, date)} // Maneja cambios
+                allowPastDates={field.allowPastDates || false} // Permite fechas pasadas
+                dateFormat={field.dateFormat || "d/m/Y"} // Formato de fecha
+                enableTime={field.enableTime || false} // Habilita selección de hora
                 />
             );
         }
@@ -124,7 +142,18 @@ function GenericForm({
                         label: type.DSC_NOMBRE,
                     })),
                 ];
-            } else {
+            } else if (field.name==="METODO_PAGO") {
+                options = [
+                    { value: "", label: "Ninguno" },
+                    { value: "Efectivo", label: "Efectivo" },
+                    { value: "Tarjeta", label: "Tarjeta" },
+                ];
+            } else if (field.name==="TIPO_TRANSACCION") {
+                options = [
+                    { value: "", label: "Ninguno" },
+                    { value: "Sinpe", label: "Sinpe" },
+                ];
+            }else{
                 options = [
                     { value: "0", label: "Seleccione el estado" },
                     { value: 1, label: "Activo" },
@@ -145,20 +174,6 @@ function GenericForm({
         }
 
         // Agregar soporte para NumberInput
-    if (field.type === "numberinput") {
-        //console.log("Valor de rango en GenericForm: ", formData[field.type]); //Debug
-        // return (
-        //     <NumberInput
-        //         id={field.name}
-        //         min={field.min}
-        //         max={field.max}
-        //         initialValue={formData[field.name]}
-        //         onChange={(id, newValue) => handleChange(id, newValue)}
-        //         mode={mode}
-        //         label={field.label}
-        //     />
-        // );
-    }
 
         const isBlocked = isCedulaValid && ["nombre", "primerApellido", "segundoApellido"].includes(field.name);
 

@@ -5,6 +5,7 @@ import Details_Shopping from '../models/shopping_details.model.js';
 import { getDateCR } from '../libs/date.js';
 import { QueryTypes } from 'sequelize';
 import db from '../db.js';
+import Product from '../models/product.model.js';   
 
 export const getAllShoppings = async (req, res) => {
     try {
@@ -136,7 +137,7 @@ export const registerShopping = async (req, res) => {
         // creating the product
         const currentDate = await getDateCR();
         const isValid = validateregister({
-            FEC_COMPRA: FEC_COMPRA,
+            FEC_COMPRA: currentDate,
             FEC_ENTRADA: FEC_ENTRADA,
             DSC_METODO_PAGO: DSC_METODO_PAGO,
             ID_PROVEEDOR: ID_PROVEEDOR,
@@ -160,7 +161,7 @@ export const registerShopping = async (req, res) => {
 
 
         const newShopping = new Shopping({
-            FEC_COMPRA: FEC_COMPRA,
+            FEC_COMPRA: currentDate,
             FEC_ENTRADA: FEC_ENTRADA,
             FEC_CREATED_AT: currentDate,
             ESTADO: 1,
@@ -190,6 +191,16 @@ export const registerShopping = async (req, res) => {
                 const detailsSaved = await newDetail.save();
                 if (detailsSaved) {
                     sumTotal = sumTotal + product.MON_PRECIO_COMPRA
+                    const productFound = await Product.findOne({
+                        attributes: ['ID_PRODUCT', 'CANTIDAD'],
+                        where: {
+                            DSC_CODIGO_BARRAS: product.DSC_CODIGO_BARRAS
+                        }
+                    })
+                    if(productFound) {
+                        productFound.CANTIDAD = productFound.CANTIDAD + product.MON_CANTIDAD
+                        productFound.save();
+                    }
                 }
 
             } catch (err) {
@@ -230,9 +241,9 @@ export const deleteShopping = async (req, res) => {
         }
 
         const currentDate = await getDateCR();
-        // if (EightDaysHavePassed(shopping.FEC_COMPRA)) {
-        //     return res.status(404).json({ message: "El tiempo para anular la venta ha expirado." });
-        // }
+        if (!EightDaysHavePassed(shopping.FEC_COMPRA)) {
+            return res.status(404).json({ message: "El tiempo para anular la venta ha expirado." });
+        }
         await shopping.update(
             {
                 ESTADO: 2,

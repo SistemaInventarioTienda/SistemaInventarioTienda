@@ -8,22 +8,33 @@ const StatusPill = ({ status, entityKey }) => {
         default: { 1: "Activo", 2: "Inactivo" },
         sales: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
         shopping: { 1: "Pagada", 2: "Anulada", 3: "Pendiente" },
+        credit: { 0:"Activo", 1:"Moroso", 2:  "Cancelado"},
     };
 
     const selectedMap = statusMappings[entityKey] || statusMappings.default;
-
-    let parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
-
-    let statusClass;
+    const parsedStatus = typeof status === "number" ? selectedMap[status] || "Desconocido" : status;
     const lowerStatus = parsedStatus.toLowerCase();
 
-    if (lowerStatus === "pendiente") {
-        statusClass = "pending";
-    } else if (lowerStatus === "anulada" || lowerStatus === "inactivo") {
-        statusClass = "inactive";
+    let statusClass = "active"; // default
+
+    if (entityKey === "credit") {
+        if (lowerStatus === "moroso") {
+            statusClass = "inactive";
+        } else if (lowerStatus === "cancelado") {
+            statusClass = "pending";
+        } else {
+            statusClass = "active";
+        }
     } else {
-        statusClass = "active";
+        if (["pendiente"].includes(lowerStatus)) {
+            statusClass = "pending";
+        } else if (["anulada", "inactivo"].includes(lowerStatus)) {
+            statusClass = "inactive";
+        } else {
+            statusClass = "active";
+        }
     }
+
     return <span className={`status-pill ${statusClass}`}>{parsedStatus}</span>;
 };
 
@@ -118,7 +129,9 @@ const Table = ({ columns, data, actions, onSort, sortField, sortOrder, expandabl
                                     <tr>
                                         {columns.map((column, colIndex) => (
                                             <td key={colIndex}>
-                                                {column.field === "ESTADO" ? (
+                                                {column.field === "ESTADO_CREDITO"? (
+                                                    <StatusPill status={row[column.field]} entityKey={entityKey} />
+                                                )  : column.field === "ESTADO"? (
                                                     <StatusPill status={row[column.field]} entityKey={entityKey} />
                                                 ) : column.field === "actions" ? (
                                                     <ActionsCell actions={actions} rowData={row} entityKey={entityKey} />

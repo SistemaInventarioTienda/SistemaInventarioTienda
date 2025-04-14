@@ -197,79 +197,51 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchCredits` (IN `termSearch` 
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchSales` (IN `termSearch` VARCHAR(255), IN `page` INT, IN `pageSize` INT)   BEGIN
+    -- Calcular el offset para la paginación
     DECLARE offset INT;
     SET offset = (page - 1) * pageSize;
 
+    -- Consulta para obtener las ventas
     SELECT 
         CONCAT(
-            '{"credit":[',
+            '[',
             GROUP_CONCAT(
-                CONCAT(
-                    '{',
-                        '"ID_CREDITO":', cr.ID_CREDITO, ',',
-                        '"ID_VENTA":', cr.ID_VENTA, ',',
-                        '"FEC_ULTIMOPAGO":"', cr.FEC_ULTIMOPAGO, '",',
-                        '"FEC_VENCIMIENTO":"', cr.FEC_VENCIMIENTO, '",',
-                        '"MON_PENDIENTE":', cr.MON_PENDIENTE, ',',
-                        '"ESTADO_CREDITO":', cr.ESTADO_CREDITO, ',',
-                        
-                        '"sale":{',
-                            '"ID_VENTA":', v.ID_VENTA, ',',
-                            '"DSC_VENTA":"', v.DSC_VENTA, '",',
-                            '"PORCENT_IMPUESTO":', v.PORCENT_IMPUESTO, ',',
-                            '"MONT_SUBTOTAL":', v.MONT_SUBTOTAL, ',',
-                            '"PORCENT_DESCUENTO":', v.PORCENT_DESCUENTO, ',',
-                            
-                            '"Client":{',
-                                '"ID_CLIENTE":', cl.ID_CLIENTE, ',',
-                                '"DSC_NOMBRE":"', cl.DSC_NOMBRE, '",',
-                                '"DSC_APELLIDOUNO":"', cl.DSC_APELLIDOUNO, '",',
-                                '"DSC_APELLIDODOS":"', cl.DSC_APELLIDODOS, '",',
-                                '"TelefonoClientes":',
-                                    CONCAT(
-                                        '[',
-                                        GROUP_CONCAT(
-                                            CONCAT(
-                                                '{"DSC_TELEFONO":"', tel.DSC_TELEFONO, '"}'
-                                            ) SEPARATOR ','
-                                        ),
-                                        ']'
-                                    ),
-                            '}', -- Fin Client
-                        '},', -- Fin sale
-
-                        '"payments":',
-                        CONCAT(
-                            '[',
-                            GROUP_CONCAT(
-                                CONCAT(
-                                    '{"ID_ABONO":', ab.ID_ABONO, ',',
-                                    '"FEC_ABONO":"', ab.FEC_ABONO, '",',
-                                    '"MON_ABONADO":', ab.MON_ABONADO, ',',
-                                    '"BTN_CANCEL":true}'
-                                ) SEPARATOR ','
-                            ),
-                            ']'
-                        ),
-                    '}'
-                ) SEPARATOR ','
-            ), 
-            ']' -- Fin del objeto "credit"
+                JSON_OBJECT(
+                    'ID_VENTA', v.ID_VENTA, 
+                    'ID_CLIENTE', v.ID_CLIENTE,
+                    'FEC_VENTA', v.FEC_VENTA,
+                    'PORCENT_IMPUESTO', v.PORCENT_IMPUESTO,
+                    'METODO_PAGO', v.METODO_PAGO,
+                    'DSC_VENTA', v.DSC_VENTA,
+                    'MONT_SUBTOTAL', v.MONT_SUBTOTAL,
+                    'PORCENT_DESCUENTO', v.PORCENT_DESCUENTO,
+                    'ESTADO', v.ESTADO,
+                    'DSC_CLIENTE_NOMBRE', c.DSC_NOMBRE,
+                    'DSC_CLIENTE_APELLIDO_UNO', c.DSC_APELLIDOUNO,
+                    'DSC_CLIENTE_APELLIDO_DOS', c.DSC_APELLIDODOS,
+                    'CANTIDAD', pd.CANTIDAD,
+                    'MONT_UNITARIO', pd.MONT_UNITARIO,
+                    'DSC_PRODUCTO_NOMBRE', p.DSC_NOMBRE,
+                    'MON_PRODUCTO_VENTA', p.MON_VENTA,
+                    'ID_PRODUCTO', p.ID_PRODUCT
+                )
+            ),
+            ']'
         ) AS ResultadoJSON
     FROM 
-        tsit_credito cr
-    JOIN tsit_venta v ON cr.ID_VENTA = v.ID_VENTA
-    JOIN tsit_cliente cl ON v.ID_CLIENTE = cl.ID_CLIENTE
-    LEFT JOIN tsit_telefonocliente tel ON cl.ID_CLIENTE = tel.ID_CLIENTE
-    LEFT JOIN tsit_abono ab ON cr.ID_CREDITO = ab.ID_CREDITO
+        tsit_venta v
+    JOIN 
+        tsit_cliente c ON v.ID_CLIENTE = c.ID_CLIENTE
+    LEFT JOIN 
+        tsit_detalleventa pd ON v.ID_VENTA = pd.ID_VENTA
+    LEFT JOIN 
+        tsim_producto p ON pd.ID_PRODUCTO = p.ID_PRODUCT
     WHERE 
-        (termSearch = '' OR 
-        cl.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%') OR 
-        cl.DSC_APELLIDOUNO LIKE CONCAT('%', termSearch, '%') OR 
-        cl.DSC_APELLIDODOS LIKE CONCAT('%', termSearch, '%') OR 
-        DATE_FORMAT(cr.FEC_VENCIMIENTO, '%Y-%m-%d') LIKE CONCAT('%', termSearch, '%')
-    )
-    GROUP BY cr.ID_CREDITO
+        (v.DSC_VENTA LIKE CONCAT('%', termSearch, '%') 
+        OR c.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%') 
+        OR c.DSC_APELLIDOUNO LIKE CONCAT('%', termSearch, '%') 
+        OR c.DSC_APELLIDODOS LIKE CONCAT('%', termSearch, '%') 
+        OR p.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%'))
     LIMIT offset, pageSize;
 END$$
 

@@ -89,14 +89,23 @@
     display: inline-block;
 }
 
+.credits-badge-red {
+    background-color: var(--color-status-pill-inactive-bg);
+    color: var(--color-status-pill-inactive-text);
+}
+
 .credits-badge-yellow {
-    background-color: #fbbf24;
-    color: white;
+    /* background-color: #fbbf24;
+    color: white; */
+    background-color: var(--color-status-pill-pending-bg);
+    color: var(--color-status-pill-pending-text);
 }
 
 .credits-badge-green {
-    background-color: #22c55e;
-    color: white;
+    /* background-color: #22c55e;
+    color: white; */
+    background-color: var(--color-status-pill-active-bg);
+    color: var(--color-status-pill-active-text);
 }
 
 /* TABLA */
