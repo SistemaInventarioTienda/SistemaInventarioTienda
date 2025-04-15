@@ -2,18 +2,45 @@
 import React, { useState } from 'react';
 import { Input } from '../../components/common';
 import GenericForm from '../../components/common/GenericForm';
-const ProfileForm = ({ initialData, handleSubmit }) => {
+import handleApiCall from '../../utils/handleApiCall';
+const ProfileForm = ({ initialData, handleSubmit, userConfig }) => {
 
     const [passwordData, setPasswordData] = useState({
+        id: initialData.id,
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
     })
 
+    const handlePasswordSubmit = async (passwordData) => {
+        try {
+            console.log("Datos recibidos desde el form: ",passwordData);
+            if (!passwordData || typeof passwordData !== "object") {
+                throw new Error("Los datos recibidos son inválidos.");
+            }
+
+            const backendData = await userConfig.transformData.toBackenPassword(passwordData);
+            console.log("Datos transformados para el backend:", backendData);
+            
+            // Enviar la solicitud al backend
+            //const idUser = passwordData.id;
+            await handleApiCall(
+                () => userConfig.api.updataPassword(backendData),
+                "Contraseña actualizada correctamente."
+            );
+            return { success: true };
+        } catch (error) {
+            console.error("Error al actualizar la contraseña:", error);
+            return { success: false, message: "Error al actualizar la contraseña" };
+        }
+    };
+
     const handlePasswordChange = (e) => {
         setPasswordData({ ...passwordData, [e.target.name]: e.target.value })
+
     }
 
+    
     return (
         <div className="profile-form-container">
             {/* Left Section - Current Information */}
@@ -74,7 +101,12 @@ const ProfileForm = ({ initialData, handleSubmit }) => {
                             placeholder="Vuelva a ingresar la nueva contraseña"
                         />
                     </div>
-                    <button className="submit-button" onClick={handleSubmit}>
+                                                                {/* handleSubmit */}
+                    <button className="submit-button" onClick={(e) => {
+                        e.preventDefault();
+                        handlePasswordSubmit(passwordData)
+                        }}
+                        > 
                         Actualizar Contraseña
                     </button>
                 </div>

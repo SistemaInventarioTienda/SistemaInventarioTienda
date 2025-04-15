@@ -98,8 +98,8 @@ export function useGenericFormLogic({
     e.preventDefault();
     setIsProcessing(true);
 
-    console.log("EntityName: ", entityName);
-    console.log("formData: ", formData);
+    // console.log("EntityName: ", entityName);
+    // console.log("formData: ", formData);
     try {
       let errors = [];
       
@@ -147,7 +147,7 @@ export function useGenericFormLogic({
         };
       }
 
-      console.log("Estado en useGenericForm: ", formData.estado);
+      //console.log("Estado en useGenericForm: ", formData.estado);
       //console.log("ID del credito: ", formData.ID_CREDITO);
       // Elimina el campo estado si es un ajuste y no se ha seleccionado un estado
       if (entityName === "Ajuste" && !formData.estado) {
