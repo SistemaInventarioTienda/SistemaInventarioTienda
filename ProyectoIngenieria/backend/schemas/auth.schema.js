@@ -157,3 +157,27 @@ export const updateSchema = z.object({
     })
     .optional(),
 });
+
+export const changePasswordSchema = z.object({
+  DSC_CONTRASENIA_ACTU: z
+  .string({
+    required_error: "La contraseña actual es requerida."
+  })
+  .min(6, {
+    message: "La contraseña actual debe tener al menos 6 caracteres.",
+  }),
+  DSC_CONTRASENIA_NUEVA: z
+  .string({
+    required_error: "La nueva contraseña es requerida."
+  })
+  .min(6, {
+    message: "La nueva contraseña debe tener al menos 6 caracteres.",
+  }),
+  DSC_CONTRASENIA_CONFIRM: z
+  .string({
+    required_error: "La confirmación de la nueva contraseña es requerida."
+  })
+  .min(6, {
+    message: "La confirmación de la nueva contraseña debe tener al menos 6 caracteres.",
+  })
+})
