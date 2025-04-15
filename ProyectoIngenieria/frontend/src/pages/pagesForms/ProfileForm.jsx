@@ -10,6 +10,10 @@ const ProfileForm = ({ initialData, handleSubmit }) => {
         confirmPassword: "",
     })
 
+    const handlePasswordSubmit = async () => {
+        console.log("Cambiar contraseña:");// passwordData
+    };
+
     const handlePasswordChange = (e) => {
         setPasswordData({ ...passwordData, [e.target.name]: e.target.value })
     }
@@ -74,7 +78,8 @@ const ProfileForm = ({ initialData, handleSubmit }) => {
                             placeholder="Vuelva a ingresar la nueva contraseña"
                         />
                     </div>
-                    <button className="submit-button" onClick={handleSubmit}>
+                                                                {/* handleSubmit */}
+                    <button className="submit-button" onClick={handlePasswordSubmit}> 
                         Actualizar Contraseña
                     </button>
                 </div>
