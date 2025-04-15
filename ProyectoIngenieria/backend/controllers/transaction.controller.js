@@ -48,7 +48,9 @@ export const getAllTransactions = async (req, res) => {
         const offset = (parseInt(page) - 1) * limit;
 
         const field = (
+
             orderByField === 'METODO_PAGO' || orderByField === 'DSC_TRANSACCION' || orderByField === 'TIPO_TRANSACCION' || orderByField === 'ESTADO'
+
         ) ? orderByField : 'FEC_TRANSACCION';
 
         const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
@@ -61,7 +63,9 @@ export const getAllTransactions = async (req, res) => {
             order: [
                 [field, sortOrder],
             ],
+
             raw: true
+
         });
 
 

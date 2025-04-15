@@ -15,7 +15,7 @@ export const registerTransaction = async (TransactionData) => {
 
 export const getAllTransaction = async (page, pageSize, orderByField, order) => {
     try {
-        const response = await axios.get('/transaction/getAllTransaction', {
+        const response = await axios.get('/transaction/get_all_transaction', {
             params: { page, pageSize, orderByField, order }
         });
         console.log(response.data);
