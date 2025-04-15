@@ -4,6 +4,8 @@ import { useAuth } from "../context/authContext";
 import ProfileForm from "./pagesForms/ProfileForm";
 import "./styles/profilePage.css"
 import PageLayout from "../components/layout/PageLayout";
+import { userConfig } from "../config/entities/userConfig";
+import handleApiCall from "../utils/handleApiCall";
 
 function ProfilePage() {
     const navigate = useNavigate();
@@ -16,9 +18,23 @@ function ProfilePage() {
         }
     }, [isAuthenticated, navigate]);
 
-    const handleSubmit = async (formData, passwordData) => {
-        console.log("Actualizar perfil:", formData);
-        console.log("Cambiar contraseña:", passwordData);
+    const handleSubmit = async (formData) => {
+        try {
+            console.log("Actualizar perfil:", formData);
+            
+            const backendData = await userConfig.transformData.toBackend(formData);
+            console.log("Respuesta del backend:", backendData);
+
+            //const userID = user.DSC_CEDULA;
+            await handleApiCall(
+                () => userConfig.api.update(backendData), 
+                "Perfil actualizado correctamente."
+            );
+            return { success: true }; 
+        } catch (error) {
+            console.error("Error al actualizar el perfil:", error);
+            return { success: false, message: "Error al actualizar el perfil" };
+        }
     };
 
     return (
@@ -31,7 +47,11 @@ function ProfilePage() {
             </div>
 
             <div>
-                <ProfileForm initialData={user} onSubmit={handleSubmit} />
+                <ProfileForm 
+                initialData={user} 
+                onSubmit={handleSubmit} 
+                userConfig={userConfig}
+                />
             </div>
 
         </PageLayout>

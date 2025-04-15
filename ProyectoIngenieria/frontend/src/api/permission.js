@@ -22,6 +22,7 @@ function mapRecords(permissions) {
         clients: permissions.some(registro => registro.nombre === 'Clientes' && registro.estado),
         sales: permissions.some(registro => registro.nombre === 'Ventas' && registro.estado),
         shopping: permissions.some(registro => registro.nombre === 'Compras' && registro.estado),
+        transaction: permissions.some(registro => registro.nombre === 'Transacciones' && registro.estado),
         reports: permissions.some(registro => registro.nombre === 'Reportes' && registro.estado),
     };
     return resultado;

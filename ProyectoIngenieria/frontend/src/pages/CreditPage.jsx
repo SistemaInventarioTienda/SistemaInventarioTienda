@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageLayout from "../components/layout/PageLayout";
 import { useLocation } from "react-router-dom";
 import handleApiCall from "../utils/handleApiCall";
@@ -13,16 +13,33 @@ import "./styles/CreditsPage.css"
 
 
 const CreditPage = () => {
+    const location = useLocation();
+    const { /*creditInfo,*/ fields, entityName } = location.state || {}; // Obtenemos el estado pasado
 
     //constantes para manejar los estados del modal.
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("add");
     const [modalData, setModalData] = useState(null);
     //const [isConfirmationModalOpen, setConfirmationModalOpen]= useState(false);
+    const [creditInfo, setCreditInfo] = useState(location.state?.creditInfo || null);
+    
+    
 
-    const location = useLocation();
-    const { creditInfo, fields, entityName } = location.state || {}; // Obtenemos el estado pasado
-
+    // Función para obtener los datos actualizados del crédito
+    const fetchCreditData = async () => {
+        try {
+          const creditId = creditInfo?.ID_CREDITO;
+          if (!creditId) return;
+    
+          // Llamar al endpoint para obtener los datos del crédito
+          const response = await creditConfig.api.getCreditById(creditId);
+          setCreditInfo(response); // Actualizar el estado con los datos nuevos
+        } catch (error) {
+          console.error("Error al obtener los datos del crédito:", error);
+        }
+      };
+    
+  
     const handleAdd = () => {
         // Abre el modal para agregar un nuevo pago
         setModalMode("add");
@@ -32,37 +49,48 @@ const CreditPage = () => {
     };
 
      //Logica para manejar el envio de datos al y desde el formulario.
-      
-    //console.log("Impresion de onSubmit: ", onSubmit);
-
     const formatDate = (isoDate) => {
         if (!isoDate) return ""; // Manejo de valores nulos o vacíos
         const date = new Date(isoDate);
         return date.toLocaleDateString("es-ES", { day: "numeric", month: "numeric", year: "numeric" });
       };
 
-      const onSubmit = async (mode , data) => {
-          try {
-              const backendData = await creditConfig.transformData.toBackend(data);
-              const formDataObj = {};
-              for (const [key, value] of backendData.entries()) {
-                formDataObj[key] = value;
-              }
-              console.log("Datos enviados al backend: ", formDataObj);
-      
-              if (mode === "add") {
-                await handleApiCall(
-                  () => creditConfig.api.create(backendData),
-                  "Crédito agregado exitosamente."
-                );
-      
-                return { success: true };
-              }
-          } catch (error) {
-              console.log('Error desde CreditSalePage: ', error);
-              return { success: false }
+
+      const onSubmit = async (data) => {
+        try {
+          console.log("Data recibida en onSubmit: ", data);
+    
+          if (!data || typeof data !== "object") {
+            throw new Error("Los datos recibidos en onSubmit son inválidos.");
           }
-        };
+    
+          if (!data.MON_ABONADO || !data.ID_CREDITO) {
+            throw new Error("Faltan campos obligatorios (MON_ABONADO o ID_CREDITO).");
+          }
+    
+          // Transformar los datos para el backend
+          const backendData = await creditConfig.transformData.toBackend(data);
+          console.log("Datos enviados al backend: ", backendData);
+    
+          // Enviar la solicitud al backend
+          const idCredit = data.ID_CREDITO;
+          await handleApiCall(
+            () => creditConfig.api.create(idCredit, backendData),
+            "Abono registrado exitosamente."
+          );
+    
+          // Refrescar los datos del crédito
+          await fetchCreditData();
+    
+          // Cerrar el modal
+          setModalOpen(false);
+    
+          return { success: true };
+        } catch (error) {
+          console.error("Error desde CreditSalePage: ", error.message);
+          return { success: false };
+        }
+      };
 
     const subTotal = creditInfo?.sale?.MONT_SUBTOTAL;
     const credit = {
@@ -80,11 +108,17 @@ const CreditPage = () => {
         return total + (payment.MON_ABONADO || 0);
     }, 0) || 0;
 
-    const fullName = creditInfo.DSC_NOMBRE+" "+creditInfo?.sale?.Client.DSC_APELLIDOUNO+" "+creditInfo?.sale?.Client.DSC_APELLIDODOS;
+    let firsName = creditInfo.DSC_NOMBRE || "";
+    let lastName1 = creditInfo?.sale?.Client.DSC_APELLIDOUNO || "";
+    let lastName2 = creditInfo?.sale?.Client.DSC_APELLIDODOS || "";
+    const fullName = `${firsName} ${lastName1} ${lastName2}`.trim();
+
+    let phoneNumber = creditInfo.sale?.Client.TelefonoClientes[0].DSC_TELEFONO;
+
     const client = {
         name: fullName,
         id: "119160537",//Falta este campo
-        phone: "60900809",//Falta este campo
+        phone:phoneNumber,//Falta este campo
         paid: paid,
         pending: creditInfo.MON_PENDIENTE,
     }
@@ -92,7 +126,8 @@ const CreditPage = () => {
 
 
     const payments = creditInfo?.payments?.map(payment => ({
-        date: formatDate(payment.FEC_ABONO), // Formatear la fecha
+      id: payment.ID_ABONO, // ID del abono
+      date: formatDate(payment.FEC_ABONO), // Formatear la fecha
         amount: payment.MON_ABONADO || 0,   // Monto abonado
         type: "PARCIAL"                      // Tipo fijo ("PARCIAL")
     })) || [];
@@ -113,7 +148,12 @@ const CreditPage = () => {
                     credit={credit} />
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
-                    <PaymentHistoryTable payments={payments} />
+                    <PaymentHistoryTable 
+                    payments={payments}
+                    creditConfig={creditConfig}
+                    fetchCreditData={fetchCreditData}
+                    pendingAmount= {creditInfo.MON_PENDIENTE}
+                     />
                 </div>
                 
             </div>
@@ -128,6 +168,17 @@ const CreditPage = () => {
                 <PaymentForm
                 fields={fields}
                 initialData={creditInfo}
+                // onSubmit={async (formData) =>{
+                //     try {
+                //         const response = await onSubmit(modalMode, formData);
+                //         console.log("Respuesta en paymentForm: ", response);
+                //         if(response && response.success){
+                //             await 
+                //         }
+                //     } catch (error) {
+                        
+                //     }
+                // }}
                 onSubmit={onSubmit}
                 onCancel={() => setModalOpen(false)}
             />
