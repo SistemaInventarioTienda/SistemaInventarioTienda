@@ -47,7 +47,11 @@ function ProfilePage() {
             </div>
 
             <div>
-                <ProfileForm initialData={user} onSubmit={handleSubmit} />
+                <ProfileForm 
+                initialData={user} 
+                onSubmit={handleSubmit} 
+                userConfig={userConfig}
+                />
             </div>
 
         </PageLayout>
