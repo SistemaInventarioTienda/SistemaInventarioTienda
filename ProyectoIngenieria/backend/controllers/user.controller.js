@@ -6,6 +6,7 @@ import { Op } from 'sequelize';
 import { decodedToken } from "../libs/jwt.js";
 import { Permission, PermissionUser } from "../models/permission.model.js";
 import { getDateCR } from '../libs/date.js';
+import { changePasswordEmail } from "../utils/sendEmail.js";
 
 export const updateUser = async (req, res) => {
     try {
@@ -314,5 +315,7 @@ export const changePassword = async (req, res) => {
         DSC_CONTRASENIA: passwordHash
     });
 
+    const currentDate = await getDateCR();
+    changePasswordEmail({ name: userFound.DSC_NOMBRE, date: currentDate, to: userFound.DSC_CORREO });
     return res.status(200).json({ message: "Contraseña actualizada correctamente." });
 }

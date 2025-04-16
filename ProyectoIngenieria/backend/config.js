@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 // API
 export const PORT = process.env.PORT || 4000;
 
@@ -13,3 +15,7 @@ const host = process.env.HOST_DB || 'localhost';
 const port = process.env.PORT_DB || 3306;
 const database = process.env.DATABASE || 'dbtiendasistemainventario';
 export const MYSQL_URI = `mysql://${user}:${password}@${host}:${port}/${database}`;
+
+// EMAIL
+export const USEREMAIL = process.env.USEREMAIL;
+export const USERPASSEMAIL = process.env.USERPASSEMAIL;
