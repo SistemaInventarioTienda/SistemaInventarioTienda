@@ -317,5 +317,5 @@ export const changePassword = async (req, res) => {
 
     const currentDate = await getDateCR();
     changePasswordEmail({ name: userFound.DSC_NOMBRE, date: currentDate, to: userFound.DSC_CORREO });
-    return res.status(200).json({ message: "Contraseña actualizada correctamente." });
+    return res.status(200).json({ message: "Su contraseña actualizada correctamente." });
 }
