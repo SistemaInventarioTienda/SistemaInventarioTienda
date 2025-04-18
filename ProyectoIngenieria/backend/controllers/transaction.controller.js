@@ -1,6 +1,8 @@
 import Transaction from "../models/transaction.model.js";
 import { getDateCR } from '../libs/date.js';
-import { Op, Sequelize  } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
+import User from "../models/user.model.js";
+import { getTime } from "date-fns";
 
 export const createTransaction = async (req, res) => {
 
@@ -37,7 +39,42 @@ export const updateTransaction = async (req, res) => {
 
 
 export const deleteTransaction = async (req, res) => {
-    return res.status(200).json({ message: "Funciona" })
+    try {
+        const transaction = await Transaction.findOne({
+            attributes: ['ID_TRANSACCION', 'FEC_TRANSACCION'],
+            where: { ID_TRANSACCION: req.params.id }
+        });
+        if (!transaction) {
+            return res.status(404).json({ message: "Transacción no encontrada." });
+        }
+
+
+        const user = await User.findOne({
+            attributes: ['ID_USUARIO'],
+            where: { DSC_CEDULA: req.user.id }
+        })
+
+        if (!user) return res.status(404).json({ message: "El usuario no tiene permiso de eliminar la transacción." })
+        
+        const TimeHasPassed = await timeHasPassed(transaction.FEC_TRANSACCION); // tiempo de 24h
+        if (TimeHasPassed) {
+            return res.status(404).json({ message: "El tiempo para eliminar una transacción ha expirado." });
+        }
+
+        await transaction.update(
+            {
+                ESTADO: 2,
+            },
+            {
+                where: { ID_TRANSACCION: req.params.id }
+            }
+        );
+
+        return res.status(200).json({ message: "Transacción eliminada con éxito." });
+    } catch (error) {
+        console.log("Error: ", error)
+        return res.status(500).json({ message: error.message });
+    }
 }
 
 export const getAllTransactions = async (req, res) => {
@@ -144,5 +181,41 @@ export const searchTransaction = async (req, res) => {
     }
 }
 
-
-
+const timeHasPassed = async (dateISO) => { // 2025-04-15T20:42:05.000Z (UTC)
+    try {
+        const currentDateCR = await getDateCR(); // 2025-04-16 15:44:15 (CST - UTC-6)
+    
+        // 1. Convert the current Costa Rica date to a Date object in UTC.
+        const [fechaPartCR, horaPartCR] = currentDateCR.split(' ');
+        const [yearCR, monthCR, dayCR] = fechaPartCR.split('-');
+        const [hoursCR, minutesCR, secondsCR] = horaPartCR.split(':');
+    
+        // We create a date in UTC adjusting for the Costa Rica time difference.
+        // We subtract 6 hours to convert the local time from Costa Rica to UTC.
+        const currentDateUTC = new Date(Date.UTC(
+          parseInt(yearCR),
+          parseInt(monthCR) - 1,
+          parseInt(dayCR),
+          parseInt(hoursCR) + 6,
+          parseInt(minutesCR),
+          parseInt(secondsCR)
+        ));
+    
+        // 2. Convert the date to be compared to a Date object (it is already in UTC).
+        const compareDateUTC = new Date(dateISO);
+    
+        // 3. Calculate the difference in milliseconds.
+        const diferenciaMilisegundos = currentDateUTC.getTime() - compareDateUTC.getTime();
+    
+        // 4. Calculate the difference in hours.
+        const diferenciaHoras = diferenciaMilisegundos / (1000 * 60 * 60);
+        console.log("Diferencia en horas: ", diferenciaHoras);
+    
+        // 5. Return true if the difference is greater than or equal to 24 hours.
+        return diferenciaHoras >= 24;
+    
+      } catch (error) {
+        console.error("Error al comparar las fechas:", error);
+        return true; 
+      }
+  };
