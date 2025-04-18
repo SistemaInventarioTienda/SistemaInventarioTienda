@@ -52,14 +52,3 @@ export const searchUser = async (page, pageSize, termSearch, orderByField, order
         throw error;
     }
 };
-
-export const changePassword = async (userData) => {
-    try {
-        const response = await axios.put('/user/change_password', userData);
-        return response.data;
-    } catch (error) {
-        console.error('Error changing password:', error.message);
-        throw error;
-
-    }
-};
