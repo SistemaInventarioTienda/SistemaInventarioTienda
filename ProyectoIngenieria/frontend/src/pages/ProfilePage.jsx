@@ -18,6 +18,8 @@ function ProfilePage() {
         }
     }, [isAuthenticated, navigate]);
 
+    console.log("Usuario autenticado:", user);
+
     const handleSubmit = async (formData) => {
         try {
             console.log("Actualizar perfil:", formData);
@@ -25,12 +27,13 @@ function ProfilePage() {
             const backendData = await userConfig.transformData.toBackend(formData);
             console.log("Respuesta del backend:", backendData);
 
-            //const userID = user.DSC_CEDULA;
+            const userID = user.cedula;
             await handleApiCall(
-                () => userConfig.api.update(backendData), 
+                () => userConfig.api.update(userID, backendData), 
                 "Perfil actualizado correctamente."
             );
             return { success: true }; 
+
         } catch (error) {
             console.error("Error al actualizar el perfil:", error);
             return { success: false, message: "Error al actualizar el perfil" };
@@ -49,7 +52,7 @@ function ProfilePage() {
             <div>
                 <ProfileForm 
                 initialData={user} 
-                onSubmit={handleSubmit} 
+                handleSubmit={handleSubmit} 
                 userConfig={userConfig}
                 />
             </div>

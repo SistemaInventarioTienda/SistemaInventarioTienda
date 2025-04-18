@@ -14,7 +14,8 @@ function isNotEmpty(value) {
  */
 export const validateUpdateUser = (req) => {
     const {
-        DSC_NOMBREUSUARIO, DSC_CORREO, DSC_CONTRASENIA, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
+        //DSC_CONTRASENIA,ID_ROL,
+        DSC_NOMBREUSUARIO, DSC_CORREO,  DSC_TELEFONO,  DSC_CEDULA,
         DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO
     } = req.body;
 

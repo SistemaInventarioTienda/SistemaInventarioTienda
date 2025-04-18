@@ -17,5 +17,5 @@ const database = process.env.DATABASE || 'dbtiendasistemainventario';
 export const MYSQL_URI = `mysql://${user}:${password}@${host}:${port}/${database}`;
 
 // EMAIL
-export const USEREMAIL = process.env.USEREMAIL;
-export const USERPASSEMAIL = process.env.USERPASSEMAIL;
+export const USEREMAIL = process.env.USEREMAIL || 'root';
+export const USERPASSEMAIL = process.env.USERPASSEMAIL || 'root';

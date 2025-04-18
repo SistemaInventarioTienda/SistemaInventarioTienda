@@ -175,6 +175,22 @@ function GenericForm({
 
         // Agregar soporte para NumberInput
 
+         if (entityName === "Usuario" && field.name === "cedula") {
+            const isCedulaBlocked = field.name === "cedula"; // Bloquea solo el campo de cédula
+        
+            return (
+                <Input
+                    name={field.name}
+                    value={fieldValue}
+                    onChange={handleChange}
+                    required={field.required}
+                    readOnly={true} // Bloquea si es cédula o si el modo es "view"
+                    placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                    className={isCedulaBlocked ? "readonly-input" : ""}
+                />
+            );
+        }
+
         const isBlocked = isCedulaValid && ["nombre", "primerApellido", "segundoApellido"].includes(field.name);
 
         return (

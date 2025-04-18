@@ -6,11 +6,13 @@ import handleApiCall from '../../utils/handleApiCall';
 const ProfileForm = ({ initialData, handleSubmit, userConfig }) => {
 
     const [passwordData, setPasswordData] = useState({
-        id: initialData.id,
+        id: initialData.cedula,
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
     })
+
+    console.log("Datos iniciales del formulario[ID]:", passwordData.cedula);
 
     const handlePasswordSubmit = async (passwordData) => {
         try {
@@ -28,7 +30,16 @@ const ProfileForm = ({ initialData, handleSubmit, userConfig }) => {
                 () => userConfig.api.updataPassword(backendData),
                 "Contraseña actualizada correctamente."
             );
+
+            setPasswordData({
+                id: passwordData.id, // Mantén el ID del usuario
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
+            
             return { success: true };
+
         } catch (error) {
             console.error("Error al actualizar la contraseña:", error);
             return { success: false, message: "Error al actualizar la contraseña" };

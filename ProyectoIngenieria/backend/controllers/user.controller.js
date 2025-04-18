@@ -11,7 +11,8 @@ import { changePasswordEmail } from "../utils/sendEmail.js";
 export const updateUser = async (req, res) => {
     try {
         const {
-            DSC_NOMBREUSUARIO, DSC_CORREO, DSC_CONTRASENIA, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
+            //, DSC_CONTRASENIA, ID_ROL,
+            DSC_NOMBREUSUARIO, DSC_CORREO, DSC_TELEFONO,  DSC_CEDULA,
             DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO
         } = req.body;
 
@@ -27,24 +28,25 @@ export const updateUser = async (req, res) => {
             return res.status(404).json({ message: "Usuario no encontrado." });
         }
 
-        const output = await validateUpdate(req);
-        if (output !== true) {
-            return res.status(400).json({
-                message: output,
-            })
-        }
+        // const output = await validateUpdate(req);
+        // if (output !== true) {
+        //     return res.status(400).json({
+        //         message: output,
+        //     })
+        // }
 
         // hashing the password
-        var passwordHash;
-        if (DSC_CONTRASENIA) {
-            passwordHash = await encryptData(DSC_CONTRASENIA, 10);
-        } else {
-            passwordHash = user.DSC_CONTRASENIA;
-        }
+        // var passwordHash;
+        // if (DSC_CONTRASENIA) {
+        //     passwordHash = await encryptData(DSC_CONTRASENIA, 10);
+        // } else {
+        //     passwordHash = user.DSC_CONTRASENIA;
+        // }
 
 
         await user.update({
-            DSC_NOMBREUSUARIO, DSC_CORREO: DSC_CORREO.toLowerCase(), DSC_CONTRASENIA: passwordHash, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
+            // DSC_CONTRASENIA: passwordHash,ID_ROL,
+            DSC_NOMBREUSUARIO, DSC_CORREO: DSC_CORREO.toLowerCase(), DSC_TELEFONO, DSC_CEDULA,
             DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO
         });
 
