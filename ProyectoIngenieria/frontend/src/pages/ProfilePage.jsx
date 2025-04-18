@@ -33,6 +33,7 @@ function ProfilePage() {
                 "Perfil actualizado correctamente."
             );
             return { success: true }; 
+
         } catch (error) {
             console.error("Error al actualizar el perfil:", error);
             return { success: false, message: "Error al actualizar el perfil" };
@@ -51,7 +52,8 @@ function ProfilePage() {
             <div>
                 <ProfileForm 
                 initialData={user} 
-                onSubmit={handleSubmit} 
+                handleSubmit={handleSubmit} 
+                userConfig={userConfig}
                 />
             </div>
 

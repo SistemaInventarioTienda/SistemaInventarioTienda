@@ -2,22 +2,56 @@
 import React, { useState } from 'react';
 import { Input } from '../../components/common';
 import GenericForm from '../../components/common/GenericForm';
-const ProfileForm = ({ initialData, onSubmit }) => {
+import handleApiCall from '../../utils/handleApiCall';
+const ProfileForm = ({ initialData, handleSubmit, userConfig }) => {
 
     const [passwordData, setPasswordData] = useState({
+        id: initialData.cedula,
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
     })
 
-    const handlePasswordSubmit = async () => {
-        console.log("Cambiar contraseña:");// passwordData
+    console.log("Datos iniciales del formulario[ID]:", passwordData.cedula);
+
+    const handlePasswordSubmit = async (passwordData) => {
+        try {
+            console.log("Datos recibidos desde el form: ",passwordData);
+            if (!passwordData || typeof passwordData !== "object") {
+                throw new Error("Los datos recibidos son inválidos.");
+            }
+
+            const backendData = await userConfig.transformData.toBackenPassword(passwordData);
+            console.log("Datos transformados para el backend:", backendData);
+            
+            // Enviar la solicitud al backend
+            //const idUser = passwordData.id;
+            await handleApiCall(
+                () => userConfig.api.updataPassword(backendData),
+                "Contraseña actualizada correctamente."
+            );
+
+            setPasswordData({
+                id: passwordData.id, // Mantén el ID del usuario
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
+            
+            return { success: true };
+
+        } catch (error) {
+            console.error("Error al actualizar la contraseña:", error);
+            return { success: false, message: "Error al actualizar la contraseña" };
+        }
     };
 
     const handlePasswordChange = (e) => {
         setPasswordData({ ...passwordData, [e.target.name]: e.target.value })
+
     }
 
+    
     return (
         <div className="profile-form-container">
             {/* Left Section - Current Information */}
@@ -36,7 +70,7 @@ const ProfileForm = ({ initialData, onSubmit }) => {
                         { name: "correo", label: "Correo", type: "email", required: true },
                         { name: "nombreUsuario", label: "Nombre de Usuario", type: "text", required: true },
                     ]}
-                    onSubmit={onSubmit}
+                    onSubmit={handleSubmit}
                     submitButtonText="Modificar"
                     submitButtonClassName="submit-button"
                 />
@@ -79,7 +113,11 @@ const ProfileForm = ({ initialData, onSubmit }) => {
                         />
                     </div>
                                                                 {/* handleSubmit */}
-                    <button className="submit-button" onClick={handlePasswordSubmit}> 
+                    <button className="submit-button" onClick={(e) => {
+                        e.preventDefault();
+                        handlePasswordSubmit(passwordData)
+                        }}
+                        > 
                         Actualizar Contraseña
                     </button>
                 </div>
