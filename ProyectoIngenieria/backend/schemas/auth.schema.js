@@ -94,10 +94,10 @@ export const updateSchema = z.object({
   }).min(3, {
     message: "El nombre de usuario debe tener minimo 3 caracteres.",
   }),
-  DSC_CONTRASENIA: z
-    .string({
-      required_error: "La contraseña es obligatoria.",
-    }),
+  // DSC_CONTRASENIA: z
+  //   .string({
+  //     required_error: "La contraseña es obligatoria.",
+  //   }),
   DSC_CORREO: z
     .string({
       required_error: "El correo es obligatorio.",

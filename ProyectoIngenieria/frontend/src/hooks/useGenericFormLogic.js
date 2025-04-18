@@ -163,6 +163,12 @@ export function useGenericFormLogic({
         delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
         delete dataToSubmit.estado;
         delete dataToSubmit.rango;
+      }else if (entityName === "Usuario") {
+        //console.log("Usuario: ", formData.estado);
+        delete dataToSubmit.correos;
+        delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
+        delete dataToSubmit.rango;
+        delete dataToSubmit.email;
       }
 
 

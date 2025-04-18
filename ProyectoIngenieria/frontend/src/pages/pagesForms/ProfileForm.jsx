@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Input } from '../../components/common';
 import GenericForm from '../../components/common/GenericForm';
-const ProfileForm = ({ initialData, handleSubmit }) => {
+const ProfileForm = ({ initialData, onSubmit }) => {
 
     const [passwordData, setPasswordData] = useState({
         currentPassword: "",
@@ -36,7 +36,7 @@ const ProfileForm = ({ initialData, handleSubmit }) => {
                         { name: "correo", label: "Correo", type: "email", required: true },
                         { name: "nombreUsuario", label: "Nombre de Usuario", type: "text", required: true },
                     ]}
-                    onSubmit={handleSubmit}
+                    onSubmit={onSubmit}
                     submitButtonText="Modificar"
                     submitButtonClassName="submit-button"
                 />
