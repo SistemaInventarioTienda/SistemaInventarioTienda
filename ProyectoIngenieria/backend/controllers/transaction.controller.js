@@ -2,7 +2,6 @@ import Transaction from "../models/transaction.model.js";
 import { getDateCR } from '../libs/date.js';
 import { Op, Sequelize } from 'sequelize';
 import User from "../models/user.model.js";
-import { getTime } from "date-fns";
 
 export const createTransaction = async (req, res) => {
 
@@ -34,7 +33,35 @@ export const createTransaction = async (req, res) => {
 }
 
 export const updateTransaction = async (req, res) => {
-    return res.status(200).json({ message: "Funciona" })
+    try {
+        const { METODO_PAGO, MONTO_PAGO, DSC_TRANSACCION, TIPO_TRANSACCION, ESTADO } = req.body;
+
+        if (METODO_PAGO === "" || MONTO_PAGO === "" || DSC_TRANSACCION === "" || TIPO_TRANSACCION === "" || ESTADO === "") {
+            return res.status(400).json({ message: "Todos los campos son requeridos." })
+        }
+
+        if (isNaN(Number(MONTO_PAGO)) || isNaN(Number(ESTADO)))
+            return res.status(400).json({ message: "El método de pago y el estado deben ser números válidos." });
+
+        const transaction = await Transaction.findOne({ where: { ID_TRANSACCION: req.params.id } });
+        if (!transaction) return res.status(404).json({ message: "Transacción no encontrada." });
+
+        const TimeHasPassed = await timeHasPassed(transaction.FEC_TRANSACCION); // tiempo de 24h
+        if (TimeHasPassed) 
+            return res.status(404).json({ message: "El tiempo para modificar una transacción ha expirado." });
+
+        await transaction.update({
+            METODO_PAGO: METODO_PAGO,
+            MONTO_PAGO: MONTO_PAGO,
+            DSC_TRANSACCION: DSC_TRANSACCION,
+            TIPO_TRANSACCION: TIPO_TRANSACCION,
+            ESTADO: ESTADO
+        })
+
+        return res.status(200).json({message: "Transacción actualizada con éxito."})
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 }
 
 
@@ -55,7 +82,7 @@ export const deleteTransaction = async (req, res) => {
         })
 
         if (!user) return res.status(404).json({ message: "El usuario no tiene permiso de eliminar la transacción." })
-        
+
         const TimeHasPassed = await timeHasPassed(transaction.FEC_TRANSACCION); // tiempo de 24h
         if (TimeHasPassed) {
             return res.status(404).json({ message: "El tiempo para eliminar una transacción ha expirado." });
@@ -108,12 +135,22 @@ export const getAllTransactions = async (req, res) => {
             });
         }
 
+        const transactionResults = await Promise.all(
+            Object.values(rows).map(async (row) => {
+                const canCancel = !(await timeHasPassed(row.FEC_TRANSACCION));
+                return {
+                    ...row,
+                    CAN_CANCEL: canCancel
+                };
+            })
+        );
+        
         res.json({
             total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            transaction: rows
+            transaction: transactionResults
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -165,12 +202,22 @@ export const searchTransaction = async (req, res) => {
             });
         }
 
+        const transactionResults = await Promise.all(
+            Object.values(rows).map(async (row) => {
+                const canCancel = !(await timeHasPassed(row.FEC_TRANSACCION));
+                return {
+                    ...row,
+                    CAN_CANCEL: canCancel
+                };
+            })
+        );
+
         res.json({
             total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: parseInt(page),
             pageSize: limit,
-            transaction: rows
+            transaction: transactionResults
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -180,38 +227,38 @@ export const searchTransaction = async (req, res) => {
 const timeHasPassed = async (dateISO) => { // 2025-04-15T20:42:05.000Z (UTC)
     try {
         const currentDateCR = await getDateCR(); // 2025-04-16 15:44:15 (CST - UTC-6)
-    
+
         // 1. Convert the current Costa Rica date to a Date object in UTC.
         const [fechaPartCR, horaPartCR] = currentDateCR.split(' ');
         const [yearCR, monthCR, dayCR] = fechaPartCR.split('-');
         const [hoursCR, minutesCR, secondsCR] = horaPartCR.split(':');
-    
+
         // We create a date in UTC adjusting for the Costa Rica time difference.
         // We subtract 6 hours to convert the local time from Costa Rica to UTC.
         const currentDateUTC = new Date(Date.UTC(
-          parseInt(yearCR),
-          parseInt(monthCR) - 1,
-          parseInt(dayCR),
-          parseInt(hoursCR) + 6,
-          parseInt(minutesCR),
-          parseInt(secondsCR)
+            parseInt(yearCR),
+            parseInt(monthCR) - 1,
+            parseInt(dayCR),
+            parseInt(hoursCR) + 6,
+            parseInt(minutesCR),
+            parseInt(secondsCR)
         ));
-    
+
         // 2. Convert the date to be compared to a Date object (it is already in UTC).
         const compareDateUTC = new Date(dateISO);
-    
+
         // 3. Calculate the difference in milliseconds.
         const diferenciaMilisegundos = currentDateUTC.getTime() - compareDateUTC.getTime();
-    
+
         // 4. Calculate the difference in hours.
         const diferenciaHoras = diferenciaMilisegundos / (1000 * 60 * 60);
         console.log("Diferencia en horas: ", diferenciaHoras);
-    
+
         // 5. Return true if the difference is greater than or equal to 24 hours.
         return diferenciaHoras >= 24;
-    
-      } catch (error) {
+
+    } catch (error) {
         console.error("Error al comparar las fechas:", error);
-        return true; 
-      }
-  };
+        return true;
+    }
+};
