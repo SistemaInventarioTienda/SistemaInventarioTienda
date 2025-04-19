@@ -119,9 +119,9 @@ export const getAllTransactions = async (req, res) => {
 
         const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
         const { count, rows } = await Transaction.findAndCountAll({
-            attributes: {
-                exclude: ['ID_TRANSACCION']
-            },
+            // attributes: {
+            //     exclude: ['ID_TRANSACCION']
+            // },
             limit,
             offset,
             order: [
@@ -175,9 +175,9 @@ export const searchTransaction = async (req, res) => {
         const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
         const expectedMatch = { [Op.like]: `%${termSearch}%` };
         const { count, rows } = await Transaction.findAndCountAll({
-            attributes: {
-                exclude: ['ID_TRANSACCION']
-            },
+            // attributes: {
+            //     exclude: ['ID_TRANSACCION']
+            // },
             limit,
             offset,
             order: [

@@ -144,13 +144,13 @@ function GenericForm({
                 ];
             } else if (field.name==="METODO_PAGO") {
                 options = [
-                    { value: "", label: "Ninguno" },
+                    { value: "", label: "Seleccione un metodo de pago" },
                     { value: "Efectivo", label: "Efectivo" },
                     { value: "Tarjeta", label: "Tarjeta" },
                 ];
             } else if (field.name==="TIPO_TRANSACCION") {
                 options = [
-                    { value: "", label: "Ninguno" },
+                    { value: "", label: "Seleccione un metodo de pago" },
                     { value: "Sinpe", label: "Sinpe" },
                 ];
             }else{

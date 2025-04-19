@@ -26,6 +26,7 @@ export const TransactionConfig = {
         { field: "DSC_TRANSACCION", label: "Descripcion" },
         { field: "TIPO_TRANSACCION", label: "Metodo de pago saliente" },
         { field: "ESTADO", label: "Estado" },
+        { field: "actions", label: "Acciones" },
     ],
 
     // Configuración de campos del formulario
@@ -54,6 +55,16 @@ export const TransactionConfig = {
                 { value: "Sinpe", label: "Sinpe" },
             ],
         },
+        {
+            name: "estado",
+            label: "Estado",
+            type: "select",
+            required: true,
+            options: [
+                { value: 1, label: "Activo" },
+                { value: 0, label: "Inactivo" },
+            ],
+        },
     ],
 
     // Funciones API específicas de la entidad
@@ -69,13 +80,13 @@ export const TransactionConfig = {
     transformData: {
         // Transformar datos desde la API hacia el frontend
         toFrontend: (transaction) => ({
-            ID_TRANSACCION : transaction.IDENTIFICADOR_PROVEEDOR,
+            ID_TRANSACCION: transaction.ID_TRANSACCION,
             FEC_TRANSACCION: transaction.FEC_TRANSACCION,
             METODO_PAGO: transaction.METODO_PAGO,
-            MONTO_PAGO: transaction.MONTO_PAGO ,
+            MONTO_PAGO: transaction.MONTO_PAGO,
             DSC_TRANSACCION: transaction.DSC_TRANSACCION,
             TIPO_TRANSACCION: transaction.TIPO_TRANSACCION,
-            ESTADO: transaction.ESTADO === "ACTIVO" ? 1 : 2,
+            estado: transaction.ESTADO,
         }),
 
         // Transformar datos desde el formulario hacia la API
@@ -85,19 +96,19 @@ export const TransactionConfig = {
             MONTO_PAGO: parseFloat(formData.MONTO_PAGO) || 0,
             DSC_TRANSACCION: formData.DSC_TRANSACCION,
             TIPO_TRANSACCION: formData.TIPO_TRANSACCION,
-            ESTADO: "1",
+            ESTADO: formData.estado,
         }),
     },
 
- 
+
     transformConfig: {
-        ESTADO: (item) => (item.ESTADO === 1 ? "ACTIVO" : "INACTIVO"),
+        // ESTADO: (item) => (item.ESTADO === 1 ? "ACTIVO" : "INACTIVO"),
         FEC_TRANSACCION: (item) => item.FEC_TRANSACCION
-        ? new Date(item.FEC_TRANSACCION).toLocaleDateString("es-ES", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric"
-        }) : null,
+            ? new Date(item.FEC_TRANSACCION).toLocaleDateString("es-ES", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }) : null,
     },
 
     // Configuración de acciones permitidas

@@ -28,7 +28,7 @@ export const getAllTransaction = async (page, pageSize, orderByField, order) => 
 
 export const updateTransaction = async (id, TransactionData) => {
     try {
-        const response = await axios.put(`/transaction/update_Transfer/${id}`, TransactionData);
+        const response = await axios.put(`/transaction/update_transaction/${id}`, TransactionData);
         return response.data;
     } catch (error) {
         console.error('Error actualizando la transaccion:', error.message);
