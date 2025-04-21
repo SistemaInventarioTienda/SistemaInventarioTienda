@@ -47,6 +47,7 @@ const Sidebar = () => {
                 { path: '/shopping/new', icon: PackagePlus, text: 'Nueva Compra' }
             ]
         },
+        { key: 'transaction', path: '/transaction', icon: FileText, text: 'Transacciones'},
         { key: 'reports', path: '/reports', icon: BarChart2, text: 'Reportes' },
     ];
 

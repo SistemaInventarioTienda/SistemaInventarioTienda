@@ -19,7 +19,16 @@ const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
                     <div className="credits-info-item">
                         <p className="credits-info-label">Estado</p>
                         <p className="credits-info-value">
-                            <span className="credits-badge credits-badge-yellow">{credit.status}</span>
+                            <span className={`credits-badge ${credit.status === "ACTIVO" ? 'credits-badge-green' : 
+                                credit.status === "MOROSO" ? 'credits-badge-red' :
+                                'credits-badge-yellow'
+                            }`}>
+                                {credit.status === "ACTIVO" ? 'Activo' :
+                                credit.status === "MOROSO" ? 'Moroso' : 
+                                'Cancelado'
+                                }
+
+                            </span>
                         </p>
                     </div>
                     <div className="credits-info-item">

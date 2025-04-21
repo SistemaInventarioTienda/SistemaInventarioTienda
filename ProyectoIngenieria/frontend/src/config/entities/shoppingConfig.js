@@ -74,13 +74,18 @@ export const shoppingConfig = {
     },
 
     transformConfig: {
-        FEC_COMPRA: (item) => item.FEC_COMPRA
-            ? new Date(item.FEC_COMPRA).toLocaleDateString("es-ES", {
+        FEC_COMPRA: (item) => {
+            if (!item.FEC_COMPRA) return null;
+
+            const [year, month, day] = item.FEC_COMPRA.split("-");
+            const date = new Date(Number(year), Number(month) - 1, Number(day));
+
+            return date.toLocaleDateString("es-ES", {
                 day: "2-digit",
                 month: "long",
                 year: "numeric"
-            })
-            : null,
+            });
+        },
         ESTADO: (item) => {
             const estado = parseInt(item.ESTADO, 10);
             switch (estado) {

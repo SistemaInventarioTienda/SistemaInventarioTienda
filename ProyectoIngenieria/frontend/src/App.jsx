@@ -20,6 +20,7 @@ import ProductPage from './pages/ProductPage';
 import SalePage from './pages/SalePage'
 import AddSalePage from './pages/AddSalePage';
 import AddShoppingPage from './pages/AddShoppingPage';
+import TransactionPage from  './pages/TransactionPage';
 import { Toaster } from "sonner";
 import ShoppingPage from './pages/ShoppingPage';
 import CreditSalePage from './pages/CreditSalePage';
@@ -110,6 +111,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="sales/new" element={<AddSalePage />} />
             <Route path="shopping/history" element={<ShoppingPage />} />
             <Route path="shopping/new" element={<AddShoppingPage />} />
+            <Route path="transaction" element={<TransactionPage />} />
           </Routes>
         </main>
       </div>
