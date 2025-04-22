@@ -12,9 +12,20 @@ export const getAllCredits = async (page, pageSize, orderByField, order) =>{
     }
 };
 
+export const getCreditById = async (id) =>{
+    try {
+        const response = await axios.get(`/credit/getCreditById/${id}`);
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching credit data', error.message);
+        throw error;
+    }
+};
+
 export const addPayment = async (id, paymentData) => {
     try {
-        const response = await axios.post(`/credit/registerPay:${id}`, paymentData);
+        const response = await axios.post(`/credit/registerPay/${id}`, paymentData);
         return response.data;
     } catch (error) {
         console.error('Error registering payment: ', error.message);
@@ -24,7 +35,7 @@ export const addPayment = async (id, paymentData) => {
 
 export const modifyPayment = async (id, paymentData) => {
     try {
-        const response = await axios.put(`/credit/registerPayMod/:${id}`);
+        const response = await axios.put(`/credit/registerPayMod/${id}`,paymentData);
         return response.data;
     } catch (error) {
         console.error('Error registering payment: ', error.message);
@@ -41,7 +52,7 @@ export const formatDate = (isoDate) => {
 
 export const searchCredits = async (page, pageSize, termSearch, orderByField, order) => {
     try {
-        const response = await axios.get(`/credit/getpaymentByFilter`, {params: {page, pageSize, termSearch, orderByField, order}});//Falta la ruta del endpoint.
+        const response = await axios.get(`/credit/search_transaction`, {params: {page, pageSize, termSearch, orderByField, order}});//Falta la ruta del endpoint.
         return response.data;
     } catch (error) {
         console.error('Error fetching credits in searchCredits: ', error.message);

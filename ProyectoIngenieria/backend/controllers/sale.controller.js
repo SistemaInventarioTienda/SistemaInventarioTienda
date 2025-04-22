@@ -357,6 +357,17 @@ export const deleteSale = async (req, res) => {
         const id = req.params.id;
 
         const saleFound =await sale.findOne({ where: { ID_VENTA: id }})
+        const creditFound= await credit.findOne({ where: { ID_VENTA: id }})
+        const messages = [];
+        if(creditFound){
+          if (creditFound.MON_PENDIENTE<=0){
+              return res.status(400).json({ message: "No se puede anular un credito que ya fue cancelado," });
+          }
+
+         creditFound.ESTADO_CREDITO=2;
+         creditFound.save();
+         messages.push("Crédito eliminado correctamente.");
+        }
 
         if(!saleFound){
             return res.status(400).json({ message: "Venta no encontrada" });
@@ -398,7 +409,8 @@ export const deleteSale = async (req, res) => {
             }
           });
 
-        res.status(201).json({ message: 'Venta Eliminada Correctamente' });
+          messages.push("Venta eliminada correctamente.");
+        res.status(201).json({ message: messages});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al realizar la venta', error });

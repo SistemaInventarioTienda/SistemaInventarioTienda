@@ -3,6 +3,8 @@ import { validateGeneral } from "../schemas/validations/validateGeneral";
 import { validateSupplier } from "../schemas/validations/validateSupplier";
 import { validateProduct } from "../schemas/validations/validateProduct";
 import { validateClient } from "../schemas/validations/validateClient";
+import { validateTransaction } from "../schemas/validations/validateTransaction";
+import { validatePayment } from "../schemas/validations/validatePayment";
 
 export function useGenericFormLogic({
   entityName,
@@ -96,12 +98,13 @@ export function useGenericFormLogic({
     e.preventDefault();
     setIsProcessing(true);
 
-    console.log("EntityName: ", entityName);
-    console.log("formData: ", formData);
+    // console.log("EntityName: ", entityName);
+    // console.log("formData: ", formData);
     try {
       let errors = [];
+      
 
-      if (entityName !== "Ajuste" && entityName !== "Abono") {
+      if (entityName !== "Ajuste" && entityName !== "Abono" && entityName !== "Transaccion") {
         errors = validateGeneral(formData);
       } 
 
@@ -111,6 +114,10 @@ export function useGenericFormLogic({
         errors = [...errors, ...validateProduct(formData)];
       } else if (entityName === "Cliente") {
         errors = [...errors, ...validateClient(phones)];
+      }else if (entityName === "Transaccion"){
+        errors = [...errors, ...validateTransaction(formData)];
+      } else if (entityName === "Abono"){
+        errors = [...errors, ...validatePayment(formData)];
       }
 
       // else if (entityName === "Ajuste"){
@@ -126,6 +133,8 @@ export function useGenericFormLogic({
       let dataToSubmit = {};
       if (entityName === "Abono") {
         dataToSubmit = {
+          ID_ABONO: formData.ID_ABONO,
+          ID_CREDITO: formData.ID_CREDITO,
           MON_ABONADO: formData.MON_ABONADO, // Solo este campo es necesario para el abono
         };
       } else {
@@ -138,15 +147,8 @@ export function useGenericFormLogic({
         };
       }
 
-      // const dataToSubmit = {
-      //     ...formData,
-      //     telefonos: phones,
-      //     correos: emails,
-      //     estado: parseInt(formData.estado, 10),
-      //     rango: parseInt(formData.rango, 10)
-      // };
-      console.log("Estado en useGenericForm: ", formData.estado);
-      console.log("Datos de formulario: ", formData);
+      //console.log("Estado en useGenericForm: ", formData.estado);
+      //console.log("ID del credito: ", formData.ID_CREDITO);
       // Elimina el campo estado si es un ajuste y no se ha seleccionado un estado
       if (entityName === "Ajuste" && !formData.estado) {
         delete dataToSubmit.correos;
@@ -156,7 +158,21 @@ export function useGenericFormLogic({
         delete dataToSubmit.correos;
         delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
         delete dataToSubmit.estado;
+      }else if (entityName === "Transaccion" && !formData.estado) {
+        delete dataToSubmit.correos;
+        delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
+        delete dataToSubmit.estado;
+        delete dataToSubmit.rango;
+      }else if (entityName === "Usuario") {
+        //console.log("Usuario: ", formData.estado);
+        delete dataToSubmit.correos;
+        delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
+        delete dataToSubmit.rango;
+        delete dataToSubmit.email;
       }
+
+
+
       console.log("Data to submit: ", dataToSubmit);
       await onSubmit(dataToSubmit);
     } catch (error) {
