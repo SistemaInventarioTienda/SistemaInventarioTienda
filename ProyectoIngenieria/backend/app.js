@@ -14,6 +14,7 @@ import saleRoutes from "./routes/sale.routes.js";
 import creditRoutes from "./routes/credit.routes.js";
 import transactionRoutes from "./routes/transaction.routes.js";
 import shoppingRoutes from "./routes/shopping.routes.js";
+import graphicsRoutes from "./routes/graphics.routes.js";
 
 //nuevo
 import configRoutes from "./routes/config.routes.js";
@@ -46,6 +47,7 @@ app.use("/api/config", configRoutes);
 app.use("/api/credit", creditRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/api/transaction', transactionRoutes);
+app.use('/api/graphics', graphicsRoutes);
 
 if (process.env.NODE_ENV === "production") {
   const path = await import("path");
