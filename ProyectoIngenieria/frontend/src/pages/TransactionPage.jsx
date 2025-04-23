@@ -11,7 +11,7 @@ import { toast } from "sonner";
 export default function Transferencias() {
     const { permissions } = usePermissions();
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         if (permissions.home === undefined) return;
 
@@ -20,17 +20,21 @@ export default function Transferencias() {
             navigate("/");
         }
     }, [permissions, navigate]);
- 
+
 
 
     const onSubmit = async (mode, data) => {
         try {
             const backendData = transformData.toBackend(data);
             if (mode === "add") {
-                await api.create(backendData); 
+                await api.create(backendData);
                 toast.success("Transacción agregada exitosamente.");
+            } else if (mode === "edit") {
+                await handleApiCall(
+                    () => api.update(backendData.ID_TRANSACCION, backendData),
+                    "Transacción actualizado exitosamente."
+                );
             }
-          //  entityPageRef.current.fetchData(); // Actualizar datos después de la operación
             return { success: true };
         } catch (error) {
             const rawMessages = error?.response?.data?.message;
@@ -39,7 +43,7 @@ export default function Transferencias() {
             } else {
                 toast.error("Ocurrió un error al procesar la transacción.");
             }
-            
+
         }
     };
 
@@ -57,8 +61,8 @@ export default function Transferencias() {
     } = TransactionConfig;
 
 
-  return (
-    <>
+    return (
+        <>
             <EntityPage
                 entityName={entityName}
                 titlePage={titlePage}
@@ -66,7 +70,7 @@ export default function Transferencias() {
                 columns={columns}
                 fields={fields}
                 fetchAll={api.fetchAll}
-                searchByName={() => Promise.resolve([])}
+                searchByName={api.searchTransaction}
                 onSubmit={onSubmit}
                 onDelete={(transaction) => api.delete(transaction.ID_TRANSACCION)}
                 entityKey={entityKey}
@@ -78,5 +82,5 @@ export default function Transferencias() {
                 confirmButtonText={"Anular"}
             />
         </>
-  );
+    );
 }

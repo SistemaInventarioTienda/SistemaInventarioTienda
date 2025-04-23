@@ -9,5 +9,7 @@ const router = Router();
 router.post("/create_transaction", auth, validateSchema(registerSchema), createTransaction);
 router.get("/get_all_transaction", auth, getAllTransactions);
 router.get("/search_transaction", auth, searchTransaction);
+router.delete("/delete_transaction/:id", auth, deleteTransaction);
+router.put("/update_transaction/:id", auth, updateTransaction);
 
 export default router;

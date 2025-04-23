@@ -144,13 +144,13 @@ function GenericForm({
                 ];
             } else if (field.name==="METODO_PAGO") {
                 options = [
-                    { value: "", label: "Ninguno" },
+                    { value: "", label: "Seleccione un metodo de pago" },
                     { value: "Efectivo", label: "Efectivo" },
                     { value: "Tarjeta", label: "Tarjeta" },
                 ];
             } else if (field.name==="TIPO_TRANSACCION") {
                 options = [
-                    { value: "", label: "Ninguno" },
+                    { value: "", label: "Seleccione un metodo de pago" },
                     { value: "Sinpe", label: "Sinpe" },
                 ];
             }else{
@@ -174,6 +174,22 @@ function GenericForm({
         }
 
         // Agregar soporte para NumberInput
+
+         if (entityName === "Usuario" && field.name === "cedula") {
+            const isCedulaBlocked = field.name === "cedula"; // Bloquea solo el campo de cédula
+        
+            return (
+                <Input
+                    name={field.name}
+                    value={fieldValue}
+                    onChange={handleChange}
+                    required={field.required}
+                    readOnly={true} // Bloquea si es cédula o si el modo es "view"
+                    placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                    className={isCedulaBlocked ? "readonly-input" : ""}
+                />
+            );
+        }
 
         const isBlocked = isCedulaValid && ["nombre", "primerApellido", "segundoApellido"].includes(field.name);
 
