@@ -1,8 +1,8 @@
 /* Estilos generales */
 .metric-grid {
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
@@ -15,4 +15,30 @@
 .metric-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Contenedor general para los gráficos */
+.charts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Contenedor para gráficos en fila */
+.charts-row {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+    .charts-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Gráfico a pantalla completa */
+.chart-full-width {
+    width: 100%;
+    height: auto;
 }
