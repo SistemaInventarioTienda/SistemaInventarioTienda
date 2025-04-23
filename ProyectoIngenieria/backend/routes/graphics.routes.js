@@ -6,6 +6,6 @@ import { auth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 // Parte de administración de graficos y reportes
-router.get("/all_graphics", auth, getAllDataFromGrpahic);
+router.get("/all_graphics", getAllDataFromGrpahic);
 
 export default router;
