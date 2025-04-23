@@ -9,7 +9,10 @@ import { clientConfig } from "../config/entities/clientConfig";
 import { supplierConfig } from "../config/entities/supplierConfig";
 import { categoryConfig } from "../config/entities/categoryConfig";
 import { productConfig } from "../config/entities/productConfig";
-import {ProductComparisonChart} from "../components/features/analytics";
+import {
+  TopProductsChart,
+  ProductComparisonChart
+} from "../components/features/analytics";
 
 import "./styles/HomePage.css";
 
@@ -91,10 +94,10 @@ function HomePage() {
 
       <div className="charts-section">
 
-        {/* <div className="charts-row">
-          <MonthlySalesChart/>
+         <div className="charts-row">
+          {/* <MonthlySalesChart/> */}
           <TopProductsChart/>
-        </div> */}
+        </div> 
 
         <div className="chart-full-width">
           <ProductComparisonChart />

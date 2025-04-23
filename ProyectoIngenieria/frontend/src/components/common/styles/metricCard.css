@@ -1,7 +1,6 @@
 .metric-card {
-    background-color: var(--color-chart-card-background);
+    background-color: var(--color-secondary);
     border-radius: 1rem;
-    box-shadow: 0 4px 8px var(--color-chart-card-shadow);
     padding: 1.5rem;
     transition: all 0.3s ease;
     display: flex;
@@ -10,11 +9,6 @@
     border: 1px solid var(--color-border);
     height: 100%;
     cursor: pointer;
-}
-
-.metric-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px var(--color-chart-card-hover-shadow);
 }
 
 .metric-card-header {
