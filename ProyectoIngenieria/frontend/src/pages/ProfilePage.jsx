@@ -18,6 +18,7 @@ function ProfilePage() {
         }
     }, [isAuthenticated, navigate]);
 
+    
     console.log("Usuario autenticado:", user);
 
     const handleSubmit = async (formData) => {
