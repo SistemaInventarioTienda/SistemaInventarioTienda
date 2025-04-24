@@ -283,14 +283,29 @@ export const updateClient = async (req, res) => {
     //await phoneClient.update(updatedTelefonos, { where: { ID_CLIENTE: req.params.id } });
     if (telefonos && telefonos.length > 0) {
       console.log("Entro al if para modificar los telefonos");
+
       for (const telefono of telefonos) {
-        await phoneClient.update(
-          {
-            DSC_TELEFONO: telefono.numeroTelefono,
-            FEC_MODIFICADOEN: modificadoEN,
-          },
-          { where: { ID_TELEFONOCLIENTE: telefono.idTelefonoCliente } }
-        );
+        const { idTelefonoCliente, numeroTelefono } = telefono;
+
+        if (idTelefonoCliente) {
+          //Actualizar el telefono
+          await phoneClient.update(
+              {
+                DSC_TELEFONO: telefono.numeroTelefono,
+                FEC_MODIFICADOEN: modificadoEN,
+              },
+              { where: { ID_TELEFONOCLIENTE: telefono.idTelefonoCliente } }
+            );
+        } else {
+          await phoneClient.create({
+            ID_CLIENTE: client.ID_CLIENTE,
+            DSC_TELEFONO: numeroTelefono,
+            FEC_CREADOEN: modificadoEN,
+            ESTADO: 1,
+          });
+        }
+
+       
       }
     }
 
