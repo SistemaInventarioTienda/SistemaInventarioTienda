@@ -2,13 +2,19 @@ import { useState, useEffect } from "react";
 import { getAllDataFromGraphic } from "../../../../api/graphics";
 
 export function useTopProductsChart() {
-    const today = new Date().toISOString().split('T')[0];
-    const [dateRange, setDateRange] = useState({ start: '2020-01-01', end: today });
+    const today = new Date();
+    const formattedToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const [dateRange, setDateRange] = useState({ start: '2020-01-01', end: formattedToday });
     const [chartData, setChartData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const isDateValid = (date) => date && !isNaN(new Date(date).getTime());
+
+    useEffect(() => {
+        console.log("FEC INICIO", dateRange.start);
+        console.log("FEC FINAL", dateRange.end);
+    });
 
     const addOneDay = (dateStr) => {
         const date = new Date(dateStr);
@@ -52,9 +58,12 @@ export function useTopProductsChart() {
         }
     }, [dateRange]);
 
-    const handleDateChange = (e) => {
-        const { name, value } = e.target;
-        setDateRange(prev => ({ ...prev, [name]: value }));
+    const handleDateChange = (name, date) => {
+        const formattedDate = date.toISOString().split("T")[0];
+        setDateRange((prev) => ({
+            ...prev,
+            [name]: formattedDate,
+        }));
     };
 
     const best = chartData[0] || { DSC_NOMBRE: 'N/A', TOTAL_VENDIDO: 0 };
