@@ -18,7 +18,7 @@
 .flatpickr-calendar.static.open {
     z-index: 999;
     display: block;
-    width: -webkit-fill-available
+    width: auto;
 }
 
 .custom-flatpickr .flatpickr-calendar {

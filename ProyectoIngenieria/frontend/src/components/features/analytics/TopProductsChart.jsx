@@ -28,26 +28,25 @@ export default function TopProductsChart() {
             </div>
 
             <div className="filter-section">
-                <label>
-                    Desde:
-                    <input
-                        type="date"
-                        name="start"
-                        value={dateRange.start}
-                        onChange={handleDateChange}
-                        max={new Date().toISOString().split('T')[0]}
-                    />
-                </label>
-                <label>
-                    Hasta:
-                    <input
-                        type="date"
-                        name="end"
-                        value={dateRange.end}
-                        onChange={handleDateChange}
-                        max={new Date().toISOString().split('T')[0]}
-                    />
-                </label>
+                <DatePicker
+                    label="Desde"
+                    value={dateRange.start}
+                    onChange={(date) => handleDateChange("start", date)}
+                    allowPastDates={true}
+                    className="input"
+                    placeholder="Selecciona una fecha"
+                    dateFormat="Y-m-d"
+                />
+                <DatePicker
+                    label="Hasta"
+                    value={dateRange.end}
+                    onChange={(date) => handleDateChange("end", date)}
+                    allowPastDates={true}
+                    allowFutureDates={false}
+                    className="input"
+                    placeholder="Selecciona una fecha"
+                    dateFormat="Y-m-d"
+                />
             </div>
 
             {loading && <div className="loading">Cargando...</div>}
