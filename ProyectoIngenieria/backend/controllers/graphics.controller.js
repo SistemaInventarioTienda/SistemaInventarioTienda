@@ -23,7 +23,7 @@ export const getAllDataFromGrpahic = async (req, res) => {
             }
         );
 
-        return res.json({ message: "Datos obtenidos con éxito.", results: results[0]})
+        return res.json({ message: "Datos obtenidos con éxito.", results: results[0], other: results[1]})
 
     } catch (error) {
 
