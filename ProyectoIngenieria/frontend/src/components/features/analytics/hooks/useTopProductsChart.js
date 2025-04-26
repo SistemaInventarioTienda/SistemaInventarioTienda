@@ -40,10 +40,10 @@ export function useTopProductsChart() {
                 MAX_FEC: addOneDay(dateRange.end),
                 LIMIT_PRODUCTS: 5,
             });
-
-            const parsedResults = Array.isArray(data)
-                ? data
-                : Object.values(data || {});
+            console.log("DATA", data.results);
+            const parsedResults = Array.isArray(data.results)
+                ? data.results
+                : Object.values(data.results || {});
             setChartData(parsedResults);
         } catch (err) {
             setError('Error cargando datos. Intente nuevamente.');

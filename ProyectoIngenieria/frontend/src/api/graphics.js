@@ -9,7 +9,7 @@ export const getAllDataFromGraphic = async (params) => {
                 LIMIT_PRODUCTS: params?.LIMIT_PRODUCTS,
             }
         });
-        return response.data.results || [];
+        return response.data || [];
     } catch (error) {
         console.error('Error fetching data:', error.message);
         throw error;

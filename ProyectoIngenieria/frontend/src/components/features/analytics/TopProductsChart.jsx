@@ -27,26 +27,33 @@ export default function TopProductsChart() {
                 </div>
             </div>
 
-            <div className="filter-section">
-                <DatePicker
-                    label="Desde"
-                    value={dateRange.start}
-                    onChange={(date) => handleDateChange("start", date)}
-                    allowPastDates={true}
-                    className="input"
-                    placeholder="Selecciona una fecha"
-                    dateFormat="Y-m-d"
-                />
-                <DatePicker
-                    label="Hasta"
-                    value={dateRange.end}
-                    onChange={(date) => handleDateChange("end", date)}
-                    allowPastDates={true}
-                    allowFutureDates={false}
-                    className="input"
-                    placeholder="Selecciona una fecha"
-                    dateFormat="Y-m-d"
-                />
+            <div className="filter-container">
+                <div className="filter-section">
+                    <div className="filter-item">
+                        <div className="filter-label">Desde</div>
+                        <DatePicker
+                            value={dateRange.start}
+                            onChange={(date) => handleDateChange("start", date)}
+                            allowPastDates={true}
+                            className="filter-input"
+                            placeholder="Selecciona una fecha"
+                            dateFormat="Y-m-d"
+                        />
+                    </div>
+
+                    <div className="filter-item">
+                        <div className="filter-label">Hasta</div>
+                        <DatePicker
+                            value={dateRange.end}
+                            onChange={(date) => handleDateChange("end", date)}
+                            allowPastDates={true}
+                            allowFutureDates={false}
+                            className="filter-input"
+                            placeholder="Selecciona una fecha"
+                            dateFormat="Y-m-d"
+                        />
+                    </div>
+                </div>
             </div>
 
             {loading && <div className="loading">Cargando...</div>}
