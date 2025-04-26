@@ -26,12 +26,12 @@ export const getAllSuppliers = async (req, res) => {
             order: [[field, sortOrder]],
             include: [
                 {
-                    model: numberSupplier,
-                    attributes: ['DSC_TELEFONO'],
+                    model: numberSupplier, //"ID_TELEFONOCPROVEEDOR",
+                    attributes: ["ID_TELEFONOPROVEEDOR",'DSC_TELEFONO'],
                 },
                 {
-                    model: mailSupplier,
-                    attributes: ['DSC_CORREO'],
+                    model: mailSupplier,//"ID_CORREOPROVEEDOR",
+                    attributes: ["ID_CORREOPROVEEDOR",'DSC_CORREO'],
                 },
                 {
                     model: supplierType,
@@ -233,10 +233,16 @@ export const getAllSupplierTypes = async (req, res) => {
 
 
 export const updatedSupplier = async (req, res) => {
-    const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_VENTA, CTA_BANCARIA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO } = req.body;
+    console.log("req.body [updatedSupplier]", req.body.DSC_DIRECCIONEXACTA);
+    const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_VENTA, CTA_BANCARIA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
 
+    console.log(
+        "Hola estamos en [updateSupplier] y estos son los datos del backend: ",
+        req.body
+      );
     try {
         const date = await getDateCR();
+        const supplier = await Supplier.findOne({where: {IDENTIFICADOR_PROVEEDOR: IDENTIFICADOR_PROVEEDOR}});
 
         const validateFields = validateSupplierDataUpdate(req);
         if (validateFields !== true) {
@@ -259,20 +265,60 @@ export const updatedSupplier = async (req, res) => {
             });
         }
 
+        let updatedData = {
+            DSC_NOMBRE,
+            ID_TIPOPROVEEDOR,
+            DSC_DIRECCIONEXACTA,
+            DSC_VENTA,
+            CTA_BANCARIA,
+            ESTADO,
+            FEC_MODIFICADOEN: date,
+        };
 
 
         await Supplier.update(
-            {
-                DSC_NOMBRE,
-                ID_TIPOPROVEEDOR,
-                DSC_DIRECCIONEXACTA,
-                DSC_VENTA,
-                CTA_BANCARIA,
-                ESTADO,
-                FEC_MODIFICADOEN: date,
-            },
-            { where: { IDENTIFICADOR_PROVEEDOR } }
+            updatedData, { where: { IDENTIFICADOR_PROVEEDOR } }
         );
+        if ((phones && phones.length > 0) || (emails && emails.length > 0)) {
+            console.log("Entro al if para modificar los telefonos o los correos");
+
+            for (const phone of phones) {
+                const { ID_TELEFONOCPROVEEDOR, DSC_TELEFONO } = phone;
+
+                if (ID_TELEFONOCPROVEEDOR) {
+                    await numberSupplier.update(
+                        {DSC_TELEFONO: DSC_TELEFONO},
+                        {where: {ID_TELEFONOPROVEEDOR: ID_TELEFONOCPROVEEDOR}}
+                    );
+                } else {
+                    await numberSupplier.create({
+                        ID_PROVEEDOR: supplier.ID_PROVEEDOR,
+                        DSC_TELEFONO: DSC_TELEFONO,
+                        FEC_CREADOEN: date,
+                        ESTADO: 1,
+                    });
+                }
+            }
+
+            for (const email of emails) {
+                const { ID_CORREOPROVEEDOR, DSC_CORREO } = email;
+
+                if (ID_CORREOPROVEEDOR) {
+                    await mailSupplier.update(
+                        {DSC_CORREO: DSC_CORREO},
+                        {where: {ID_CORREOPROVEEDOR: ID_CORREOPROVEEDOR}}
+                    );
+                } else {
+                    await mailSupplier.create({
+                        ID_PROVEEDOR: supplier.ID_PROVEEDOR,
+                        DSC_CORREO: DSC_CORREO,
+                        FEC_CREADOEN: date,
+                        ESTADO: 1,
+                    });
+                }
+                
+            }
+        }
 
         res.status(200).json({
             message: 'Proveedor actualizado correctamente'

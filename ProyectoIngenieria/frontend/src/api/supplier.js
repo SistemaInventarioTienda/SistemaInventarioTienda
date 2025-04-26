@@ -55,7 +55,7 @@ export const deleteSupplier = async (IDENTIFICADOR_PROVEEDOR) => {
 export const updateSupplier = async (supplierData) => {
     console.log("recibido", supplierData);
     try {
-        const response = await axios.put('supplier/updateSupplier', supplierData);
+        const response = await axios.put('/supplier/updateSupplier', supplierData);
         return response.data;
     } catch (error) {
         console.error('Error actualizando el proveedor:', error.message);
