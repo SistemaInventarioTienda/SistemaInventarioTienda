@@ -3,7 +3,7 @@ import db from '../db.js';
 
 export const getAllDataFromGrpahic = async (req, res) => {
     try {
-        const { LIMIT_PRODUCTS = 5, MIN_FEC = '', MAX_FEC = '' } = req.query;
+        const { LIMIT_PRODUCTS = 5, MIN_FEC = '', MAX_FEC = '', CATEGORY = '' } = req.query;
 
         const min_f = validateDate(MIN_FEC);
         const max_f = validateDate(MAX_FEC);
@@ -12,12 +12,13 @@ export const getAllDataFromGrpahic = async (req, res) => {
             return res.status(400).json({ message: message })
         }
         const results = await db.query(
-            'CALL sp_getAllDataFromGrpahics(:MIN_FEC, :MAX_FEC, :LIMIT_PRODUCTS)',
+            'CALL sp_getAllDataFromGrpahics(:MIN_FEC, :MAX_FEC, :LIMIT_PRODUCTS, :CATEGORY)',
             {
                 replacements: {
                     MIN_FEC: MIN_FEC,
                     MAX_FEC: MAX_FEC,
-                    LIMIT_PRODUCTS: LIMIT_PRODUCTS
+                    LIMIT_PRODUCTS: LIMIT_PRODUCTS,
+                    CATEGORY: CATEGORY
                 },
                 type: QueryTypes.SELECT
             }
