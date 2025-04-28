@@ -6,7 +6,7 @@
     box-shadow: 0 4px 8px var(--color-chart-card-shadow);
     transition: all 0.3s ease;
     border: 1px solid var(--color-border);
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     animation: fadeIn 0.5s ease-out forwards;
 }
@@ -184,6 +184,9 @@
     margin-bottom: 20px;
     border: 1px solid var(--color-border);
     animation: fadeIn 0.3s ease-out forwards;
+    overflow: visible;
+    position: relative;
+    z-index: 10;
 }
 
 .filter-section {
@@ -276,5 +279,3 @@
     font-size: 15px;
     padding: 16px 0;
 }
-
-
