@@ -116,6 +116,9 @@ export default function ContactManager({
     const isEditMode = mode === 'edit';
     const isAddMode = mode === 'add';
 
+
+    //console.log(`Estos son los ${type}: `, contacts);
+    
     return (
         <div className="contacts-container">
             <label>{type === 'phone' ? 'Teléfonos' : 'Correos Electrónicos'}</label>
