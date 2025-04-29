@@ -6,6 +6,7 @@ function SupplierForm({ mode, initialData, onSubmit, onCancel }) {
     const [supplierTypes, setSupplierTypes] = useState([]);
     const [formData, setFormData] = useState(null);
 
+    console.log("initialData [SupplierForm]", initialData);
     useEffect(() => {
         async function fetchSupplierTypes() {
             try {
@@ -27,6 +28,7 @@ function SupplierForm({ mode, initialData, onSubmit, onCancel }) {
         fetchSupplierTypes();
     }, [initialData]);
 
+    
     if (!formData) {
         return <p>Cargando...</p>;
     }

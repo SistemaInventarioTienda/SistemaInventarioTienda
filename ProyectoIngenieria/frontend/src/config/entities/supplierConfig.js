@@ -70,22 +70,44 @@ export const supplierConfig = {
             direccion: supplier.DSC_DIRECCIONEXACTA,
             venta: supplier.DSC_VENTA,
             cuentaBanco: supplier.CTA_BANCARIA,
-            telefonos: supplier.numberSuppliers?.map((t) => t.DSC_TELEFONO) || [],
-            correos: supplier.mailSuppliers?.map((t) => t.DSC_CORREO) || [],
+            //telefonos: supplier.numberSuppliers?.map((t) => t.DSC_TELEFONO) || [],
+            telefonos: supplier.numberSuppliers?.map((t) => ({
+                idTelefonoProveedor: t.ID_TELEFONOPROVEEDOR,
+                numeroTelefono: t.DSC_TELEFONO,
+            })) || [],
+            //correos: supplier.mailSuppliers?.map((t) => t.DSC_CORREO) || [],
+            correos: supplier.mailSuppliers?.map((t) => ({
+                id: t.ID_CORREOPROVEEDOR,
+                correoElectronico: t.DSC_CORREO,
+            })) || [],
         }),
 
         // Transformar datos desde el formulario hacia la API
-        toBackend: (formData) => ({
-            IDENTIFICADOR_PROVEEDOR: formData.id,
-            DSC_NOMBRE: formData.nombre,
-            ID_TIPOPROVEEDOR: parseInt(formData.tipoProveedor, 10),
-            DSC_DIRECCIONEXACTA: formData.direccion,
-            DSC_VENTA: formData.venta,
-            CTA_BANCARIA: formData.cuentaBanco,
-            phones: formData.telefonos,
-            emails: formData.correos,
-            ESTADO: formData.estado,
-        }),
+        toBackend: async (formData) => {
+            console.log("toBackend[supplierConfig]", formData);
+            const data = {
+                IDENTIFICADOR_PROVEEDOR: formData.id,
+                DSC_NOMBRE: formData.nombre,
+                ID_TIPOPROVEEDOR: parseInt(formData.tipoProveedor, 10),
+                DSC_DIRECCIONEXACTA: formData.direccion,
+                DSC_VENTA: formData.venta,
+                CTA_BANCARIA: formData.cuentaBanco,
+                //phones: formData.telefonos,
+                phones: formData.telefonos?.map((t) => ({
+                    ID_TELEFONOCPROVEEDOR: t.idTelefonoProveedor,
+                    DSC_TELEFONO: t.numeroTelefono,
+                })) || [],
+                //emails: formData.correos,
+                emails: formData.correos?.map((t) => ({
+                    ID_CORREOPROVEEDOR: t.id,
+                    DSC_CORREO: t.correoElectronico,
+                })) || [],
+                ESTADO: formData.estado,
+            };
+            console.log("data procesada de toBackend[supplierConfig]", data);
+
+            return data;
+        },
     },
 
     // Transformaciones específicas de campos individuales
