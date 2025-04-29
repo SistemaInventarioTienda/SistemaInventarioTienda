@@ -277,6 +277,8 @@ export const updateClient = async (req, res) => {
       DSC_DIRECCION,
       FEC_MODIFICADOEN: modificadoEN,
     };
+
+    const phoneNumbers = telefonos.map(phone => phone.numeroTelefono);
     //let updatedTelefonos = { DSC_TELEFONO: telefonos };
     // new - manejar el guardado de la foto en el servidor y guardar la ruta en bd
     /* también el eliminado de la foto en el servidor
@@ -290,6 +292,16 @@ export const updateClient = async (req, res) => {
       }
     }
     */
+
+    //validacion de los numeros de telefono-------------------------------
+    const validatePhones = await validatePhonesClientUpdate(phoneNumbers, client.ID_CLIENTE);
+    if (Array.isArray(validatePhones)){
+      return res.status(400).json({
+        message: validatePhones[0],
+      });
+    }
+    //--------------------------------------------------------------------
+
     await client.update(updatedData);
     //await phoneClient.update(updatedTelefonos, { where: { ID_CLIENTE: req.params.id } });
 
@@ -452,4 +464,27 @@ export const searchClient = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
+};
+
+async function validatePhonesClientUpdate(phones, clientID) {
+  try {
+    
+    const existingPhones = await phoneClient.findAll({
+      where: {
+        DSC_TELEFONO: { [Op.in]: phones },
+        ID_CLIENTE: { [Op.ne]: clientID}
+      },
+      attributes: ['DSC_TELEFONO']
+    });
+  
+    if (existingPhones.length > 0) {
+      const existingNumbers = existingPhones.map(phone => phone.DSC_TELEFONO);
+      return [`Hay números de teléfono en uso por otro cliente: ${existingNumbers.join(', ')}.`];
+    }
+    return false;
+  } catch (error) {
+    console.error("Error en validatePhonesClientUpdate:", error);
+    throw error;
+  }
+  
 };

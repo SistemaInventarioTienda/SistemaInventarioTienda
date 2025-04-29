@@ -330,9 +330,25 @@ export const updatedSupplier = async (req, res) => {
         // }
 
 
+
+        //---------validacion de los telefonos y correos---------
+        const validatePhones = await validatePhonesSupplierUpdate(phoneNumbers, supplier.ID_PROVEEDOR);
+        if (Array.isArray(validatePhones)) {
+            return res.status(400).json({
+                message: validatePhones[0], // Accede al primer mensaje de error
+            });
+        }
+        
+        const validateEmails = await validateEmailsSupplierUpdate(emailAddresses, supplier.ID_PROVEEDOR);
+        if (Array.isArray(validateEmails)) {
+            return res.status(400).json({
+                message: validateEmails[0], // Accede al primer mensaje de error
+            });
+        }
         await Supplier.update(
             updatedData, { where: { IDENTIFICADOR_PROVEEDOR } }
         );
+        //--------------------------------------------------------
 
         //manejo de los telefonos
         if ((phones && phones.length > 0) ) { //|| (emails && emails.length > 0)
@@ -539,3 +555,46 @@ export const searchSupplier = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
+async function validatePhonesSupplierUpdate(phones, supplierId) {
+    const existingPhones = await numberSupplier.findAll({
+        where: {
+            DSC_TELEFONO: { [Op.in]: phones },
+            ID_PROVEEDOR: { [Op.ne]: supplierId } 
+        },
+        attributes: ['DSC_TELEFONO']
+    });
+
+    if (existingPhones.length > 0) {
+        const existingNumbers = existingPhones.map(phone => phone.DSC_TELEFONO);
+        return [`Hay números de teléfono en uso por otro proveedor: ${existingNumbers.join(', ')}.`];
+    }
+
+   return false;
+}
+
+async function validateEmailsSupplierUpdate(emails, supplierId) {
+    try {
+        // Consulta los correos electrónicos existentes en la base de datos
+        const existingEmails = await mailSupplier.findAll({
+            where: { 
+                DSC_CORREO: { [Op.in]: emails },
+                ID_PROVEEDOR: { [Op.ne]: supplierId } // Excluir el proveedor actual
+            },
+            attributes: ['DSC_CORREO'] // Solo seleccionamos el campo DSC_CORREO
+        });
+
+        // Si hay correos electrónicos en uso por otros proveedores, devolver un mensaje de error
+        if (existingEmails.length > 0) {
+            const duplicateEmails = existingEmails.map(email => email.DSC_CORREO); // Extraer los correos
+            return [`Hay correos en uso por otro proveedor: ${duplicateEmails.join(', ')}.`];
+        }
+
+        // Si no hay conflictos, devolver false
+        return false;
+    } catch (error) {
+        console.error("Error en validateEmailsSupplierUpdate:", error);
+        throw error; // Propagar el error para manejarlo en el nivel superior
+    }
+}
