@@ -15,10 +15,10 @@
     top: 0;
     transition: width 0.3s ease;
     overflow-y: hidden;
-    will-change: width;
+    scroll-behavior: smooth;
 }
 
-.sidebar.expanded {
+.sidebar:hover {
     overflow-y: auto;
 }
 
@@ -32,7 +32,6 @@
     flex-direction: column;
     margin-left: 280px;
     transition: margin-left 0.3s ease;
-    will-change: margin-left;
 }
 
 .sidebar.collapsed~.main-content {
@@ -112,7 +111,6 @@
     display: none;
 }
 
-/* Scrollbar */
 .sidebar::-webkit-scrollbar {
     width: 8px;
 }
@@ -131,7 +129,47 @@
     background: rgba(255, 255, 255, 0.5);
 }
 
-/* Submenu */
+/* Estilos del Submenú */
+.submenu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--color-card);
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border-radius: 16px;
+}
+
+.submenu-header:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.submenu-container {
+    display: none;
+    flex-direction: column;
+    padding-left: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+.submenu-container.open {
+    display: flex;
+}
+
+.submenu-item {
+    display: flex;
+    align-items: center;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.submenu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+
 .submenu-header {
     display: flex;
     justify-content: space-between;
@@ -144,51 +182,25 @@
     min-height: 48px;
 }
 
-.submenu-header:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-.submenu-container {
-    overflow: hidden;
-    max-height: 0;
-    opacity: 0;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    padding-left: 16px;
-    display: flex;
-    flex-direction: column;
-}
-
-.submenu-container.open {
-    max-height: 500px;
-    opacity: 1;
-}
-
-.submenu-item {
-    display: flex;
-    align-items: center;
-    border-left: 3px solid transparent;
-    transition: all 0.3s ease;
-    margin: 5px 0;
-}
-
-.submenu-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
 .submenu-header>div {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.submenu-header>div>svg,
+.submenu-header>div>svg {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+}
+
 .submenu-header svg:last-child {
     flex-shrink: 0;
     width: 24px;
     height: 24px;
 }
 
-/* Responsive */
+/* Responsivo */
 @media (max-width: 768px) {
     .sidebar {
         width: 80px;

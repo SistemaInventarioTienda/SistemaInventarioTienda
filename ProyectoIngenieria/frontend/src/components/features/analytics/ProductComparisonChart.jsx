@@ -12,9 +12,11 @@ export default function ProductComparisonChart() {
     handleDateChange,
     loading,
     error,
-    categories,
-    selectedCategory,
-    handleCategoryChange,
+    filterType,
+    handleFilterTypeChange,
+    filterOptions,
+    selectedFilter,
+    handleFilterChange,
   } = useInventoryComparisonChart();
 
   const stockColor = "#4dabf5";
@@ -68,16 +70,30 @@ export default function ProductComparisonChart() {
           </div>
 
           <div className="filter-item">
-            <div className="filter-label">Filtrar por categoría</div>
-            <div className="category-select-wrapper">
-              <Select
-                name="category"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                options={[{ value: "", label: "Todas las categorías" }, ...categories]}
-                className="filter-input"
-              />
+            <div className="filter-label">Tipo de filtro</div>
+            <Select
+              name="filterType"
+              value={filterType}
+              onChange={handleFilterTypeChange}
+              options={[
+                { value: "category", label: "Categoría" },
+                { value: "subcategory", label: "Subcategoría" }
+              ]}
+              className="filter-input"
+            />
+          </div>
+
+          <div className="filter-item">
+            <div className="filter-label">
+              {filterType === 'category' ? "Filtrar por categoría" : "Filtrar por subcategoría"}
             </div>
+            <Select
+              name="filterValue"
+              value={selectedFilter}
+              onChange={handleFilterChange}
+              options={[{ value: "", label: "Todos" }, ...filterOptions]}
+              className="filter-input"
+            />
           </div>
         </div>
       </div>
@@ -160,10 +176,6 @@ export default function ProductComparisonChart() {
                     fontSize: 14,
                     fill: "#fff",
                   },
-                  itemMarkWidth: 15,
-                  itemMarkHeight: 15,
-                  markGap: 5,
-                  itemGap: 15,
                   direction: "row",
                 },
               }}

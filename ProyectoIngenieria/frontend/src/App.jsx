@@ -7,23 +7,14 @@ import { AuthProvider, useAuth } from "./context/authContext";
 import { AuthPermissionsProvider } from './context/authPermissions';
 import { ProtectedRoute } from "./routes";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
-import CategoryPage from "./pages/CategoryPage";
-import ClientPage from "./pages/ClientPage";
-import CreditPage from "./pages/CreditPage";
-import HomePage from "./pages/HomePage";
-import UserPage from "./pages/UserPage";
-import SupplierPage from './pages/SupplierPage';
-import LoginPage from "./pages/LoginPage";
-import ProfilePage from "./pages/ProfilePage";
-import SettingsPage from './pages/SettingsPage';
-import ProductPage from './pages/ProductPage';
-import SalePage from './pages/SalePage'
-import AddSalePage from './pages/AddSalePage';
-import AddShoppingPage from './pages/AddShoppingPage';
-import TransactionPage from  './pages/TransactionPage';
 import { Toaster } from "sonner";
-import ShoppingPage from './pages/ShoppingPage';
-import CreditSalePage from './pages/CreditSalePage';
+import {
+  CategoryPage, ClientPage, CreditPage,
+  HomePage, UserPage, SupplierPage, LoginPage,
+  SettingsPage, ProductPage, SalePage,
+  AddSalePage, AddShoppingPage, TransactionPage,
+  ShoppingPage, CreditSalePage, ProfilePage
+} from './pages';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -99,13 +90,13 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="user" element={<UserPage />} />
             <Route path="category" element={<CategoryPage />} />
             <Route path="clients" element={<ClientPage />} />
-            
+
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage />} />
             <Route path="product" element={<ProductPage />} />
-            <Route path="sales/credit" element= {<CreditSalePage/>}></Route>
+            <Route path="sales/credit" element={<CreditSalePage />}></Route>
             <Route path="credits" element={<CreditPage />} />
             <Route path="sales/history" element={<SalePage />} />
             <Route path="sales/new" element={<AddSalePage />} />

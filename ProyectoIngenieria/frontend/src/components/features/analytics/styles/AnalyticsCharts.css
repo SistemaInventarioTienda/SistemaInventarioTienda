@@ -9,16 +9,18 @@
     overflow: visible;
     position: relative;
     animation: fadeIn 0.5s ease-out forwards;
+    z-index: 0;
 }
 
 .analytics-card::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    inset: 0;
     height: 4px;
     background: linear-gradient(90deg, var(--color-primary), #ff9eb6);
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    z-index: 1;
 }
 
 /* Encabezado de la tarjeta */
@@ -190,6 +192,7 @@
 }
 
 .filter-section {
+    margin-top: 10px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 15px;
@@ -274,6 +277,15 @@
 
 /* Texto sin datos */
 .no-data {
+    background-color: var(--color-card);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    box-shadow: 0 4px 8px var(--color-chart-card-shadow);
+    transition: all 0.3s ease;
+    border: 1px solid var(--color-border);
+    overflow: visible;
+    position: relative;
+    animation: fadeIn 0.5s ease-out forwards;
     text-align: center;
     color: var(--color-font);
     font-size: 15px;
