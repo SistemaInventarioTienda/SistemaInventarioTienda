@@ -14,7 +14,7 @@ export function useTopProductsChart() {
     useEffect(() => {
         console.log("FEC INICIO", dateRange.start);
         console.log("FEC FINAL", dateRange.end);
-    });
+    }, [dateRange]);    
 
     const addOneDay = (dateStr) => {
         const date = new Date(dateStr);
@@ -39,11 +39,13 @@ export function useTopProductsChart() {
                 MIN_FEC: dateRange.start,
                 MAX_FEC: addOneDay(dateRange.end),
                 LIMIT_PRODUCTS: 5,
+                CATEGORY: '',
+                FEC_CURRENT: '',
             });
-
-            const parsedResults = Array.isArray(data)
-                ? data
-                : Object.values(data || {});
+            console.log("DATA", data.top5Products);
+            const parsedResults = Array.isArray(data.top5Products)
+                ? data.top5Products
+                : Object.values(data.top5Products || {});
             setChartData(parsedResults);
         } catch (err) {
             setError('Error cargando datos. Intente nuevamente.');
