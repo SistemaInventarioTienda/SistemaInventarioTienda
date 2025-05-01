@@ -267,8 +267,8 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
                 'CALL getShoppingsReport(:MIN_FEC, :MAX_FEC)',
                 {
                     replacements: {
-                        MIN_FEC: '2025-04-01',
-                        MAX_FEC: '2025-04-30'
+                        MIN_FEC: MIN_FEC,
+                        MAX_FEC: MAX_FEC
                     },
                     type: QueryTypes.SELECT
                 });
