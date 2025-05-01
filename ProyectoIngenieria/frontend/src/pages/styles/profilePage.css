@@ -185,11 +185,14 @@
 .info-label {
     color: var(--color-font);
     opacity: 0.7;
+    width: 40%;
 }
 
 .info-value {
     color: var(--color-primary);
     font-weight: 500;
+    width: 60%;
+    text-align: right;
 }
 
 /* Estilos para las pestañas */
@@ -280,7 +283,7 @@
 
 .password-hint {
     font-size: 12px;
-    color: var(--color-font-primary);
+    color: var(--color-font);
     opacity: 0.7;
     margin-top: 4px;
 }
