@@ -25,7 +25,6 @@ export const validateRegisterSupplierUpdate = async (DSC_NOMBRE,IDENTIFICADOR_PR
     }
 };
 
-
 export const validateRegisterPhones = async (phones) => {
     try {
         const output = await validatePhonesSupplier(phones);
@@ -37,7 +36,6 @@ export const validateRegisterPhones = async (phones) => {
         throw new Error(error.message);
     }
 };
-
 
 export const validateRegisterEmails = async (emails) => {
     try {
@@ -79,16 +77,12 @@ export const validatIbanAccount = async (account) => {
     }
  }
 
-
-
-
 async function validateNameSupplier(name) {
     if (await existName(name))
         return ["El nombre del proveedor ya se encuentra en uso."];
 
     return false;
 }
-
 
 async function validateNameSupplierUpdate(name,id) {
     if (await existNameUpdate(name,id))
@@ -101,8 +95,6 @@ async function existName(name) {
     const nameFound = await Supplier.findOne({ where: { DSC_NOMBRE: name} }); 
     return  nameFound?true:false;
 }
-
-
 
 async function existNameUpdate(name, id) {
     const nameFound = await Supplier.findOne({
@@ -130,7 +122,6 @@ async function validatePhonesSupplier(phones) {
     return false;  
 }
 
-
 async function validateEmailsSupplier(emails) {
     const existingEmails = await mailSupplier.findAll({
         where: {
@@ -151,7 +142,6 @@ async function validateEqualsPhones(phones){
     const uniquePhones = [...new Set(phones)];
     return (uniquePhones.length!== phones.length) ?  ["No puede haber números de teléfono repetidos."]: false;
 }
-
 
 async function validateEqualsEmails(emails){
     const uniqueEmails = [...new Set(emails)];

@@ -161,11 +161,12 @@ export function useContactManager(initialContacts = [], onContactsChange, type) 
             };
         } else {
             // Agregar nuevo contacto
-            const newId = contacts.length > 0 ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
+            //const newId = contacts.length > 0 ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
             const newContactToAdd = {
-                id: newId,
+                id: undefined,//newId
                 [type === 'phone' ? 'numeroTelefono' : 'correoElectronico']: value,
             };
+            console.log(`Este es el nuevo contacto a agregar: `, newContactToAdd);
             updatedContacts = [...contacts, newContactToAdd];
         }
 
@@ -183,7 +184,7 @@ export function useContactManager(initialContacts = [], onContactsChange, type) 
         }
         const contactToEdit = contacts[index];
         setNewContact({
-            id: contactToEdit.id,
+            id: contactToEdit.id,//contactToEdit.id,
             value: contactToEdit[type === 'phone' ? 'numeroTelefono' : 'correoElectronico'],
         });
         setEditingIndex(index);

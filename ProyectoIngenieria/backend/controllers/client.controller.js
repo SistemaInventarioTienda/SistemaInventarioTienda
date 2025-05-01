@@ -21,6 +21,7 @@ function isNotEmpty(value) {
 
 export const registerClient = async (req, res) => {
   try {
+    console.log("Hola estamos en [registerClient] y estos son los datos: ", req.body);
     const {
       DSC_CEDULA,
       DSC_NOMBRE,
@@ -29,7 +30,7 @@ export const registerClient = async (req, res) => {
       ESTADO,
       DSC_DIRECCION,
       FOTO,
-      ...telefonos
+      telefonos
     } = req.body;
 
     if (!isNotEmpty(DSC_CEDULA)) {
@@ -50,13 +51,21 @@ export const registerClient = async (req, res) => {
       });
     }
 
+    // const telefonosList = Array.from(
+    //   new Set(
+    //     Object.keys(telefonos)
+    //       .filter((key) => key.startsWith("DSC_TELEFONO"))
+    //       .map((key) => telefonos[key])
+    //   )
+    // );
+
     const telefonosList = Array.from(
-      new Set(
-        Object.keys(telefonos)
-          .filter((key) => key.startsWith("DSC_TELEFONO"))
-          .map((key) => telefonos[key])
-      )
+      new Set(telefonos.filter((telefono) => telefono.numeroTelefono && isNotEmpty(telefono.numeroTelefono))
+    .map((telefono) => telefono.numeroTelefono)
+    )
     );
+
+    //Validar los numeros de telefono
     const numberValidation = await validateRegisterPhones(telefonosList);
     if (numberValidation !== true) {
       return res.status(400).json({
@@ -232,6 +241,11 @@ export const deleteClient = async (req, res) => {
 
 export const updateClient = async (req, res) => {
   try {
+
+    console.log(
+      "Hola estamos en [updateClient] y estos son los datos del backend: ",
+      req.body
+    );
     const {
       DSC_CEDULA,
       DSC_NOMBRE,
@@ -243,10 +257,7 @@ export const updateClient = async (req, res) => {
       telefonos,
     } = req.body;
 
-    console.log(
-      "Hola estamos en [updateClient] y estos son los telefonos: ",
-      telefonos
-    );
+    
 
     const modificadoEN = await getDateCR();
     const client = await Client.findOne({
@@ -266,6 +277,8 @@ export const updateClient = async (req, res) => {
       DSC_DIRECCION,
       FEC_MODIFICADOEN: modificadoEN,
     };
+
+    const phoneNumbers = telefonos.map(phone => phone.numeroTelefono);
     //let updatedTelefonos = { DSC_TELEFONO: telefonos };
     // new - manejar el guardado de la foto en el servidor y guardar la ruta en bd
     /* también el eliminado de la foto en el servidor
@@ -279,10 +292,40 @@ export const updateClient = async (req, res) => {
       }
     }
     */
+
+    //validacion de los numeros de telefono-------------------------------
+    const validatePhones = await validatePhonesClientUpdate(phoneNumbers, client.ID_CLIENTE);
+    if (Array.isArray(validatePhones)){
+      return res.status(400).json({
+        message: validatePhones[0],
+      });
+    }
+    //--------------------------------------------------------------------
+
     await client.update(updatedData);
     //await phoneClient.update(updatedTelefonos, { where: { ID_CLIENTE: req.params.id } });
+
     if (telefonos && telefonos.length > 0) {
       console.log("Entro al if para modificar los telefonos");
+
+      const existingPhones = await phoneClient.findAll({
+        where: {ID_CLIENTE: client.ID_CLIENTE},
+        attributes: ['ID_TELEFONOCLIENTE'],
+      });
+
+      const existingPhoneIds = existingPhones.map(phone => phone.ID_TELEFONOCLIENTE);
+      console.log("Telefonos Existentes [existingPhones]: ", existingPhoneIds);
+
+      const phoneIdInRequest = telefonos
+      .filter(phone => phone.idTelefonoCliente)
+      .map(phone => phone.idTelefonoCliente);
+
+      const phonesToDelete = existingPhoneIds.filter(id => !phoneIdInRequest.includes(id));
+      if (phonesToDelete.length > 0) {  
+        await phoneClient.destroy({
+          where: {ID_TELEFONOCLIENTE: phonesToDelete}
+        });
+      }
 
       for (const telefono of telefonos) {
         const { idTelefonoCliente, numeroTelefono } = telefono;
@@ -307,6 +350,10 @@ export const updateClient = async (req, res) => {
 
        
       }
+    } else {
+      await phoneClient.destroy({
+        where: {ID_CLIENTE: client.ID_CLIENTE}
+      });
     }
 
     return res.json(client);
@@ -417,4 +464,27 @@ export const searchClient = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
+};
+
+async function validatePhonesClientUpdate(phones, clientID) {
+  try {
+    
+    const existingPhones = await phoneClient.findAll({
+      where: {
+        DSC_TELEFONO: { [Op.in]: phones },
+        ID_CLIENTE: { [Op.ne]: clientID}
+      },
+      attributes: ['DSC_TELEFONO']
+    });
+  
+    if (existingPhones.length > 0) {
+      const existingNumbers = existingPhones.map(phone => phone.DSC_TELEFONO);
+      return [`Hay números de teléfono en uso por otro cliente: ${existingNumbers.join(', ')}.`];
+    }
+    return false;
+  } catch (error) {
+    console.error("Error en validatePhonesClientUpdate:", error);
+    throw error;
+  }
+  
 };

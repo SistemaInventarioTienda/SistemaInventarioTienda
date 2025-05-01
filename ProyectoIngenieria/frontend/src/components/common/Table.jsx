@@ -279,7 +279,6 @@ const Table = ({
           fontSize: "14px",
           zIndex: 1001,
         }}
-        // getContent = {(dataTip) => dataTip}
       />
     </>
   );
