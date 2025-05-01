@@ -1,0 +1,324 @@
+/* Estilos de página */
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--color-text);
+}
+
+.page-header p {
+    color: var(--color-font);
+    font-size: 0.95rem;
+}
+
+/* Contenedor de pestañas */
+.reports-tabs-container {
+    background-color: var(--color-background);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.reports-tabs {
+    width: 100%;
+}
+
+.reports-tab-list {
+    display: flex;
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 1rem;
+}
+
+.reports-tab-list button {
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+    color: var(--color-font);
+    border: none;
+    background: transparent;
+    position: relative;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.reports-tab-list button:hover {
+    color: var(--color-primary);
+}
+
+.reports-tab-list button[aria-selected="true"] {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.reports-tab-list button[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+    border-radius: 2px 2px 0 0;
+}
+
+/* Contenedor de reportes */
+.reports-container {
+    padding-top: 1.5rem;
+}
+
+/* Tarjetas */
+.report-form-card,
+.report-preview-card {
+    background-color: var(--color-card);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Filtros */
+.report-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.report-filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.report-filter-label {
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.report-filter-input {
+    background-color: var(--color-input-background);
+    border: 1px solid var(--color-input-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--color-font);
+    font-size: 13px;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.report-filter-input:focus,
+.report-filter-input:hover {
+    border-color: #7aa2f7;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(122, 162, 247, 0.2);
+}
+
+
+/* Select */
+.report-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.report-select-wrapper select {
+    appearance: none;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background-color: white;
+    color: var(--color-text);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.report-select-wrapper::after {
+    content: "";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--color-text-secondary);
+    pointer-events: none;
+}
+
+/* Acciones */
+.report-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.generate-report-button {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.generate-report-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Vista previa */
+.report-preview-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+}
+
+.report-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.report-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.report-table td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.report-table tr:last-child td {
+    border-bottom: none;
+}
+
+.report-table tr:hover td {
+    background-color: var(--color-background-hover);
+}
+
+/* Estilos para CheckboxList */
+.checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.checkbox-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-list-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-input-background);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.checkbox-list-item input[type="checkbox"]:checked {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.checkbox-list-item input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--color-border);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-list-item input[type="checkbox"]:focus,
+.checkbox-list-item input[type="checkbox"]:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(122, 162, 247, 0.2);
+}
+
+.checkbox-list-item label {
+    font-size: 13px;
+    color: var(--color-font);
+    user-select: none;
+}
+
+/* Versión radio (para selección única) */
+.checkbox-list.radio-style .checkbox-list-item input[type="checkbox"] {
+    border-radius: 50%;
+}
+
+.checkbox-list.radio-style .checkbox-list-item input[type="checkbox"]:checked::after {
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--color-background);
+    transform: translate(-50%, -50%);
+}
+
+/* Versión horizontal */
+.checkbox-list.horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* Versión con bordes */
+.checkbox-list.bordered .checkbox-list-item {
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.checkbox-list.bordered .checkbox-list-item:hover {
+    background-color: var(--color-background-hover);
+}
+
+.checkbox-list.bordered .checkbox-list-item input[type="checkbox"]:checked+label {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .report-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-actions {
+        justify-content: center;
+    }
+}
