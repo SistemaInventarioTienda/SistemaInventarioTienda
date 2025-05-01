@@ -75,6 +75,7 @@ export const userConfig = {
             nombreUsuario: user.DSC_NOMBREUSUARIO,
             correo: user.DSC_CORREO,
             estado: user.ESTADO === "ACTIVO" ? 1 : 2,
+            fechaCreacion: user.FEC_CREADOEN,
         }),
 
         // Transformar datos desde el formulario hacia la API

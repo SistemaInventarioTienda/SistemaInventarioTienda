@@ -8,6 +8,7 @@ export { Select } from "./Select";
 export { Message } from "./Message";
 export { Label } from "./Label";
 export { Alert } from "./Alert";
+export { Tabs } from './Tabs';
 export { default as SearchSelect } from "./SearchSelect";
 export { default as Spinner } from "./Spinner";
 export { default as MetricCard } from "./MetricCard";
