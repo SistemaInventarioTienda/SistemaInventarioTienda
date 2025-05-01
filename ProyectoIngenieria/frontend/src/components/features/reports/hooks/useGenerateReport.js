@@ -7,10 +7,10 @@ import { getPreviewColumns, getPreviewData } from "../../../../config/entities/r
 // Opciones para los selects
 const reportTypeOptions = [
     { value: "", label: "Seleccionar tipo de reporte" },
-    { value: "sales", label: "Ventas" },
-    { value: "clients", label: "Clientes" },
-    { value: "suppliers", label: "Proveedores" },
-    { value: "products", label: "Productos" }
+    { value: "ComprasXProveedor", label: "Compras por proveedor" },
+    // { value: "clients", label: "Clientes" },
+    // { value: "suppliers", label: "Proveedores" },
+    // { value: "products", label: "Productos" }
 ];
 
 const formatOptions = [
@@ -68,6 +68,17 @@ export function useGenerateReport() {
         }
     }, [reportType, updatePreview]);
 
+    // Función para limpiar campos del formulario
+    const resetForm = () => {
+        setReportType("");
+        setFormat("");
+        setStartDate(null);
+        setEndDate(null);
+        setPreviewData([]);
+        setShowNoDataMessage(false);
+    };
+    
+
     // Función submit para generar el reporte
     const handleSubmit = async () => {
         const errors = validateReport({ reportType, format, startDate, endDate });
@@ -92,6 +103,7 @@ export function useGenerateReport() {
             if (response.downloadLink) {
                 window.open(response.downloadLink, '_blank');
                 toast.success("Reporte generado correctamente.");
+                resetForm();
             } else {
                 toast.error("No se recibió un enlace de descarga.");
             }

@@ -1,5 +1,6 @@
-import { Button, Select, DatePicker, Table } from "../../common"
+import { Button, Select, DatePicker } from "../../common"
 import { useGenerateReport } from "./hooks/useGenerateReport"
+import { ReportPreview } from "./";
 
 function GenerateReport() {
     const {
@@ -73,6 +74,7 @@ function GenerateReport() {
                             value={endDate}
                             onChange={handleEndDateChange}
                             allowPastDates={true}
+                            allowFutureDates={false}
                             className="report-filter-input"
                             placeholder="Selecciona fecha fin"
                             dateFormat="Y-m-d"
@@ -87,18 +89,7 @@ function GenerateReport() {
                 </div>
             </div>
 
-            <div className="report-preview-card">
-                <h3 className="report-preview-title">Vista previa de los campos del reporte</h3>
-                {reportType && !isLoading ? (
-                    <Table
-                        columns={getPreviewColumns(reportType)}
-                        data={getPreviewData(reportType)}
-                        emptyMessage="Los datos se mostrarán en el reporte final"
-                        className="report-table"
-                        onSort={null}
-                    />
-                ) : null}
-            </div>
+            <ReportPreview reportType={reportType} format={format} isLoading={isLoading} />
         </div>
     )
 }

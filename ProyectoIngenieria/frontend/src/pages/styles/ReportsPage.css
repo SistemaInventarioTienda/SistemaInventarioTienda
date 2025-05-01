@@ -312,6 +312,102 @@
     font-weight: 500;
 }
 
+
+/* Estilos preview del reporte */
+.report-preview-card {
+    background-color: var(--color-card);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+}
+
+.report-preview-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+}
+
+.report-preview-title::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background-color: var(--color-primary);
+    margin-right: 8px;
+    border-radius: 2px;
+}
+
+.report-preview-image {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+    position: relative;
+}
+
+.report-preview-img {
+    max-width: 70%;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.report-preview-placeholder {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--color-font);
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    border: 1px dashed var(--color-border);
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.pill {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.pill.type {
+    background-color: var(--color-status-pill-pending-bg);
+    color: var(--color-status-pill-pending-text);
+}
+
+.pill.format-pdf {
+    background-color: var(--color-status-pill-inactive-bg);
+    color: var(--color-status-pill-inactive-text);
+}
+
+.pill.format-excel {
+    background-color: var(--color-status-pill-active);
+    color: var(--color-status-pill-active-text);
+}
+
+.icon-preview{
+    margin: 10px;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .report-filter-grid {
