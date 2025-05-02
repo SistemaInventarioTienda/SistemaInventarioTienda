@@ -41,9 +41,9 @@
 
 .profile-content {
     flex-grow: 1;
-    padding: 0 40px 40px;
+    /* padding: 0 40px 40px; */
 }
-
+/* 
 .profile-form-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -78,6 +78,236 @@
 
 @media (max-width: 768px) {
     .profile-form-container {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        padding: 0 20px;
+    }
+
+    .profile-content {
+        padding: 0 20px 20px;
+    }
+} */
+
+
+/* Nuevo layout con sidebar */
+.profile-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    width: 100%;
+    height: 100%;
+}
+
+.profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.profile-main {
+    flex: 1;
+}
+
+/* Estilos de las tarjetas */
+.form-card {
+    background: var(--color-card);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card-header {
+    margin-bottom: 20px;
+}
+
+.profile-card-header h2 {
+    color: var(--color-primary);
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.profile-card-header p {
+    color: var(--color-font);
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.profile-card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilos del avatar y perfil */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--color-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    border: 2px solid var(--color-primary);
+}
+
+.avatar-icon {
+    color: var(--color-primary);
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.profile-email {
+    font-size: 14px;
+    color: var(--color-font);
+    opacity: 0.7;
+    text-align: center;
+}
+
+/* Estilos para la información adicional */
+.profile-info-card .profile-card-content {
+    gap: 12px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.info-label {
+    color: var(--color-font);
+    opacity: 0.7;
+    width: 40%;
+}
+
+.info-value {
+    color: var(--color-primary);
+    font-weight: 500;
+    width: 60%;
+    text-align: right;
+}
+
+/* Estilos para las pestañas */
+.profile-tabs {
+    width: 100%;
+}
+
+.profile-tab-list {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 8px;
+}
+
+.profile-tab-list button {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-primary);
+    cursor: pointer;
+    position: relative;
+}
+
+.profile-tab-list button.tab-active {
+    color: var(--color-primary);
+}
+
+.profile-tab-list button.tab-active::after {
+    content: "";
+    position: absolute;
+    bottom: -9px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-primary);
+}
+
+/* Estilos para el formulario */
+.profile-form-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+}
+
+.profile-form-single {
+    width: 100%;
+}
+
+.profile-form-group {
+    margin-bottom: 20px;
+}
+
+.profile-form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--color-primary);
+}
+
+.password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Estilos para los campos de contraseña */
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-hint {
+    font-size: 12px;
+    color: var(--color-font);
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-sidebar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-form-container {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .profile-sidebar {
         grid-template-columns: 1fr;
     }
 

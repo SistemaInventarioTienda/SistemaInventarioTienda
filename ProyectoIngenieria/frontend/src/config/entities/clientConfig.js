@@ -68,12 +68,17 @@ export const clientConfig = {
             segundoApellido: client.DSC_APELLIDODOS,
             direccion: client.DSC_DIRECCION,
             estado: client.ESTADO === "ACTIVO" ? 1 : 2,
-            telefonos: client.TelefonoClientes?.map((t) => t.DSC_TELEFONO) || [],
+            //telefonos: client.TelefonoClientes?.map((t) => t.DSC_TELEFONO) || [],
+            telefonos: client.TelefonoClientes?.map((t) => ({
+                idTelefonoCliente: t.ID_TELEFONOCLIENTE, // Incluimos el ID del número de teléfono
+                numeroTelefono: t.DSC_TELEFONO,          // Incluimos el número de teléfono
+            })) || [],
             foto: client.URL_FOTO,
         }),
 
         // Transformar datos desde el formulario hacia la API
         toBackend: async (formData) => {
+            console.log("toBackend[clientConfig]", formData);
             const base64Image = formData.foto instanceof File
                 ? await convertToBase64(formData.foto)
                 : formData.foto;
@@ -85,11 +90,15 @@ export const clientConfig = {
                 DSC_DIRECCION: formData.direccion,
                 ESTADO: formData.estado,
                 FOTO: base64Image || null,
+                telefonos: formData.telefonos?.map((telefono, index) => ({
+                    idTelefonoCliente: telefono.idTelefonoCliente,
+                    numeroTelefono: telefono.numeroTelefono,
+                })) || [],
             };
 
-            formData.telefonos?.forEach((telefono, index) => {
-                data[`DSC_TELEFONO${index + 1}`] = telefono;
-            });
+            // formData.telefonos?.forEach((telefono, index) => {
+            //     data[`DSC_TELEFONO${index + 1}`] = telefono;
+            // });
 
             return data;
         },

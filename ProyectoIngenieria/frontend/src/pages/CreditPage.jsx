@@ -168,17 +168,6 @@ const CreditPage = () => {
                 <PaymentForm
                 fields={fields}
                 initialData={creditInfo}
-                // onSubmit={async (formData) =>{
-                //     try {
-                //         const response = await onSubmit(modalMode, formData);
-                //         console.log("Respuesta en paymentForm: ", response);
-                //         if(response && response.success){
-                //             await 
-                //         }
-                //     } catch (error) {
-                        
-                //     }
-                // }}
                 onSubmit={onSubmit}
                 onCancel={() => setModalOpen(false)}
             />

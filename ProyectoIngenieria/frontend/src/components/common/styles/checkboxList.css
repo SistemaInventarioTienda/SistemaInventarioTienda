@@ -1,21 +1,57 @@
-
+/* Contenedor de la cuadrícula */
 .grid {
-    display: grid;
-  }
-  
-  .grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  
-  .gap-8 {
-    gap: 2rem; /* 32px de espacio entre elementos */
-  }
-
-
-.checkbox-input {
-    accent-color: rgb(40, 211, 143);
-    margin-right: 10px;
+  display: grid;
 }
 
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 
-  
+.gap-8 {
+  gap: 2rem;
+}
+
+/* Estilo base del checkbox */
+.checkbox-input {
+  accent-color: rgb(40, 211, 143);
+  margin-right: 10px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+/* Estilo del contenedor de cada opción */
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-background);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.checkbox-option:hover {
+  background-color: var(--color-card);
+  box-shadow: 0 0 0 2px rgba(40, 211, 143, 0.2);
+}
+
+/* Estilo cuando el checkbox está seleccionado */
+.checkbox-input:checked+span {
+  color: rgb(40, 211, 143);
+  font-weight: 600;
+}
+
+/* Estilo del label que contiene el checkbox y el texto */
+.checkbox-option label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Texto de la etiqueta */
+.checkbox-label {
+  cursor: pointer;
+}

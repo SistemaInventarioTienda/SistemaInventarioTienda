@@ -26,12 +26,12 @@ export const getAllSuppliers = async (req, res) => {
             order: [[field, sortOrder]],
             include: [
                 {
-                    model: numberSupplier,
-                    attributes: ['DSC_TELEFONO'],
+                    model: numberSupplier, //"ID_TELEFONOCPROVEEDOR",
+                    attributes: ["ID_TELEFONOPROVEEDOR",'DSC_TELEFONO'],
                 },
                 {
-                    model: mailSupplier,
-                    attributes: ['DSC_CORREO'],
+                    model: mailSupplier,//"ID_CORREOPROVEEDOR",
+                    attributes: ["ID_CORREOPROVEEDOR",'DSC_CORREO'],
                 },
                 {
                     model: supplierType,
@@ -62,6 +62,9 @@ export const getAllSuppliers = async (req, res) => {
 
 
 export const createSupplier = async (req, res) => {
+    // console.log("Hola estamos en [createSupplier] y estos son los datos: ", req.body);
+    // console.log("phones: ", req.body.phones);
+    // console.log("emails: ", req.body.emails);
     const { DSC_DIRECCIONEXACTA, DSC_VENTA, DSC_NOMBRE, CTA_BANCARIA, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
 
     try {
@@ -100,14 +103,31 @@ export const createSupplier = async (req, res) => {
             });
         }
 
-        const numberValidation = await validateRegisterPhones(phones);
+        const phoneNumbers = phones.map(phone => phone.DSC_TELEFONO);
+        const emailAddresses = emails.map(email => email.DSC_CORREO);
+
+
+        const validatePhone = await validateEqualsPhonesSupplier(phoneNumbers);
+        if (validatePhone !== true) {
+            return res.status(400).json({
+                message: validatePhone,
+            });
+        }
+        const validateEmail = await validateEqualsEmailsSupplier(emailAddresses);
+        if (validateEmail !== true) {
+            return res.status(400).json({
+                message: validateEmail,
+            });
+        }
+
+        const numberValidation = await validateRegisterPhones(phoneNumbers);
         if (numberValidation !== true) {
             return res.status(400).json({
                 message: numberValidation,
             });
         }
 
-        const emailValidation = await validateRegisterEmails(emails);
+        const emailValidation = await validateRegisterEmails(emailAddresses);
         if (emailValidation !== true) {
             return res.status(400).json({
                 message: emailValidation,
@@ -130,8 +150,8 @@ export const createSupplier = async (req, res) => {
             FEC_CREADOEN: date,
         });
 
-        if (phones && Array.isArray(phones) && phones.length > 0) {
-            const phoneRecords = phones.map(phone => ({
+        if (phones && Array.isArray(phoneNumbers) && phoneNumbers.length > 0) {
+            const phoneRecords = phoneNumbers.map(phone => ({
                 ID_PROVEEDOR: supplier.ID_PROVEEDOR,
                 DSC_TELEFONO: phone,
                 FEC_CREADOEN: date,
@@ -141,8 +161,8 @@ export const createSupplier = async (req, res) => {
             await numberSupplier.bulkCreate(phoneRecords);
         }
 
-        if (emails && Array.isArray(emails) && emails.length > 0) {
-            const emailRecords = emails.map(email => ({
+        if (emails && Array.isArray(emailAddresses) && emailAddresses.length > 0) {
+            const emailRecords = emailAddresses.map(email => ({
                 ID_PROVEEDOR: supplier.ID_PROVEEDOR,
                 DSC_CORREO: email,
                 FEC_CREADOEN: date,
@@ -233,10 +253,16 @@ export const getAllSupplierTypes = async (req, res) => {
 
 
 export const updatedSupplier = async (req, res) => {
-    const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_VENTA, CTA_BANCARIA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO } = req.body;
+    //console.log("req.body [updatedSupplier]", req.body.DSC_DIRECCIONEXACTA);
+    const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_VENTA, CTA_BANCARIA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
 
+    console.log(
+        "Hola estamos en [updateSupplier] y estos son los datos del backend: ",
+        req.body
+      );
     try {
         const date = await getDateCR();
+        const supplier = await Supplier.findOne({where: {IDENTIFICADOR_PROVEEDOR: IDENTIFICADOR_PROVEEDOR}});
 
         const validateFields = validateSupplierDataUpdate(req);
         if (validateFields !== true) {
@@ -259,20 +285,163 @@ export const updatedSupplier = async (req, res) => {
             });
         }
 
+        //const phoneNumbers = phones.map(phone => phone.DSC_TELEFONO);
+        
+
+        let updatedData = {
+            DSC_NOMBRE,
+            ID_TIPOPROVEEDOR,
+            DSC_DIRECCIONEXACTA,
+            DSC_VENTA,
+            CTA_BANCARIA,
+            ESTADO,
+            FEC_MODIFICADOEN: date,
+        };
+
+        const phoneNumbers = phones.map(phone => phone.DSC_TELEFONO);
+        const emailAddresses = emails.map(email => email.DSC_CORREO);
 
 
+        // const validatePhones = await validateEqualsPhonesSupplier(phoneNumbers);
+        // if (validatePhones !== true) {
+        //     return res.status(400).json({
+        //         message: validatePhones,
+        //     });
+        // }
+        // const validateEmail = await validateEqualsEmailsSupplier(emailAddresses);
+        // if (validateEmail !== true) {
+        //     return res.status(400).json({
+        //         message: validateEmail,
+        //     });
+        // }
+
+        // const numberValidation = await validateRegisterPhones(phoneNumbers);
+        // if (numberValidation !== true) {
+        //     return res.status(400).json({
+        //         message: numberValidation,
+        //     });
+        // }
+
+        // const emailValidation = await validateRegisterEmails(emailAddresses);
+        // if (emailValidation !== true) {
+        //     return res.status(400).json({
+        //         message: emailValidation,
+        //     });
+        // }
+
+
+
+        //---------validacion de los telefonos y correos---------
+        const validatePhones = await validatePhonesSupplierUpdate(phoneNumbers, supplier.ID_PROVEEDOR);
+        if (Array.isArray(validatePhones)) {
+            return res.status(400).json({
+                message: validatePhones[0], // Accede al primer mensaje de error
+            });
+        }
+        
+        const validateEmails = await validateEmailsSupplierUpdate(emailAddresses, supplier.ID_PROVEEDOR);
+        if (Array.isArray(validateEmails)) {
+            return res.status(400).json({
+                message: validateEmails[0], // Accede al primer mensaje de error
+            });
+        }
         await Supplier.update(
-            {
-                DSC_NOMBRE,
-                ID_TIPOPROVEEDOR,
-                DSC_DIRECCIONEXACTA,
-                DSC_VENTA,
-                CTA_BANCARIA,
-                ESTADO,
-                FEC_MODIFICADOEN: date,
-            },
-            { where: { IDENTIFICADOR_PROVEEDOR } }
+            updatedData, { where: { IDENTIFICADOR_PROVEEDOR } }
         );
+        //--------------------------------------------------------
+
+        //manejo de los telefonos
+        if ((phones && phones.length > 0) ) { //|| (emails && emails.length > 0)
+            //console.log("Entro al if para modificar los telefonos o los correos");
+
+            const existingPhones = await numberSupplier.findAll({
+                where: {ID_PROVEEDOR: supplier.ID_PROVEEDOR},
+                attributes: ['ID_TELEFONOPROVEEDOR'],
+            });
+
+            const existingPhoneIds = existingPhones.map(phone => phone.ID_TELEFONOPROVEEDOR);
+            console.log("Telefonos Existentes [existingPhones]: ", existingPhoneIds);
+            
+            const phoneIdInRequest = phones
+            .filter(phone => phone.ID_TELEFONOCPROVEEDOR)
+            .map(phone => phone.ID_TELEFONOCPROVEEDOR);
+           
+            const phonesToDelete = existingPhoneIds.filter(id => !phoneIdInRequest.includes(id));
+            if (phonesToDelete.length > 0) {
+                await numberSupplier.destroy({
+                    where: {ID_TELEFONOPROVEEDOR: phonesToDelete}
+                });
+            }
+
+            
+
+            for (const phone of phones) {
+                const { ID_TELEFONOCPROVEEDOR, DSC_TELEFONO } = phone;
+
+                if (ID_TELEFONOCPROVEEDOR) {
+                    await numberSupplier.update(
+                        {DSC_TELEFONO: DSC_TELEFONO},
+                        {where: {ID_TELEFONOPROVEEDOR: ID_TELEFONOCPROVEEDOR}}
+                    );
+                } else {
+                    await numberSupplier.create({
+                        ID_PROVEEDOR: supplier.ID_PROVEEDOR,
+                        DSC_TELEFONO: DSC_TELEFONO,
+                        FEC_CREADOEN: date,
+                        ESTADO: 1,
+                    });
+                }
+            }
+
+        } else {
+            await numberSupplier.destroy({
+                where: {ID_PROVEEDOR: supplier.ID_PROVEEDOR}
+            })
+        }
+
+        if (emails && emails.length > 0) {
+            
+            const existingEmails = await mailSupplier.findAll({
+                where: {ID_PROVEEDOR: supplier.ID_PROVEEDOR},
+                attributes: ['ID_CORREOPROVEEDOR'],
+            });
+        
+            const existingEmailIds = existingEmails.map(email => email.ID_CORREOPROVEEDOR);
+            const emailIdsInRequest = emails.filter(email => email.ID_CORREOPROVEEDOR).map(email => email.ID_CORREOPROVEEDOR);
+
+            const emailsToDelete = existingEmailIds.filter(id => !emailIdsInRequest.includes(id));
+            if (emailsToDelete.length > 0) {
+                await mailSupplier.destroy({
+                    where: {ID_CORREOPROVEEDOR: emailsToDelete}
+                });
+            }
+            
+            //Actualizar o crear correos.
+            for (const email of emails) {
+                const { ID_CORREOPROVEEDOR, DSC_CORREO } = email;
+
+                console.log("Entro al for para modificar el correo/nId del correo: ", ID_CORREOPROVEEDOR);
+                if (ID_CORREOPROVEEDOR) {
+                    await mailSupplier.update(
+                        {DSC_CORREO: DSC_CORREO},
+                        {where: {ID_CORREOPROVEEDOR: ID_CORREOPROVEEDOR}}
+                    );
+                } else {
+                    console.log("Entro al else para crear el correo");
+                    await mailSupplier.create({
+                        ID_PROVEEDOR: supplier.ID_PROVEEDOR,
+                        DSC_CORREO: DSC_CORREO,
+                        FEC_CREADOEN: date,
+                        ESTADO: 1,
+                    });
+                }
+                
+            }
+        } else {
+            await mailSupplier.destroy({
+                where: {ID_PROVEEDOR: supplier.ID_PROVEEDOR}
+            })
+        }
 
         res.status(200).json({
             message: 'Proveedor actualizado correctamente'
@@ -386,3 +555,46 @@ export const searchSupplier = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
+async function validatePhonesSupplierUpdate(phones, supplierId) {
+    const existingPhones = await numberSupplier.findAll({
+        where: {
+            DSC_TELEFONO: { [Op.in]: phones },
+            ID_PROVEEDOR: { [Op.ne]: supplierId } 
+        },
+        attributes: ['DSC_TELEFONO']
+    });
+
+    if (existingPhones.length > 0) {
+        const existingNumbers = existingPhones.map(phone => phone.DSC_TELEFONO);
+        return [`Hay números de teléfono en uso por otro proveedor: ${existingNumbers.join(', ')}.`];
+    }
+
+   return false;
+}
+
+async function validateEmailsSupplierUpdate(emails, supplierId) {
+    try {
+        // Consulta los correos electrónicos existentes en la base de datos
+        const existingEmails = await mailSupplier.findAll({
+            where: { 
+                DSC_CORREO: { [Op.in]: emails },
+                ID_PROVEEDOR: { [Op.ne]: supplierId } // Excluir el proveedor actual
+            },
+            attributes: ['DSC_CORREO'] // Solo seleccionamos el campo DSC_CORREO
+        });
+
+        // Si hay correos electrónicos en uso por otros proveedores, devolver un mensaje de error
+        if (existingEmails.length > 0) {
+            const duplicateEmails = existingEmails.map(email => email.DSC_CORREO); // Extraer los correos
+            return [`Hay correos en uso por otro proveedor: ${duplicateEmails.join(', ')}.`];
+        }
+
+        // Si no hay conflictos, devolver false
+        return false;
+    } catch (error) {
+        console.error("Error en validateEmailsSupplierUpdate:", error);
+        throw error; // Propagar el error para manejarlo en el nivel superior
+    }
+}

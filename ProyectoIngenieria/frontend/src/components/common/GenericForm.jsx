@@ -228,7 +228,8 @@ function GenericForm({
                 ))}
 
             {/* Renderizar ContactManager para teléfonos */}
-            {(entityName === "Cliente" || entityName === "Proveedor") && (
+            {/* || entityName === "Proveedor" */}
+            {(entityName === "Cliente" || entityName === "Proveedor" ) && (
                 <div className="full-width">
                     <ContactManager
                         contacts={phones}
