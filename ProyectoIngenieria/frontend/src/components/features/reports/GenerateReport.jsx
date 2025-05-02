@@ -19,9 +19,6 @@ function GenerateReport() {
         handleStartDateChange,
         handleEndDateChange,
         handleSubmit,
-        // Utilidades
-        getPreviewColumns,
-        getPreviewData,
     } = useGenerateReport()
 
     return (
@@ -62,6 +59,7 @@ function GenerateReport() {
                             value={startDate}
                             onChange={handleStartDateChange}
                             allowPastDates={true}
+                            allowFutureDates={false}
                             className="report-filter-input"
                             placeholder="Selecciona fecha inicio"
                             dateFormat="Y-m-d"

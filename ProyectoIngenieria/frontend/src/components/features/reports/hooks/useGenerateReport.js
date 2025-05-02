@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { generateReport } from "../../../../api/report";
 import { validateReport } from "../../../../schemas/validations/validateReport";
-import { getPreviewColumns, getPreviewData } from "../../../../config/entities/reportConfig";
+import { openReportViewerInNewWindow } from "../utils/openReportViewer";
 
 // Opciones para los selects
 const reportTypeOptions = [
@@ -26,6 +26,8 @@ export function useGenerateReport() {
     const [previewData, setPreviewData] = useState([]);
     const [showNoDataMessage, setShowNoDataMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [reportURL, setReportURL] = useState(null);
+
     // Función para actualizar la vista previa
     const updatePreview = useCallback(() => {
         if (!reportType) return;
@@ -99,19 +101,10 @@ export function useGenerateReport() {
             const response = await generateReport(params);
 
             if (response.downloadLink) {
-                if (format === 'pdf') {
-                    window.open(response.downloadLink, '_blank');
-                } else {
-                    const link = document.createElement('a');
-                    link.href = response.downloadLink;
-                    link.setAttribute('download', 'reporte.' + format);
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
-                }
-
+                setReportURL(response.downloadLink);
                 toast.success("Reporte generado correctamente.");
-                resetForm();
+                openReportViewerInNewWindow(format, response.downloadLink);
+                setTimeout(() => resetForm(), 500);
             } else {
                 toast.error("No se recibió un enlace de descarga.");
             }
@@ -141,7 +134,5 @@ export function useGenerateReport() {
 
         handleSubmit,
 
-        getPreviewColumns,
-        getPreviewData,
     };
 }

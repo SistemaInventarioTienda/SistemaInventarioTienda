@@ -4,6 +4,7 @@ import { useAuth } from "../context/authContext"
 import PageLayout from "../components/layout/PageLayout"
 import { Tab, Tabs, TabList, TabPanel } from "../components/common"
 import { GenerateReport, ProgramReport } from "../components/features/reports/"
+import { ReportsHistoryPage, ScheduledHistoryReportsPage } from "../components/features/reports/"
 import "./styles/ReportsPage.css"
 
 function ReportsPage() {
@@ -32,8 +33,8 @@ function ReportsPage() {
                     <TabList className="reports-tab-list">
                         <Tab value="generate">Generar Reporte</Tab>
                         <Tab value="schedule">Programar Reporte</Tab>
-                        <Tab value="history">Historial</Tab>
-                        <Tab value="scheduled">Programados</Tab>
+                        <Tab value="history">Historial de Reportes</Tab>
+                        <Tab value="scheduled">Historial de Reportes Programados</Tab>
                     </TabList>
 
                     <TabPanel value="generate" active={activeTab === "generate"}>
@@ -43,12 +44,10 @@ function ReportsPage() {
                         <ProgramReport />
                     </TabPanel>
                     <TabPanel value="history" active={activeTab === "history"}>
-                        {/* Contenido de Historial */}
-                        <p>Listado de reportes generados.</p>
+                        <ReportsHistoryPage />
                     </TabPanel>
                     <TabPanel value="scheduled" active={activeTab === "scheduled"}>
-                        {/* Contenido de Programados */}
-                        <p>Listado de reportes programados.</p>
+                        <ScheduledHistoryReportsPage />
                     </TabPanel>
                 </Tabs>
             </div>
