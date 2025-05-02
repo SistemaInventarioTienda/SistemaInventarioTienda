@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { QueryTypes } from 'sequelize';
+import XLSX from 'xlsx';
 
 // See page sizes
 // https://pdfkit.org/docs/paper_sizes.html
@@ -41,10 +42,9 @@ export const createReport = async (req, res) => {
     }
 
     const currentDate = await getDateCR();
+    const store = await Config.findAll();
     if (EXTENSION === 'pdf') {
         try {
-            const store = await Config.findAll();
-
             const outputPDF = await switchPDF(store, currentDate, TYPE, MIN_FEC, MAX_FEC)
             return res.status(outputPDF.status).json(outputPDF.data);
         } catch (error) {
@@ -52,7 +52,13 @@ export const createReport = async (req, res) => {
             return res.status(500).json({ message: "Error interno al generar el PDF." });
         }
     } else if (EXTENSION === 'xlsx') {
-        return res.status(501).json({ message: "La generación de archivos Excel aún no está implementada." });
+        try {
+            const outputExcel = await switchEXCEL(store, currentDate, TYPE, MIN_FEC, MAX_FEC);
+            return res.status(outputExcel.status).json(outputExcel.data);
+        } catch (error) {
+            console.error("Error al generar el PDF:", error);
+            return res.status(500).json({ message: "Error interno al generar el PDF." });
+        }
     }
 
     return res.status(400).json({ message: "El formato a generar no es valido. Debe ser pdf o excel" })
@@ -64,29 +70,35 @@ export const downloadReport = async (req, res) => {
         return res.status(400).json({ error: "Nombre del archivo es requerido" });
     }
 
-    const filePath = path.join(pdfDir, fileName);
+    let filePath;
+    if (fileName.endsWith('.pdf')) {
+        filePath = path.join(pdfDir, fileName);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"');
+    } else if (fileName.endsWith('.xlsx')) {
+        filePath = path.join(excelDir, fileName);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"'); // Intentando visualización inline
+    } else {
+        return res.status(400).json({ error: "Formato de archivo no soportado." });
+    }
+
     if (!fs.existsSync(filePath)) {
         return res.status(404).json({ error: "Archivo no encontrado." });
     }
 
     try {
-        // Set the headers to indicate that the response is a PDF for viewing
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"'); // 'inline' force visualization
-
-        // Create a read stream of the file and send it directly as a response
         const fileStream = fs.createReadStream(filePath);
         fileStream.pipe(res);
 
-        // Handling file read errors
         fileStream.on('error', (err) => {
-            console.error('Error al leer el archivo PDF:', err);
-            res.status(500).json({ error: 'Error al leer el archivo PDF.' });
+            console.error('Error al leer el archivo:', err);
+            res.status(500).json({ error: 'Error al leer el archivo.' });
         });
 
     } catch (error) {
-        console.error('Error inesperado al visualizar el PDF:', error);
-        res.status(500).json({ error: 'Error inesperado al visualizar el PDF.' });
+        console.error('Error inesperado al descargar el archivo:', error);
+        res.status(500).json({ error: 'Error inesperado al descargar el archivo.' });
     }
 }
 
@@ -416,7 +428,7 @@ async function createShoppingPDF(currentDate, storeData, shoppingData, MIN_FEC, 
                 status: 200,
                 data: {
                     message: "Informe de compras generado exitosamente",
-                    downloadLink: `http://localhost:4000/api/reports/download_pdf?file=Compras/${fileName}`
+                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`
                 }
             });
         });
@@ -554,7 +566,7 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
                 status: 200,
                 data: {
                     message: "Informe de ventas por cliente generado exitosamente",
-                    downloadLink: `http://localhost:4000/api/reports/download_pdf?file=Ventas/${fileName}`
+                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`
                 }
             });
         });
@@ -565,4 +577,130 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
         });
     });
 
+}
+
+async function createShoppingEXCEL(currentDate, storeData, shoppingData, MIN_FEC, MAX_FEC) {
+    return new Promise((resolve, reject) => {
+        try {
+            const fileName = `Compras-${formatDateTime(currentDate)}.xlsx`;
+            const filePath = path.join(excelDir, 'Compras', fileName);
+            if (!fs.existsSync(path.join(excelDir, 'Compras'))) {
+                fs.mkdirSync(path.join(excelDir, 'Compras'), { recursive: true });
+            }
+
+            const comprasArray = Object.values(shoppingData).reduce((acc, compra) => {
+                const productos = compra.PRODUCTOS.split(',').map(p => p.trim());
+                const cantidades = compra.CANTIDADES.split(',').map(c => c.trim());
+
+                productos.forEach((producto, index) => {
+                    acc.push({
+                        Proveedor: compra.PROVEEDOR,
+                        'Teléfono Proveedor': compra.TEL_PROVEEDOR,
+                        'Fecha Compra': compra.FEC_COMPRA,
+                        Producto: producto,
+                        Cantidad: cantidades[index] || '',
+                        'Monto Total Compra': compra.MON_TOTAL
+                    });
+                });
+                return acc;
+            }, []);
+
+            const worksheet = XLSX.utils.json_to_sheet(comprasArray);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Compras');
+            XLSX.writeFile(workbook, filePath);
+
+            resolve({
+                status: 200,
+                data: {
+                    message: "Informe de compras generado exitosamente en Excel",
+                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`
+                }
+            });
+
+        } catch (error) {
+            console.error("Error al generar el informe de compras en Excel:", error);
+            reject({ status: 500, data: { error: "Error al generar el informe de compras en Excel." } });
+        }
+    });
+}
+
+async function createSaleEXCEL(currentDate, storeData, salesData, MIN_FEC, MAX_FEC) {
+    return new Promise((resolve, reject) => {
+        try {
+            const fileName = `Ventas-${formatDateTime(currentDate)}.xlsx`;
+            const filePath = path.join(excelDir, 'Ventas', fileName);
+            if (!fs.existsSync(path.join(excelDir, 'Ventas'))) {
+                fs.mkdirSync(path.join(excelDir, 'Ventas'), { recursive: true });
+            }
+
+            const ventasArray = Object.values(salesData).reduce((acc, venta) => {
+                const productos = venta.PRODUCTOS ? venta.PRODUCTOS.split(',').map(p => p.trim()) : [];
+                const cantidades = venta.CANTIDADES ? venta.CANTIDADES.split(',').map(c => c.trim()) : [];
+
+                productos.forEach((producto, index) => {
+                    acc.push({
+                        Cliente: venta.CLIENTE || 'Cliente Anónimo',
+                        'Teléfono Cliente': venta.TEL_CLIENTE || 'N/A',
+                        'Fecha Venta': new Date(venta.FEC_VENTA).toLocaleDateString(),
+                        Producto: producto,
+                        Cantidad: cantidades[index] || '',
+                        'Monto Subtotal': venta.MONT_SUBTOTAL,
+                        Descuento: venta.DESCUENTO || 0,
+                        'Impuesto (%)': venta.PORCENT_IMPUESTO,
+                        'Método de Pago': venta.METODO_PAGO
+                    });
+                });
+                return acc;
+            }, []);
+
+            const worksheet = XLSX.utils.json_to_sheet(ventasArray);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Ventas');
+            XLSX.writeFile(workbook, filePath);
+
+            resolve({
+                status: 200,
+                data: {
+                    message: "Informe de ventas generado exitosamente en Excel",
+                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`
+                }
+            });
+
+        } catch (error) {
+            console.error("Error al generar el informe de ventas en Excel:", error);
+            reject({ status: 500, data: { error: "Error al generar el informe de ventas en Excel." } });
+        }
+    });
+}
+
+async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
+    switch (type) {
+        case 'ComprasXProveedor':
+            const [shoppingBySupplier] = await db.query(
+                'CALL getShoppingsReport(:MIN_FEC, :MAX_FEC)',
+                {
+                    replacements: {
+                        MIN_FEC: MIN_FEC,
+                        MAX_FEC: MAX_FEC
+                    },
+                    type: QueryTypes.SELECT
+                }
+            );
+            return await createShoppingEXCEL(currentDate, store[0], shoppingBySupplier, MIN_FEC, MAX_FEC);
+        case 'VentasXCliente':
+            const [salesByClient] = await db.query(
+                'CALL getSaleReport(:MIN_FEC, :MAX_FEC)',
+                {
+                    replacements: {
+                        MIN_FEC: MIN_FEC,
+                        MAX_FEC: MAX_FEC
+                    },
+                    type: QueryTypes.SELECT
+                }
+            );
+            return await createSaleEXCEL(currentDate, store[0], salesByClient, MIN_FEC, MAX_FEC);
+        default:
+            return ({ status: 400, data: { error: "Informe no valido para generar en Excel." } });
+    }
 }

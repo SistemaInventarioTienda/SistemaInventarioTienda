@@ -7,7 +7,7 @@ import { auth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.get("/download_pdf", downloadReport)
+router.get("/download_report", downloadReport);
 router.post("/reports", auth, createReport);
 
 export default router;
