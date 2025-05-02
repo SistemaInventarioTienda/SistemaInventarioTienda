@@ -1681,7 +1681,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllDataFromGrpahics` (
     IN `MIN_FEC` DATE,
     IN `MAX_FEC` DATE,
     IN `LIMIT_PRODUCTS` INT,
-    IN CATEGORY VARCHAR(255)
+    IN CATEGORY VARCHAR(255),
+    IN FEC_CURRENT DATE
 )
 BEGIN
     -- Consulta 1: Productos más vendidos
