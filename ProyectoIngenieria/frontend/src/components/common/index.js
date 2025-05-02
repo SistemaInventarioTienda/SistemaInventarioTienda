@@ -21,3 +21,4 @@ export { default as InputButton } from "./InputButton";
 export { default as InputFile } from "./InputFile";
 export { default as NumberInput } from "./NumberInput";
 export { default as DatePicker } from './DatePicker';
+export { default as CheckboxList } from './CheckboxList';

@@ -172,10 +172,6 @@ export default function ProductComparisonChart() {
               margin={{ top: 20, right: 30, bottom: 50, left: 40 }}
               slotProps={{
                 legend: {
-                  labelStyle: {
-                    fontSize: 14,
-                    fill: "#fff",
-                  },
                   direction: "row",
                 },
               }}

@@ -13,7 +13,8 @@ import {
   HomePage, UserPage, SupplierPage, LoginPage,
   SettingsPage, ProductPage, SalePage,
   AddSalePage, AddShoppingPage, TransactionPage,
-  ShoppingPage, CreditSalePage, ProfilePage
+  ShoppingPage, CreditSalePage, ProfilePage,
+  ReportsPage
 } from './pages';
 
 function App() {
@@ -103,6 +104,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="shopping/history" element={<ShoppingPage />} />
             <Route path="shopping/new" element={<AddShoppingPage />} />
             <Route path="transaction" element={<TransactionPage />} />
+            <Route path="reports" element={<ReportsPage />} />
           </Routes>
         </main>
       </div>

@@ -1,0 +1,418 @@
+import { getDateCR } from "../libs/date.js";
+import Config from "../models/config.model.js";
+import db from '../db.js';
+import PDFDocument from 'pdfkit';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { QueryTypes } from 'sequelize';
+
+// See page sizes
+// https://pdfkit.org/docs/paper_sizes.html
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const pdfDir = path.join(__dirname, '../uploads/pdf');
+const excelDir = path.join(__dirname, '../uploads/excel');
+// Create routes if they do not exist
+if (!fs.existsSync(pdfDir)) {
+    fs.mkdirSync(pdfDir, { recursive: true });
+}
+if (!fs.existsSync(excelDir)) {
+    fs.mkdirSync(excelDir, { recursive: true });
+}
+
+export const createReport = async (req, res) => {
+
+    const { EXTENSION = '', TYPE = '', MIN_FEC = '', MAX_FEC = '' } = req.body;
+
+    // validate extension {PDF / EXCEL}
+    if (EXTENSION === '' || (EXTENSION !== 'pdf' && EXTENSION !== 'xlsx'))
+        return res.status(400).json({ message: "El formato a generar no es valido. Debe ser pdf o excel" })
+
+    // validate dates
+    const min_f = validateDate(MIN_FEC);
+    const max_f = validateDate(MAX_FEC);
+    if (!min_f.isValid || !max_f.isValid) {
+        const message = "La fecha de inicio " + min_f.message + " y la fecha de corte " + max_f.message;
+        return res.status(400).json({ message: message })
+    }
+
+    const currentDate = await getDateCR();
+    if (EXTENSION === 'pdf') {
+        try {
+            const store = await Config.findAll();
+            
+            const outputPDF = await switchPDF(store, currentDate, TYPE, MIN_FEC, MAX_FEC)
+            return res.status(outputPDF.status).json(outputPDF.data);
+        } catch (error) {
+            console.error("Error al generar el PDF:", error);
+            return res.status(500).json({ message: "Error interno al generar el PDF." });
+        }
+    } else if (EXTENSION === 'xlsx') {
+        return res.status(501).json({ message: "La generación de archivos Excel aún no está implementada." });
+    }
+
+    return res.status(400).json({ message: "El formato a generar no es valido. Debe ser pdf o excel" })
+}
+
+export const downloadReport = async (req, res) => {
+    const fileName = req.query.file;
+    if (!fileName) {
+        return res.status(400).json({ error: "Nombre del archivo es requerido" });
+    }
+
+    const filePath = path.join(pdfDir, fileName);
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "Archivo no encontrado." });
+    }
+
+    try {
+        // Set the headers to indicate that the response is a PDF for viewing
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"'); // 'inline' force visualization
+
+        // Create a read stream of the file and send it directly as a response
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+
+        // Handling file read errors
+        fileStream.on('error', (err) => {
+            console.error('Error al leer el archivo PDF:', err);
+            res.status(500).json({ error: 'Error al leer el archivo PDF.' });
+        });
+
+    } catch (error) {
+        console.error('Error inesperado al visualizar el PDF:', error);
+        res.status(500).json({ error: 'Error inesperado al visualizar el PDF.' });
+    }
+}
+
+
+function validateDate(dateString) {
+    const validFormat = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
+    if (!validFormat) {
+        return { isValid: false, message: 'tiene un formato inválido. Debe ser AAAA-MM-DD.' };
+    }
+
+    const dateObject = new Date(dateString);
+    if (isNaN(dateObject.getTime())) {
+        return { isValid: false, message: 'proporcionada no es válida.' };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    dateObject.setHours(0, 0, 0, 0);
+
+    if (dateObject > today) {
+        return { isValid: false, message: 'no puede ser futura.' };
+    }
+
+    return { isValid: true, message: 'es válida.' };
+
+}
+
+// Function to create a PDF SALE
+async function createReceiptPDF(currentDate, storeData, saleData) {
+    return new Promise((resolve, reject) => {
+        const title = "***Recibo***";
+
+        const pageWidthPoints = 227;
+        const pageHeightPoints = 623;
+        const margin = 10;
+        let currentY = margin;
+
+
+        const doc = new PDFDocument({
+            size: [pageWidthPoints, pageHeightPoints]
+        });
+        const fileName = `Recibo-${currentDate}.pdf`;
+        const filePath = path.join(pdfDir, 'Recibos', fileName);
+        if (!fs.existsSync(path.join(pdfDir, 'Recibos'))) {
+            fs.mkdirSync(path.join(pdfDir, 'Recibos'), { recursive: true });
+        }
+        const writeStream = fs.createWriteStream(filePath);
+
+        doc.pipe(writeStream);
+
+        // Store Information (Header)
+        doc.fontSize(10).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 12; // Space after name
+
+        doc.fontSize(8).text(`Teléfono: ${storeData.NUM_TELEFONO}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 10; // Space after phone
+
+        doc.fontSize(8).text(storeData.DSC_CORREO, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 10; // Space after email
+
+        doc.fontSize(8).text(storeData.DSC_DIRECCION, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 10; // Space after direction
+
+        doc.fontSize(9).text(storeData.DSC_ESLOGAN, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin, italic: true });
+        currentY += 20; // Space after slogan
+
+
+        // Title
+        doc.fontSize(12).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 15; // Space after title
+
+
+
+        // Sale Details Table Header
+        currentY += 5;
+        doc.fontSize(7).text('Producto', margin, currentY, { width: 80 });
+        doc.text('Cant.', margin + 85, currentY, { width: 30, align: 'right' });
+        doc.text('Precio U.', margin + 120, currentY, { width: 45, align: 'right' });
+        doc.text('Total', pageWidthPoints - margin - 40, currentY, { width: 40, align: 'right' });
+        currentY += 8;
+        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, currentY).lineTo(pageWidthPoints - margin, currentY).stroke();
+        currentY += 3;
+
+        // Sale Details Table Rows
+        saleData.details.forEach(item => {
+            const totalItem = item.CANTIDAD * item.MONT_UNITARIO;
+            doc.fontSize(7).text(item.Product.DSC_NOMBRE, margin, currentY, { width: 80 });
+            doc.text(item.CANTIDAD.toString(), margin + 85, currentY, { width: 30, align: 'right' });
+            doc.text(item.MONT_UNITARIO.toFixed(2), margin + 120, currentY, { width: 45, align: 'right' });
+            doc.text(totalItem.toFixed(2), pageWidthPoints - margin - 40, currentY, { width: 40, align: 'right' });
+            currentY += 8;
+            if (currentY > pageHeightPoints - 50) {
+                doc.addPage({ size: [pageWidthPoints, pageHeightPoints] });
+                currentY = margin + 10;
+                // Optionally add header again on new page
+            }
+        });
+
+        // Separator before totals
+        currentY += 5;
+        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, currentY).lineTo(pageWidthPoints - margin, currentY).stroke();
+        currentY += 5;
+
+        // Totals
+        const subTotal = saleData.MONT_SUBTOTAL;
+        const discount = (subTotal * ((saleData.PORCENT_DESCUENTO / subTotal) * 100)) / 100;
+        const tax = (subTotal - discount) * (saleData.PORCENT_IMPUESTO / 100);
+        console.log(subTotal, discount, tax);
+
+        doc.fontSize(8).text('Subtotal:', margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
+        doc.text(subTotal.toFixed(2), pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
+        currentY += 8;
+
+        doc.fontSize(8).text(`Impuesto (${saleData.PORCENT_IMPUESTO}%):`, margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
+        doc.text(tax.toFixed(2), pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
+        currentY += 8;
+
+        doc.fontSize(8).text(`Descuento (${(saleData.PORCENT_DESCUENTO / saleData.MONT_SUBTOTAL) * 100}%):`, margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
+        doc.text(`-${discount.toFixed(2)}`, pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
+        currentY += 8;
+
+        doc.fontSize(9).font('Helvetica-Bold').text('Total: ', margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
+        doc.text((subTotal - discount + tax).toFixed(2), pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
+        doc.font('Helvetica');
+        currentY += 12;
+
+        // Customer and Payment Information
+        doc.fontSize(8).text(`Cliente: ${saleData.Client?.DSC_NOMBRE || "Anónimo"}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+        currentY += 8;
+        doc.fontSize(8).text(`Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(saleData.FEC_VENTA).toLocaleTimeString()}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+        currentY += 8;
+        doc.fontSize(8).text(`Método de Pago: ${saleData.METODO_PAGO}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+        currentY += 8;
+        if (saleData.DSC_VENTA) {
+            doc.fontSize(8).text(`Nota: ${saleData.DSC_VENTA}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+            currentY += 8;
+        }
+        if (saleData.ESTADO_CREDITO === 1) {
+            doc.fontSize(8).text('Estado: Cancelado', margin, currentY, { width: pageWidthPoints - 2 * margin });
+            currentY += 8;
+        } else {
+            doc.fontSize(8).text('Estado: Pendiente', margin, currentY, { width: pageWidthPoints - 2 * margin });
+            currentY += 8;
+        }
+
+        // Footer (Optional)
+        currentY += 15;
+        doc.fontSize(6).text('Gracias por su compra!', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+
+        doc.end();
+
+        writeStream.on("finish", () => {
+            resolve({
+                status: 200,
+                data: {
+                    message: "PDF generado exitosamente",
+                    downloadLink: `http://localhost:4000/api/reports/download_pdf?file=Recibo/${fileName}`
+                }
+            });
+        });
+
+        writeStream.on("error", (error) => {
+            console.error("Error en writeStream:", error);
+            reject({ status: 500, data: { error: "Error al generar el PDF." } });
+        });
+    });
+}
+
+function formatDateTime(fechaHora) {
+    return fechaHora.replace(/[:\s]/g, '-');
+}
+
+async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
+    switch (type) {
+        case 'ComprasXProveedor':
+            const [results] = await db.query(
+                'CALL getShoppingsReport(:MIN_FEC, :MAX_FEC)',
+                {
+                    replacements: {
+                        MIN_FEC: MIN_FEC,
+                        MAX_FEC: MAX_FEC
+                    },
+                    type: QueryTypes.SELECT
+                });
+            return await createShoppingPDF(currentDate, store[0], results, MIN_FEC, MAX_FEC);
+        default: 
+            return ({ status: 400, data: { error: "Informe no valido para generar." } });
+    }
+}
+
+async function createShoppingPDF(currentDate, storeData, shoppingData, MIN_FEC, MAX_FEC) {
+    return new Promise((resolve, reject) => {
+        const title = "Informe de Compras por Proveedor";
+        const pageWidthPoints = 595.28;
+        const pageHeightPoints = 841.89;
+        const margin = 20;
+        let currentY = margin + 20;
+        let totalGastadoPeriodo = 0;
+
+        const doc = new PDFDocument({
+            size: 'A4'
+        });
+        const fileName = `Compras-${formatDateTime(currentDate)}.pdf`;
+        const filePath = path.join(pdfDir, 'Compras', fileName);
+        if (!fs.existsSync(path.join(pdfDir, 'Compras'))) {
+            fs.mkdirSync(path.join(pdfDir, 'Compras'), { recursive: true });
+        }
+        const writeStream = fs.createWriteStream(filePath);
+
+        doc.pipe(writeStream);
+
+        // Encabezado del informe
+        doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 15;
+        doc.fontSize(10).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 15;
+        doc.fontSize(8).text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 12;
+        doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 15; // Espacio después de la fecha del reporte
+
+        // Convertir el objeto shoppingData a un array
+        const comprasArray = Object.values(shoppingData);
+
+        // Agrupar compras por proveedor
+        const comprasPorProveedor = comprasArray.reduce((acc, compra) => {
+            const proveedor = compra.PROVEEDOR;
+            if (!acc[proveedor]) {
+                acc[proveedor] = {
+                    nombre: proveedor,
+                    telefono: compra.TEL_PROVEEDOR,
+                    compras: []
+                };
+            }
+            acc[proveedor].compras.push({
+                fecha: compra.FEC_COMPRA,
+                total: compra.MON_TOTAL,
+                productos: compra.PRODUCTOS.split(',').map(p => p.trim()),
+                cantidades: compra.CANTIDADES.split(',').map(c => c.trim())
+            });
+            return acc;
+        }, {});
+
+        // Tabla de compras por proveedor
+        const tableTop = currentY;
+        let rowY = tableTop;
+        const proveedorX = margin;
+        const telefonoX = proveedorX + 150;
+        const fechaX = telefonoX + 150;
+        const productoX = margin + 10;
+        const cantidadX = productoX + 150;
+        const montoX = pageWidthPoints - margin - 170;
+
+        // Cabecera de la tabla
+        doc.fontSize(9).font('Helvetica-Bold')
+            .text('Proveedor', proveedorX, rowY)
+            .text('Teléfono', telefonoX, rowY)
+            .text('Fecha Compra', fechaX, rowY)
+            .text('Monto Total', montoX - 100, rowY, { align: 'right' });
+        rowY += 12;
+        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, rowY).lineTo(pageWidthPoints - margin, rowY).stroke();
+        rowY += 5;
+        doc.font('Helvetica');
+
+        // Filas de la tabla
+        for (const proveedor in comprasPorProveedor) {
+            const proveedorData = comprasPorProveedor[proveedor];
+            doc.fontSize(9).font('Helvetica-Bold').text(proveedorData.nombre, proveedorX, rowY);
+            doc.text(proveedorData.telefono, telefonoX, rowY);
+            rowY += 10;
+            doc.font('Helvetica');
+
+            proveedorData.compras.forEach(compra => {
+                doc.fontSize(8)
+                    .text(compra.fecha, fechaX, rowY);
+
+                const compraStartY = rowY; 
+                let lastProductY = rowY; 
+
+                compra.productos.forEach((producto, index) => {
+                    doc.fontSize(8)
+                        .text(`- ${producto}`, productoX, rowY);
+                    if (compra.cantidades[index]) {
+                        doc.text(`(${compra.cantidades[index]})`, cantidadX, rowY);
+                    }
+                    lastProductY = rowY;
+                    rowY += 8;
+                });
+
+                // Dibujar el monto total después del último producto
+                doc.fontSize(8).text(compra.total.toFixed(2), montoX, lastProductY, { align: 'right' });
+                totalGastadoPeriodo += compra.total;
+
+                const lineY = rowY + 2;
+                doc.strokeColor('#ccc').lineWidth(0.5).lineJoin('miter').dash(5, { space: 5 }).moveTo(margin, lineY).lineTo(pageWidthPoints - margin, lineY).stroke();
+                doc.undash();
+                rowY += 8; 
+            });
+            doc.moveDown();
+        }
+
+        // Mostrar el monto total gastado en el periodo
+        currentY = rowY + 15;
+        doc.fontSize(10).font('Helvetica-Bold').text(`Monto total del periodo: ${totalGastadoPeriodo.toFixed(2)}`, margin, currentY, { align: 'right' });
+        doc.font('Helvetica');
+
+        // Línea final del documento
+        currentY += 15;
+        doc.fontSize(8).text('***Ultima linea***', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+
+        doc.end();
+
+        writeStream.on("finish", () => {
+            resolve({
+                status: 200,
+                data: {
+                    message: "Informe de compras generado exitosamente",
+                    downloadLink: `http://localhost:4000/api/reports/download_pdf?file=Compras/${fileName}`
+                }
+            });
+        });
+
+        writeStream.on("error", (error) => {
+            console.error("Error al generar el informe de compras:", error);
+            reject({ status: 500, data: { error: "Error al generar el informe de compras." } });
+        });
+    });
+}
