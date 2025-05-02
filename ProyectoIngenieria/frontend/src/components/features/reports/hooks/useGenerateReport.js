@@ -8,15 +8,13 @@ import { getPreviewColumns, getPreviewData } from "../../../../config/entities/r
 const reportTypeOptions = [
     { value: "", label: "Seleccionar tipo de reporte" },
     { value: "ComprasXProveedor", label: "Compras por proveedor" },
-    // { value: "clients", label: "Clientes" },
-    // { value: "suppliers", label: "Proveedores" },
-    // { value: "products", label: "Productos" }
+    { value: "VentasXCliente", label: "Ventas por cliente" }
 ];
 
 const formatOptions = [
     { value: "", label: "Seleccionar formato" },
     { value: "pdf", label: "PDF" },
-    { value: "excel", label: "Excel" }
+    { value: "xlsx", label: "Excel" }
 ];
 
 
@@ -77,7 +75,7 @@ export function useGenerateReport() {
         setPreviewData([]);
         setShowNoDataMessage(false);
     };
-    
+
 
     // Función submit para generar el reporte
     const handleSubmit = async () => {
@@ -101,7 +99,17 @@ export function useGenerateReport() {
             const response = await generateReport(params);
 
             if (response.downloadLink) {
-                window.open(response.downloadLink, '_blank');
+                if (format === 'pdf') {
+                    window.open(response.downloadLink, '_blank');
+                } else {
+                    const link = document.createElement('a');
+                    link.href = response.downloadLink;
+                    link.setAttribute('download', 'reporte.' + format);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                }
+
                 toast.success("Reporte generado correctamente.");
                 resetForm();
             } else {
