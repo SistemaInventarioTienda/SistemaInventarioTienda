@@ -100,7 +100,7 @@ export const EntityPage = forwardRef(({
     };
 
     console.log("Datos FILTRADOS: ",filteredData);
-    //console.log("TransformData [EntityPage]", transformData);
+    console.log("TransformData [EntityPage]", transformData);
     
     const tableActions = Object.entries(actions)
         .filter(([actionKey, isEnabled]) => isEnabled)
