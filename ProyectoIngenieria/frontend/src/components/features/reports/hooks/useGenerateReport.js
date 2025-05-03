@@ -2,21 +2,19 @@ import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { generateReport } from "../../../../api/report";
 import { validateReport } from "../../../../schemas/validations/validateReport";
-import { getPreviewColumns, getPreviewData } from "../../../../config/entities/reportConfig";
+import { openReportViewerInNewWindow } from "../utils/openReportViewer";
 
 // Opciones para los selects
 const reportTypeOptions = [
     { value: "", label: "Seleccionar tipo de reporte" },
     { value: "ComprasXProveedor", label: "Compras por proveedor" },
-    // { value: "clients", label: "Clientes" },
-    // { value: "suppliers", label: "Proveedores" },
-    // { value: "products", label: "Productos" }
+    { value: "VentasXCliente", label: "Ventas por cliente" }
 ];
 
 const formatOptions = [
     { value: "", label: "Seleccionar formato" },
     { value: "pdf", label: "PDF" },
-    { value: "excel", label: "Excel" }
+    { value: "xlsx", label: "Excel" }
 ];
 
 
@@ -28,6 +26,8 @@ export function useGenerateReport() {
     const [previewData, setPreviewData] = useState([]);
     const [showNoDataMessage, setShowNoDataMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [reportURL, setReportURL] = useState(null);
+
     // Función para actualizar la vista previa
     const updatePreview = useCallback(() => {
         if (!reportType) return;
@@ -77,7 +77,7 @@ export function useGenerateReport() {
         setPreviewData([]);
         setShowNoDataMessage(false);
     };
-    
+
 
     // Función submit para generar el reporte
     const handleSubmit = async () => {
@@ -101,9 +101,10 @@ export function useGenerateReport() {
             const response = await generateReport(params);
 
             if (response.downloadLink) {
-                window.open(response.downloadLink, '_blank');
+                setReportURL(response.downloadLink);
                 toast.success("Reporte generado correctamente.");
-                resetForm();
+                openReportViewerInNewWindow(format, response.downloadLink);
+                setTimeout(() => resetForm(), 500);
             } else {
                 toast.error("No se recibió un enlace de descarga.");
             }
@@ -133,7 +134,5 @@ export function useGenerateReport() {
 
         handleSubmit,
 
-        getPreviewColumns,
-        getPreviewData,
     };
 }

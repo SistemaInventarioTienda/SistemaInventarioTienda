@@ -5,6 +5,8 @@ const ReportPreview = ({ reportType, format, isLoading }) => {
     switch (type) {
       case 'ComprasXProveedor':
         return 'Compras por proveedor';
+      case 'VentasXCliente':
+        return 'Ventas por cliente';
       default:
         return type;
     }
@@ -25,7 +27,7 @@ const ReportPreview = ({ reportType, format, isLoading }) => {
     switch (format?.toLowerCase()) {
       case 'pdf':
         return 'pill format-pdf';
-      case 'excel':
+      case 'xlsx':
         return 'pill format-excel';
       default:
         return 'pill';

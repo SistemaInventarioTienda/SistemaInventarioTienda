@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Plus,
   DollarSign,
+  Download,
 } from "lucide-react";
 import { Tooltip } from "react-tooltip";
 
@@ -117,6 +118,16 @@ const ActionsCell = ({ actions, rowData, entityKey }) => (
             <Trash size={20} color="#FFFFFF" />
           </ActionButton>
         ))}
+      {actions.download && (
+        <ActionButton
+          onClick={() => actions.download(rowData)}
+          color="#4CAF50"
+          tooltipId="tooltip"
+          tooltipContent="Descargar"
+        >
+          <Download size={20} color="#FFFFFF" />
+        </ActionButton>
+      )}
     </div>
   </>
 );

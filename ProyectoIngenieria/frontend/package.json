@@ -46,6 +46,7 @@
     "react-tooltip": "^5.28.1",
     "sonner": "^1.7.4",
     "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5",
     "zod": "^3.23.8"
   },
   "scripts": {
