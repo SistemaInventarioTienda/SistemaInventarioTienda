@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/authContext"
 import PageLayout from "../components/layout/PageLayout"
 import { Tab, Tabs, TabList, TabPanel } from "../components/common"
-import { GenerateReport, ProgramReport } from "../components/features/reports/"
-import { ReportsHistoryPage, ScheduledHistoryReportsPage } from "../components/features/reports/"
+import { GenerateReport } from "../components/features/reports/"
+import { ReportsHistoryPage } from "../components/features/reports/"
 import "./styles/ReportsPage.css"
 
 function ReportsPage() {
@@ -32,22 +32,14 @@ function ReportsPage() {
                 <Tabs activeTab={activeTab} onChange={setActiveTab} className="reports-tabs">
                     <TabList className="reports-tab-list">
                         <Tab value="generate">Generar Reporte</Tab>
-                        <Tab value="schedule">Programar Reporte</Tab>
                         <Tab value="history">Historial de Reportes</Tab>
-                        <Tab value="scheduled">Historial de Reportes Programados</Tab>
                     </TabList>
 
                     <TabPanel value="generate" active={activeTab === "generate"}>
                         <GenerateReport />
                     </TabPanel>
-                    <TabPanel value="schedule" active={activeTab === "schedule"}>
-                        <ProgramReport />
-                    </TabPanel>
                     <TabPanel value="history" active={activeTab === "history"}>
                         <ReportsHistoryPage />
-                    </TabPanel>
-                    <TabPanel value="scheduled" active={activeTab === "scheduled"}>
-                        <ScheduledHistoryReportsPage />
                     </TabPanel>
                 </Tabs>
             </div>
