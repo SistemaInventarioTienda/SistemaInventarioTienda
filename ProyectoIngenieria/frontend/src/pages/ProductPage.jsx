@@ -16,7 +16,7 @@ export default function ProductPage() {
         // Verificar solo si los permisos ya se cargaron (home siempre existe)
         if (permissions.home === undefined) return;
 
-        if (!permissions.user) {
+        if (!permissions.product) {
             toast.error("No tienes permiso para acceder a usuarios");
             navigate("/");
         }

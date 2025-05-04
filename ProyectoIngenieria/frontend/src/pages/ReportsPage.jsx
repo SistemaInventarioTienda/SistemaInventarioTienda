@@ -5,19 +5,24 @@ import PageLayout from "../components/layout/PageLayout"
 import { Tab, Tabs, TabList, TabPanel } from "../components/common"
 import { GenerateReport } from "../components/features/reports/"
 import { ReportsHistoryPage } from "../components/features/reports/"
+import { usePermissions } from "../context/authPermissions";
+import { toast } from "sonner";
 import "./styles/ReportsPage.css"
 
 function ReportsPage() {
+    const { permissions } = usePermissions();
     const navigate = useNavigate()
-    const { isAuthenticated } = useAuth()
     const [activeTab, setActiveTab] = useState("generate")
 
     useEffect(() => {
         document.title = "Reportes"
-        if (!isAuthenticated) {
-            navigate("/login")
+        if (permissions.home === undefined) return;
+
+        if (!permissions.reports) {
+            toast.error("No tienes permiso para acceder a usuarios");
+            navigate("/");
         }
-    }, [isAuthenticated, navigate])
+    }, [permissions, navigate]);
 
     return (
         <PageLayout>
