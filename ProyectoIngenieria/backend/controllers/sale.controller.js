@@ -42,14 +42,26 @@ export const createSale = async (req, res) => {
         let porcentDescuento = PORCENT_DESCUENTO ?? 0;
         let dscVenta = (!DSC_VENTA || DSC_VENTA.trim() === "") ? "Gracias por la visita, vuelva pronto" : DSC_VENTA;
         let metodoPago = (!METODO_PAGO || METODO_PAGO.trim() === "") ? "Efectivo" : METODO_PAGO;
-        let montSubtotal = (typeof MONT_SUBTOTAL === "number" && MONT_SUBTOTAL >= 0)
-            ? (() => {
-                const discounted = MONT_SUBTOTAL - getDiscount(MONT_SUBTOTAL, PORCENT_DESCUENTO);
-                return discounted + getTaxes(discounted, PORCENT_IMPUESTO);
-            })()
-            : 0;
+        // let montSubtotal = (typeof MONT_SUBTOTAL === "number" && MONT_SUBTOTAL >= 0)
+        //     ? (() => {
+        //         const discounted = MONT_SUBTOTAL - getDiscount(MONT_SUBTOTAL, PORCENT_DESCUENTO);
+        //         return discounted + getTaxes(discounted, PORCENT_IMPUESTO);
+        //     })()
+        //     : 0;
+        let montoSale = 0;
+        let montSubtotal = (typeof MONT_SUBTOTAL === "number" && MONT_SUBTOTAL >= 0) ? MONT_SUBTOTAL : 0;
+        // Calcular total para crédito, si aplica
+        let montoTotalCredito = montSubtotal;
         let estadoCredito = +(ESTADO_CREDITO == 1);
+        if (estadoCredito) {
+            const montoConDescuento = montSubtotal - (montSubtotal * porcentDescuento / 100);
+            montoTotalCredito = montoConDescuento + (montoConDescuento * porcentImpuesto / 100);
 
+            montoSale =  montoTotalCredito;
+            console.log("MONTO TOtal", montoTotalCredito);
+        }else{
+            montoSale = montSubtotal;
+        }
 
         const crdSale = await sale.create({
             ID_CLIENTE: clientID,
@@ -58,7 +70,7 @@ export const createSale = async (req, res) => {
             METODO_PAGO: metodoPago,
             DSC_VENTA: dscVenta,
             ESTADO_CREDITO: estadoCredito,
-            MONT_SUBTOTAL: montSubtotal,
+            MONT_SUBTOTAL: montoSale,
             PORCENT_DESCUENTO: porcentDescuento,
             ESTADO: ESTADO,
         });
@@ -87,7 +99,7 @@ export const createSale = async (req, res) => {
                 ID_VENTA: idSale,
                 FEC_ULTIMOPAGO: date,
                 FEC_VENCIMIENTO: FEC_VENCIMIENTO,
-                MON_PENDIENTE: montSubtotal,
+                MON_PENDIENTE: montoSale,
                 ESTADO_CREDITO: estadoCredito,
             });
 
