@@ -170,7 +170,7 @@ export const EntityPage = forwardRef(({
                     <h1>{titlePage}</h1>
                     <p>{entityMessage}</p>
                 </div>
-                {entityKey !== "credit" || entityKey !== "reports" && (
+                {entityKey !== "credit" && entityKey !== "reports" && (
                     <Button className="add-btn" onClick={handleAdd}>
                         <Plus size={20} />
                         Agregar {entityName}
