@@ -175,7 +175,7 @@ function GenericForm({
 
         // Agregar soporte para NumberInput
 
-         if (entityName === "Usuario" && field.name === "cedula") {
+         if (entityName === "Usuario" && mode === "edit" && field.name === "cedula") {
             const isCedulaBlocked = field.name === "cedula"; // Bloquea solo el campo de cédula
         
             return (
