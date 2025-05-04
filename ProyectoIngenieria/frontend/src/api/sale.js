@@ -17,7 +17,8 @@ export const getAllSales = async (page, pageSize, orderByField, order) => {
         const response = await axios.get(`/sale/getSales`, {
             params: { page, pageSize, orderByField, order }
         });
-        const transformedSales = response.data.sales.map(transformSale);
+        const sales = Array.isArray(response.data.sales) ? response.data.sales : [];
+        const transformedSales = sales.map(transformSale);
         return {
             ...response.data,
             sales: transformedSales
@@ -45,7 +46,8 @@ export const searchSale = async (page, pageSize, termSearch, orderByField, order
         const response = await axios.get('/sale/searchSale', {
             params: { page, pageSize, termSearch, orderByField, order }
         });
-        const transformedSales = response.data.sales.map(transformSale);
+        const sales = Array.isArray(response.data.sales) ? response.data.sales : [];
+        const transformedSales = sales.map(transformSale);
         console.log("transformadas", transformSale);
         return {
             ...response.data,
