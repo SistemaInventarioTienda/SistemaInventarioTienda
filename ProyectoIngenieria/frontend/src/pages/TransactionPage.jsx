@@ -15,7 +15,7 @@ export default function Transferencias() {
     useEffect(() => {
         if (permissions.home === undefined) return;
 
-        if (!permissions.user) {
+        if (!permissions.transaction) {
             toast.error("No tienes permiso para acceder a Transacciones");
             navigate("/");
         }
