@@ -118,7 +118,6 @@ export const clientConfig = {
         edit: true,
         delete: true,
         view: true,
-        manageCredits: true
     },
 };
 
