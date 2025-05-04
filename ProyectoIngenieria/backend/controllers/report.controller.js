@@ -486,7 +486,7 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
             }
             acc[cliente].ventas.push({
                 fecha: new Date(venta.FEC_VENTA).toLocaleDateString(),
-                total: venta.MONT_SUBTOTAL - (venta.DESCUENTO || 0), // Calcular el total después del descuento
+                total: venta.MONT_SUBTOTAL - (venta.DESCUENTO || 0) + (venta.MONT_SUBTOTAL * (venta.PORCENT_IMPUESTO / 100)), 
                 productos: venta.PRODUCTOS ? venta.PRODUCTOS.split(',').map(p => p.trim()) : [],
                 cantidades: venta.CANTIDADES ? venta.CANTIDADES.split(',').map(c => c.trim()) : []
             });
