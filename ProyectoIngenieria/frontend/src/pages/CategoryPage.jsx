@@ -14,7 +14,7 @@ export default function CategoryPage() {
     const entityPageRef = useRef(); // Crear una referencia a EntityPage
     const { permissions } = usePermissions();
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         // Verificar solo si los permisos ya se cargaron (home siempre existe)
         if (permissions.home === undefined) return;
