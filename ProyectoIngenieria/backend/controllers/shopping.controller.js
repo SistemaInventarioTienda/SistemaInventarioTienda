@@ -190,7 +190,7 @@ export const registerShopping = async (req, res) => {
 
                 const detailsSaved = await newDetail.save();
                 if (detailsSaved) {
-                    sumTotal = sumTotal + product.MON_PRECIO_COMPRA
+                    sumTotal = sumTotal + (product.MON_PRECIO_COMPRA*product.MON_CANTIDAD)
                     const productFound = await Product.findOne({
                         attributes: ['ID_PRODUCT', 'CANTIDAD'],
                         where: {
