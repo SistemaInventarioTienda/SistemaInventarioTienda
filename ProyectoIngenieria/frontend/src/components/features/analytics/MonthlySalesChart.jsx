@@ -7,9 +7,11 @@ import "./styles/AnalyticsCharts.css";
 export default function MonthlySalesChart() {
     const { selectedYear, handleYearChange, chartData, loading, error, yearOptions } = useMonthlySalesChart();
 
-    const totalVentas = chartData.reduce((sum, m) => sum + (m.Total || 0), 0);
-    const mesesConVentas = chartData.filter((m) => (m.Total || 0) > 0).length;
-    const mejorMes = chartData.reduce((prev, current) => (current.Total > (prev?.Total || 0) ? current : prev), null);
+    const totalVentas = chartData.reduce((sum, m) => sum + (m.TotalRecaudado || 0), 0);
+    const mesesConVentas = chartData.filter((m) => (m.TotalRecaudado || 0) > 0).length;
+    const mejorMes = chartData.reduce((prev, current) => (
+        current.TotalRecaudado > (prev?.TotalRecaudado || 0) ? current : prev
+    ), null);
 
     const monthLabels = {
         "01": "Ene", "02": "Feb", "03": "Mar", "04": "Abr",
@@ -75,7 +77,7 @@ export default function MonthlySalesChart() {
                     }]}
                     yAxis={[{
                         type: 'linear',
-                        domain: [0, Math.max(...formattedChartData.map((m) => m.Total || 0))],
+                        domain: [0, Math.max(...formattedChartData.map((m) => m.TotalRecaudado || 0))],
                         tickLabelStyle: {
                             fill: "var(--color-font)",
                             fontSize: 10,
@@ -83,7 +85,7 @@ export default function MonthlySalesChart() {
                         },
                     }]}
                     series={[{
-                        data: formattedChartData.map((m) => m.Total || 0),
+                        data: formattedChartData.map((m) => m.TotalRecaudado || 0),
                         label: 'Ventas',
                         showMark: true,
                         color: '#4dabf5',
@@ -99,7 +101,7 @@ export default function MonthlySalesChart() {
                         <span>
                             <strong>Insight:</strong> El mes con más ventas fue {
                                 monthLabels[mejorMes.Mes.split("-")[1]]
-                            } con ₡{(mejorMes.Total || 0).toLocaleString()}.
+                            } con ₡{(mejorMes.TotalRecaudado || 0).toLocaleString()}.
                         </span>
                     </div>
                 )}
