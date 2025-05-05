@@ -37,7 +37,8 @@ export function useTopProductsChart() {
             setError('');
             const data = await getAllDataFromGraphic({
                 MIN_FEC: dateRange.start,
-                MAX_FEC: addOneDay(dateRange.end),
+                MAX_FEC: dateRange.end,
+                // MAX_FEC: addOneDay(dateRange.end),
                 LIMIT_PRODUCTS: 5,
                 CATEGORY: '',
                 FEC_CURRENT: '',
