@@ -228,7 +228,7 @@ export const getSaleDetails = async (req, res) => {
         });
 
         if (!saleData) {
-            return res.status(404).json({ message: "Venta no encontrada." });
+            return res.status(204).json({ message: "Venta no encontrada." });
         }
 
 
