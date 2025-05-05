@@ -489,9 +489,10 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
             const impuesto = (subtotal - descuento) * (venta.PORCENT_IMPUESTO / 100);
             acc[cliente].ventas.push({
                 fecha: new Date(venta.FEC_VENTA).toLocaleDateString(),
-                total: subtotal - descuento + impuesto, 
+                total: (venta.ESTADO === 1 && venta.ESTADO_CREDITO === 0) ? subtotal - descuento + impuesto : subtotal, 
                 productos: venta.PRODUCTOS ? venta.PRODUCTOS.split(',').map(p => p.trim()) : [],
-                cantidades: venta.CANTIDADES ? venta.CANTIDADES.split(',').map(c => c.trim()) : []
+                cantidades: venta.CANTIDADES ? venta.CANTIDADES.split(',').map(c => c.trim()) : [],
+                total_abono: venta.TOTAL_ABONOS || 0
             });
             return acc;
         }, {});
@@ -542,8 +543,14 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
                     rowY += 8;
                 });
 
-                doc.fontSize(8).text(venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
-                totalVentasPeriodo += venta.total;
+                if(venta.total_abono === 0) {
+                    doc.fontSize(8).text(venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
+                    totalVentasPeriodo += venta.total;
+                } else {
+                    doc.fontSize(8).text(venta.total_abono.toFixed(2) + " / " + venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
+                    totalVentasPeriodo += venta.total_abono;
+                }
+                
 
                 const lineY = rowY + 2;
                 doc.strokeColor('#ccc').lineWidth(0.5).lineJoin('miter').dash(5, { space: 5 }).moveTo(margin, lineY).lineTo(pageWidthPoints - margin, lineY).stroke();

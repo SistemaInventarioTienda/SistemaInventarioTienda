@@ -31,7 +31,6 @@ export const getAllDataFromGrpahic = async (req, res) => {
             }
         );
 
-        console.log(results)
         return res.json({ message: "Datos obtenidos con éxito.", top5Products: results[0], products_stock_sold: results[1], last12sales: results[2] })
 
     } catch (error) {
