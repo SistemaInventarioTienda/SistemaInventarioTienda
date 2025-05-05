@@ -61,7 +61,7 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
     }
   };
 
-  const ActionButton = ({ onClick, color, children }) => (
+  const ActionButton = ({ onClick, color, children, tooltipId, tooltipContent }) => (
     <Button
       className="btn me-3 p-0"
       style={{
@@ -71,6 +71,8 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
         height: "40px",
       }}
       onClick={onClick}
+      data-tooltip-id={tooltipId}
+      data-tooltip-content={tooltipContent}
     >
       {children}
     </Button>
@@ -102,6 +104,8 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
                 <ActionButton
                   onClick={() => handleEdit(payment)}
                   color="#007AFF"
+                  tooltipId="tooltip"
+                  tooltipContent="Editar"
                 >
                   <SquarePen size={20} color="#FFFFFF" />
                 </ActionButton>

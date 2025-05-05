@@ -50,6 +50,7 @@
   --color-metric-card-icon-background: #f3f4f6;
   --color-metric-card-title: #6b7280;
   --color-metric-card-value: #1f2937;
+  --color-metric-card-hover: rgba(0, 0, 0, 0.03);
   /* Status Pills - Light Mode */
   --color-status-pill-active-bg: #E8F5E9;
   --color-status-pill-active-text: #4CAF50;
@@ -116,6 +117,7 @@
   --color-metric-card-icon-background: #252538;
   --color-metric-card-title: #b0b7c4;
   --color-metric-card-value: #f0f0f0;
+  --color-metric-card-hover: rgba(255, 255, 255, 0.05);
   /* Status Pills - Dark Mode */
   --color-status-pill-active-bg: rgba(76, 175, 80, 0.15);
   --color-status-pill-active-text: #66bb6a;

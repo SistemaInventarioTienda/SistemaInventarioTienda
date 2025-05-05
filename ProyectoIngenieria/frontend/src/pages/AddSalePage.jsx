@@ -15,7 +15,7 @@ const AddSalePage = () => {
     useEffect(() => {
         if (permissions.home === undefined) return;
 
-        if (!permissions.user) {
+        if (!permissions.sales) {
             toast.error("No tienes permiso para acceder a ventas");
             navigate("/");
         }

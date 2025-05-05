@@ -14,7 +14,7 @@ export default function CreditSalePage() {
   useEffect(() => {
     if (permissions.home === undefined) return;
 
-    if (!permissions.home) {
+    if (!permissions.sales) {
       toast.error("No tienes permiso para acceder a usuarios");
       navigate("/");
     }

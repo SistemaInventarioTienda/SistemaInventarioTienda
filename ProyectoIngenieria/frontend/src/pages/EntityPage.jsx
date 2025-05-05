@@ -99,23 +99,37 @@ export const EntityPage = forwardRef(({
         setConfirmationModalOpen(true);
     };
 
-    console.log("Datos FILTRADOS: ",filteredData);
+    const handleDownload = async (rowData) => {
+        try {
+            if (actions.downloadHandler) {
+                await actions.downloadHandler(rowData);
+            }
+        } catch (error) {
+            console.log("error", error);
+            toast.error(error.message || 'El documento solicitado no existe');
+        }
+    };
+
+    console.log("Datos FILTRADOS: ", filteredData);
+    //console.log("TransformData [EntityPage]", transformData);
+
     const tableActions = Object.entries(actions)
         .filter(([actionKey, isEnabled]) => isEnabled)
         .reduce((acc, [actionKey, isEnabled]) => {
             if (isEnabled) {
                 acc[actionKey] =
-                actionKey === "manageCredits" ? (rowData) => {
-                    console.log("Estamos en tableActions: ",rowData);
-                    if (actions.manageCreditsHandler) {
-                        actions.manageCreditsHandler(rowData);
-                    }
-                } :
-                    actionKey === "grantPermissions" ? actions.grantPermissions :
-                        actionKey === "edit" ? handleEdit :
-                            actionKey === "delete" ? handleDeleteConfirmation :
-                                actionKey === "view" ? handleView :
-                                    undefined;
+                    actionKey === "manageCredits" ? (rowData) => {
+                        console.log("Estamos en tableActions: ", rowData);
+                        if (actions.manageCreditsHandler) {
+                            actions.manageCreditsHandler(rowData);
+                        }
+                    } :
+                        actionKey === "grantPermissions" ? actions.grantPermissions :
+                            actionKey === "edit" ? handleEdit :
+                                actionKey === "delete" ? handleDeleteConfirmation :
+                                    actionKey === "view" ? handleView :
+                                        actionKey === "download" ? handleDownload :
+                                            undefined;
             }
             return acc;
         }, {});
@@ -156,34 +170,36 @@ export const EntityPage = forwardRef(({
                     <h1>{titlePage}</h1>
                     <p>{entityMessage}</p>
                 </div>
-                {entityKey !== "credit" && (
+                {entityKey !== "credit" && entityKey !== "reports" && (
                     <Button className="add-btn" onClick={handleAdd}>
-                    <Plus size={20} />
-                    Agregar {entityName}
-                </Button>
+                        <Plus size={20} />
+                        Agregar {entityName}
+                    </Button>
                 )}
             </div>
             <div className="page-controls">
                 <div className="search-container">
-                    <InputButton
-                        inputClassName="search-input"
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            setSearchTerm(value);
+                    {entityKey !== "reports" && (
+                        <InputButton
+                            inputClassName="search-input"
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setSearchTerm(value);
 
-                            if (value.trim() === "") {
-                                fetchData({ resetPage: true, term: "", transformConfig: transformConfig });
-                            }
-                        }}
-                        onKeyPress={(e) => {
-                            if (e.key === "Enter") handleSearch();
-                        }}
-                        placeholder={`Buscar ${entityName.toLowerCase()}...`}
-                        icon={Search}
-                        onButtonClick={handleSearch}
-                    />
+                                if (value.trim() === "") {
+                                    fetchData({ resetPage: true, term: "", transformConfig: transformConfig });
+                                }
+                            }}
+                            onKeyPress={(e) => {
+                                if (e.key === "Enter") handleSearch();
+                            }}
+                            placeholder={`Buscar ${entityName.toLowerCase()}...`}
+                            icon={Search}
+                            onButtonClick={handleSearch}
+                        />
+                    )}
                 </div>
                 <div className="items-per-page">
                     <label htmlFor="itemsPerPage">Mostrar</label>

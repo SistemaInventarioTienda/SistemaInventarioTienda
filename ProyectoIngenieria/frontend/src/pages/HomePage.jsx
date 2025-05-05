@@ -9,6 +9,11 @@ import { clientConfig } from "../config/entities/clientConfig";
 import { supplierConfig } from "../config/entities/supplierConfig";
 import { categoryConfig } from "../config/entities/categoryConfig";
 import { productConfig } from "../config/entities/productConfig";
+import {
+  TopProductsChart,
+  ProductComparisonChart,
+  MonthlySalesChart
+} from "../components/features/analytics";
 
 import "./styles/HomePage.css";
 
@@ -81,18 +86,26 @@ function HomePage() {
           icon={<Truck className="h-6 w-6" />}
         />
         <MetricCard
-          onClick={() => navigate("/category")}
-          title="Categorías Totales"
-          value={metrics.categories}
-          icon={<Tag className="h-6 w-6" />}
-        />
-        <MetricCard
           onClick={() => navigate("/product")}
           title="Productos Totales"
           value={metrics.products}
           icon={<Box className="h-6 w-6" />}
         />
       </div>
+
+      <div className="charts-section">
+
+        <div className="charts-row">
+          <MonthlySalesChart />
+          <TopProductsChart />
+        </div>
+
+        <div className="chart-full-width">
+          <ProductComparisonChart />
+        </div>
+      </div>
+
+
     </PageLayout>
   );
 }

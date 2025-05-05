@@ -127,7 +127,7 @@ export const validateSupplierData = (req) => {
         errors.push('La lista de teléfonos es requerida y no puede estar vacía.');
     } else {
         phones.forEach((phone, index) => {
-            if (!isNotEmpty(phone)) {
+            if (!phone.DSC_TELEFONO || !isNotEmpty(phone.DSC_TELEFONO)) {
                 errors.push(`El teléfono no puede estar vacío.`);
             }
         });
@@ -137,9 +137,9 @@ export const validateSupplierData = (req) => {
         errors.push('La lista de correos es requerida y no puede estar vacía.');
     } else {
         emails.forEach((email, index) => {
-            if (!isNotEmpty(email)) {
+            if (!email.DSC_CORREO || !isNotEmpty(email.DSC_CORREO)) {
                 errors.push(`El correo no puede estar vacío.`);
-            } else if (!isValidEmail(email)) {
+            } else if (!isValidEmail(email.DSC_CORREO)) {
                 errors.push(`El correo no es válido.`);
             }
         });

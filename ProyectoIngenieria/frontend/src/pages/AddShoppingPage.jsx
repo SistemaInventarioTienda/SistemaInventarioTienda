@@ -45,7 +45,7 @@ const AddShoppingPage = () => {
     useEffect(() => {
         if (permissions.home === undefined) return;
 
-        if (!permissions.user) {
+        if (!permissions.shopping) {
             toast.error("No tienes permiso para acceder a compras");
             navigate("/");
         }

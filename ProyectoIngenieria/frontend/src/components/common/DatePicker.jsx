@@ -9,6 +9,7 @@ const DatePicker = ({
     value,
     onChange,
     allowPastDates = false,
+    allowFutureDates = true,
     className = "",
     dateFormat = "d/m/Y",
     firstDayOfWeek = 1,
@@ -28,7 +29,8 @@ const DatePicker = ({
                     onChange(selectedDates[0]);
                 },
                 defaultDate: value,
-                minDate: allowPastDates ? undefined : "today"
+                minDate: allowPastDates ? undefined : "today",
+                maxDate: allowFutureDates ? undefined: "today",
             };
 
             flatpickrInstance.current = flatpickr(datePickerRef.current, config);

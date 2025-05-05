@@ -75,6 +75,7 @@ export const userConfig = {
             nombreUsuario: user.DSC_NOMBREUSUARIO,
             correo: user.DSC_CORREO,
             estado: user.ESTADO === "ACTIVO" ? 1 : 2,
+            fechaCreacion: user.FEC_CREADOEN,
         }),
 
         // Transformar datos desde el formulario hacia la API
@@ -86,8 +87,8 @@ export const userConfig = {
             DSC_CORREO: formData.correo,
             DSC_TELEFONO: formData.telefono,
             DSC_NOMBREUSUARIO: formData.nombreUsuario,
-            // DSC_CONTRASENIA: formData.contrasena,
-            // CONFIRMARCONTRASENIA: formData.confirmarContrasena,
+            DSC_CONTRASENIA: formData.contrasena,
+            CONFIRMARCONTRASENIA: formData.confirmarContrasena,
             ESTADO: formData.estado,
         }),
         toBackenPassword: (formData) => ({

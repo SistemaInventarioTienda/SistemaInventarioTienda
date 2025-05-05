@@ -15,7 +15,7 @@ export default function ClientPage() {
         // Verificar solo si los permisos ya se cargaron (home siempre existe)
         if (permissions.home === undefined) return;
 
-        if (!permissions.user) {
+        if (!permissions.clients) {
             toast.error("No tienes permiso para acceder a usuarios");
             navigate("/");
         }

@@ -175,7 +175,7 @@ function GenericForm({
 
         // Agregar soporte para NumberInput
 
-         if (entityName === "Usuario" && field.name === "cedula") {
+         if (entityName === "Usuario" && mode === "edit" && field.name === "cedula") {
             const isCedulaBlocked = field.name === "cedula"; // Bloquea solo el campo de cédula
         
             return (
@@ -228,7 +228,8 @@ function GenericForm({
                 ))}
 
             {/* Renderizar ContactManager para teléfonos */}
-            {(entityName === "Cliente" || entityName === "Proveedor") && (
+            {/* || entityName === "Proveedor" */}
+            {(entityName === "Cliente" || entityName === "Proveedor" ) && (
                 <div className="full-width">
                     <ContactManager
                         contacts={phones}
