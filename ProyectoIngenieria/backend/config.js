@@ -6,7 +6,7 @@ export const PORT = process.env.PORT || 4000;
 export const TOKEN_SECRET = process.env.TOKEN_SECRET || "secret";
 
 // FRONT-END
-export const FRONTEND_URL = process.env.FRONTEND_URL || "https://sistema-inventario-tienda.vercel.app";
+export const FRONTEND_URL = process.env.FRONTEND_URL || "https://sistema-inventario-tienda-k8pxgqpoc.vercel.app";
 
 // DATABASE
 const user = process.env.USER_DB || 'root';
