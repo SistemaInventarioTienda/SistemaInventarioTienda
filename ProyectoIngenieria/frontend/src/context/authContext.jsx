@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.log(error.response.data);
       setErrors(error.response.data.message);
     }
   };
@@ -58,17 +57,14 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkLogin = async () => {
-      const cookies = Cookies.get();
-      if (!cookies.token) {
-        setIsAuthenticated(false);
-        setLoading(false);
-        return;
-      }
 
       try {
-        const res = await verifyTokenRequest(cookies.token);
-        console.log(res);
-        if (!res.data) return setIsAuthenticated(false);
+        const res = await verifyTokenRequest();
+        if (!res.data) {
+          setIsAuthenticated(false);
+          setLoading(false);
+          return
+        }
         setIsAuthenticated(true);
         setUser(res.data);
         setLoading(false);

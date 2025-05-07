@@ -33,6 +33,7 @@ const CreditPage = () => {
     
           // Llamar al endpoint para obtener los datos del crédito
           const response = await creditConfig.api.getCreditById(creditId);
+          console.log("crédito", response);
           setCreditInfo(response); // Actualizar el estado con los datos nuevos
         } catch (error) {
           console.error("Error al obtener los datos del crédito:", error);
@@ -168,17 +169,6 @@ const CreditPage = () => {
                 <PaymentForm
                 fields={fields}
                 initialData={creditInfo}
-                // onSubmit={async (formData) =>{
-                //     try {
-                //         const response = await onSubmit(modalMode, formData);
-                //         console.log("Respuesta en paymentForm: ", response);
-                //         if(response && response.success){
-                //             await 
-                //         }
-                //     } catch (error) {
-                        
-                //     }
-                // }}
                 onSubmit={onSubmit}
                 onCancel={() => setModalOpen(false)}
             />

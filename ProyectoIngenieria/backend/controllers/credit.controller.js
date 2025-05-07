@@ -22,7 +22,7 @@ export const addPayment = async (req, res) => {
     console.log("ID del credito por parametro [Controller]", req.params.id);
 
     if (!creditId) {
-      return res.status(404).json({
+      return res.status(204).json({
         message: "Credito no disponible para abonar.",
       });
     }
@@ -79,7 +79,7 @@ export const modifyPayment = async (req, res) => {
       },
     });
     if (!paymentObj) {
-      return res.status(404).json({
+      return res.status(204).json({
         message: "El Abono seleccionado no se encuentra en el sistema.",
       });
     }
@@ -103,7 +103,7 @@ export const modifyPayment = async (req, res) => {
       },
     });
     if (!creditId) {
-      return res.status(404).json({
+      return res.status(204).json({
         message: "Credito no disponible para abonar.",
       });
     }
@@ -191,7 +191,7 @@ export const getCreditById = async (req, res) => {
 
     // Verificar si el crédito existe
     if (!response) {
-      return res.status(404).json({ message: "Crédito no encontrado" });
+      return res.status(204).json({ message: "Crédito no encontrado" });
     }
 
     // Devolver el crédito con sus relaciones
@@ -319,7 +319,7 @@ export const getAllPaymentByCreditByFilter = async (req, res) => {
     console.log(results.ResultadoJSON);
 
     if (!results.ResultadoJSON) {
-      return res.status(404).json({
+      return res.status(204).json({
         message: "No se encontraron resultados.",
       });
     }

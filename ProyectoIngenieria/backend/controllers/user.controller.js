@@ -1,16 +1,18 @@
 import User from "../models/user.model.js";
-import { encryptData } from "../libs/encryptData.js";
+import { encryptData, compareData } from "../libs/encryptData.js";
 import { validateUpdate } from "../logic/user/user.logic.js";
 import { validateUpdateUser } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
 import { decodedToken } from "../libs/jwt.js";
 import { Permission, PermissionUser } from "../models/permission.model.js";
 import { getDateCR } from '../libs/date.js';
+import { changePasswordEmail } from "../utils/sendEmail.js";
 
 export const updateUser = async (req, res) => {
     try {
         const {
-            DSC_NOMBREUSUARIO, DSC_CORREO, DSC_CONTRASENIA, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
+            //, DSC_CONTRASENIA, ID_ROL,
+            DSC_NOMBREUSUARIO, DSC_CORREO, DSC_TELEFONO,  DSC_CEDULA,
             DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO
         } = req.body;
 
@@ -26,24 +28,25 @@ export const updateUser = async (req, res) => {
             return res.status(404).json({ message: "Usuario no encontrado." });
         }
 
-        const output = await validateUpdate(req);
-        if (output !== true) {
-            return res.status(400).json({
-                message: output,
-            })
-        }
+        // const output = await validateUpdate(req);
+        // if (output !== true) {
+        //     return res.status(400).json({
+        //         message: output,
+        //     })
+        // }
 
         // hashing the password
-        var passwordHash;
-        if (DSC_CONTRASENIA) {
-            passwordHash = await encryptData(DSC_CONTRASENIA, 10);
-        } else {
-            passwordHash = user.DSC_CONTRASENIA;
-        }
+        // var passwordHash;
+        // if (DSC_CONTRASENIA) {
+        //     passwordHash = await encryptData(DSC_CONTRASENIA, 10);
+        // } else {
+        //     passwordHash = user.DSC_CONTRASENIA;
+        // }
 
 
         await user.update({
-            DSC_NOMBREUSUARIO, DSC_CORREO: DSC_CORREO.toLowerCase(), DSC_CONTRASENIA: passwordHash, DSC_TELEFONO, ID_ROL, DSC_CEDULA,
+            // DSC_CONTRASENIA: passwordHash,ID_ROL,
+            DSC_NOMBREUSUARIO, DSC_CORREO: DSC_CORREO.toLowerCase(), DSC_TELEFONO, DSC_CEDULA,
             DSC_NOMBRE, DSC_APELLIDOUNO, DSC_APELLIDODOS, ESTADO
         });
 
@@ -118,7 +121,7 @@ export const getAllUsers = async (req, res) => {
             order: [
                 [field, sortOrder],
             ],
-            raw:true
+            raw: true
         });
 
 
@@ -198,7 +201,7 @@ export const searchUser = async (req, res) => {
 export const assignPermission = async (req, res) => {
     try {
         const { PERMISSION_LIST } = req.body;
-        if(!PERMISSION_LIST) return res.status(404).json({message : "Permisos no validos."})
+        if (!PERMISSION_LIST) return res.status(404).json({ message: "Permisos no validos." })
         // Buscar usuario por cédula
         const userFound = await User.findOne({
             attributes: ['ID_USUARIO'],
@@ -285,3 +288,36 @@ const searchPermissions = async (rows) => {
 
     return Promise.all(promises);
 };
+
+export const changePassword = async (req, res) => {
+    const userId = req.user?.id
+    if (!userId) return res.status(401).json({ message: "El usuario no tiene permiso de realizar esta acción." })
+
+    const { DSC_CONTRASENIA_ACTU, DSC_CONTRASENIA_NUEVA, DSC_CONTRASENIA_CONFIRM } = req.body;
+    if (!DSC_CONTRASENIA_ACTU || !DSC_CONTRASENIA_NUEVA || !DSC_CONTRASENIA_CONFIRM)
+        return res.status(400).json({ message: "Todos los campos son obligatorios." });
+
+    if (DSC_CONTRASENIA_NUEVA !== DSC_CONTRASENIA_CONFIRM)
+        return res.status(400).json({ message: "La nueva contraseña y la confirmación no coinciden." });
+
+
+    const userFound = await User.findOne({ where: { DSC_CEDULA: userId } })
+    if (!userFound)
+        return res.status(404).json({ message: "Usuario no encontrado." });
+
+    const isMatch = await compareData(DSC_CONTRASENIA_ACTU, userFound.DSC_CONTRASENIA);
+    if (!isMatch)
+        return res.status(400).json({
+            message: ["Usuario o contraseña incorrecta."],
+        });
+
+    // hashing the new password
+    const passwordHash = await encryptData(DSC_CONTRASENIA_NUEVA, 10);
+    await userFound.update({
+        DSC_CONTRASENIA: passwordHash
+    });
+
+    const currentDate = await getDateCR();
+    changePasswordEmail({ name: userFound.DSC_NOMBRE, date: currentDate, to: userFound.DSC_CORREO });
+    return res.status(200).json({ message: "Su contraseña actualizada correctamente." });
+}

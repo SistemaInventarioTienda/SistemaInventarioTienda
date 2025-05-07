@@ -49,6 +49,14 @@ async function validateStock(details_list) {
     return false;
 }
 
+export function getTaxes(MONT_SUBTOTAL,PORCENT_IMPUESTO){
+    console.log(PORCENT_IMPUESTO)
+return MONT_SUBTOTAL*(PORCENT_IMPUESTO/100);
+}
+export function getDiscount(MONT_SUBTOTAL,PORCENT_DESCUENTO){
+    console.log(PORCENT_DESCUENTO)
+    return MONT_SUBTOTAL*(PORCENT_DESCUENTO/100);
+    }
 
 async function verifyProduct(details_list) { //voy a probar some
     if (details_list.some(details => details.CANTIDAD === 0)) {

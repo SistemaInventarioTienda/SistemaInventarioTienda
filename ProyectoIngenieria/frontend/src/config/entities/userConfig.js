@@ -5,7 +5,8 @@ import {
     updateUser,
     registerUser,
     deleteUser,
-    searchUser
+    searchUser,
+    changePassword
 } from "../../api/user";
 
 // Configuración principal de la entidad
@@ -59,6 +60,7 @@ export const userConfig = {
         create: registerUser,
         update: updateUser,
         delete: deleteUser,
+        updataPassword: changePassword,
     },
 
     // Transformaciones de datos
@@ -73,6 +75,7 @@ export const userConfig = {
             nombreUsuario: user.DSC_NOMBREUSUARIO,
             correo: user.DSC_CORREO,
             estado: user.ESTADO === "ACTIVO" ? 1 : 2,
+            fechaCreacion: user.FEC_CREADOEN,
         }),
 
         // Transformar datos desde el formulario hacia la API
@@ -87,6 +90,11 @@ export const userConfig = {
             DSC_CONTRASENIA: formData.contrasena,
             CONFIRMARCONTRASENIA: formData.confirmarContrasena,
             ESTADO: formData.estado,
+        }),
+        toBackenPassword: (formData) => ({
+            DSC_CONTRASENIA_ACTU: formData.currentPassword,
+            DSC_CONTRASENIA_NUEVA: formData.newPassword,
+            DSC_CONTRASENIA_CONFIRM: formData.confirmPassword,
         }),
     },
 

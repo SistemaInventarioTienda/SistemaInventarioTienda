@@ -1,6 +1,6 @@
-import { sale, details, credit ,db} from "../models/sale.model.js";
+import { sale, details, credit, db } from "../models/sale.model.js";
 import { getDateCR } from "../libs/date.js";
-import { validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
+import { getDiscount, getTaxes, validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
 import Product from "../models/product.model.js";
 import Client from "../models/client.model.js";
 import { Op } from 'sequelize';
@@ -42,9 +42,26 @@ export const createSale = async (req, res) => {
         let porcentDescuento = PORCENT_DESCUENTO ?? 0;
         let dscVenta = (!DSC_VENTA || DSC_VENTA.trim() === "") ? "Gracias por la visita, vuelva pronto" : DSC_VENTA;
         let metodoPago = (!METODO_PAGO || METODO_PAGO.trim() === "") ? "Efectivo" : METODO_PAGO;
+        // let montSubtotal = (typeof MONT_SUBTOTAL === "number" && MONT_SUBTOTAL >= 0)
+        //     ? (() => {
+        //         const discounted = MONT_SUBTOTAL - getDiscount(MONT_SUBTOTAL, PORCENT_DESCUENTO);
+        //         return discounted + getTaxes(discounted, PORCENT_IMPUESTO);
+        //     })()
+        //     : 0;
+        let montoSale = 0;
         let montSubtotal = (typeof MONT_SUBTOTAL === "number" && MONT_SUBTOTAL >= 0) ? MONT_SUBTOTAL : 0;
+        // Calcular total para crédito, si aplica
+        let montoTotalCredito = montSubtotal;
         let estadoCredito = +(ESTADO_CREDITO == 1);
+        if (estadoCredito) {
+            const montoConDescuento = montSubtotal - (montSubtotal * porcentDescuento / 100);
+            montoTotalCredito = montoConDescuento + (montoConDescuento * porcentImpuesto / 100);
 
+            montoSale =  montoTotalCredito;
+            console.log("MONTO TOtal", montoTotalCredito);
+        }else{
+            montoSale = montSubtotal;
+        }
 
         const crdSale = await sale.create({
             ID_CLIENTE: clientID,
@@ -53,7 +70,7 @@ export const createSale = async (req, res) => {
             METODO_PAGO: metodoPago,
             DSC_VENTA: dscVenta,
             ESTADO_CREDITO: estadoCredito,
-            MONT_SUBTOTAL: montSubtotal,
+            MONT_SUBTOTAL: montoSale,
             PORCENT_DESCUENTO: porcentDescuento,
             ESTADO: ESTADO,
         });
@@ -82,7 +99,7 @@ export const createSale = async (req, res) => {
                 ID_VENTA: idSale,
                 FEC_ULTIMOPAGO: date,
                 FEC_VENCIMIENTO: FEC_VENCIMIENTO,
-                MON_PENDIENTE: montSubtotal,
+                MON_PENDIENTE: montoSale,
                 ESTADO_CREDITO: estadoCredito,
             });
 
@@ -211,7 +228,7 @@ export const getSaleDetails = async (req, res) => {
         });
 
         if (!saleData) {
-            return res.status(404).json({ message: "Venta no encontrada." });
+            return res.status(204).json({ message: "Venta no encontrada." });
         }
 
 
@@ -356,61 +373,61 @@ export const deleteSale = async (req, res) => {
     try {
         const id = req.params.id;
 
-        const saleFound =await sale.findOne({ where: { ID_VENTA: id }})
-        const creditFound= await credit.findOne({ where: { ID_VENTA: id }})
+        const saleFound = await sale.findOne({ where: { ID_VENTA: id } })
+        const creditFound = await credit.findOne({ where: { ID_VENTA: id } })
         const messages = [];
-        if(creditFound){
-          if (creditFound.MON_PENDIENTE<=0){
-              return res.status(400).json({ message: "No se puede anular un credito que ya fue cancelado," });
-          }
+        if (creditFound) {
+            if (creditFound.MON_PENDIENTE <= 0) {
+                return res.status(400).json({ message: "No se puede anular un credito que ya fue cancelado," });
+            }
 
-         creditFound.ESTADO_CREDITO=2;
-         creditFound.save();
-         messages.push("Crédito eliminado correctamente.");
+            creditFound.ESTADO_CREDITO = 2;
+            creditFound.save();
+            messages.push("Crédito eliminado correctamente.");
         }
 
-        if(!saleFound){
+        if (!saleFound) {
             return res.status(400).json({ message: "Venta no encontrada" });
         }
 
-       if(await EightDaysHavePassed(new Date(saleFound.FEC_VENTA))){
-        return res.status(400).json({ message: "No se puede anular la venta, dias excedidos." });
-       }
+        if (await EightDaysHavePassed(new Date(saleFound.FEC_VENTA))) {
+            return res.status(400).json({ message: "No se puede anular la venta, dias excedidos." });
+        }
 
 
-        saleFound.ESTADO=2;
+        saleFound.ESTADO = 2;
         saleFound.save();
         await db.transaction(async (t) => {
             const productList = await details.findAll({
-              where: { ID_VENTA: id },
-              attributes: ['ID_PRODUCTO', 'CANTIDAD'],
-              include: [{
-                model: Product,
-                attributes: ['ID_PRODUCT', 'CANTIDAD']
-              }],
-              transaction: t
+                where: { ID_VENTA: id },
+                attributes: ['ID_PRODUCTO', 'CANTIDAD'],
+                include: [{
+                    model: Product,
+                    attributes: ['ID_PRODUCT', 'CANTIDAD']
+                }],
+                transaction: t
             });
-          
-            for (const item of productList) {
-              const cantidadDevuelta = item.CANTIDAD;
-              const producto = item.Product;
-          
-              if (producto) {
-                await Product.update(
-                  {
-                    CANTIDAD: producto.CANTIDAD + cantidadDevuelta
-                  },
-                  {
-                    where: { ID_PRODUCT: producto.ID_PRODUCT },
-                    transaction: t
-                  }
-                );
-              }
-            }
-          });
 
-          messages.push("Venta eliminada correctamente.");
-        res.status(201).json({ message: messages});
+            for (const item of productList) {
+                const cantidadDevuelta = item.CANTIDAD;
+                const producto = item.Product;
+
+                if (producto) {
+                    await Product.update(
+                        {
+                            CANTIDAD: producto.CANTIDAD + cantidadDevuelta
+                        },
+                        {
+                            where: { ID_PRODUCT: producto.ID_PRODUCT },
+                            transaction: t
+                        }
+                    );
+                }
+            }
+        });
+
+        messages.push("Venta eliminada correctamente.");
+        res.status(201).json({ message: messages });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al realizar la venta', error });

@@ -36,7 +36,7 @@ export const creditConfig = {
         toFrontend: (credit) => ({
             id: credit.ID_CREDITO,
             nombre: credit.sale?.Client?.DSC_NOMBRE || "Sin cliente", // Este campo ya está transformado
-            mon_pendiente: credit.MON_PENDIENTE,
+            mon_pendiente: credit.MON_PENDIENTE.toFixed(2),
             fec_ultimoPago: credit.FEC_ULTIMOPAGO,
             fec_vencimiento: credit.FEC_VENCIMIENTO,
             estado_credito: credit.ESTADO_CREDITO,
@@ -69,7 +69,7 @@ export const creditConfig = {
           }
         },
         DSC_NOMBRE: (item) => item.sale?.Client?.DSC_NOMBRE || "Sin cliente",
-        MON_PENDIENTE: (item) => item.MON_PENDIENTE,
+        MON_PENDIENTE: (item) => item.MON_PENDIENTE.toFixed(2),
         FEC_ULTIMOPAGO: (item) => formatDate(item.FEC_ULTIMOPAGO),
         FEC_VENCIMIENTO: (item) => formatDate(item.FEC_VENCIMIENTO),
       },

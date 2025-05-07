@@ -115,7 +115,7 @@ const useSaleForm = () => {
             DSC_VENTA: note,
             ESTADO_CREDITO: Number(selectedSaleType),
             MONT_SUBTOTAL: subtotal,
-            PORCENT_DESCUENTO: discountAmount,
+            PORCENT_DESCUENTO: discount,
             PRODUCTS_LIST: selectedProducts,
             FEC_VENCIMIENTO: creditDueDate,
             ESTADO: ESTADO, 

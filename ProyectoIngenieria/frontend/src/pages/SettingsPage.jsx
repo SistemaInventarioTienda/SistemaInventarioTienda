@@ -25,8 +25,7 @@ function SettingsPage() {
     const fetchInitialData = async () => {
       try {
         const { data } = await handleApiCallSetting(
-          () => settingConfig.api.fetchAll(),
-          "Datos cargados correctamente."
+          () => settingConfig.api.fetchAll(),"Datos cargados correctamente."
         );
     
         console.log("Respuesta completa del backend:", data); // Debug

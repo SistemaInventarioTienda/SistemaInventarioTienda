@@ -4,15 +4,16 @@ function CheckboxList({ options, selectedOptions, onChange }) {
   return (
     <div className="grid grid-cols-2 gap-8">
       {options.map((option) => (
-        <div key={option.value}>
+        <div key={option.value} className="checkbox-option">
           <label>
-            <input className="checkbox-input"
+            <input
+              className="checkbox-input"
               type="checkbox"
               name={option.value}
               checked={selectedOptions[option.value]}
               onChange={onChange}
             />
-            {option.label}
+            <span className="checkbox-label">{option.label}</span>
           </label>
         </div>
       ))}

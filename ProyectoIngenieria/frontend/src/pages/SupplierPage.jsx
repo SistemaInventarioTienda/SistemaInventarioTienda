@@ -15,7 +15,7 @@ export default function SupplierPage() {
     useEffect(() => {
         if (permissions.home === undefined) return;
 
-        if (!permissions.user) {
+        if (!permissions.suppliers) {
             toast.error("No tienes permiso para acceder a usuarios");
             navigate("/");
         }
@@ -36,7 +36,7 @@ export default function SupplierPage() {
 
     const onSubmit = async (mode, data) => {
         try {
-            const backendData = transformData.toBackend(data);
+            const backendData = await transformData.toBackend(data);
 
             if (mode === "add") {
                 await handleApiCall(

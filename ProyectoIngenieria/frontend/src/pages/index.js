@@ -1,0 +1,17 @@
+export { default as CategoryPage} from './CategoryPage';
+export { default as ClientPage} from './ClientPage';
+export { default as CreditPage} from './CreditPage';
+export { default as HomePage} from './HomePage';
+export { default as UserPage} from './UserPage';
+export { default as SupplierPage} from './SupplierPage';
+export { default as LoginPage} from './LoginPage';
+export { default as SettingsPage} from './SettingsPage';
+export { default as ProductPage} from './ProductPage';
+export { default as SalePage} from './SalePage';
+export { default as AddSalePage} from './AddSalePage';
+export { default as AddShoppingPage} from './AddShoppingPage';
+export { default as TransactionPage} from './TransactionPage';
+export { default as ShoppingPage} from './ShoppingPage';
+export { default as CreditSalePage} from './CreditSalePage';
+export { default as ProfilePage } from './ProfilePage';
+export { default as ReportsPage } from './ReportsPage';
