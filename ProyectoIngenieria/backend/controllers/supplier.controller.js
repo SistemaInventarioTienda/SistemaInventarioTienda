@@ -1,5 +1,5 @@
 import { Supplier, mailSupplier, numberSupplier, supplierType } from "../models/supplier.model.js";
-import { validateRegisterSupplier, validateRegisterSupplierUpdate, validateRegisterEmails, validateRegisterPhones, validateEqualsEmailsSupplier, validateEqualsPhonesSupplier, validatIbanAccount } from "../logic/supplier/supplier.logic.js"
+import { validateRegisterSupplier, validateRegisterSupplierUpdate, validateRegisterEmails, validateRegisterPhones, validateEqualsEmailsSupplier, validateEqualsPhonesSupplier, validatIbanAccount,validatIbanBD,validatIbanBDUpdate } from "../logic/supplier/supplier.logic.js"
 import { getDateCR } from "../libs/date.js";
 import { validateSupplierData, validateSupplierDataUpdate } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
@@ -62,9 +62,6 @@ export const getAllSuppliers = async (req, res) => {
 
 
 export const createSupplier = async (req, res) => {
-    // console.log("Hola estamos en [createSupplier] y estos son los datos: ", req.body);
-    // console.log("phones: ", req.body.phones);
-    // console.log("emails: ", req.body.emails);
     const { DSC_DIRECCIONEXACTA, DSC_VENTA, DSC_NOMBRE, CTA_BANCARIA, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
 
     try {
@@ -87,6 +84,13 @@ export const createSupplier = async (req, res) => {
         if (validateIban !== true) {
             return res.status(400).json({
                 message: validateIban,
+            });
+        }
+
+        const verifyIban = await validatIbanBD(CTA_BANCARIA);
+        if (verifyIban !== true) {
+            return res.status(400).json({
+                message: verifyIban,
             });
         }
 
@@ -282,6 +286,13 @@ export const updatedSupplier = async (req, res) => {
         if (validateIban !== true) {
             return res.status(400).json({
                 message: validateIban,
+            });
+        }
+
+        const verifyIban = await validatIbanBDUpdate(CTA_BANCARIA,IDENTIFICADOR_PROVEEDOR);
+        if (verifyIban !== true) {
+            return res.status(400).json({
+                message: verifyIban,
             });
         }
 
