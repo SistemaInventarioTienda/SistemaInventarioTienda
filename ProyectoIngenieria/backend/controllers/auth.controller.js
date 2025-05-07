@@ -168,7 +168,7 @@ export const login = async (req, res) => {
       sameSite: "none",
     });
 
-    console.log("userFound: ", userFound);
+    //console.log("userFound: ", userFound);
 
     res.json({
       cedula: userFound.DSC_CEDULA,
