@@ -11,6 +11,10 @@ import {
     getAllSubcategoriesTypes
 } from "../../api/subcategory";
 
+import {
+    getAllCategoriesWithoutPag
+} from "../../api/category";
+
 // Configuración principal de la entidad
 export const productConfig = {
     // Nombre y descripción de la entidad
@@ -36,6 +40,7 @@ export const productConfig = {
         { name: "DSC_CODIGO_BARRAS", label: "Código de Barras", type: "text", required: true },
         { name: "DSC_NOMBRE", label: "Nombre del Producto", type: "text", required: true },
         { name: "DSC_DESCRIPTION", label: "Descripción", type: "textarea", required: true },
+        { name: "CATEGORIA", label: "Categoría del Producto", type: "select", required: true },
         { name: "SUBCATEGORIA", label: "Subcategoría del Producto", type: "select", required: true },
         { name: "foto", type: "file", required: false, resourcePath: "images/products" },
         { name: "MON_VENTA", label: "Precio de Venta", type: "number", required: true },
@@ -55,6 +60,7 @@ export const productConfig = {
 
     // Funciones API específicas de la entidad
     api: {
+        fetchAllCategories: getAllCategoriesWithoutPag,
         fetchAllSubcategoriesTypes: getAllSubcategoriesTypes,
         fetchAll: getAllProducts,
         searchByName: searchProduct,

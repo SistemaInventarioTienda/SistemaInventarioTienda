@@ -4,10 +4,9 @@ import { productConfig } from "../../config/entities/productConfig";
 
 function ProductForm({ mode, initialData, onSubmit, onCancel }) {
 
+    const [categories, setCategories] = useState([]);
     const [subcategoriesTypes, setSubcategoriesTypes] = useState([]);
     const [formData, setFormData] = useState(null);
-
-    console.log("MODE: ", mode);
 
     useEffect(() => {
         async function fetchSubcategoriesTypes() {
@@ -36,6 +35,24 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
                 console.error("Error al obtener los tipos de subcategorías:", error);
             }
         }
+
+        async function fetchCategories() {
+            try {
+                const categories = await productConfig.api.fetchAllCategories();
+                console.log("categorias", categories);
+                const extractedCategories = categories.categories.map((item) => ({
+                    ID_CATEGORIA: item.ID_CATEGORIA,
+                    DSC_NOMBRE: item.DSC_NOMBRE
+                }));
+
+                setCategories(extractedCategories);
+
+            } catch (error) {
+                console.error("Error al obtener los tipos de subcategorías:", error);
+            }
+        }
+
+        fetchCategories();
         fetchSubcategoriesTypes();
     }, [initialData]);
 
@@ -51,6 +68,7 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
             fields={productConfig.fields}
             onSubmit={onSubmit}
             onCancel={onCancel}
+            categories={categories}
             subcategoriesTypes={subcategoriesTypes}
         />
     );

@@ -56,3 +56,13 @@ export const searchCategoryByName = async (page, pageSize, DSC_NOMBRE, orderByFi
         throw error;
     }
 };
+
+export const getAllCategoriesWithoutPag = async () => {
+    try {
+        const response = await axios.get(`/category/all_categories`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching categories types:', error.message);
+        throw error;
+    }
+}

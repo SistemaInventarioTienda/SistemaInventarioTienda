@@ -227,3 +227,35 @@ export const getCategoriesWithSubcategories = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const getAllCategoriesWithoutPag = async (req, res) => {
+    try {
+        const categories = await Category.findAll({
+            attributes: {
+                exclude: ['FEC_MODIFICADOEN']
+            },
+            include: [
+                {
+                    model: Subcategory,
+                    as: "subcategories",
+                    attributes: ['ID_CATEGORIA', 'ID_SUBCATEGORIA', 'DSC_NOMBRE', 'ESTADO'],
+                    exclude: ['FEC_MODIFICADOEN', 'FEC_CREADOEN'],
+                }
+            ],
+            distinct: true
+        });
+
+        if (categories.length === 0) {
+            return res.status(200).json({
+                message: "No se encontraron subcategorías.",
+            });
+        }
+
+        res.json({
+            categories: categories
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
