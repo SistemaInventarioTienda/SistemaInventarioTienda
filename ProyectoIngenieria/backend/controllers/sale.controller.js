@@ -3,8 +3,8 @@ import { getDateCR } from "../libs/date.js";
 import { getDiscount, getTaxes, validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
 import Product from "../models/product.model.js";
 import Client from "../models/client.model.js";
-import { Op } from 'sequelize';
-
+import Config from "../models/config.model.js";
+import { createReceiptPDF } from "./report.controller.js";
 
 
 export const createSale = async (req, res) => {
@@ -13,9 +13,9 @@ export const createSale = async (req, res) => {
     try {
 
         let clientID = ID_CLIENTE && ID_CLIENTE > 0 ? ID_CLIENTE : null;
-
+        let client = null;
         if (clientID) {
-            const client = await Client.findOne({ where: { DSC_CEDULA: ID_CLIENTE } });
+            client = await Client.findOne({ where: { DSC_CEDULA: ID_CLIENTE } });
             if (!client) {
                 return res.status(400).json({ message: "Cliente no encontrado" });
             }
@@ -58,7 +58,6 @@ export const createSale = async (req, res) => {
             montoTotalCredito = montoConDescuento + (montoConDescuento * porcentImpuesto / 100);
 
             montoSale =  montoTotalCredito;
-            console.log("MONTO TOtal", montoTotalCredito);
         }else{
             montoSale = montSubtotal;
         }
@@ -74,9 +73,6 @@ export const createSale = async (req, res) => {
             PORCENT_DESCUENTO: porcentDescuento,
             ESTADO: ESTADO,
         });
-
-
-
 
         const idSale = crdSale.dataValues.ID_VENTA;
 
@@ -105,6 +101,7 @@ export const createSale = async (req, res) => {
 
         }
 
+        let products = [];
         if (details_list && Array.isArray(details_list) && details_list.length > 0) {
 
             await Promise.all(details_list.map(async (detailsProd) => {
@@ -124,12 +121,24 @@ export const createSale = async (req, res) => {
                             }
                         }
                     );
+                    products.push({
+                        CANTIDAD: detailsProd.CANTIDAD,
+                        MONT_UNITARIO: detailsProd.MONTO_UNITARIO,
+                        Product: product.dataValues
+                    })
                 }
             }));
 
         }
 
-        res.status(201).json({ message: 'Venta realizada Correctamente' });
+
+        const store = await Config.findAll();
+        const recibe = await createReceiptPDF(date, store[0], {
+            PORCENT_IMPUESTO: crdSale.PORCENT_IMPUESTO, MONT_SUBTOTAL: crdSale.MONT_SUBTOTAL, PORCENT_DESCUENTO: crdSale.PORCENT_DESCUENTO,
+            FEC_VENTA: crdSale.FEC_VENTA, METODO_PAGO: crdSale.METODO_PAGO, DSC_VENTA: crdSale.DSC_VENTA, ESTADO_CREDITO: crdSale.ESTADO_CREDITO,
+            details: products, client: client
+        })
+        res.status(200).json({ message: 'Venta realizada Correctamente', data: recibe?.data });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al realizar la venta', error });

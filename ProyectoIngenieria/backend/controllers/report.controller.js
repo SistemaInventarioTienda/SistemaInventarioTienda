@@ -128,7 +128,7 @@ function validateDate(dateString) {
 }
 
 // Function to create a PDF SALE
-async function createReceiptPDF(currentDate, storeData, saleData) {
+export async function createReceiptPDF(currentDate, storeData, saleData) {
     return new Promise((resolve, reject) => {
         const title = "***Recibo***";
 
@@ -141,7 +141,7 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
         const doc = new PDFDocument({
             size: [pageWidthPoints, pageHeightPoints]
         });
-        const fileName = `Recibo-${currentDate}.pdf`;
+        const fileName = `Recibo-${formatDateTime(currentDate)}.pdf`;
         const filePath = path.join(pdfDir, 'Recibos', fileName);
         if (!fs.existsSync(path.join(pdfDir, 'Recibos'))) {
             fs.mkdirSync(path.join(pdfDir, 'Recibos'), { recursive: true });
@@ -184,6 +184,7 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
         currentY += 3;
 
         // Sale Details Table Rows
+        let subtotalProducts = 0;
         saleData.details.forEach(item => {
             const totalItem = item.CANTIDAD * item.MONT_UNITARIO;
             doc.fontSize(7).text(item.Product.DSC_NOMBRE, margin, currentY, { width: 80 });
@@ -196,6 +197,7 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
                 currentY = margin + 10;
                 // Optionally add header again on new page
             }
+            subtotalProducts += totalItem;
         });
 
         // Separator before totals
@@ -204,8 +206,8 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
         currentY += 5;
 
         // Totals
-        const subTotal = saleData.MONT_SUBTOTAL;
-        const discount = (subTotal * ((saleData.PORCENT_DESCUENTO / subTotal) * 100)) / 100;
+        const subTotal = subtotalProducts;
+        const discount = subTotal * (saleData.PORCENT_DESCUENTO / 100);
         const tax = (subTotal - discount) * (saleData.PORCENT_IMPUESTO / 100);
         console.log(subTotal, discount, tax);
 
@@ -217,7 +219,7 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
         doc.text(tax.toFixed(2), pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
         currentY += 8;
 
-        doc.fontSize(8).text(`Descuento (${(saleData.PORCENT_DESCUENTO / saleData.MONT_SUBTOTAL) * 100}%):`, margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
+        doc.fontSize(8).text(`Descuento (${saleData.PORCENT_DESCUENTO}%):`, margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
         doc.text(`-${discount.toFixed(2)}`, pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
         currentY += 8;
 
@@ -237,7 +239,7 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
             doc.fontSize(8).text(`Nota: ${saleData.DSC_VENTA}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
             currentY += 8;
         }
-        if (saleData.ESTADO_CREDITO === 1) {
+        if (saleData.ESTADO_CREDITO === 0) {
             doc.fontSize(8).text('Estado: Cancelado', margin, currentY, { width: pageWidthPoints - 2 * margin });
             currentY += 8;
         } else {
@@ -489,7 +491,7 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
             const impuesto = (subtotal - descuento) * (venta.PORCENT_IMPUESTO / 100);
             acc[cliente].ventas.push({
                 fecha: new Date(venta.FEC_VENTA).toLocaleDateString(),
-                total: (venta.ESTADO === 1 && venta.ESTADO_CREDITO === 0) ? subtotal - descuento + impuesto : subtotal, 
+                total: (venta.ESTADO === 1 && venta.ESTADO_CREDITO === 0) ? subtotal - descuento + impuesto : subtotal,
                 productos: venta.PRODUCTOS ? venta.PRODUCTOS.split(',').map(p => p.trim()) : [],
                 cantidades: venta.CANTIDADES ? venta.CANTIDADES.split(',').map(c => c.trim()) : [],
                 total_abono: venta.TOTAL_ABONOS || 0
@@ -543,14 +545,14 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
                     rowY += 8;
                 });
 
-                if(venta.total_abono === 0) {
+                if (venta.total_abono === 0) {
                     doc.fontSize(8).text(venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
                     totalVentasPeriodo += venta.total;
                 } else {
                     doc.fontSize(8).text(venta.total_abono.toFixed(2) + " / " + venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
                     totalVentasPeriodo += venta.total_abono;
                 }
-                
+
 
                 const lineY = rowY + 2;
                 doc.strokeColor('#ccc').lineWidth(0.5).lineJoin('miter').dash(5, { space: 5 }).moveTo(margin, lineY).lineTo(pageWidthPoints - margin, lineY).stroke();
