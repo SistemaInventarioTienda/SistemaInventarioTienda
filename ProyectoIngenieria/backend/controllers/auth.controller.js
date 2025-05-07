@@ -168,7 +168,6 @@ export const login = async (req, res) => {
       sameSite: "none",
     });
 
-    //console.log("userFound: ", userFound);
 
     res.json({
       cedula: userFound.DSC_CEDULA,
@@ -199,9 +198,32 @@ export const verifyToken = async (req, res) => {
     const userFound = await User.findOne({ where: { DSC_CEDULA: user.id } });
     if (!userFound) return res.sendStatus(401);
 
+    // Obtener el rol del usuario
+    const role = await Role.findOne({
+      attributes: ['DSC_NOMBRE', 'DSC_DESCRIPCION', 'ESTADO'],
+      where: { ID_ROL: userFound.ID_ROL }
+    });
+
+    const roleDetails = role
+      ? {
+          nombre: role.DSC_NOMBRE,
+          descripcion: role.DSC_DESCRIPCION,
+          estado: role.ESTADO
+        }
+      : null;
+
     return res.json({
-      id: userFound.DSC_CEDULA,
-      username: userFound.DSC_NOMBREUSUARIO,
+      cedula: userFound.DSC_CEDULA,
+      nombreUsuario: userFound.DSC_NOMBREUSUARIO,
+      email: userFound.DSC_CORREO,
+      nombre: userFound.DSC_NOMBRE,
+      primerApellido: userFound.DSC_APELLIDOUNO,
+      segundoApellido: userFound.DSC_APELLIDODOS,
+      telefono: userFound.DSC_TELEFONO,
+      correo: userFound.DSC_CORREO,
+      estado: userFound.ESTADO,
+      fechaCreacion: userFound.FEC_CREADOEN,
+      rol: roleDetails
     });
   });
 };
