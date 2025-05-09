@@ -254,6 +254,11 @@ VALUES (
         8,
         'Ventas',
         'Se le permite el acceso a la página de ventas. Puede realizar acciones como: ver realizar una venta, anular venta.'
+    ),
+    (
+        9,
+        'Transacciones',
+        'Se le permite el acceso a la página de transacciones. Puede realizar acciones como: ver transacciones, realizar una transacción, etc.'
     );
 
 -- --------------------------------------------------------
@@ -501,43 +506,6 @@ CREATE TABLE IF NOT EXISTS `tsit_abono` (
 -- Volcado de datos para la tabla `tsit_abono`
 --
 
-INSERT INTO
-    `tsit_abono` (
-        `ID_ABONO`,
-        `ID_CREDITO`,
-        `FEC_ABONO`,
-        `MON_ABONADO`
-    )
-VALUES (
-        1,
-        2,
-        '2025-03-25 22:06:26',
-        100
-    ),
-    (
-        2,
-        2,
-        '2025-03-25 22:08:29',
-        100
-    ),
-    (
-        3,
-        2,
-        '2025-03-25 22:08:37',
-        50
-    ),
-    (
-        4,
-        1,
-        '2025-03-25 22:10:47',
-        250
-    ),
-    (
-        5,
-        3,
-        '2025-03-25 22:12:43',
-        250
-    );
 
 -- --------------------------------------------------------
 
@@ -565,68 +533,6 @@ CREATE TABLE IF NOT EXISTS `tsit_cliente` (
 --
 -- Volcado de datos para la tabla `tsit_cliente`
 --
-
-INSERT INTO
-    `tsit_cliente` (
-        `ID_CLIENTE`,
-        `DSC_CEDULA`,
-        `DSC_NOMBRE`,
-        `DSC_APELLIDOUNO`,
-        `DSC_APELLIDODOS`,
-        `ESTADO`,
-        `FEC_CREADOEN`,
-        `FEC_MODIFICADOEN`,
-        `URL_FOTO`,
-        `DSC_DIRECCION`
-    )
-VALUES (
-        6,
-        '402640062',
-        'Josue Emanuel',
-        'Porras',
-        'Rojas',
-        1,
-        '2025-02-24 11:48:19',
-        NULL,
-        'public/Assets/image/clientes/402640062.png',
-        'abajo de la casa'
-    ),
-    (
-        7,
-        '701210527',
-        'Luis Enrique',
-        'Aguirre',
-        'Sosa',
-        2,
-        '2025-02-24 11:51:18',
-        '2025-02-24 12:25:52',
-        'public/Assets/image/clientes/701210527.png',
-        'dad'
-    ),
-    (
-        8,
-        '700620073',
-        'Yolanda',
-        'Gutierrez',
-        'Bonilla',
-        2,
-        '2025-02-24 12:20:49',
-        '2025-02-24 12:25:53',
-        'public/Assets/image/clientes/700620073.png',
-        'jhjshfjksd'
-    ),
-    (
-        9,
-        '701230284',
-        'Flor Jiseni',
-        'Gutierrez',
-        'Barrantes',
-        2,
-        '2025-02-24 12:22:15',
-        '2025-02-24 12:25:50',
-        'public/Assets/image/clientes/701230284.png',
-        'hfhfgh'
-    );
 
 -- --------------------------------------------------------
 
@@ -673,29 +579,6 @@ CREATE TABLE IF NOT EXISTS `tsit_correoproveedor` (
 -- Volcado de datos para la tabla `tsit_correoproveedor`
 --
 
-INSERT INTO
-    `tsit_correoproveedor` (
-        `ID_CORREOPROVEEDOR`,
-        `ID_PROVEEDOR`,
-        `DSC_CORREO`,
-        `FEC_CREADOEN`,
-        `ESTADO`
-    )
-VALUES (
-        4,
-        31,
-        'contacto@proveedor.com',
-        '2025-02-06 23:04:03',
-        1
-    ),
-    (
-        5,
-        31,
-        'ventas@proveedor.com',
-        '2025-02-06 23:04:03',
-        1
-    );
-
 -- --------------------------------------------------------
 
 --
@@ -716,40 +599,6 @@ CREATE TABLE IF NOT EXISTS `tsit_credito` (
 --
 -- Volcado de datos para la tabla `tsit_credito`
 --
-
-INSERT INTO
-    `tsit_credito` (
-        `ID_CREDITO`,
-        `ID_VENTA`,
-        `FEC_ULTIMOPAGO`,
-        `FEC_VENCIMIENTO`,
-        `MON_PENDIENTE`,
-        `ESTADO_CREDITO`
-    )
-VALUES (
-        1,
-        1,
-        '2025-03-21 11:39:38',
-        '2025-04-29 18:00:00',
-        0,
-        1
-    ),
-    (
-        2,
-        2,
-        '2025-03-23 13:26:47',
-        '2025-04-29 18:00:00',
-        0,
-        1
-    ),
-    (
-        3,
-        3,
-        '2025-03-23 18:38:09',
-        '2025-04-29 18:00:00',
-        0,
-        0
-    );
 
 -- --------------------------------------------------------
 
@@ -793,17 +642,6 @@ CREATE TABLE IF NOT EXISTS `tsit_detalleventa` (
 -- Volcado de datos para la tabla `tsit_detalleventa`
 --
 
-INSERT INTO
-    `tsit_detalleventa` (
-        `ID_DETALLEVENTA`,
-        `ID_VENTA`,
-        `ID_PRODUCTO`,
-        `MONT_UNITARIO`,
-        `CANTIDAD`
-    )
-VALUES (1, 1, 21, 150, 3),
-    (2, 2, 21, 75, 2),
-    (3, 3, 21, 50, 3);
 
 -- --------------------------------------------------------
 
@@ -889,6 +727,13 @@ VALUES (
         8,
         '2025-03-19 20:23:09',
         1
+    ), 
+    (
+        9,
+        10,
+        9,
+        '2025-03-19 20:23:09',
+        1
     );
 
 -- --------------------------------------------------------
@@ -919,32 +764,6 @@ CREATE TABLE IF NOT EXISTS `tsit_proveedor` (
 -- Volcado de datos para la tabla `tsit_proveedor`
 --
 
-INSERT INTO
-    `tsit_proveedor` (
-        `ID_PROVEEDOR`,
-        `IDENTIFICADOR_PROVEEDOR`,
-        `DSC_NOMBRE`,
-        `ID_TIPOPROVEEDOR`,
-        `DSC_VENTA`,
-        `CTA_BANCARIA`,
-        `DSC_DIRECCIONEXACTA`,
-        `ESTADO`,
-        `FEC_CREADOEN`,
-        `FEC_MODIFICADOEN`
-    )
-VALUES (
-        31,
-        'SUP-20250206 23040-986ba2b3',
-        'Proveedor Ejemplo S.A.',
-        1,
-        'Venta  de construcción',
-        'cta-77',
-        'los lirios',
-        1,
-        '2025-02-06 23:04:03',
-        '2025-02-06 23:44:41'
-    );
-
 -- --------------------------------------------------------
 
 --
@@ -967,56 +786,6 @@ CREATE TABLE IF NOT EXISTS `tsit_telefonocliente` (
 -- Volcado de datos para la tabla `tsit_telefonocliente`
 --
 
-INSERT INTO
-    `tsit_telefonocliente` (
-        `ID_TELEFONOCLIENTE`,
-        `ID_CLIENTE`,
-        `DSC_TELEFONO`,
-        `FEC_CREADOEN`,
-        `FEC_MODIFICADOEN`,
-        `ESTADO`
-    )
-VALUES (
-        7,
-        6,
-        '11223344',
-        '2025-02-24 11:48:19',
-        NULL,
-        1
-    ),
-    (
-        8,
-        7,
-        '11223344',
-        '2025-02-24 11:51:18',
-        NULL,
-        1
-    ),
-    (
-        9,
-        8,
-        '89204863',
-        '2025-02-24 12:20:49',
-        NULL,
-        1
-    ),
-    (
-        10,
-        8,
-        '84602655',
-        '2025-02-24 12:20:49',
-        NULL,
-        1
-    ),
-    (
-        11,
-        9,
-        '88776655',
-        '2025-02-24 12:22:15',
-        NULL,
-        1
-    );
-
 -- --------------------------------------------------------
 
 --
@@ -1037,29 +806,6 @@ CREATE TABLE IF NOT EXISTS `tsit_telefonoproveedor` (
 --
 -- Volcado de datos para la tabla `tsit_telefonoproveedor`
 --
-
-INSERT INTO
-    `tsit_telefonoproveedor` (
-        `ID_TELEFONOPROVEEDOR`,
-        `ID_PROVEEDOR`,
-        `DSC_TELEFONO`,
-        `FEC_CREADOEN`,
-        `ESTADO`
-    )
-VALUES (
-        4,
-        31,
-        '12345678',
-        '2025-02-06 23:04:03',
-        1
-    ),
-    (
-        5,
-        31,
-        '87654321',
-        '2025-02-06 23:04:03',
-        1
-    );
 
 -- --------------------------------------------------------
 
@@ -1144,56 +890,6 @@ CREATE TABLE IF NOT EXISTS `tsit_venta` (
 --
 -- Volcado de datos para la tabla `tsit_venta`
 --
-
-INSERT INTO
-    `tsit_venta` (
-        `ID_VENTA`,
-        `ID_CLIENTE`,
-        `FEC_VENTA`,
-        `PORCENT_IMPUESTO`,
-        `METODO_PAGO`,
-        `DSC_VENTA`,
-        `ESTADO_CREDITO`,
-        `MONT_SUBTOTAL`,
-        `PORCENT_DESCUENTO`,
-        `ESTADO`
-    )
-VALUES (
-        1,
-        9,
-        '2025-03-21 11:39:38',
-        13,
-        'Tarjeta',
-        'Descuento por temporada',
-        1,
-        250,
-        10,
-        1
-    ),
-    (
-        2,
-        9,
-        '2025-03-23 13:26:47',
-        13,
-        'Tarjeta',
-        'Descuento por temporada',
-        1,
-        250,
-        10,
-        1
-    ),
-    (
-        3,
-        8,
-        '2025-03-23 18:38:09',
-        13,
-        'Tarjeta',
-        'Hola',
-        1,
-        250,
-        10,
-        1
-    );
 
 -- --------------------------------------------------------
 
