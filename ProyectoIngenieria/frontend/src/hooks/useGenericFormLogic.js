@@ -38,6 +38,12 @@ export function useGenericFormLogic({
   }, [initialData, supplierTypes]);
 
   useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+        setFormData(initialData);
+    }
+}, [initialData]);
+
+  useEffect(() => {
     const worker = new Worker("workers/searchPerson.worker.js");
     worker.onmessage = ({ data }) => {
       if (data) {

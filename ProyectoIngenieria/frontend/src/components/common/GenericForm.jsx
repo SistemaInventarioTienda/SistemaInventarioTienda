@@ -17,6 +17,7 @@ function GenericForm({
     categories = [],
     onSubmit,
     onCancel,
+    onFieldChange
 }) {
 
     //console.log("onSubmit recibido en GenericForm:", onSubmit);
@@ -46,19 +47,7 @@ function GenericForm({
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [quantity, setQuantity] = useState(1);
     const [formValues, setFormValues] = useState(initialData);
-
-    // useBarcodeScanner({
-    //     enabled: mode !== 'view',
-    //     onScan: (barcode) => {
-    //         setFormData(prev => ({
-    //             ...prev,
-    //             DSC_CODIGO_BARRAS: barcode
-    //         }));
-    //     }
-    // });
-
 
     useEffect(() => {
         if (errorMessages.length > 0) {
@@ -86,11 +75,7 @@ function GenericForm({
     const handleDatePickerChange = (fieldName, date) => {
         setFormValues({ ...formValues, [fieldName]: date });
     };
-    //useState para componente de rango
-    // const handleQuantityChange = (newValue) => {
-    //     setQuantity(newValue);
-    //     };
-
+   
     console.log("Datos Iniciales en GenericForm:", initialData);
     // Renderizador de campos dinámicos
     const renderField = (field) => {
@@ -113,13 +98,12 @@ function GenericForm({
         if (field.type === "date") {
             return (
                 <DatePicker
-                    //label={field.label} // Pasa la etiqueta del campo
                     placeholder={field.placeholder || "Selecciona una fecha"}
-                    value={formValues[field.name]} // Valor inicial del DatePicker
-                    onChange={(date) => handleDatePickerChange(field.name, date)} // Maneja cambios
-                    allowPastDates={field.allowPastDates || false} // Permite fechas pasadas
-                    dateFormat={field.dateFormat || "d/m/Y"} // Formato de fecha
-                    enableTime={field.enableTime || false} // Habilita selección de hora
+                    value={formValues[field.name]}
+                    onChange={(date) => handleDatePickerChange(field.name, date)}
+                    allowPastDates={field.allowPastDates || false}
+                    dateFormat={field.dateFormat || "d/m/Y"}
+                    enableTime={field.enableTime || false}
                 />
             );
         }
@@ -146,7 +130,7 @@ function GenericForm({
             } else if (field.name === "SUBCATEGORIA") {
                 options = [
                     { value: "", label: "Seleccione la subcategoría" },
-                    ...localSubcategoriesTypes.map((type) => ({
+                    ...subcategoriesTypes.map((type) => ({
                         value: type.ID_SUBCATEGORIA,
                         label: type.DSC_NOMBRE,
                     })),
@@ -174,10 +158,19 @@ function GenericForm({
                 <Select
                     name={field.name}
                     value={formData[field.name] || ""}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                        handleChange(e);
+                        if (onFieldChange) {
+                            const { name, value } = e.target;
+                            onFieldChange(name, value);
+                        }
+                    }}                    
                     options={options}
                     required={field.required}
-                    disabled={mode === "view"}
+                    disabled={
+                        mode === "view" ||
+                        (field.name === "SUBCATEGORIA" && !formData.CATEGORIA) // Nueva condición
+                    }
                 />
             );
         }

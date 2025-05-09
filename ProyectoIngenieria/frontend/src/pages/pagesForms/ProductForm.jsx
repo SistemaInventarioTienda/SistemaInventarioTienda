@@ -3,10 +3,9 @@ import GenericForm from '../../components/common/GenericForm';
 import { productConfig } from "../../config/entities/productConfig";
 
 function ProductForm({ mode, initialData, onSubmit, onCancel }) {
-
     const [categories, setCategories] = useState([]);
     const [subcategoriesTypes, setSubcategoriesTypes] = useState([]);
-    const [formData, setFormData] = useState(null);
+    const [formData, setFormData] = useState({}); // Inicializar como objeto vacío
 
     // Cargar categorías y subcategorías al montar el componente
     useEffect(() => {
@@ -40,9 +39,8 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
                     setFormData({
                         ...initialData,
                         SUBCATEGORIA: matchedType ? matchedType.ID_SUBCATEGORIA : "",
+                        CATEGORIA: matchedType ? matchedType.ID_CATEGORIA : "",
                     });
-                } else {
-                    setFormData({});
                 }
             } catch (error) {
                 console.error("Error al obtener los tipos de subcategorías:", error);
@@ -53,15 +51,10 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
         fetchSubcategoriesTypes();
     }, [initialData]);
 
-    // Si los datos del formulario aún no están listos
-    if (!formData) {
-        return <p>Cargando...</p>;
-    }
-
     // Filtrar subcategorías según la categoría seleccionada
-    const filteredSubcategories = formData.ID_CATEGORIA
+    const filteredSubcategories = formData?.CATEGORIA
         ? subcategoriesTypes.filter(
-            (sub) => sub.ID_CATEGORIA === formData.ID_CATEGORIA
+            (sub) => sub.ID_CATEGORIA === formData.CATEGORIA
         )
         : [];
 
@@ -70,12 +63,22 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
         const updatedFormData = { ...formData, [field]: value };
 
         // Si cambia la categoría, limpia la subcategoría seleccionada
-        if (field === 'ID_CATEGORIA') {
+        if (field === 'CATEGORIA') {
             updatedFormData.SUBCATEGORIA = '';
         }
 
         setFormData(updatedFormData);
     };
+
+    useEffect(() => {
+        if (formData?.CATEGORIA) {
+            const filtered = subcategoriesTypes.filter(
+                (sub) => sub.ID_CATEGORIA === formData.CATEGORIA
+            );
+            console.log("Subcategorías filtradas:", filtered);
+        }
+    }, [formData?.CATEGORIA, subcategoriesTypes]);
+    
 
     return (
         <GenericForm
@@ -86,8 +89,8 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
             onSubmit={onSubmit}
             onCancel={onCancel}
             categories={categories}
-            subcategoriesTypes={filteredSubcategories} // Pasar solo las subcategorías filtradas
-            onFieldChange={handleChange} // Pasar el manejador de cambios
+            subcategoriesTypes={filteredSubcategories}
+            onFieldChange={handleChange}
         />
     );
 }
