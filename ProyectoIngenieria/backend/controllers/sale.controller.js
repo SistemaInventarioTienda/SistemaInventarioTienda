@@ -5,6 +5,7 @@ import Product from "../models/product.model.js";
 import Client from "../models/client.model.js";
 import Config from "../models/config.model.js";
 import { createReceiptPDF } from "./report.controller.js";
+import { sendReceiptEmail } from "../utils/sendEmail.js";
 
 
 export const createSale = async (req, res) => {
@@ -133,12 +134,19 @@ export const createSale = async (req, res) => {
 
 
         const store = await Config.findAll();
-        const recibe = await createReceiptPDF(date, store[0], {
+        const receipt = await createReceiptPDF(date, store[0], {
             PORCENT_IMPUESTO: crdSale.PORCENT_IMPUESTO, MONT_SUBTOTAL: crdSale.MONT_SUBTOTAL, PORCENT_DESCUENTO: crdSale.PORCENT_DESCUENTO,
             FEC_VENTA: crdSale.FEC_VENTA, METODO_PAGO: crdSale.METODO_PAGO, DSC_VENTA: crdSale.DSC_VENTA, ESTADO_CREDITO: crdSale.ESTADO_CREDITO,
             details: products, client: client
         })
-        res.status(200).json({ message: 'Venta realizada Correctamente', data: recibe?.data });
+        
+        // if (client) {
+        //     sendReceiptEmail(
+        //         {name: client.DSC_NOMBRE, to: "", store: {name: store.DSC_NOMBRE}, files: {name: receipt?.data?.filename, path: receipt?.data?.downloadLink, type: "application/pdf"}}
+        //     )
+        // }
+
+        res.status(200).json({ message: 'Venta realizada Correctamente', data: receipt?.data });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al realizar la venta', error });

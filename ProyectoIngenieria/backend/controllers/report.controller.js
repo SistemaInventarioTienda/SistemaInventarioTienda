@@ -258,7 +258,8 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
                 status: 200,
                 data: {
                     message: "PDF generado exitosamente",
-                    downloadLink: `http://localhost:4000/api/reports/download_pdf?file=Recibo/${fileName}`
+                    downloadLink: `http://localhost:4000/api/reports/download_pdf?file=Recibo/${fileName}`,
+                    filename: fileName
                 }
             });
         });
