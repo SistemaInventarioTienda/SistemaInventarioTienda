@@ -9,7 +9,7 @@ import { sendReceiptEmail } from "../utils/sendEmail.js";
 
 
 export const createSale = async (req, res) => {
-    const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, ESTADO, details_list, FEC_VENCIMIENTO } = req.body;
+    const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, ESTADO, details_list, FEC_VENCIMIENTO, DSC_CORREO = '' } = req.body;
 
     try {
 
@@ -140,11 +140,11 @@ export const createSale = async (req, res) => {
             details: products, client: client
         })
         
-        // if (client) {
-        //     sendReceiptEmail(
-        //         {name: client.DSC_NOMBRE, to: "", store: {name: store.DSC_NOMBRE}, files: {name: receipt?.data?.filename, path: receipt?.data?.downloadLink, type: "application/pdf"}}
-        //     )
-        // }
+        if (validateEmail(DSC_CORREO)) {
+            sendReceiptEmail(
+                {name: client.DSC_NOMBRE, to: DSC_CORREO, store: {name: store.DSC_NOMBRE}, files: {name: receipt?.data?.filename, path: receipt?.data?.downloadLink, type: "application/pdf"}}
+            )
+        }
 
         res.status(200).json({ message: 'Venta realizada Correctamente', data: receipt?.data });
     } catch (error) {
@@ -450,3 +450,12 @@ export const deleteSale = async (req, res) => {
         res.status(500).json({ message: 'Error al realizar la venta', error });
     }
 };
+
+
+function validateEmail(email) {
+    if(email !== ''){
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+    return false;
+}
