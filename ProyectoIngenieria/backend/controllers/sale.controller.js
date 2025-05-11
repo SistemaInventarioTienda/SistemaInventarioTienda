@@ -6,7 +6,8 @@ import Client from "../models/client.model.js";
 import Config from "../models/config.model.js";
 import { createReceiptPDF } from "./report.controller.js";
 import { sendReceiptEmail } from "../utils/sendEmail.js";
-
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
 export const createSale = async (req, res) => {
     const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, ESTADO, details_list, FEC_VENCIMIENTO, DSC_CORREO = '' } = req.body;
@@ -58,8 +59,8 @@ export const createSale = async (req, res) => {
             const montoConDescuento = montSubtotal - (montSubtotal * porcentDescuento / 100);
             montoTotalCredito = montoConDescuento + (montoConDescuento * porcentImpuesto / 100);
 
-            montoSale =  montoTotalCredito;
-        }else{
+            montoSale = montoTotalCredito;
+        } else {
             montoSale = montSubtotal;
         }
 
@@ -139,10 +140,21 @@ export const createSale = async (req, res) => {
             FEC_VENTA: crdSale.FEC_VENTA, METODO_PAGO: crdSale.METODO_PAGO, DSC_VENTA: crdSale.DSC_VENTA, ESTADO_CREDITO: crdSale.ESTADO_CREDITO,
             details: products, client: client
         })
-        
+
         if (validateEmail(DSC_CORREO)) {
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = dirname(__filename);
             sendReceiptEmail(
-                {name: client.DSC_NOMBRE, to: DSC_CORREO, store: {name: store.DSC_NOMBRE}, files: {name: receipt?.data?.filename, path: receipt?.data?.downloadLink, type: "application/pdf"}}
+                {
+                    name: client?.DSC_NOMBRE ?? "Anónimo",
+                    to: DSC_CORREO,
+                    store: { name: store[0].DSC_NOMBRE },
+                    files: [{
+                        name: receipt?.data?.filename,
+                        path: path.join(__dirname, `../uploads/pdf/Recibos/${receipt?.data?.filename}`),
+                        type: "application/pdf"
+                    }]
+                }
             )
         }
 
@@ -453,7 +465,7 @@ export const deleteSale = async (req, res) => {
 
 
 function validateEmail(email) {
-    if(email !== ''){
+    if (email !== '') {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     }

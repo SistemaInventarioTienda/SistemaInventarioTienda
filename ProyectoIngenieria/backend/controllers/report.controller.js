@@ -333,7 +333,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     currentY += 12;
 
         // Customer and Payment Information
-        doc.fontSize(8).text(`Cliente: ${saleData.Client?.DSC_NOMBRE || "Anónimo"}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+        doc.fontSize(8).text(`Cliente: ${saleData.client?.DSC_NOMBRE || "Anónimo"}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
         currentY += 8;
         doc.fontSize(8).text(`Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(saleData.FEC_VENTA).toLocaleTimeString()}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
         currentY += 8;
