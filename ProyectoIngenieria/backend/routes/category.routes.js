@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {getAllCategories,addCategory,UpdateCategory,searchCategories,DisableCategory} from "../controllers/category.controller.js";
+import {getAllCategories,addCategory,UpdateCategory,searchCategories,DisableCategory,getAllCategoriesWithoutPag} from "../controllers/category.controller.js";
 import { auth } from "../middlewares/auth.middleware.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { categorySchema } from "../schemas/category.schema.js";
@@ -14,7 +14,7 @@ const router = Router();
  router.put("/updateCategory",auth, validateSchema(categorySchema),UpdateCategory);
  router.get("/searchCategory", auth, searchCategories);
  router.put("/disableCategory",auth, validateSchema(categorySchema), DisableCategory);
-
+ router.get("/all_categories", auth, getAllCategoriesWithoutPag);
 
 
 
