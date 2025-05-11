@@ -4,6 +4,7 @@ import { getDateCR } from "../libs/date.js";
 import { validateSupplierData, validateSupplierDataUpdate } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
+import db from "../db.js";
 
 
 
@@ -609,3 +610,45 @@ async function validateEmailsSupplierUpdate(emails, supplierId) {
         throw error; // Propagar el error para manejarlo en el nivel superior
     }
 }
+
+
+
+export const supplierReport = async (req, res) => {
+    try {
+        const results = await db.query(`CALL sp_reporte_Proveedor();`, {
+            type: db.QueryTypes.SELECT,
+        });
+
+        if (!results || !results[0] || Object.keys(results[0]).length === 0) {
+            return res.status(204).json({ message: "No se encontraron proveedores." });
+        }
+
+        const rawData = Object.values(results[0]); 
+
+        const parsedResults = rawData.map((supplier) => {
+            let compras = [];
+
+            try {
+                let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
+                compras = JSON.parse(fixedComprasStr);
+            } catch (err) {
+                console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
+            }
+
+            return {
+                proveedor_nombre: supplier.proveedor_nombre,
+                direccion: supplier.DSC_DIRECCIONEXACTA,
+                telefonos: supplier.telefonos,
+                correos: supplier.correos,
+                compras: compras
+            };
+        });
+
+        return res.status(200).json(parsedResults);
+    } catch (error) {
+        console.error("Error al obtener el reporte de proveedores:", error.message);
+        return res.status(500).json({
+            message: "Error al obtener el reporte de proveedores.",
+        });
+    }
+};
