@@ -77,6 +77,24 @@ export const validatIbanAccount = async (account) => {
     }
  }
 
+ export const validatIbanBD = async (iban) => {
+    try {
+        const output = await validateIbanAccount (iban);
+        return (output!== false)? output : true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+ }
+
+ export const validatIbanBDUpdate = async (iban,IDENTIFICADOR_PROVEEDOR) => {
+    try {
+        const output = await validateIbanAccountUpdate (iban,IDENTIFICADOR_PROVEEDOR);
+        return (output!== false)? output : true;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+ }
+
 async function validateNameSupplier(name) {
     if (await existName(name))
         return ["El nombre del proveedor ya se encuentra en uso."];
@@ -89,6 +107,37 @@ async function validateNameSupplierUpdate(name,id) {
         return ["El nombre del proveedor ya se encuentra en uso."];
 
     return false;
+}
+
+async function validateIbanAccount(iban) {
+    const supplier=await getSupplierByIBAN(iban);
+    if (supplier)
+        return [`La cuenta IBAN ya se encuentra en uso: ${supplier.DSC_NOMBRE}`];
+
+    return false;
+}
+
+async function validateIbanAccountUpdate(iban,id) {
+    const supplier=await existIbanUpdate(iban,id);
+    if (supplier)
+        return [`La cuenta IBAN ya se encuentra en uso: ${supplier.DSC_NOMBRE}`];
+
+    return false;
+}
+
+async function getSupplierByIBAN(iban) {
+    const supplier = await Supplier.findOne({ where: { CTA_BANCARIA: iban } });
+    return supplier ? supplier : false;
+}
+
+async function existIbanUpdate(iban, id) {
+    const supplier = await Supplier.findOne({
+        where: {
+            CTA_BANCARIA: iban,
+            IDENTIFICADOR_PROVEEDOR: { [Op.ne]: id }
+        }
+    });
+    return supplier ? supplier : null;
 }
 
 async function existName(name) {

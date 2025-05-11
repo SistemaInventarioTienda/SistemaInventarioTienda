@@ -1,13 +1,15 @@
 import { getDateCR } from "../libs/date.js";
 import Config from "../models/config.model.js";
-import db from '../db.js';
-import PDFDocument from 'pdfkit';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { QueryTypes } from 'sequelize';
-import XLSX from 'xlsx';
+import db from "../db.js";
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path, { resolve } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { QueryTypes } from "sequelize";
+import XLSX from "xlsx";
+import { rejects } from "assert";
+import { object } from "zod";
 
 // See page sizes
 // https://pdfkit.org/docs/paper_sizes.html
@@ -15,116 +17,148 @@ import XLSX from 'xlsx';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const pdfDir = path.join(__dirname, '../uploads/pdf');
-const excelDir = path.join(__dirname, '../uploads/excel');
+const pdfDir = path.join(__dirname, "../uploads/pdf");
+const excelDir = path.join(__dirname, "../uploads/excel");
 // Create routes if they do not exist
 if (!fs.existsSync(pdfDir)) {
-    fs.mkdirSync(pdfDir, { recursive: true });
+  fs.mkdirSync(pdfDir, { recursive: true });
 }
 if (!fs.existsSync(excelDir)) {
-    fs.mkdirSync(excelDir, { recursive: true });
+  fs.mkdirSync(excelDir, { recursive: true });
 }
 
 export const createReport = async (req, res) => {
+  const { EXTENSION = "", TYPE = "", MIN_FEC = "", MAX_FEC = "" } = req.body;
 
-    const { EXTENSION = '', TYPE = '', MIN_FEC = '', MAX_FEC = '' } = req.body;
+  // validate extension {PDF / EXCEL}
+  if (EXTENSION === "" || (EXTENSION !== "pdf" && EXTENSION !== "xlsx"))
+    return res
+      .status(400)
+      .json({
+        message: "El formato a generar no es valido. Debe ser pdf o excel",
+      });
 
-    // validate extension {PDF / EXCEL}
-    if (EXTENSION === '' || (EXTENSION !== 'pdf' && EXTENSION !== 'xlsx'))
-        return res.status(400).json({ message: "El formato a generar no es valido. Debe ser pdf o excel" })
+  // validate dates
+  const min_f = validateDate(MIN_FEC);
+  const max_f = validateDate(MAX_FEC);
+  if (!min_f.isValid || !max_f.isValid) {
+    const message =
+      "La fecha de inicio " +
+      min_f.message +
+      " y la fecha de corte " +
+      max_f.message;
+    return res.status(400).json({ message: message });
+  }
 
-    // validate dates
-    const min_f = validateDate(MIN_FEC);
-    const max_f = validateDate(MAX_FEC);
-    if (!min_f.isValid || !max_f.isValid) {
-        const message = "La fecha de inicio " + min_f.message + " y la fecha de corte " + max_f.message;
-        return res.status(400).json({ message: message })
+  const currentDate = await getDateCR();
+  const store = await Config.findAll();
+  if (EXTENSION === "pdf") {
+    try {
+      const outputPDF = await switchPDF(
+        store,
+        currentDate,
+        TYPE,
+        MIN_FEC,
+        MAX_FEC
+      );
+      return res.status(outputPDF.status).json(outputPDF.data);
+    } catch (error) {
+      console.error("Error al generar el PDF:", error);
+      return res
+        .status(500)
+        .json({ message: "Error interno al generar el PDF." });
     }
-
-    const currentDate = await getDateCR();
-    const store = await Config.findAll();
-    if (EXTENSION === 'pdf') {
-        try {
-            const outputPDF = await switchPDF(store, currentDate, TYPE, MIN_FEC, MAX_FEC)
-            return res.status(outputPDF.status).json(outputPDF.data);
-        } catch (error) {
-            console.error("Error al generar el PDF:", error);
-            return res.status(500).json({ message: "Error interno al generar el PDF." });
-        }
-    } else if (EXTENSION === 'xlsx') {
-        try {
-            const outputExcel = await switchEXCEL(store, currentDate, TYPE, MIN_FEC, MAX_FEC);
-            return res.status(outputExcel.status).json(outputExcel.data);
-        } catch (error) {
-            console.error("Error al generar el PDF:", error);
-            return res.status(500).json({ message: "Error interno al generar el PDF." });
-        }
+  } else if (EXTENSION === "xlsx") {
+    try {
+      const outputExcel = await switchEXCEL(
+        store,
+        currentDate,
+        TYPE,
+        MIN_FEC,
+        MAX_FEC
+      );
+      return res.status(outputExcel.status).json(outputExcel.data);
+    } catch (error) {
+      console.error("Error al generar el PDF:", error);
+      return res
+        .status(500)
+        .json({ message: "Error interno al generar el PDF." });
     }
+  }
 
-    return res.status(400).json({ message: "El formato a generar no es valido. Debe ser pdf o excel" })
-}
+  return res
+    .status(400)
+    .json({
+      message: "El formato a generar no es valido. Debe ser pdf o excel",
+    });
+};
 
 export const downloadReport = async (req, res) => {
-    const fileName = req.query.file;
-    if (!fileName) {
-        return res.status(400).json({ error: "Nombre del archivo es requerido" });
-    }
+  const fileName = req.query.file;
+  if (!fileName) {
+    return res.status(400).json({ error: "Nombre del archivo es requerido" });
+  }
 
-    let filePath;
-    if (fileName.endsWith('.pdf')) {
-        filePath = path.join(pdfDir, fileName);
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"');
-    } else if (fileName.endsWith('.xlsx')) {
-        filePath = path.join(excelDir, fileName);
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', 'inline; filename="' + fileName + '"'); // Intentando visualización inline
-    } else {
-        return res.status(400).json({ error: "Formato de archivo no soportado." });
-    }
+  let filePath;
+  if (fileName.endsWith(".pdf")) {
+    filePath = path.join(pdfDir, fileName);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'inline; filename="' + fileName + '"');
+  } else if (fileName.endsWith(".xlsx")) {
+    filePath = path.join(excelDir, fileName);
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", 'inline; filename="' + fileName + '"'); // Intentando visualización inline
+  } else {
+    return res.status(400).json({ error: "Formato de archivo no soportado." });
+  }
 
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ error: "Archivo no encontrado." });
-    }
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: "Archivo no encontrado." });
+  }
 
-    try {
-        const fileStream = fs.createReadStream(filePath);
-        fileStream.pipe(res);
+  try {
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
 
-        fileStream.on('error', (err) => {
-            console.error('Error al leer el archivo:', err);
-            res.status(500).json({ error: 'Error al leer el archivo.' });
-        });
-
-    } catch (error) {
-        console.error('Error inesperado al descargar el archivo:', error);
-        res.status(500).json({ error: 'Error inesperado al descargar el archivo.' });
-    }
-}
-
+    fileStream.on("error", (err) => {
+      console.error("Error al leer el archivo:", err);
+      res.status(500).json({ error: "Error al leer el archivo." });
+    });
+  } catch (error) {
+    console.error("Error inesperado al descargar el archivo:", error);
+    res
+      .status(500)
+      .json({ error: "Error inesperado al descargar el archivo." });
+  }
+};
 
 function validateDate(dateString) {
-    const validFormat = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
-    if (!validFormat) {
-        return { isValid: false, message: 'tiene un formato inválido. Debe ser AAAA-MM-DD.' };
-    }
+  const validFormat = /^\d{4}-\d{2}-\d{2}$/.test(dateString);
+  if (!validFormat) {
+    return {
+      isValid: false,
+      message: "tiene un formato inválido. Debe ser AAAA-MM-DD.",
+    };
+  }
 
-    const dateObject = new Date(dateString);
-    if (isNaN(dateObject.getTime())) {
-        return { isValid: false, message: 'proporcionada no es válida.' };
-    }
+  const dateObject = new Date(dateString);
+  if (isNaN(dateObject.getTime())) {
+    return { isValid: false, message: "proporcionada no es válida." };
+  }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    dateObject.setHours(0, 0, 0, 0);
+  dateObject.setHours(0, 0, 0, 0);
 
-    if (dateObject > today) {
-        return { isValid: false, message: 'no puede ser futura.' };
-    }
+  if (dateObject > today) {
+    return { isValid: false, message: "no puede ser futura." };
+  }
 
-    return { isValid: true, message: 'es válida.' };
-
+  return { isValid: true, message: "es válida." };
 }
 
 // Function to create a PDF SALE
@@ -132,11 +166,10 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     return new Promise((resolve, reject) => {
         const title = "***Recibo***";
 
-        const pageWidthPoints = 227;
-        const pageHeightPoints = 623;
-        const margin = 10;
-        let currentY = margin;
-
+    const pageWidthPoints = 227;
+    const pageHeightPoints = 623;
+    const margin = 10;
+    let currentY = margin;
 
         const doc = new PDFDocument({
             size: [pageWidthPoints, pageHeightPoints]
@@ -148,40 +181,79 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
         }
         const writeStream = fs.createWriteStream(filePath);
 
-        doc.pipe(writeStream);
+    doc.pipe(writeStream);
 
-        // Store Information (Header)
-        doc.fontSize(10).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 12; // Space after name
+    // Store Information (Header)
+    doc
+      .fontSize(10)
+      .text(storeData.DSC_NOMBRE, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 12; // Space after name
 
-        doc.fontSize(8).text(`Teléfono: ${storeData.NUM_TELEFONO}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 10; // Space after phone
+    doc
+      .fontSize(8)
+      .text(`Teléfono: ${storeData.NUM_TELEFONO}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 10; // Space after phone
 
-        doc.fontSize(8).text(storeData.DSC_CORREO, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 10; // Space after email
+    doc
+      .fontSize(8)
+      .text(storeData.DSC_CORREO, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 10; // Space after email
 
-        doc.fontSize(8).text(storeData.DSC_DIRECCION, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 10; // Space after direction
+    doc
+      .fontSize(8)
+      .text(storeData.DSC_DIRECCION, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 10; // Space after direction
 
-        doc.fontSize(9).text(storeData.DSC_ESLOGAN, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin, italic: true });
-        currentY += 20; // Space after slogan
+    doc
+      .fontSize(9)
+      .text(storeData.DSC_ESLOGAN, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+        italic: true,
+      });
+    currentY += 20; // Space after slogan
 
+    // Title
+    doc
+      .fontSize(12)
+      .text(title, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15; // Space after title
 
-        // Title
-        doc.fontSize(12).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 15; // Space after title
-
-
-
-        // Sale Details Table Header
-        currentY += 5;
-        doc.fontSize(7).text('Producto', margin, currentY, { width: 80 });
-        doc.text('Cant.', margin + 85, currentY, { width: 30, align: 'right' });
-        doc.text('Precio U.', margin + 120, currentY, { width: 45, align: 'right' });
-        doc.text('Total', pageWidthPoints - margin - 40, currentY, { width: 40, align: 'right' });
-        currentY += 8;
-        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, currentY).lineTo(pageWidthPoints - margin, currentY).stroke();
-        currentY += 3;
+    // Sale Details Table Header
+    currentY += 5;
+    doc.fontSize(7).text("Producto", margin, currentY, { width: 80 });
+    doc.text("Cant.", margin + 85, currentY, { width: 30, align: "right" });
+    doc.text("Precio U.", margin + 120, currentY, {
+      width: 45,
+      align: "right",
+    });
+    doc.text("Total", pageWidthPoints - margin - 40, currentY, {
+      width: 40,
+      align: "right",
+    });
+    currentY += 8;
+    doc
+      .strokeColor("#000")
+      .lineWidth(0.5)
+      .moveTo(margin, currentY)
+      .lineTo(pageWidthPoints - margin, currentY)
+      .stroke();
+    currentY += 3;
 
         // Sale Details Table Rows
         let subtotalProducts = 0;
@@ -200,10 +272,15 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
             subtotalProducts += totalItem;
         });
 
-        // Separator before totals
-        currentY += 5;
-        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, currentY).lineTo(pageWidthPoints - margin, currentY).stroke();
-        currentY += 5;
+    // Separator before totals
+    currentY += 5;
+    doc
+      .strokeColor("#000")
+      .lineWidth(0.5)
+      .moveTo(margin, currentY)
+      .lineTo(pageWidthPoints - margin, currentY)
+      .stroke();
+    currentY += 5;
 
         // Totals
         const subTotal = subtotalProducts;
@@ -211,22 +288,49 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
         const tax = (subTotal - discount) * (saleData.PORCENT_IMPUESTO / 100);
         console.log(subTotal, discount, tax);
 
-        doc.fontSize(8).text('Subtotal:', margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
-        doc.text(subTotal.toFixed(2), pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
-        currentY += 8;
+    doc
+      .fontSize(8)
+      .text("Subtotal:", margin, currentY, {
+        align: "right",
+        width: pageWidthPoints - margin - 50,
+      });
+    doc.text(subTotal.toFixed(2), pageWidthPoints - margin - 40, currentY, {
+      align: "right",
+      width: 40,
+    });
+    currentY += 8;
 
-        doc.fontSize(8).text(`Impuesto (${saleData.PORCENT_IMPUESTO}%):`, margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
-        doc.text(tax.toFixed(2), pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
-        currentY += 8;
+    doc
+      .fontSize(8)
+      .text(`Impuesto (${saleData.PORCENT_IMPUESTO}%):`, margin, currentY, {
+        align: "right",
+        width: pageWidthPoints - margin - 50,
+      });
+    doc.text(tax.toFixed(2), pageWidthPoints - margin - 40, currentY, {
+      align: "right",
+      width: 40,
+    });
+    currentY += 8;
 
         doc.fontSize(8).text(`Descuento (${saleData.PORCENT_DESCUENTO}%):`, margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
         doc.text(`-${discount.toFixed(2)}`, pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
         currentY += 8;
 
-        doc.fontSize(9).font('Helvetica-Bold').text('Total: ', margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
-        doc.text((subTotal - discount + tax).toFixed(2), pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
-        doc.font('Helvetica');
-        currentY += 12;
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .text("Total: ", margin, currentY, {
+        align: "right",
+        width: pageWidthPoints - margin - 50,
+      });
+    doc.text(
+      (subTotal - discount + tax).toFixed(2),
+      pageWidthPoints - margin - 40,
+      currentY,
+      { align: "right", width: 40 }
+    );
+    doc.font("Helvetica");
+    currentY += 12;
 
         // Customer and Payment Information
         doc.fontSize(8).text(`Cliente: ${saleData.Client?.DSC_NOMBRE || "Anónimo"}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
@@ -247,11 +351,16 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
             currentY += 8;
         }
 
-        // Footer (Optional)
-        currentY += 15;
-        doc.fontSize(6).text('Gracias por su compra!', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+    // Footer (Optional)
+    currentY += 15;
+    doc
+      .fontSize(6)
+      .text("Gracias por su compra!", margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
 
-        doc.end();
+    doc.end();
 
         writeStream.on("finish", () => {
             resolve({
@@ -264,218 +373,341 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
             });
         });
 
-        writeStream.on("error", (error) => {
-            console.error("Error en writeStream:", error);
-            reject({ status: 500, data: { error: "Error al generar el PDF." } });
-        });
+    writeStream.on("error", (error) => {
+      console.error("Error en writeStream:", error);
+      reject({ status: 500, data: { error: "Error al generar el PDF." } });
     });
+  });
 }
 
 function formatDateTime(fechaHora) {
-    return fechaHora.replace(/[:\s]/g, '-');
+  return fechaHora.replace(/[:\s]/g, "-");
 }
 
 async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
-    switch (type) {
-        case 'ComprasXProveedor':
-            const [shoppingBySupplier] = await db.query(
-                'CALL getShoppingsReport(:MIN_FEC, :MAX_FEC)',
-                {
-                    replacements: {
-                        MIN_FEC: MIN_FEC,
-                        MAX_FEC: MAX_FEC
-                    },
-                    type: QueryTypes.SELECT
-                });
-            return await createShoppingPDF(currentDate, store[0], shoppingBySupplier, MIN_FEC, MAX_FEC);
-        case 'VentasXCliente':
-            const [salesByClient] = await db.query(
-                'CALL getSaleReport(:MIN_FEC, :MAX_FEC)',
-                {
-                    replacements: {
-                        MIN_FEC: MIN_FEC,
-                        MAX_FEC: MAX_FEC
-                    },
-                    type: QueryTypes.SELECT
-                });
-            return await createSalePDF(currentDate, store[0], salesByClient, MIN_FEC, MAX_FEC);
-        default:
-            return ({ status: 400, data: { error: "Informe no valido para generar." } });
-    }
+  switch (type) {
+    case "ComprasXProveedor":
+      const [shoppingBySupplier] = await db.query(
+        "CALL getShoppingsReport(:MIN_FEC, :MAX_FEC)",
+        {
+          replacements: {
+            MIN_FEC: MIN_FEC,
+            MAX_FEC: MAX_FEC,
+          },
+          type: QueryTypes.SELECT,
+        }
+      );
+      return await createShoppingPDF(
+        currentDate,
+        store[0],
+        shoppingBySupplier,
+        MIN_FEC,
+        MAX_FEC
+      );
+    case "VentasXCliente":
+      const [salesByClient] = await db.query(
+        "CALL getSaleReport(:MIN_FEC, :MAX_FEC)",
+        {
+          replacements: {
+            MIN_FEC: MIN_FEC,
+            MAX_FEC: MAX_FEC,
+          },
+          type: QueryTypes.SELECT,
+        }
+      );
+      return await createSalePDF(
+        currentDate,
+        store[0],
+        salesByClient,
+        MIN_FEC,
+        MAX_FEC
+      );
+
+    case "ReporteTransaccion":
+      const [TransactionReport] = await db.query(
+        "CALL getTransactionReport(:MIN_FEC_TRANSACCION, :MAX_FEC_TRANSACCION)",
+        {
+          replacements: {
+            MIN_FEC_TRANSACCION: MIN_FEC,
+            MAX_FEC_TRANSACCION: MAX_FEC,
+          },
+          type: QueryTypes.SELECT,
+        }
+      );
+      return await createTransactionPDF(
+        currentDate,
+        store[0],
+        TransactionReport,
+        MIN_FEC,
+        MAX_FEC
+      );
+    default:
+      return {
+        status: 400,
+        data: { error: "Informe no valido para generar." },
+      };
+  }
 }
 
-async function createShoppingPDF(currentDate, storeData, shoppingData, MIN_FEC, MAX_FEC) {
-    return new Promise((resolve, reject) => {
-        const title = "Informe de Compras por Proveedor";
-        const pageWidthPoints = 595.28;
-        const pageHeightPoints = 841.89;
-        const margin = 20;
-        let currentY = margin + 20;
-        let totalGastadoPeriodo = 0;
+async function createShoppingPDF(
+  currentDate,
+  storeData,
+  shoppingData,
+  MIN_FEC,
+  MAX_FEC
+) {
+  return new Promise((resolve, reject) => {
+    const title = "Informe de Compras por Proveedor";
+    const pageWidthPoints = 595.28;
+    const pageHeightPoints = 841.89;
+    const margin = 20;
+    let currentY = margin + 20;
+    let totalGastadoPeriodo = 0;
 
-        const doc = new PDFDocument({
-            size: 'A4'
-        });
-        const fileName = `Compras-${formatDateTime(currentDate)}.pdf`;
-        const filePath = path.join(pdfDir, 'Compras', fileName);
-        if (!fs.existsSync(path.join(pdfDir, 'Compras'))) {
-            fs.mkdirSync(path.join(pdfDir, 'Compras'), { recursive: true });
-        }
-        const writeStream = fs.createWriteStream(filePath);
-
-        doc.pipe(writeStream);
-
-        // Encabezado del informe
-        doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 15;
-        doc.fontSize(10).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 15;
-        doc.fontSize(8).text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 12;
-        doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 15; // Espacio después de la fecha del reporte
-
-        // Convertir el objeto shoppingData a un array
-        const comprasArray = Object.values(shoppingData);
-
-        // Agrupar compras por proveedor
-        const comprasPorProveedor = comprasArray.reduce((acc, compra) => {
-            const proveedor = compra.PROVEEDOR;
-            if (!acc[proveedor]) {
-                acc[proveedor] = {
-                    nombre: proveedor,
-                    telefono: compra.TEL_PROVEEDOR,
-                    compras: []
-                };
-            }
-            acc[proveedor].compras.push({
-                fecha: compra.FEC_COMPRA,
-                total: compra.MON_TOTAL,
-                productos: compra.PRODUCTOS.split(',').map(p => p.trim()),
-                cantidades: compra.CANTIDADES.split(',').map(c => c.trim())
-            });
-            return acc;
-        }, {});
-
-        // Tabla de compras por proveedor
-        const tableTop = currentY;
-        let rowY = tableTop;
-        const proveedorX = margin;
-        const telefonoX = proveedorX + 150;
-        const fechaX = telefonoX + 150;
-        const productoX = margin + 10;
-        const cantidadX = productoX + 150;
-        const montoX = pageWidthPoints - margin - 170;
-
-        // Cabecera de la tabla
-        doc.fontSize(9).font('Helvetica-Bold')
-            .text('Proveedor', proveedorX, rowY)
-            .text('Teléfono', telefonoX, rowY)
-            .text('Fecha Compra', fechaX, rowY)
-            .text('Monto Total', montoX - 100, rowY, { align: 'right' });
-        rowY += 12;
-        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, rowY).lineTo(pageWidthPoints - margin, rowY).stroke();
-        rowY += 5;
-        doc.font('Helvetica');
-
-        // Filas de la tabla
-        for (const proveedor in comprasPorProveedor) {
-            const proveedorData = comprasPorProveedor[proveedor];
-            doc.fontSize(9).font('Helvetica-Bold').text(proveedorData.nombre, proveedorX, rowY);
-            doc.text(proveedorData.telefono, telefonoX, rowY);
-            rowY += 10;
-            doc.font('Helvetica');
-
-            proveedorData.compras.forEach(compra => {
-                doc.fontSize(8)
-                    .text(compra.fecha, fechaX, rowY);
-
-                const compraStartY = rowY;
-                let lastProductY = rowY;
-
-                compra.productos.forEach((producto, index) => {
-                    doc.fontSize(8)
-                        .text(`- ${producto}`, productoX, rowY);
-                    if (compra.cantidades[index]) {
-                        doc.text(`(${compra.cantidades[index]})`, cantidadX, rowY);
-                    }
-                    lastProductY = rowY;
-                    rowY += 8;
-                });
-
-                // Dibujar el monto total después del último producto
-                doc.fontSize(8).text(compra.total.toFixed(2), montoX, lastProductY, { align: 'right' });
-                totalGastadoPeriodo += compra.total;
-
-                const lineY = rowY + 2;
-                doc.strokeColor('#ccc').lineWidth(0.5).lineJoin('miter').dash(5, { space: 5 }).moveTo(margin, lineY).lineTo(pageWidthPoints - margin, lineY).stroke();
-                doc.undash();
-                rowY += 8;
-            });
-            doc.moveDown();
-        }
-
-        // Mostrar el monto total gastado en el periodo
-        currentY = rowY + 15;
-        doc.fontSize(10).font('Helvetica-Bold').text(`Monto total del periodo: ${totalGastadoPeriodo.toFixed(2)}`, margin, currentY, { align: 'right' });
-        doc.font('Helvetica');
-
-        // Línea final del documento
-        currentY += 15;
-        doc.fontSize(8).text('***Ultima linea***', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-
-        doc.end();
-
-        writeStream.on("finish", () => {
-            resolve({
-                status: 200,
-                data: {
-                    message: "Informe de compras generado exitosamente",
-                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`
-                }
-            });
-        });
-
-        writeStream.on("error", (error) => {
-            console.error("Error al generar el informe de compras:", error);
-            reject({ status: 500, data: { error: "Error al generar el informe de compras." } });
-        });
+    const doc = new PDFDocument({
+      size: "A4",
     });
+    const fileName = `Compras-${formatDateTime(currentDate)}.pdf`;
+    const filePath = path.join(pdfDir, "Compras", fileName);
+    if (!fs.existsSync(path.join(pdfDir, "Compras"))) {
+      fs.mkdirSync(path.join(pdfDir, "Compras"), { recursive: true });
+    }
+    const writeStream = fs.createWriteStream(filePath);
+
+    doc.pipe(writeStream);
+
+    // Encabezado del informe
+    doc
+      .fontSize(12)
+      .text(storeData.DSC_NOMBRE, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15;
+    doc
+      .fontSize(10)
+      .text(title, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15;
+    doc
+      .fontSize(8)
+      .text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 12;
+    doc
+      .fontSize(8)
+      .text(`Reporte generado: ${currentDate}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15; // Espacio después de la fecha del reporte
+
+    // Convertir el objeto shoppingData a un array
+    const comprasArray = Object.values(shoppingData);
+
+    // Agrupar compras por proveedor
+    const comprasPorProveedor = comprasArray.reduce((acc, compra) => {
+      const proveedor = compra.PROVEEDOR;
+      if (!acc[proveedor]) {
+        acc[proveedor] = {
+          nombre: proveedor,
+          telefono: compra.TEL_PROVEEDOR,
+          compras: [],
+        };
+      }
+      acc[proveedor].compras.push({
+        fecha: compra.FEC_COMPRA,
+        total: compra.MON_TOTAL,
+        productos: compra.PRODUCTOS.split(",").map((p) => p.trim()),
+        cantidades: compra.CANTIDADES.split(",").map((c) => c.trim()),
+      });
+      return acc;
+    }, {});
+
+    // Tabla de compras por proveedor
+    const tableTop = currentY;
+    let rowY = tableTop;
+    const proveedorX = margin;
+    const telefonoX = proveedorX + 150;
+    const fechaX = telefonoX + 150;
+    const productoX = margin + 10;
+    const cantidadX = productoX + 150;
+    const montoX = pageWidthPoints - margin - 170;
+
+    // Cabecera de la tabla
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .text("Proveedor", proveedorX, rowY)
+      .text("Teléfono", telefonoX, rowY)
+      .text("Fecha Compra", fechaX, rowY)
+      .text("Monto Total", montoX - 100, rowY, { align: "right" });
+    rowY += 12;
+    doc
+      .strokeColor("#000")
+      .lineWidth(0.5)
+      .moveTo(margin, rowY)
+      .lineTo(pageWidthPoints - margin, rowY)
+      .stroke();
+    rowY += 5;
+    doc.font("Helvetica");
+
+    // Filas de la tabla
+    for (const proveedor in comprasPorProveedor) {
+      const proveedorData = comprasPorProveedor[proveedor];
+      doc
+        .fontSize(9)
+        .font("Helvetica-Bold")
+        .text(proveedorData.nombre, proveedorX, rowY);
+      doc.text(proveedorData.telefono, telefonoX, rowY);
+      rowY += 10;
+      doc.font("Helvetica");
+
+      proveedorData.compras.forEach((compra) => {
+        doc.fontSize(8).text(compra.fecha, fechaX, rowY);
+
+        const compraStartY = rowY;
+        let lastProductY = rowY;
+
+        compra.productos.forEach((producto, index) => {
+          doc.fontSize(8).text(`- ${producto}`, productoX, rowY);
+          if (compra.cantidades[index]) {
+            doc.text(`(${compra.cantidades[index]})`, cantidadX, rowY);
+          }
+          lastProductY = rowY;
+          rowY += 8;
+        });
+
+        // Dibujar el monto total después del último producto
+        doc
+          .fontSize(8)
+          .text(compra.total.toFixed(2), montoX, lastProductY, {
+            align: "right",
+          });
+        totalGastadoPeriodo += compra.total;
+
+        const lineY = rowY + 2;
+        doc
+          .strokeColor("#ccc")
+          .lineWidth(0.5)
+          .lineJoin("miter")
+          .dash(5, { space: 5 })
+          .moveTo(margin, lineY)
+          .lineTo(pageWidthPoints - margin, lineY)
+          .stroke();
+        doc.undash();
+        rowY += 8;
+      });
+      doc.moveDown();
+    }
+
+    // Mostrar el monto total gastado en el periodo
+    currentY = rowY + 15;
+    doc
+      .fontSize(10)
+      .font("Helvetica-Bold")
+      .text(
+        `Monto total del periodo: ${totalGastadoPeriodo.toFixed(2)}`,
+        margin,
+        currentY,
+        { align: "right" }
+      );
+    doc.font("Helvetica");
+
+    // Línea final del documento
+    currentY += 15;
+    doc
+      .fontSize(8)
+      .text("***Ultima linea***", margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+
+    doc.end();
+
+    writeStream.on("finish", () => {
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de compras generado exitosamente",
+          downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`,
+        },
+      });
+    });
+
+    writeStream.on("error", (error) => {
+      console.error("Error al generar el informe de compras:", error);
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe de compras." },
+      });
+    });
+  });
 }
 
-async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC) {
-    return new Promise((resolve, reject) => {
-        const title = "Informe de Ventas por Cliente";
-        const pageWidthPoints = 595.28;
-        const pageHeightPoints = 841.89;
-        const margin = 20;
-        let currentY = margin + 20;
-        let totalVentasPeriodo = 0;
+async function createSalePDF(
+  currentDate,
+  storeData,
+  salesData,
+  MIN_FEC,
+  MAX_FEC
+) {
+  return new Promise((resolve, reject) => {
+    const title = "Informe de Ventas por Cliente";
+    const pageWidthPoints = 595.28;
+    const pageHeightPoints = 841.89;
+    const margin = 20;
+    let currentY = margin + 20;
+    let totalVentasPeriodo = 0;
 
-        const doc = new PDFDocument({
-            size: 'A4'
-        });
-        const fileName = `Ventas-${formatDateTime(currentDate)}.pdf`;
-        const filePath = path.join(pdfDir, 'Ventas', fileName);
-        if (!fs.existsSync(path.join(pdfDir, 'Ventas'))) {
-            fs.mkdirSync(path.join(pdfDir, 'Ventas'), { recursive: true });
-        }
-        const writeStream = fs.createWriteStream(filePath);
+    const doc = new PDFDocument({
+      size: "A4",
+    });
+    const fileName = `Ventas-${formatDateTime(currentDate)}.pdf`;
+    const filePath = path.join(pdfDir, "Ventas", fileName);
+    if (!fs.existsSync(path.join(pdfDir, "Ventas"))) {
+      fs.mkdirSync(path.join(pdfDir, "Ventas"), { recursive: true });
+    }
+    const writeStream = fs.createWriteStream(filePath);
 
-        doc.pipe(writeStream);
+    doc.pipe(writeStream);
 
-        // Encabezado del informe
-        doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 15;
-        doc.fontSize(10).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 15;
-        doc.fontSize(8).text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 12;
-        doc.fontSize(8).text(`Fecha del Reporte: ${currentDate}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 25;
+    // Encabezado del informe
+    doc
+      .fontSize(12)
+      .text(storeData.DSC_NOMBRE, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15;
+    doc
+      .fontSize(10)
+      .text(title, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15;
+    doc
+      .fontSize(8)
+      .text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 12;
+    doc
+      .fontSize(8)
+      .text(`Fecha del Reporte: ${currentDate}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 25;
 
-        // Convertir el objeto salesData a un array
-        const ventasArray = Object.values(salesData);
+    // Convertir el objeto salesData a un array
+    const ventasArray = Object.values(salesData);
 
         // Agrupar ventas por cliente
         const ventasPorCliente = ventasArray.reduce((acc, venta) => {
@@ -500,51 +732,59 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
             return acc;
         }, {});
 
-        // Tabla de ventas por cliente
-        const tableTop = currentY;
-        let rowY = tableTop;
-        const clienteX = margin;
-        const telefonoX = clienteX + 180;
-        const fechaX = telefonoX + 120;
-        const productoX = margin + 10;
-        const cantidadX = productoX + 150;
-        const montoX = pageWidthPoints - margin - 70;
+    // Tabla de ventas por cliente
+    const tableTop = currentY;
+    let rowY = tableTop;
+    const clienteX = margin;
+    const telefonoX = clienteX + 180;
+    const fechaX = telefonoX + 120;
+    const productoX = margin + 10;
+    const cantidadX = productoX + 150;
+    const montoX = pageWidthPoints - margin - 70;
 
-        // Cabecera de la tabla
-        doc.fontSize(9).font('Helvetica-Bold')
-            .text('Cliente', clienteX, rowY)
-            .text('Teléfono', telefonoX, rowY)
-            .text('Fecha Venta', fechaX, rowY)
-            .text('Monto Total', montoX - 100, rowY, { align: 'right' });
-        rowY += 12;
-        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, rowY).lineTo(pageWidthPoints - margin, rowY).stroke();
-        rowY += 5;
-        doc.font('Helvetica');
+    // Cabecera de la tabla
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .text("Cliente", clienteX, rowY)
+      .text("Teléfono", telefonoX, rowY)
+      .text("Fecha Venta", fechaX, rowY)
+      .text("Monto Total", montoX - 100, rowY, { align: "right" });
+    rowY += 12;
+    doc
+      .strokeColor("#000")
+      .lineWidth(0.5)
+      .moveTo(margin, rowY)
+      .lineTo(pageWidthPoints - margin, rowY)
+      .stroke();
+    rowY += 5;
+    doc.font("Helvetica");
 
-        // Filas de la tabla
-        for (const cliente in ventasPorCliente) {
-            const clienteData = ventasPorCliente[cliente];
-            doc.fontSize(9).font('Helvetica-Bold').text(clienteData.nombre, clienteX, rowY);
-            doc.text(clienteData.telefono, telefonoX, rowY);
-            rowY += 10;
-            doc.font('Helvetica');
+    // Filas de la tabla
+    for (const cliente in ventasPorCliente) {
+      const clienteData = ventasPorCliente[cliente];
+      doc
+        .fontSize(9)
+        .font("Helvetica-Bold")
+        .text(clienteData.nombre, clienteX, rowY);
+      doc.text(clienteData.telefono, telefonoX, rowY);
+      rowY += 10;
+      doc.font("Helvetica");
 
-            clienteData.ventas.forEach(venta => {
-                doc.fontSize(8)
-                    .text(venta.fecha, fechaX, rowY);
+      clienteData.ventas.forEach((venta) => {
+        doc.fontSize(8).text(venta.fecha, fechaX, rowY);
 
-                const ventaStartY = rowY;
-                let lastProductY = rowY;
+        const ventaStartY = rowY;
+        let lastProductY = rowY;
 
-                venta.productos.forEach((producto, index) => {
-                    doc.fontSize(8)
-                        .text(`- ${producto}`, productoX, rowY);
-                    if (venta.cantidades[index]) {
-                        doc.text(`(${venta.cantidades[index]})`, cantidadX, rowY);
-                    }
-                    lastProductY = rowY;
-                    rowY += 8;
-                });
+        venta.productos.forEach((producto, index) => {
+          doc.fontSize(8).text(`- ${producto}`, productoX, rowY);
+          if (venta.cantidades[index]) {
+            doc.text(`(${venta.cantidades[index]})`, cantidadX, rowY);
+          }
+          lastProductY = rowY;
+          rowY += 8;
+        });
 
                 if (venta.total_abono === 0) {
                     doc.fontSize(8).text(venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
@@ -555,22 +795,213 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
                 }
 
 
-                const lineY = rowY + 2;
-                doc.strokeColor('#ccc').lineWidth(0.5).lineJoin('miter').dash(5, { space: 5 }).moveTo(margin, lineY).lineTo(pageWidthPoints - margin, lineY).stroke();
-                doc.undash();
-                rowY += 8;
-            });
-            doc.moveDown();
+        const lineY = rowY + 2;
+        doc
+          .strokeColor("#ccc")
+          .lineWidth(0.5)
+          .lineJoin("miter")
+          .dash(5, { space: 5 })
+          .moveTo(margin, lineY)
+          .lineTo(pageWidthPoints - margin, lineY)
+          .stroke();
+        doc.undash();
+        rowY += 8;
+      });
+      doc.moveDown();
+    }
+
+    // Mostrar el monto total de ventas en el periodo
+    currentY = rowY + 15;
+    doc
+      .fontSize(10)
+      .font("Helvetica-Bold")
+      .text(
+        `Monto total del periodo: ${totalVentasPeriodo.toFixed(2)}`,
+        margin,
+        currentY,
+        { align: "right" }
+      );
+    doc.font("Helvetica");
+
+    // Línea final del documento
+    currentY += 15;
+    doc
+      .fontSize(8)
+      .text("***Ultima linea***", margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+
+    doc.end();
+
+    writeStream.on("finish", () => {
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de ventas por cliente generado exitosamente",
+          downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`,
+        },
+      });
+    });
+
+    writeStream.on("error", (error) => {
+      console.error("Error al generar el informe de ventas:", error);
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe de ventas." },
+      });
+    });
+  });
+}
+
+async function createTransactionPDF(currentDate, storeData, transactionsData, MIN_FEC, MAX_FEC) {
+    return new Promise((resolve, reject) => {
+        const title = "Informe de Transacciones SINPE";
+        const pageWidthPoints = 595.28; // A4 width in points
+        const pageHeightPoints = 841.89; // A4 height in points
+        const margin = 20;
+        let currentY = margin + 20;
+        let totalEgresos = 0;
+
+        const doc = new PDFDocument({ size: 'A4' });
+        const fileName = `Transacciones-${formatDateTime(currentDate)}.pdf`;
+        const filePath = path.join(pdfDir, 'Transacciones', fileName);
+
+        if (!fs.existsSync(path.join(pdfDir, 'Transacciones'))) {
+            fs.mkdirSync(path.join(pdfDir, 'Transacciones'), { recursive: true });
         }
 
-        // Mostrar el monto total de ventas en el periodo
-        currentY = rowY + 15;
-        doc.fontSize(10).font('Helvetica-Bold').text(`Monto total del periodo: ${totalVentasPeriodo.toFixed(2)}`, margin, currentY, { align: 'right' });
+        const writeStream = fs.createWriteStream(filePath);
+        doc.pipe(writeStream);
+
+        // Encabezado del informe
+        doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
+            align: 'center',
+            width: pageWidthPoints - 2 * margin
+        });
+        currentY += 15;
+        doc.fontSize(10).text(title, margin, currentY, {
+            align: 'center',
+            width: pageWidthPoints - 2 * margin
+        });
+        currentY += 15;
+        doc.fontSize(8).text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
+            align: 'center',
+            width: pageWidthPoints - 2 * margin
+        });
+        currentY += 12;
+        doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, {
+            align: 'center',
+            width: pageWidthPoints - 2 * margin
+        });
+        currentY += 15;
+
+        // Tabla de transacciones
+        const tableTop = currentY;
+        let rowY = tableTop;
+
+        const fechaX = margin;
+        const descripcionX = fechaX + 120;
+        const metodoX = descripcionX + 130;
+        const montoX = pageWidthPoints - margin - 100;
+
+        // Cabecera de tabla
+        doc.fontSize(9).font('Helvetica-Bold')
+            .text('Fecha', fechaX, rowY)
+            .text('Descripción', descripcionX, rowY)
+            .text('Método Entrada', metodoX, rowY)
+            .text('Monto', montoX, rowY, { align: 'right' });
+
+        rowY += 12;
+        doc.strokeColor('#000').lineWidth(0.5)
+           .moveTo(margin, rowY)
+           .lineTo(pageWidthPoints - margin, rowY)
+           .stroke();
+        rowY += 5;
         doc.font('Helvetica');
 
-        // Línea final del documento
-        currentY += 15;
-        doc.fontSize(8).text('***Ultima linea***', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        // Convertir objeto a array si es necesario
+        const transactionsArray = toArrayList(transactionsData);
+
+        // Validar que transactionsData sea un array
+        if (!Array.isArray(transactionsArray)) {
+            console.error("transactionsData no es un array:", transactionsArray);
+            return reject({
+                status: 500,
+                data: { error: "Datos de transacciones inválidos." }
+            });
+        }
+
+        // Dibujar filas
+        transactionsArray.forEach(transaccion => {
+            // Si se acaba el espacio, agregar nueva página
+            if (rowY > pageHeightPoints - 40) {
+                doc.addPage();
+                rowY = margin + 20;
+
+                // Redibujar encabezado en nueva página
+                doc.fontSize(9).font('Helvetica-Bold')
+                    .text('Fecha', fechaX, rowY)
+                    .text('Descripción', descripcionX, rowY)
+                    .text('Método Entrada', metodoX, rowY)
+                    .text('Monto', montoX, rowY, { align: 'right' });
+                rowY += 12;
+
+                doc.strokeColor('#000').lineWidth(0.5)
+                   .moveTo(margin, rowY)
+                   .lineTo(pageWidthPoints - margin, rowY)
+                   .stroke();
+                rowY += 5;
+                doc.font('Helvetica');
+            }
+
+            // Formatear fecha
+            const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
+
+            // Establecer color según método de pago
+            if (transaccion.METODO_PAGO === 'Efectivo') {
+                doc.fillColor('green'); // Efectivo en verde
+            } else if (transaccion.METODO_PAGO === 'Tarjeta') {
+                doc.fillColor('blue'); // Tarjeta en azul
+            } else {
+                doc.fillColor('black'); // Otros en negro
+            }
+
+            // Mostrar datos de la transacción
+            doc.fontSize(8)
+                .text(formattedDate || '--', fechaX, rowY)
+                .text(transaccion.DSC_TRANSACCION || '--', descripcionX, rowY)
+                .text(transaccion.METODO_PAGO || '--', metodoX, rowY)
+                .text(parseFloat(transaccion.MONTO_PAGO || 0).toFixed(2), montoX, rowY, { align: 'right' });
+
+            // Restaurar color predeterminado
+            doc.fillColor('black');
+
+            // Acumular totales (todas son salidas)
+            totalEgresos += parseFloat(transaccion.MONTO_PAGO || 0);
+
+            rowY += 15;
+        });
+
+        // Totales
+        currentY = rowY + 15;
+        doc.fontSize(10).font('Helvetica-Bold')
+            .text(`Total Transferencias: ${transactionsArray.length}`, margin, currentY)
+            .text(`Monto Total Enviado: ${totalEgresos.toFixed(2)}`, margin + 200, currentY)
+            .text(
+                `Promedio por Envío: ${(totalEgresos / transactionsArray.length || 0).toFixed(2)}`,
+                margin + 400,
+                currentY,
+                { align: 'right' }
+            );
+        doc.font('Helvetica');
+
+        // Pie de página
+        currentY += 20;
+        doc.fontSize(8).text('*** Última línea ***', margin, currentY, {
+            align: 'center',
+            width: pageWidthPoints - 2 * margin
+        });
 
         doc.end();
 
@@ -578,142 +1009,299 @@ async function createSalePDF(currentDate, storeData, salesData, MIN_FEC, MAX_FEC
             resolve({
                 status: 200,
                 data: {
-                    message: "Informe de ventas por cliente generado exitosamente",
-                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`
+                    message: `${title} generado exitosamente`,
+                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Transacciones/${fileName}`
                 }
             });
         });
 
         writeStream.on("error", (error) => {
-            console.error("Error al generar el informe de ventas:", error);
-            reject({ status: 500, data: { error: "Error al generar el informe de ventas." } });
+            console.error("Error al generar el informe de transacciones:", error);
+            reject({ status: 500, data: { error: "Error al generar el informe de transacciones." } });
         });
     });
-
 }
 
-async function createShoppingEXCEL(currentDate, storeData, shoppingData, MIN_FEC, MAX_FEC) {
+async function createShoppingEXCEL(
+  currentDate,
+  storeData,
+  shoppingData,
+  MIN_FEC,
+  MAX_FEC
+) {
+  return new Promise((resolve, reject) => {
+    try {
+      const fileName = `Compras-${formatDateTime(currentDate)}.xlsx`;
+      const filePath = path.join(excelDir, "Compras", fileName);
+      if (!fs.existsSync(path.join(excelDir, "Compras"))) {
+        fs.mkdirSync(path.join(excelDir, "Compras"), { recursive: true });
+      }
+
+      const comprasArray = Object.values(shoppingData).reduce((acc, compra) => {
+        const productos = compra.PRODUCTOS.split(",").map((p) => p.trim());
+        const cantidades = compra.CANTIDADES.split(",").map((c) => c.trim());
+
+        productos.forEach((producto, index) => {
+          acc.push({
+            Proveedor: compra.PROVEEDOR,
+            "Teléfono Proveedor": compra.TEL_PROVEEDOR,
+            "Fecha Compra": compra.FEC_COMPRA,
+            Producto: producto,
+            Cantidad: cantidades[index] || "",
+            "Monto Total Compra": compra.MON_TOTAL,
+          });
+        });
+        return acc;
+      }, []);
+
+      const worksheet = XLSX.utils.json_to_sheet(comprasArray);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Compras");
+      XLSX.writeFile(workbook, filePath);
+
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de compras generado exitosamente en Excel",
+          downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`,
+        },
+      });
+    } catch (error) {
+      console.error("Error al generar el informe de compras en Excel:", error);
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe de compras en Excel." },
+      });
+    }
+  });
+}
+
+async function createSaleEXCEL(
+  currentDate,
+  storeData,
+  salesData,
+  MIN_FEC,
+  MAX_FEC
+) {
+  return new Promise((resolve, reject) => {
+    try {
+      const fileName = `Ventas-${formatDateTime(currentDate)}.xlsx`;
+      const filePath = path.join(excelDir, "Ventas", fileName);
+      if (!fs.existsSync(path.join(excelDir, "Ventas"))) {
+        fs.mkdirSync(path.join(excelDir, "Ventas"), { recursive: true });
+      }
+
+      const ventasArray = Object.values(salesData).reduce((acc, venta) => {
+        const productos = venta.PRODUCTOS
+          ? venta.PRODUCTOS.split(",").map((p) => p.trim())
+          : [];
+        const cantidades = venta.CANTIDADES
+          ? venta.CANTIDADES.split(",").map((c) => c.trim())
+          : [];
+
+        productos.forEach((producto, index) => {
+          acc.push({
+            Cliente: venta.CLIENTE || "Cliente Anónimo",
+            "Teléfono Cliente": venta.TEL_CLIENTE || "N/A",
+            "Fecha Venta": new Date(venta.FEC_VENTA).toLocaleDateString(),
+            Producto: producto,
+            Cantidad: cantidades[index] || "",
+            "Monto Subtotal": venta.MONT_SUBTOTAL,
+            Descuento: venta.DESCUENTO || 0,
+            "Impuesto (%)": venta.PORCENT_IMPUESTO,
+            "Método de Pago": venta.METODO_PAGO,
+          });
+        });
+        return acc;
+      }, []);
+
+      const worksheet = XLSX.utils.json_to_sheet(ventasArray);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Ventas");
+      XLSX.writeFile(workbook, filePath);
+
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de ventas generado exitosamente en Excel",
+          downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`,
+        },
+      });
+    } catch (error) {
+      console.error("Error al generar el informe de ventas en Excel:", error);
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe de ventas en Excel." },
+      });
+    }
+  });
+}
+
+async function createTransactionEXCEL(currentDate, storeData, transactionsData, MIN_FEC, MAX_FEC) {
     return new Promise((resolve, reject) => {
         try {
-            const fileName = `Compras-${formatDateTime(currentDate)}.xlsx`;
-            const filePath = path.join(excelDir, 'Compras', fileName);
-            if (!fs.existsSync(path.join(excelDir, 'Compras'))) {
-                fs.mkdirSync(path.join(excelDir, 'Compras'), { recursive: true });
+            const title = "Informe de Transacciones SINPE";
+            const fileName = `Transacciones-${formatDateTime(currentDate)}.xlsx`;
+            const filePath = path.join(excelDir, 'Transacciones', fileName);
+
+            if (!fs.existsSync(path.join(excelDir, 'Transacciones'))) {
+                fs.mkdirSync(path.join(excelDir, 'Transacciones'), { recursive: true });
             }
 
-            const comprasArray = Object.values(shoppingData).reduce((acc, compra) => {
-                const productos = compra.PRODUCTOS.split(',').map(p => p.trim());
-                const cantidades = compra.CANTIDADES.split(',').map(c => c.trim());
+            // Convertir objeto a array si es necesario
+            const transactionsArray = toArrayList(transactionsData);
 
-                productos.forEach((producto, index) => {
-                    acc.push({
-                        Proveedor: compra.PROVEEDOR,
-                        'Teléfono Proveedor': compra.TEL_PROVEEDOR,
-                        'Fecha Compra': compra.FEC_COMPRA,
-                        Producto: producto,
-                        Cantidad: cantidades[index] || '',
-                        'Monto Total Compra': compra.MON_TOTAL
-                    });
+            if (!Array.isArray(transactionsArray)) {
+                console.error("transactionsData no es un array:", transactionsData);
+                return reject({
+                    status: 500,
+                    data: { error: "Datos de transacciones inválidos." }
                 });
-                return acc;
-            }, []);
+            }
 
-            const worksheet = XLSX.utils.json_to_sheet(comprasArray);
+            let totalEgresos = 0;
+
+            // Preparar datos para la hoja de cálculo
+            const excelRows = [];
+
+            // Encabezado del informe (como filas)
+            excelRows.push([storeData.DSC_NOMBRE]);
+            excelRows.push([title]);
+            excelRows.push([`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`]);
+            excelRows.push([`Reporte generado: ${currentDate}`]);
+            excelRows.push([]); // Espacio
+
+            // Encabezado de tabla
+            excelRows.push(['Fecha', 'Descripción', 'Método Entrada', 'Monto']);
+
+            // Datos de cada transacción
+            transactionsArray.forEach(transaccion => {
+                const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
+                const monto = parseFloat(transaccion.MONTO_PAGO || 0);
+
+                excelRows.push([
+                    formattedDate,
+                    transaccion.DSC_TRANSACCION || '--',
+                    transaccion.METODO_PAGO || '--',
+                    monto.toFixed(2)
+                ]);
+
+                totalEgresos += monto;
+            });
+
+            // Estadísticas finales
+            excelRows.push([]);
+            excelRows.push([
+                `Total Transferencias: ${transactionsArray.length}`,
+                `Monto Total Enviado: ${totalEgresos.toFixed(2)}`,
+                `Promedio por Envío: ${(totalEgresos / transactionsArray.length || 0).toFixed(2)}`
+            ]);
+            excelRows.push(['*** Última línea ***']);
+
+            // Crear libro y hoja
+            const worksheet = XLSX.utils.aoa_to_sheet(excelRows);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Compras');
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Transacciones');
+
+            // Guardar archivo
             XLSX.writeFile(workbook, filePath);
 
             resolve({
                 status: 200,
                 data: {
-                    message: "Informe de compras generado exitosamente en Excel",
-                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`
+                    message: `${title} generado exitosamente en Excel`,
+                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Transacciones/${fileName}`
                 }
             });
 
         } catch (error) {
-            console.error("Error al generar el informe de compras en Excel:", error);
-            reject({ status: 500, data: { error: "Error al generar el informe de compras en Excel." } });
-        }
-    });
-}
-
-async function createSaleEXCEL(currentDate, storeData, salesData, MIN_FEC, MAX_FEC) {
-    return new Promise((resolve, reject) => {
-        try {
-            const fileName = `Ventas-${formatDateTime(currentDate)}.xlsx`;
-            const filePath = path.join(excelDir, 'Ventas', fileName);
-            if (!fs.existsSync(path.join(excelDir, 'Ventas'))) {
-                fs.mkdirSync(path.join(excelDir, 'Ventas'), { recursive: true });
-            }
-
-            const ventasArray = Object.values(salesData).reduce((acc, venta) => {
-                const productos = venta.PRODUCTOS ? venta.PRODUCTOS.split(',').map(p => p.trim()) : [];
-                const cantidades = venta.CANTIDADES ? venta.CANTIDADES.split(',').map(c => c.trim()) : [];
-
-                productos.forEach((producto, index) => {
-                    acc.push({
-                        Cliente: venta.CLIENTE || 'Cliente Anónimo',
-                        'Teléfono Cliente': venta.TEL_CLIENTE || 'N/A',
-                        'Fecha Venta': new Date(venta.FEC_VENTA).toLocaleDateString(),
-                        Producto: producto,
-                        Cantidad: cantidades[index] || '',
-                        'Monto Subtotal': venta.MONT_SUBTOTAL,
-                        Descuento: venta.DESCUENTO || 0,
-                        'Impuesto (%)': venta.PORCENT_IMPUESTO,
-                        'Método de Pago': venta.METODO_PAGO
-                    });
-                });
-                return acc;
-            }, []);
-
-            const worksheet = XLSX.utils.json_to_sheet(ventasArray);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Ventas');
-            XLSX.writeFile(workbook, filePath);
-
-            resolve({
-                status: 200,
-                data: {
-                    message: "Informe de ventas generado exitosamente en Excel",
-                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`
-                }
+            console.error("Error al generar el informe de transacciones en Excel:", error);
+            reject({
+                status: 500,
+                data: { error: "Error al generar el informe de transacciones en Excel." }
             });
-
-        } catch (error) {
-            console.error("Error al generar el informe de ventas en Excel:", error);
-            reject({ status: 500, data: { error: "Error al generar el informe de ventas en Excel." } });
         }
     });
 }
 
 async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
-    switch (type) {
-        case 'ComprasXProveedor':
-            const [shoppingBySupplier] = await db.query(
-                'CALL getShoppingsReport(:MIN_FEC, :MAX_FEC)',
-                {
-                    replacements: {
-                        MIN_FEC: MIN_FEC,
-                        MAX_FEC: MAX_FEC
-                    },
-                    type: QueryTypes.SELECT
-                }
-            );
-            return await createShoppingEXCEL(currentDate, store[0], shoppingBySupplier, MIN_FEC, MAX_FEC);
-        case 'VentasXCliente':
-            const [salesByClient] = await db.query(
-                'CALL getSaleReport(:MIN_FEC, :MAX_FEC)',
-                {
-                    replacements: {
-                        MIN_FEC: MIN_FEC,
-                        MAX_FEC: MAX_FEC
-                    },
-                    type: QueryTypes.SELECT
-                }
-            );
-            return await createSaleEXCEL(currentDate, store[0], salesByClient, MIN_FEC, MAX_FEC);
-        default:
-            return ({ status: 400, data: { error: "Informe no valido para generar en Excel." } });
-    }
+  switch (type) {
+    case "ComprasXProveedor":
+      const [shoppingBySupplier] = await db.query(
+        "CALL getShoppingsReport(:MIN_FEC, :MAX_FEC)",
+        {
+          replacements: {
+            MIN_FEC: MIN_FEC,
+            MAX_FEC: MAX_FEC,
+          },
+          type: QueryTypes.SELECT,
+        }
+      );
+      return await createShoppingEXCEL(
+        currentDate,
+        store[0],
+        shoppingBySupplier,
+        MIN_FEC,
+        MAX_FEC
+      );
+    case "VentasXCliente":
+      const [salesByClient] = await db.query(
+        "CALL getSaleReport(:MIN_FEC, :MAX_FEC)",
+        {
+          replacements: {
+            MIN_FEC: MIN_FEC,
+            MAX_FEC: MAX_FEC,
+          },
+          type: QueryTypes.SELECT,
+        }
+      );
+      return await createSaleEXCEL(
+        currentDate,
+        store[0],
+        salesByClient,
+        MIN_FEC,
+        MAX_FEC
+      );
+    case "ReporteTransaccion":
+      const [TransactionReport] = await db.query(
+        "CALL getTransactionReport(:MIN_FEC_TRANSACCION, :MAX_FEC_TRANSACCION)",
+        {
+          replacements: {
+            MIN_FEC_TRANSACCION: MIN_FEC,
+            MAX_FEC_TRANSACCION: MAX_FEC,
+          },
+          type: QueryTypes.SELECT,
+        }
+      );
+      return await createTransactionEXCEL(
+        currentDate,
+        store[0],
+        TransactionReport,
+        MIN_FEC,
+        MAX_FEC
+      );
+    default:
+      return {
+        status: 400,
+        data: { error: "Informe no valido para generar en Excel." },
+      };
+  }
+}
+
+function toArrayList(data) {
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'object' && data !== null) return Object.values(data);
+    return [];
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }) + ' ' + date.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }

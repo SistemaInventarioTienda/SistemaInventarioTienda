@@ -14,8 +14,10 @@ function GenericForm({
     entityName,
     supplierTypes = [],
     subcategoriesTypes = [],
+    categories = [],
     onSubmit,
     onCancel,
+    onFieldChange
 }) {
 
     //console.log("onSubmit recibido en GenericForm:", onSubmit);
@@ -45,20 +47,8 @@ function GenericForm({
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [quantity, setQuantity] = useState(1);
     const [formValues, setFormValues] = useState(initialData);
 
-    // useBarcodeScanner({
-    //     enabled: mode !== 'view',
-    //     onScan: (barcode) => {
-    //         setFormData(prev => ({
-    //             ...prev,
-    //             DSC_CODIGO_BARRAS: barcode
-    //         }));
-    //     }
-    // });
-
-    
     useEffect(() => {
         if (errorMessages.length > 0) {
             errorMessages.forEach((msg) => toast.error(msg));
@@ -85,11 +75,7 @@ function GenericForm({
     const handleDatePickerChange = (fieldName, date) => {
         setFormValues({ ...formValues, [fieldName]: date });
     };
-    //useState para componente de rango
-    // const handleQuantityChange = (newValue) => {
-    //     setQuantity(newValue);
-    //     };
-
+   
     console.log("Datos Iniciales en GenericForm:", initialData);
     // Renderizador de campos dinámicos
     const renderField = (field) => {
@@ -112,13 +98,12 @@ function GenericForm({
         if (field.type === "date") {
             return (
                 <DatePicker
-                //label={field.label} // Pasa la etiqueta del campo
-                placeholder={field.placeholder || "Selecciona una fecha"}
-                value={formValues[field.name]} // Valor inicial del DatePicker
-                onChange={(date) => handleDatePickerChange(field.name, date)} // Maneja cambios
-                allowPastDates={field.allowPastDates || false} // Permite fechas pasadas
-                dateFormat={field.dateFormat || "d/m/Y"} // Formato de fecha
-                enableTime={field.enableTime || false} // Habilita selección de hora
+                    placeholder={field.placeholder || "Selecciona una fecha"}
+                    value={formValues[field.name]}
+                    onChange={(date) => handleDatePickerChange(field.name, date)}
+                    allowPastDates={field.allowPastDates || false}
+                    dateFormat={field.dateFormat || "d/m/Y"}
+                    enableTime={field.enableTime || false}
                 />
             );
         }
@@ -134,26 +119,34 @@ function GenericForm({
                         label: type.DSC_NOMBRE,
                     })),
                 ];
+            } else if (field.name === "CATEGORIA") {
+                options = [
+                    { value: "", label: "Seleccione la categoría" },
+                    ...categories.map((cat) => ({
+                        value: cat.ID_CATEGORIA,
+                        label: cat.DSC_NOMBRE,
+                    })),
+                ];
             } else if (field.name === "SUBCATEGORIA") {
                 options = [
                     { value: "", label: "Seleccione la subcategoría" },
-                    ...localSubcategoriesTypes.map((type) => ({
+                    ...subcategoriesTypes.map((type) => ({
                         value: type.ID_SUBCATEGORIA,
                         label: type.DSC_NOMBRE,
                     })),
                 ];
-            } else if (field.name==="METODO_PAGO") {
+            } else if (field.name === "METODO_PAGO") {
                 options = [
                     { value: "", label: "Seleccione un metodo de pago" },
                     { value: "Efectivo", label: "Efectivo" },
                     { value: "Tarjeta", label: "Tarjeta" },
                 ];
-            } else if (field.name==="TIPO_TRANSACCION") {
+            } else if (field.name === "TIPO_TRANSACCION") {
                 options = [
                     { value: "", label: "Seleccione un metodo de pago" },
                     { value: "Sinpe", label: "Sinpe" },
                 ];
-            }else{
+            } else {
                 options = [
                     { value: "0", label: "Seleccione el estado" },
                     { value: 1, label: "Activo" },
@@ -165,19 +158,28 @@ function GenericForm({
                 <Select
                     name={field.name}
                     value={formData[field.name] || ""}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                        handleChange(e);
+                        if (onFieldChange) {
+                            const { name, value } = e.target;
+                            onFieldChange(name, value);
+                        }
+                    }}                    
                     options={options}
                     required={field.required}
-                    disabled={mode === "view"}
+                    disabled={
+                        mode === "view" ||
+                        (field.name === "SUBCATEGORIA" && !formData.CATEGORIA) // Nueva condición
+                    }
                 />
             );
         }
 
         // Agregar soporte para NumberInput
 
-         if (entityName === "Usuario" && mode === "edit" && field.name === "cedula") {
+        if (entityName === "Usuario" && mode === "edit" && field.name === "cedula") {
             const isCedulaBlocked = field.name === "cedula"; // Bloquea solo el campo de cédula
-        
+
             return (
                 <Input
                     name={field.name}
@@ -229,7 +231,7 @@ function GenericForm({
 
             {/* Renderizar ContactManager para teléfonos */}
             {/* || entityName === "Proveedor" */}
-            {(entityName === "Cliente" || entityName === "Proveedor" ) && (
+            {(entityName === "Cliente" || entityName === "Proveedor") && (
                 <div className="full-width">
                     <ContactManager
                         contacts={phones}
