@@ -152,6 +152,7 @@ const useSaleForm = () => {
         selectedPaymentMethod,
         selectedSaleType,
         note,
+        email,
         discount,
         taxRate,
         setSelectedClient,
