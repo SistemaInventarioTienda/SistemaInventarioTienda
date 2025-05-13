@@ -3,19 +3,21 @@ import { getDateCR } from "../libs/date.js";
 import { getDiscount, getTaxes, validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
 import Product from "../models/product.model.js";
 import Client from "../models/client.model.js";
-import { Op } from 'sequelize';
-
-
+import Config from "../models/config.model.js";
+import { createReceiptPDF } from "./report.controller.js";
+import { sendReceiptEmail } from "../utils/sendEmail.js";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
 export const createSale = async (req, res) => {
-    const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, ESTADO, details_list, FEC_VENCIMIENTO } = req.body;
+    const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, ESTADO, details_list, FEC_VENCIMIENTO, DSC_CORREO = '' } = req.body;
 
     try {
 
         let clientID = ID_CLIENTE && ID_CLIENTE > 0 ? ID_CLIENTE : null;
-
+        let client = null;
         if (clientID) {
-            const client = await Client.findOne({ where: { DSC_CEDULA: ID_CLIENTE } });
+            client = await Client.findOne({ where: { DSC_CEDULA: ID_CLIENTE } });
             if (!client) {
                 return res.status(400).json({ message: "Cliente no encontrado" });
             }
@@ -57,9 +59,8 @@ export const createSale = async (req, res) => {
             const montoConDescuento = montSubtotal - (montSubtotal * porcentDescuento / 100);
             montoTotalCredito = montoConDescuento + (montoConDescuento * porcentImpuesto / 100);
 
-            montoSale =  montoTotalCredito;
-            console.log("MONTO TOtal", montoTotalCredito);
-        }else{
+            montoSale = montoTotalCredito;
+        } else {
             montoSale = montSubtotal;
         }
 
@@ -74,9 +75,6 @@ export const createSale = async (req, res) => {
             PORCENT_DESCUENTO: porcentDescuento,
             ESTADO: ESTADO,
         });
-
-
-
 
         const idSale = crdSale.dataValues.ID_VENTA;
 
@@ -105,6 +103,7 @@ export const createSale = async (req, res) => {
 
         }
 
+        let products = [];
         if (details_list && Array.isArray(details_list) && details_list.length > 0) {
 
             await Promise.all(details_list.map(async (detailsProd) => {
@@ -124,12 +123,42 @@ export const createSale = async (req, res) => {
                             }
                         }
                     );
+                    products.push({
+                        CANTIDAD: detailsProd.CANTIDAD,
+                        MONT_UNITARIO: detailsProd.MONTO_UNITARIO,
+                        Product: product.dataValues
+                    })
                 }
             }));
 
         }
 
-        res.status(201).json({ message: 'Venta realizada Correctamente' });
+
+        const store = await Config.findAll();
+        const receipt = await createReceiptPDF(date, store[0], {
+            PORCENT_IMPUESTO: crdSale.PORCENT_IMPUESTO, MONT_SUBTOTAL: crdSale.MONT_SUBTOTAL, PORCENT_DESCUENTO: crdSale.PORCENT_DESCUENTO,
+            FEC_VENTA: crdSale.FEC_VENTA, METODO_PAGO: crdSale.METODO_PAGO, DSC_VENTA: crdSale.DSC_VENTA, ESTADO_CREDITO: crdSale.ESTADO_CREDITO,
+            details: products, client: client
+        })
+
+        if (validateEmail(DSC_CORREO)) {
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = dirname(__filename);
+            sendReceiptEmail(
+                {
+                    name: client?.DSC_NOMBRE ?? "Anónimo",
+                    to: DSC_CORREO,
+                    store: { name: store[0].DSC_NOMBRE },
+                    files: [{
+                        name: receipt?.data?.filename,
+                        path: path.join(__dirname, `../uploads/pdf/Recibos/${receipt?.data?.filename}`),
+                        type: "application/pdf"
+                    }]
+                }
+            )
+        }
+
+        res.status(200).json({ message: 'Venta realizada Correctamente', data: receipt?.data });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al realizar la venta', error });
@@ -433,3 +462,12 @@ export const deleteSale = async (req, res) => {
         res.status(500).json({ message: 'Error al realizar la venta', error });
     }
 };
+
+
+function validateEmail(email) {
+    if (email !== '') {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+    return false;
+}
