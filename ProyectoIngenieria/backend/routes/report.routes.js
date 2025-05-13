@@ -1,11 +1,6 @@
 import { Router } from "express";
-import {
-    downloadReport,
-    createReport
-} from "../controllers/report.controller.js";
-import {
-    getAllReports
-} from "../controllers/reports.controller.js";
+import { downloadReport , createReport } from "../controllers/report.controller.js";
+import { getAllReports } from "../controllers/reports.controller.js";
 import { auth } from "../middlewares/auth.middleware.js";
 
 const router = Router();

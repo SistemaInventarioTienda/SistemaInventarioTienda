@@ -7,6 +7,8 @@ const ReportPreview = ({ reportType, format, isLoading }) => {
         return 'Compras por proveedor';
       case 'VentasXCliente':
         return 'Ventas por cliente';
+      case 'ReporteTransaccion':
+        return 'Reporte de transacciones';
       default:
         return type;
     }

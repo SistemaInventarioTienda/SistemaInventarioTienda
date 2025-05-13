@@ -115,3 +115,78 @@ const sendEmail = async (data) => {
     console.log("Error al enviar el correo: ", error)
   }
 };
+
+export const sendReceiptEmail = async (data) => {
+  data['html'] = `
+        <!DOCTYPE html>
+        <html lang="es">
+
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Cambio de Contraseña Exitoso</title>
+            <style>
+                body {
+                    font-family: sans-serif;
+                    background-color: #f4f4f4;
+                    margin: 0;
+                    padding: 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                }
+
+                .container {
+                    background-color: #fff;
+                    padding: 30px;
+                    border-radius: 8px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    width: 90%;
+                    max-width: 600px;
+                    text-align: center;
+                }
+
+                h1 {
+                    color: #28a745;
+                    /* Verde éxito */
+                    margin-bottom: 20px;
+                }
+
+                h5 {
+                    color: #333;
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                }
+
+                .message {
+                    color: #555;
+                    display: block;
+                    margin-bottom: 20px;
+                }
+
+                .greeting {
+                    margin-bottom: 15px;
+                    font-style: italic;
+                    color: #777;
+                }
+            </style>
+        </head>
+
+        <body>
+            <div class="container">
+                <h1>Recibo de compra</h1>
+                <p class="greeting">Estimado/a ${data.name},</p>
+                <p class="message">Gracias por su compra en ${data.store.name}</p>
+                <p class="message">Adjunto encontrará un pdf con el recibo de su compra.</p>
+                <br>
+                <p style="font-size: 0.8em; color: #999;">Este es un correo electrónico automático. Por favor, no responda a
+                    este mensaje.</p>
+            </div>
+        </body>
+
+        </html>
+    `;
+  data['subject'] = "Recibo de compra";
+  sendEmail(data);
+}

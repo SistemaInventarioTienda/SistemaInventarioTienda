@@ -8,7 +8,8 @@ import { openReportViewerInNewWindow } from "../utils/openReportViewer";
 const reportTypeOptions = [
     { value: "", label: "Seleccionar tipo de reporte" },
     { value: "ComprasXProveedor", label: "Compras por proveedor" },
-    { value: "VentasXCliente", label: "Ventas por cliente" }
+    { value: "VentasXCliente", label: "Ventas por cliente" },
+    { value: "ReporteTransaccion", label: "Reporte de transacciones" }
 ];
 
 const formatOptions = [
