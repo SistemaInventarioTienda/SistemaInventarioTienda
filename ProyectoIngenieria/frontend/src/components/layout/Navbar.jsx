@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, UserRoundCogIcon, Moon, Sun } from 'lucide-react';
+
+
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import Badge from '@mui/material/Badge';
+
 import { Button } from '../common';
 import { useAuth } from "../../context/authContext";
 import UserMenu from '../features/UserMenu';
@@ -49,8 +54,14 @@ const Navbar = ({ isDarkMode, toggleDarkMode }) => {
         </Button>
 
         <Button className="btn icon-button me-3">
-          <Bell size={20} className="navbar-icon" />
+          {/* <Bell size={20} className="navbar-icon" /> */}
+          <Badge badgeContent={4} color="primary">
+          {/* <Bell color="action" /> */}
+            <NotificationsNoneIcon className="navbar-icon" 
+            />
+        </Badge>
         </Button>
+        
 
         <Button
           className="btn icon-button me-3"
