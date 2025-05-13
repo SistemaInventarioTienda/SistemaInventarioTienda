@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, UserRoundCogIcon, Moon, Sun } from 'lucide-react';
 
+import { useNavigate } from "react-router-dom";
 
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import Badge from '@mui/material/Badge';
@@ -14,6 +15,11 @@ const Navbar = ({ isDarkMode, toggleDarkMode }) => {
   const { isAuthenticated, user } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const navigate = useNavigate();
+
+  const goToNotificationPage = () => {
+    navigate("/notifications");
+  }
 
   const toggleUserMenu = () => {
     setIsUserMenuOpen(prev => !prev);
@@ -53,7 +59,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }) => {
           {isDarkMode ? <Sun size={20} className='navbar-icon' /> : <Moon size={20} className='navbar-icon' />}
         </Button>
 
-        <Button className="btn icon-button me-3">
+        <Button className="btn icon-button me-3" onClick={goToNotificationPage}>
           {/* <Bell size={20} className="navbar-icon" /> */}
           <Badge badgeContent={4} color="primary">
           {/* <Bell color="action" /> */}
