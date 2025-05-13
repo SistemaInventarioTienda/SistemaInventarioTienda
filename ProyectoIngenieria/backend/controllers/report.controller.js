@@ -16,7 +16,7 @@ import { object } from "zod";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
+const downloadLink = 'http://localhost:4000/api/reports/download_report?file='
 const pdfDir = path.join(__dirname, "../uploads/pdf");
 const excelDir = path.join(__dirname, "../uploads/excel");
 // Create routes if they do not exist
@@ -367,7 +367,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
         status: 200,
         data: {
           message: "PDF generado exitosamente",
-          downloadLink: `http://localhost:4000/api/reports/download_pdf?file=Recibo/${fileName}`,
+          downloadLink: `${downloadLink}Recibo/${fileName}`,
           filename: fileName
         }
       });
@@ -648,7 +648,7 @@ async function createShoppingPDF(
         status: 200,
         data: {
           message: "Informe de compras generado exitosamente",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`,
+          downloadLink: `${downloadLink}Compras/${fileName}`,
         },
       });
     });
@@ -853,7 +853,7 @@ async function createSalePDF(
         status: 200,
         data: {
           message: "Informe de ventas por cliente generado exitosamente",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`,
+          downloadLink: `${downloadLink}Ventas/${fileName}`,
         },
       });
     });
@@ -1024,7 +1024,7 @@ async function createTransactionPDF(currentDate, storeData, transactionsData, MI
         status: 200,
         data: {
           message: `${title} generado exitosamente`,
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Transacciones/${fileName}`
+          downloadLink: `${downloadLink}Transacciones/${fileName}`
         }
       });
     });
@@ -1077,7 +1077,7 @@ async function createShoppingEXCEL(
         status: 200,
         data: {
           message: "Informe de compras generado exitosamente en Excel",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`,
+          downloadLink: `${downloadLink}Compras/${fileName}`,
         },
       });
     } catch (error) {
@@ -1138,7 +1138,7 @@ async function createSaleEXCEL(
         status: 200,
         data: {
           message: "Informe de ventas generado exitosamente en Excel",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`,
+          downloadLink: `${downloadLink}Ventas/${fileName}`,
         },
       });
     } catch (error) {
@@ -1224,7 +1224,7 @@ async function createTransactionEXCEL(currentDate, storeData, transactionsData, 
         status: 200,
         data: {
           message: `${title} generado exitosamente en Excel`,
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Transacciones/${fileName}`
+          downloadLink: `${downloadLink}Transacciones/${fileName}`
         }
       });
 
@@ -1453,7 +1453,7 @@ async function createProductPDF(currentDate, storeData, productData) {
         status: 200,
         data: {
           message: "Informe de productos generado exitosamente",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Productos/${fileName}`,
+          downloadLink: `${downloadLink}Productos/${fileName}`,
         },
       });
     });
@@ -1496,7 +1496,7 @@ async function createProductEXCEL(currentDate, productData) {
         status: 200,
         data: {
           message: "Informe de productos generado exitosamente en Excel",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Productos/${fileName}`,
+          downloadLink: `${downloadLink}Productos/${fileName}`,
         },
       });
     } catch (error) {
