@@ -24,6 +24,7 @@ function mapRecords(permissions) {
         shopping: permissions.some(registro => registro.nombre === 'Compras' && registro.estado),
         transaction: permissions.some(registro => registro.nombre === 'Transacciones' && registro.estado),
         reports: permissions.some(registro => registro.nombre === 'Reportes' && registro.estado),
+        cashClosing: permissions.some(registro => registro.nombre === 'Reportes' && registro.estado),
     };
     return resultado;
 }

@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { useAuthPermissions } from '../../context/authPermissions';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, ScanBarcode, CreditCard, ShoppingBag, ClipboardList, PlusCircle, PackagePlus} from 'lucide-react';
+import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, 
+    BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, Banknote, 
+    CreditCard, ShoppingBag, ClipboardList, PlusCircle, PackagePlus } from 'lucide-react';
 import SubMenu from './SubMenu';
 import './styles/sidebar.css';
 
@@ -42,13 +44,14 @@ const Sidebar = () => {
             iconOpened: <ChevronDown size={24} />,
             iconClosed: <ChevronUp size={24} />,
             subNav: [
-                
+
                 { path: '/shopping/history', icon: ClipboardList, text: 'Historial de compras' },
                 { path: '/shopping/new', icon: PackagePlus, text: 'Nueva Compra' }
             ]
         },
-        { key: 'transaction', path: '/transaction', icon: FileText, text: 'Transacciones'},
+        { key: 'transaction', path: '/transaction', icon: FileText, text: 'Transacciones' },
         { key: 'reports', path: '/reports', icon: BarChart2, text: 'Reportes' },
+        { key: 'cashClosing', path: '/cashClosing', icon: Banknote, text: 'Cierre de Caja' },
     ];
 
     return (
