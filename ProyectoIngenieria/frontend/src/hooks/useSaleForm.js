@@ -3,6 +3,7 @@ import handleApiCall from '../utils/handleApiCall';
 import { salesConfig } from '../config/entities/salesConfig';
 import { toast } from "sonner";
 import { validateSale } from '../schemas/validations/validateSale';
+import { openReportViewerInNewWindow } from "../components/features/reports/utils/openReportViewer";
 const useSaleForm = () => {
 
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
@@ -127,10 +128,14 @@ const useSaleForm = () => {
         console.log("Datos de la venta:", JSON.stringify(saleData, null, 2));
 
         try {
-            await handleApiCall(
+            const response = await handleApiCall(
                 () => salesConfig.api.create(saleData),
                 "Venta registrada exitosamente."
             );
+            console.log(response)
+            if (response && response.downloadLink) {
+                openReportViewerInNewWindow("pdf", response.downloadLink)
+            }
             resetForm();
         } catch (error) {
             console.error("Error al registrar la venta:", error);
