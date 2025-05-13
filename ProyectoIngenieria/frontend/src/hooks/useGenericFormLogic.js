@@ -7,6 +7,7 @@ import { validateTransaction } from "../schemas/validations/validateTransaction"
 import { validatePayment } from "../schemas/validations/validatePayment";
 
 export function useGenericFormLogic({
+  mode,
   entityName,
   initialData = {},
   supplierTypes = [],
@@ -38,10 +39,10 @@ export function useGenericFormLogic({
   }, [initialData, supplierTypes]);
 
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
-        setFormData(initialData);
+    if (mode !== 'add' && initialData && Object.keys(initialData).length > 0) {
+      setFormData(initialData);
     }
-}, [initialData]);
+  }, [initialData]);
 
   useEffect(() => {
     const worker = new Worker("workers/searchPerson.worker.js");
@@ -108,11 +109,11 @@ export function useGenericFormLogic({
     // console.log("formData: ", formData);
     try {
       let errors = [];
-      
+
 
       if (entityName !== "Ajuste" && entityName !== "Abono" && entityName !== "Transaccion") {
         errors = validateGeneral(formData);
-      } 
+      }
 
       if (entityName === "Proveedor") {
         errors = [...errors, ...validateSupplier(formData, phones, emails)];
@@ -120,9 +121,9 @@ export function useGenericFormLogic({
         errors = [...errors, ...validateProduct(formData)];
       } else if (entityName === "Cliente") {
         errors = [...errors, ...validateClient(phones)];
-      }else if (entityName === "Transaccion"){
+      } else if (entityName === "Transaccion") {
         errors = [...errors, ...validateTransaction(formData)];
-      } else if (entityName === "Abono"){
+      } else if (entityName === "Abono") {
         errors = [...errors, ...validatePayment(formData)];
       }
 
@@ -164,12 +165,12 @@ export function useGenericFormLogic({
         delete dataToSubmit.correos;
         delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
         delete dataToSubmit.estado;
-      }else if (entityName === "Transaccion" && !formData.estado) {
+      } else if (entityName === "Transaccion" && !formData.estado) {
         delete dataToSubmit.correos;
         delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
         delete dataToSubmit.estado;
         delete dataToSubmit.rango;
-      }else if (entityName === "Usuario") {
+      } else if (entityName === "Usuario") {
         //console.log("Usuario: ", formData.estado);
         delete dataToSubmit.correos;
         delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen

@@ -3,6 +3,7 @@ import handleApiCall from '../utils/handleApiCall';
 import { salesConfig } from '../config/entities/salesConfig';
 import { toast } from "sonner";
 import { validateSale } from '../schemas/validations/validateSale';
+import { openReportViewerInNewWindow } from "../components/features/reports/utils/openReportViewer";
 const useSaleForm = () => {
 
     const [isConfirmationModalOpen, setConfirmationModalOpen] = React.useState(false);
@@ -15,6 +16,7 @@ const useSaleForm = () => {
     const [note, setNote] = useState("");
     const [taxRate, setTaxRate] = useState(0);
     const [discount, setDiscount] = useState(0);
+    const [email, setEmail] = useState("");
 
     // Calcular el total de la venta
     const calculateTotal = () => {
@@ -85,6 +87,7 @@ const useSaleForm = () => {
         setNote("");
         setDiscount(0);
         setTaxRate(0);
+        setEmail("");
     };
 
     const handleSubmit = async () => {
@@ -119,15 +122,20 @@ const useSaleForm = () => {
             PRODUCTS_LIST: selectedProducts,
             FEC_VENCIMIENTO: creditDueDate,
             ESTADO: ESTADO, 
+            DSC_EMAIL: email
         });
 
         console.log("Datos de la venta:", JSON.stringify(saleData, null, 2));
 
         try {
-            await handleApiCall(
+            const response = await handleApiCall(
                 () => salesConfig.api.create(saleData),
                 "Venta registrada exitosamente."
             );
+            console.log(response)
+            if (response && response.downloadLink) {
+                openReportViewerInNewWindow("pdf", response.downloadLink)
+            }
             resetForm();
         } catch (error) {
             console.error("Error al registrar la venta:", error);
@@ -149,6 +157,7 @@ const useSaleForm = () => {
         selectedPaymentMethod,
         selectedSaleType,
         note,
+        email,
         discount,
         taxRate,
         setSelectedClient,
@@ -167,6 +176,7 @@ const useSaleForm = () => {
         confirmationCallback,
         creditDueDate,
         setCreditDueDate,
+        setEmail
     };
 };
 

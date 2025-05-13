@@ -16,7 +16,7 @@ import { object } from "zod";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
+const downloadLink = 'http://localhost:4000/api/reports/download_report?file='
 const pdfDir = path.join(__dirname, "../uploads/pdf");
 const excelDir = path.join(__dirname, "../uploads/excel");
 // Create routes if they do not exist
@@ -162,7 +162,7 @@ function validateDate(dateString) {
 }
 
 // Function to create a PDF SALE
-async function createReceiptPDF(currentDate, storeData, saleData) {
+export async function createReceiptPDF(currentDate, storeData, saleData) {
   return new Promise((resolve, reject) => {
     const title = "***Recibo***";
 
@@ -172,12 +172,12 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
     let currentY = margin;
 
     const doc = new PDFDocument({
-      size: [pageWidthPoints, pageHeightPoints],
+      size: [pageWidthPoints, pageHeightPoints]
     });
-    const fileName = `Recibo-${currentDate}.pdf`;
-    const filePath = path.join(pdfDir, "Recibos", fileName);
-    if (!fs.existsSync(path.join(pdfDir, "Recibos"))) {
-      fs.mkdirSync(path.join(pdfDir, "Recibos"), { recursive: true });
+    const fileName = `Recibo-${formatDateTime(currentDate)}.pdf`;
+    const filePath = path.join(pdfDir, 'Recibos', fileName);
+    if (!fs.existsSync(path.join(pdfDir, 'Recibos'))) {
+      fs.mkdirSync(path.join(pdfDir, 'Recibos'), { recursive: true });
     }
     const writeStream = fs.createWriteStream(filePath);
 
@@ -256,29 +256,20 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
     currentY += 3;
 
     // Sale Details Table Rows
-    saleData.details.forEach((item) => {
+    let subtotalProducts = 0;
+    saleData.details.forEach(item => {
       const totalItem = item.CANTIDAD * item.MONT_UNITARIO;
-      doc
-        .fontSize(7)
-        .text(item.Product.DSC_NOMBRE, margin, currentY, { width: 80 });
-      doc.text(item.CANTIDAD.toString(), margin + 85, currentY, {
-        width: 30,
-        align: "right",
-      });
-      doc.text(item.MONT_UNITARIO.toFixed(2), margin + 120, currentY, {
-        width: 45,
-        align: "right",
-      });
-      doc.text(totalItem.toFixed(2), pageWidthPoints - margin - 40, currentY, {
-        width: 40,
-        align: "right",
-      });
+      doc.fontSize(7).text(item.Product.DSC_NOMBRE, margin, currentY, { width: 80 });
+      doc.text(item.CANTIDAD.toString(), margin + 85, currentY, { width: 30, align: 'right' });
+      doc.text(item.MONT_UNITARIO.toFixed(2), margin + 120, currentY, { width: 45, align: 'right' });
+      doc.text(totalItem.toFixed(2), pageWidthPoints - margin - 40, currentY, { width: 40, align: 'right' });
       currentY += 8;
       if (currentY > pageHeightPoints - 50) {
         doc.addPage({ size: [pageWidthPoints, pageHeightPoints] });
         currentY = margin + 10;
         // Optionally add header again on new page
       }
+      subtotalProducts += totalItem;
     });
 
     // Separator before totals
@@ -292,9 +283,8 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
     currentY += 5;
 
     // Totals
-    const subTotal = saleData.MONT_SUBTOTAL;
-    const discount =
-      (subTotal * ((saleData.PORCENT_DESCUENTO / subTotal) * 100)) / 100;
+    const subTotal = subtotalProducts;
+    const discount = subTotal * (saleData.PORCENT_DESCUENTO / 100);
     const tax = (subTotal - discount) * (saleData.PORCENT_IMPUESTO / 100);
     console.log(subTotal, discount, tax);
 
@@ -322,22 +312,8 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
     });
     currentY += 8;
 
-    doc
-      .fontSize(8)
-      .text(
-        `Descuento (${
-          (saleData.PORCENT_DESCUENTO / saleData.MONT_SUBTOTAL) * 100
-        }%):`,
-        margin,
-        currentY,
-        { align: "right", width: pageWidthPoints - margin - 50 }
-      );
-    doc.text(
-      `-${discount.toFixed(2)}`,
-      pageWidthPoints - margin - 40,
-      currentY,
-      { align: "right", width: 40 }
-    );
+    doc.fontSize(8).text(`Descuento (${saleData.PORCENT_DESCUENTO}%):`, margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
+    doc.text(`-${discount.toFixed(2)}`, pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
     currentY += 8;
 
     doc
@@ -357,53 +333,21 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
     currentY += 12;
 
     // Customer and Payment Information
-    doc
-      .fontSize(8)
-      .text(
-        `Cliente: ${saleData.Client?.DSC_NOMBRE || "Anónimo"}`,
-        margin,
-        currentY,
-        { width: pageWidthPoints - 2 * margin }
-      );
+    doc.fontSize(8).text(`Cliente: ${saleData.client?.DSC_NOMBRE || "Anónimo"}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
     currentY += 8;
-    doc
-      .fontSize(8)
-      .text(
-        `Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(
-          saleData.FEC_VENTA
-        ).toLocaleTimeString()}`,
-        margin,
-        currentY,
-        { width: pageWidthPoints - 2 * margin }
-      );
+    doc.fontSize(8).text(`Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(saleData.FEC_VENTA).toLocaleTimeString()}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
     currentY += 8;
-    doc
-      .fontSize(8)
-      .text(`Método de Pago: ${saleData.METODO_PAGO}`, margin, currentY, {
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(8).text(`Método de Pago: ${saleData.METODO_PAGO}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
     currentY += 8;
     if (saleData.DSC_VENTA) {
-      doc
-        .fontSize(8)
-        .text(`Nota: ${saleData.DSC_VENTA}`, margin, currentY, {
-          width: pageWidthPoints - 2 * margin,
-        });
+      doc.fontSize(8).text(`Nota: ${saleData.DSC_VENTA}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
       currentY += 8;
     }
-    if (saleData.ESTADO_CREDITO === 1) {
-      doc
-        .fontSize(8)
-        .text("Estado: Cancelado", margin, currentY, {
-          width: pageWidthPoints - 2 * margin,
-        });
+    if (saleData.ESTADO_CREDITO === 0) {
+      doc.fontSize(8).text('Estado: Cancelado', margin, currentY, { width: pageWidthPoints - 2 * margin });
       currentY += 8;
     } else {
-      doc
-        .fontSize(8)
-        .text("Estado: Pendiente", margin, currentY, {
-          width: pageWidthPoints - 2 * margin,
-        });
+      doc.fontSize(8).text('Estado: Pendiente', margin, currentY, { width: pageWidthPoints - 2 * margin });
       currentY += 8;
     }
 
@@ -423,8 +367,9 @@ async function createReceiptPDF(currentDate, storeData, saleData) {
         status: 200,
         data: {
           message: "PDF generado exitosamente",
-          downloadLink: `http://localhost:4000/api/reports/download_pdf?file=Recibo/${fileName}`,
-        },
+          downloadLink: `${downloadLink}Recibos/${fileName}`,
+          filename: fileName
+        }
       });
     });
 
@@ -495,6 +440,20 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
         TransactionReport,
         MIN_FEC,
         MAX_FEC
+      );
+    case 'ReporteProductos':
+      const [products] = await db.query(
+        "CALL sp_products_report(:MIN_FEC, :MAX_FEC)",
+        {
+          replacements: {
+            MIN_FEC: MIN_FEC,
+            MAX_FEC: MAX_FEC,
+          },
+          type: QueryTypes.SELECT
+        }
+      )
+      return await createProductPDF(
+        currentDate, store[0], products
       );
     default:
       return {
@@ -689,7 +648,7 @@ async function createShoppingPDF(
         status: 200,
         data: {
           message: "Informe de compras generado exitosamente",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`,
+          downloadLink: `${downloadLink}Compras/${fileName}`,
         },
       });
     });
@@ -766,30 +725,23 @@ async function createSalePDF(
 
     // Agrupar ventas por cliente
     const ventasPorCliente = ventasArray.reduce((acc, venta) => {
-      const cliente = venta.CLIENTE || "Cliente Anónimo";
+      const cliente = venta.CLIENTE || 'Cliente Anónimo';
       if (!acc[cliente]) {
         acc[cliente] = {
           nombre: cliente,
-          telefono: venta.TEL_CLIENTE || "N/A",
-          ventas: [],
+          telefono: venta.TEL_CLIENTE || 'N/A',
+          ventas: []
         };
       }
       const subtotal = venta.MONT_SUBTOTAL;
-      const descuento = subtotal * (venta.DESCUENTO / 100);
+      const descuento = (subtotal * (venta.DESCUENTO / 100));
       const impuesto = (subtotal - descuento) * (venta.PORCENT_IMPUESTO / 100);
       acc[cliente].ventas.push({
         fecha: new Date(venta.FEC_VENTA).toLocaleDateString(),
-        total:
-          venta.ESTADO === 1 && venta.ESTADO_CREDITO === 0
-            ? subtotal - descuento + impuesto
-            : subtotal,
-        productos: venta.PRODUCTOS
-          ? venta.PRODUCTOS.split(",").map((p) => p.trim())
-          : [],
-        cantidades: venta.CANTIDADES
-          ? venta.CANTIDADES.split(",").map((c) => c.trim())
-          : [],
-        total_abono: venta.TOTAL_ABONOS || 0,
+        total: (venta.ESTADO === 1 && venta.ESTADO_CREDITO === 0) ? subtotal - descuento + impuesto : subtotal,
+        productos: venta.PRODUCTOS ? venta.PRODUCTOS.split(',').map(p => p.trim()) : [],
+        cantidades: venta.CANTIDADES ? venta.CANTIDADES.split(',').map(c => c.trim()) : [],
+        total_abono: venta.TOTAL_ABONOS || 0
       });
       return acc;
     }, {});
@@ -849,23 +801,13 @@ async function createSalePDF(
         });
 
         if (venta.total_abono === 0) {
-          doc
-            .fontSize(8)
-            .text(venta.total.toFixed(2), montoX - 175, lastProductY, {
-              align: "right",
-            });
+          doc.fontSize(8).text(venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
           totalVentasPeriodo += venta.total;
         } else {
-          doc
-            .fontSize(8)
-            .text(
-              venta.total_abono.toFixed(2) + " / " + venta.total.toFixed(2),
-              montoX - 175,
-              lastProductY,
-              { align: "right" }
-            );
+          doc.fontSize(8).text(venta.total_abono.toFixed(2) + " / " + venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
           totalVentasPeriodo += venta.total_abono;
         }
+
 
         const lineY = rowY + 2;
         doc
@@ -911,7 +853,7 @@ async function createSalePDF(
         status: 200,
         data: {
           message: "Informe de ventas por cliente generado exitosamente",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`,
+          downloadLink: `${downloadLink}Ventas/${fileName}`,
         },
       });
     });
@@ -927,171 +869,171 @@ async function createSalePDF(
 }
 
 async function createTransactionPDF(currentDate, storeData, transactionsData, MIN_FEC, MAX_FEC) {
-    return new Promise((resolve, reject) => {
-        const title = "Informe de Transacciones SINPE";
-        const pageWidthPoints = 595.28; // A4 width in points
-        const pageHeightPoints = 841.89; // A4 height in points
-        const margin = 20;
-        let currentY = margin + 20;
-        let totalEgresos = 0;
+  return new Promise((resolve, reject) => {
+    const title = "Informe de Transacciones SINPE";
+    const pageWidthPoints = 595.28; // A4 width in points
+    const pageHeightPoints = 841.89; // A4 height in points
+    const margin = 20;
+    let currentY = margin + 20;
+    let totalEgresos = 0;
 
-        const doc = new PDFDocument({ size: 'A4' });
-        const fileName = `Transacciones-${formatDateTime(currentDate)}.pdf`;
-        const filePath = path.join(pdfDir, 'Transacciones', fileName);
+    const doc = new PDFDocument({ size: 'A4' });
+    const fileName = `Transacciones-${formatDateTime(currentDate)}.pdf`;
+    const filePath = path.join(pdfDir, 'Transacciones', fileName);
 
-        if (!fs.existsSync(path.join(pdfDir, 'Transacciones'))) {
-            fs.mkdirSync(path.join(pdfDir, 'Transacciones'), { recursive: true });
-        }
+    if (!fs.existsSync(path.join(pdfDir, 'Transacciones'))) {
+      fs.mkdirSync(path.join(pdfDir, 'Transacciones'), { recursive: true });
+    }
 
-        const writeStream = fs.createWriteStream(filePath);
-        doc.pipe(writeStream);
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream);
 
-        // Encabezado del informe
-        doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
-            align: 'center',
-            width: pageWidthPoints - 2 * margin
-        });
-        currentY += 15;
-        doc.fontSize(10).text(title, margin, currentY, {
-            align: 'center',
-            width: pageWidthPoints - 2 * margin
-        });
-        currentY += 15;
-        doc.fontSize(8).text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
-            align: 'center',
-            width: pageWidthPoints - 2 * margin
-        });
-        currentY += 12;
-        doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, {
-            align: 'center',
-            width: pageWidthPoints - 2 * margin
-        });
-        currentY += 15;
+    // Encabezado del informe
+    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
+      align: 'center',
+      width: pageWidthPoints - 2 * margin
+    });
+    currentY += 15;
+    doc.fontSize(10).text(title, margin, currentY, {
+      align: 'center',
+      width: pageWidthPoints - 2 * margin
+    });
+    currentY += 15;
+    doc.fontSize(8).text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
+      align: 'center',
+      width: pageWidthPoints - 2 * margin
+    });
+    currentY += 12;
+    doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, {
+      align: 'center',
+      width: pageWidthPoints - 2 * margin
+    });
+    currentY += 15;
 
-        // Tabla de transacciones
-        const tableTop = currentY;
-        let rowY = tableTop;
+    // Tabla de transacciones
+    const tableTop = currentY;
+    let rowY = tableTop;
 
-        const fechaX = margin;
-        const descripcionX = fechaX + 120;
-        const metodoX = descripcionX + 130;
-        const montoX = pageWidthPoints - margin - 100;
+    const fechaX = margin;
+    const descripcionX = fechaX + 120;
+    const metodoX = descripcionX + 130;
+    const montoX = pageWidthPoints - margin - 100;
 
-        // Cabecera de tabla
+    // Cabecera de tabla
+    doc.fontSize(9).font('Helvetica-Bold')
+      .text('Fecha', fechaX, rowY)
+      .text('Descripción', descripcionX, rowY)
+      .text('Método Entrada', metodoX, rowY)
+      .text('Monto', montoX, rowY, { align: 'right' });
+
+    rowY += 12;
+    doc.strokeColor('#000').lineWidth(0.5)
+      .moveTo(margin, rowY)
+      .lineTo(pageWidthPoints - margin, rowY)
+      .stroke();
+    rowY += 5;
+    doc.font('Helvetica');
+
+    // Convertir objeto a array si es necesario
+    const transactionsArray = toArrayList(transactionsData);
+
+    // Validar que transactionsData sea un array
+    if (!Array.isArray(transactionsArray)) {
+      console.error("transactionsData no es un array:", transactionsArray);
+      return reject({
+        status: 500,
+        data: { error: "Datos de transacciones inválidos." }
+      });
+    }
+
+    // Dibujar filas
+    transactionsArray.forEach(transaccion => {
+      // Si se acaba el espacio, agregar nueva página
+      if (rowY > pageHeightPoints - 40) {
+        doc.addPage();
+        rowY = margin + 20;
+
+        // Redibujar encabezado en nueva página
         doc.fontSize(9).font('Helvetica-Bold')
-            .text('Fecha', fechaX, rowY)
-            .text('Descripción', descripcionX, rowY)
-            .text('Método Entrada', metodoX, rowY)
-            .text('Monto', montoX, rowY, { align: 'right' });
-
+          .text('Fecha', fechaX, rowY)
+          .text('Descripción', descripcionX, rowY)
+          .text('Método Entrada', metodoX, rowY)
+          .text('Monto', montoX, rowY, { align: 'right' });
         rowY += 12;
+
         doc.strokeColor('#000').lineWidth(0.5)
-           .moveTo(margin, rowY)
-           .lineTo(pageWidthPoints - margin, rowY)
-           .stroke();
+          .moveTo(margin, rowY)
+          .lineTo(pageWidthPoints - margin, rowY)
+          .stroke();
         rowY += 5;
         doc.font('Helvetica');
+      }
 
-        // Convertir objeto a array si es necesario
-        const transactionsArray = toArrayList(transactionsData);
+      // Formatear fecha
+      const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
 
-        // Validar que transactionsData sea un array
-        if (!Array.isArray(transactionsArray)) {
-            console.error("transactionsData no es un array:", transactionsArray);
-            return reject({
-                status: 500,
-                data: { error: "Datos de transacciones inválidos." }
-            });
-        }
+      // Establecer color según método de pago
+      if (transaccion.METODO_PAGO === 'Efectivo') {
+        doc.fillColor('green'); // Efectivo en verde
+      } else if (transaccion.METODO_PAGO === 'Tarjeta') {
+        doc.fillColor('blue'); // Tarjeta en azul
+      } else {
+        doc.fillColor('black'); // Otros en negro
+      }
 
-        // Dibujar filas
-        transactionsArray.forEach(transaccion => {
-            // Si se acaba el espacio, agregar nueva página
-            if (rowY > pageHeightPoints - 40) {
-                doc.addPage();
-                rowY = margin + 20;
+      // Mostrar datos de la transacción
+      doc.fontSize(8)
+        .text(formattedDate || '--', fechaX, rowY)
+        .text(transaccion.DSC_TRANSACCION || '--', descripcionX, rowY)
+        .text(transaccion.METODO_PAGO || '--', metodoX, rowY)
+        .text(parseFloat(transaccion.MONTO_PAGO || 0).toFixed(2), montoX, rowY, { align: 'right' });
 
-                // Redibujar encabezado en nueva página
-                doc.fontSize(9).font('Helvetica-Bold')
-                    .text('Fecha', fechaX, rowY)
-                    .text('Descripción', descripcionX, rowY)
-                    .text('Método Entrada', metodoX, rowY)
-                    .text('Monto', montoX, rowY, { align: 'right' });
-                rowY += 12;
+      // Restaurar color predeterminado
+      doc.fillColor('black');
 
-                doc.strokeColor('#000').lineWidth(0.5)
-                   .moveTo(margin, rowY)
-                   .lineTo(pageWidthPoints - margin, rowY)
-                   .stroke();
-                rowY += 5;
-                doc.font('Helvetica');
-            }
+      // Acumular totales (todas son salidas)
+      totalEgresos += parseFloat(transaccion.MONTO_PAGO || 0);
 
-            // Formatear fecha
-            const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
-
-            // Establecer color según método de pago
-            if (transaccion.METODO_PAGO === 'Efectivo') {
-                doc.fillColor('green'); // Efectivo en verde
-            } else if (transaccion.METODO_PAGO === 'Tarjeta') {
-                doc.fillColor('blue'); // Tarjeta en azul
-            } else {
-                doc.fillColor('black'); // Otros en negro
-            }
-
-            // Mostrar datos de la transacción
-            doc.fontSize(8)
-                .text(formattedDate || '--', fechaX, rowY)
-                .text(transaccion.DSC_TRANSACCION || '--', descripcionX, rowY)
-                .text(transaccion.METODO_PAGO || '--', metodoX, rowY)
-                .text(parseFloat(transaccion.MONTO_PAGO || 0).toFixed(2), montoX, rowY, { align: 'right' });
-
-            // Restaurar color predeterminado
-            doc.fillColor('black');
-
-            // Acumular totales (todas son salidas)
-            totalEgresos += parseFloat(transaccion.MONTO_PAGO || 0);
-
-            rowY += 15;
-        });
-
-        // Totales
-        currentY = rowY + 15;
-        doc.fontSize(10).font('Helvetica-Bold')
-            .text(`Total Transferencias: ${transactionsArray.length}`, margin, currentY)
-            .text(`Monto Total Enviado: ${totalEgresos.toFixed(2)}`, margin + 200, currentY)
-            .text(
-                `Promedio por Envío: ${(totalEgresos / transactionsArray.length || 0).toFixed(2)}`,
-                margin + 400,
-                currentY,
-                { align: 'right' }
-            );
-        doc.font('Helvetica');
-
-        // Pie de página
-        currentY += 20;
-        doc.fontSize(8).text('*** Última línea ***', margin, currentY, {
-            align: 'center',
-            width: pageWidthPoints - 2 * margin
-        });
-
-        doc.end();
-
-        writeStream.on("finish", () => {
-            resolve({
-                status: 200,
-                data: {
-                    message: `${title} generado exitosamente`,
-                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Transacciones/${fileName}`
-                }
-            });
-        });
-
-        writeStream.on("error", (error) => {
-            console.error("Error al generar el informe de transacciones:", error);
-            reject({ status: 500, data: { error: "Error al generar el informe de transacciones." } });
-        });
+      rowY += 15;
     });
+
+    // Totales
+    currentY = rowY + 15;
+    doc.fontSize(10).font('Helvetica-Bold')
+      .text(`Total Transferencias: ${transactionsArray.length}`, margin, currentY)
+      .text(`Monto Total Enviado: ${totalEgresos.toFixed(2)}`, margin + 200, currentY)
+      .text(
+        `Promedio por Envío: ${(totalEgresos / transactionsArray.length || 0).toFixed(2)}`,
+        margin + 400,
+        currentY,
+        { align: 'right' }
+      );
+    doc.font('Helvetica');
+
+    // Pie de página
+    currentY += 20;
+    doc.fontSize(8).text('*** Última línea ***', margin, currentY, {
+      align: 'center',
+      width: pageWidthPoints - 2 * margin
+    });
+
+    doc.end();
+
+    writeStream.on("finish", () => {
+      resolve({
+        status: 200,
+        data: {
+          message: `${title} generado exitosamente`,
+          downloadLink: `${downloadLink}Transacciones/${fileName}`
+        }
+      });
+    });
+
+    writeStream.on("error", (error) => {
+      console.error("Error al generar el informe de transacciones:", error);
+      reject({ status: 500, data: { error: "Error al generar el informe de transacciones." } });
+    });
+  });
 }
 
 async function createShoppingEXCEL(
@@ -1135,7 +1077,7 @@ async function createShoppingEXCEL(
         status: 200,
         data: {
           message: "Informe de compras generado exitosamente en Excel",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Compras/${fileName}`,
+          downloadLink: `${downloadLink}Compras/${fileName}`,
         },
       });
     } catch (error) {
@@ -1196,7 +1138,7 @@ async function createSaleEXCEL(
         status: 200,
         data: {
           message: "Informe de ventas generado exitosamente en Excel",
-          downloadLink: `http://localhost:4000/api/reports/download_report?file=Ventas/${fileName}`,
+          downloadLink: `${downloadLink}Ventas/${fileName}`,
         },
       });
     } catch (error) {
@@ -1210,90 +1152,90 @@ async function createSaleEXCEL(
 }
 
 async function createTransactionEXCEL(currentDate, storeData, transactionsData, MIN_FEC, MAX_FEC) {
-    return new Promise((resolve, reject) => {
-        try {
-            const title = "Informe de Transacciones SINPE";
-            const fileName = `Transacciones-${formatDateTime(currentDate)}.xlsx`;
-            const filePath = path.join(excelDir, 'Transacciones', fileName);
+  return new Promise((resolve, reject) => {
+    try {
+      const title = "Informe de Transacciones SINPE";
+      const fileName = `Transacciones-${formatDateTime(currentDate)}.xlsx`;
+      const filePath = path.join(excelDir, 'Transacciones', fileName);
 
-            if (!fs.existsSync(path.join(excelDir, 'Transacciones'))) {
-                fs.mkdirSync(path.join(excelDir, 'Transacciones'), { recursive: true });
-            }
+      if (!fs.existsSync(path.join(excelDir, 'Transacciones'))) {
+        fs.mkdirSync(path.join(excelDir, 'Transacciones'), { recursive: true });
+      }
 
-            // Convertir objeto a array si es necesario
-            const transactionsArray = toArrayList(transactionsData);
+      // Convertir objeto a array si es necesario
+      const transactionsArray = toArrayList(transactionsData);
 
-            if (!Array.isArray(transactionsArray)) {
-                console.error("transactionsData no es un array:", transactionsData);
-                return reject({
-                    status: 500,
-                    data: { error: "Datos de transacciones inválidos." }
-                });
-            }
+      if (!Array.isArray(transactionsArray)) {
+        console.error("transactionsData no es un array:", transactionsData);
+        return reject({
+          status: 500,
+          data: { error: "Datos de transacciones inválidos." }
+        });
+      }
 
-            let totalEgresos = 0;
+      let totalEgresos = 0;
 
-            // Preparar datos para la hoja de cálculo
-            const excelRows = [];
+      // Preparar datos para la hoja de cálculo
+      const excelRows = [];
 
-            // Encabezado del informe (como filas)
-            excelRows.push([storeData.DSC_NOMBRE]);
-            excelRows.push([title]);
-            excelRows.push([`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`]);
-            excelRows.push([`Reporte generado: ${currentDate}`]);
-            excelRows.push([]); // Espacio
+      // Encabezado del informe (como filas)
+      excelRows.push([storeData.DSC_NOMBRE]);
+      excelRows.push([title]);
+      excelRows.push([`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`]);
+      excelRows.push([`Reporte generado: ${currentDate}`]);
+      excelRows.push([]); // Espacio
 
-            // Encabezado de tabla
-            excelRows.push(['Fecha', 'Descripción', 'Método Entrada', 'Monto']);
+      // Encabezado de tabla
+      excelRows.push(['Fecha', 'Descripción', 'Método Entrada', 'Monto']);
 
-            // Datos de cada transacción
-            transactionsArray.forEach(transaccion => {
-                const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
-                const monto = parseFloat(transaccion.MONTO_PAGO || 0);
+      // Datos de cada transacción
+      transactionsArray.forEach(transaccion => {
+        const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
+        const monto = parseFloat(transaccion.MONTO_PAGO || 0);
 
-                excelRows.push([
-                    formattedDate,
-                    transaccion.DSC_TRANSACCION || '--',
-                    transaccion.METODO_PAGO || '--',
-                    monto.toFixed(2)
-                ]);
+        excelRows.push([
+          formattedDate,
+          transaccion.DSC_TRANSACCION || '--',
+          transaccion.METODO_PAGO || '--',
+          monto.toFixed(2)
+        ]);
 
-                totalEgresos += monto;
-            });
+        totalEgresos += monto;
+      });
 
-            // Estadísticas finales
-            excelRows.push([]);
-            excelRows.push([
-                `Total Transferencias: ${transactionsArray.length}`,
-                `Monto Total Enviado: ${totalEgresos.toFixed(2)}`,
-                `Promedio por Envío: ${(totalEgresos / transactionsArray.length || 0).toFixed(2)}`
-            ]);
-            excelRows.push(['*** Última línea ***']);
+      // Estadísticas finales
+      excelRows.push([]);
+      excelRows.push([
+        `Total Transferencias: ${transactionsArray.length}`,
+        `Monto Total Enviado: ${totalEgresos.toFixed(2)}`,
+        `Promedio por Envío: ${(totalEgresos / transactionsArray.length || 0).toFixed(2)}`
+      ]);
+      excelRows.push(['*** Última línea ***']);
 
-            // Crear libro y hoja
-            const worksheet = XLSX.utils.aoa_to_sheet(excelRows);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Transacciones');
+      // Crear libro y hoja
+      const worksheet = XLSX.utils.aoa_to_sheet(excelRows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Transacciones');
 
-            // Guardar archivo
-            XLSX.writeFile(workbook, filePath);
+      // Guardar archivo
+      XLSX.writeFile(workbook, filePath);
 
-            resolve({
-                status: 200,
-                data: {
-                    message: `${title} generado exitosamente en Excel`,
-                    downloadLink: `http://localhost:4000/api/reports/download_report?file=Transacciones/${fileName}`
-                }
-            });
-
-        } catch (error) {
-            console.error("Error al generar el informe de transacciones en Excel:", error);
-            reject({
-                status: 500,
-                data: { error: "Error al generar el informe de transacciones en Excel." }
-            });
+      resolve({
+        status: 200,
+        data: {
+          message: `${title} generado exitosamente en Excel`,
+          downloadLink: `${downloadLink}Transacciones/${fileName}`
         }
-    });
+      });
+
+    } catch (error) {
+      console.error("Error al generar el informe de transacciones en Excel:", error);
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe de transacciones en Excel." }
+      });
+    }
+  });
 }
 
 async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
@@ -1352,6 +1294,20 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
         MIN_FEC,
         MAX_FEC
       );
+    case 'ReporteProductos':
+      const [products] = await db.query(
+        "CALL sp_products_report(:MIN_FEC, :MAX_FEC)",
+        {
+          replacements: {
+            MIN_FEC: MIN_FEC,
+            MAX_FEC: MAX_FEC,
+          },
+          type: QueryTypes.SELECT
+        }
+      )
+      return await createProductEXCEL(
+        currentDate, products
+      );
     default:
       return {
         status: 400,
@@ -1361,19 +1317,194 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
 }
 
 function toArrayList(data) {
-    if (Array.isArray(data)) return data;
-    if (typeof data === 'object' && data !== null) return Object.values(data);
-    return [];
+  if (Array.isArray(data)) return data;
+  if (typeof data === 'object' && data !== null) return Object.values(data);
+  return [];
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }) + ' ' + date.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit'
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }) + ' ' + date.toLocaleTimeString('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+async function createProductPDF(currentDate, storeData, productData) {
+  return new Promise((resolve, reject) => {
+    const title = "Informe de Productos";
+    const pageWidthPoints = 595.28;
+    const margin = 20;
+    let currentY = margin + 20;
+
+    const doc = new PDFDocument({ size: "A4" });
+    const fileName = `Productos-${formatDateTime(currentDate)}.pdf`;
+    const filePath = path.join(pdfDir, "Productos", fileName);
+
+    if (!fs.existsSync(path.join(pdfDir, "Productos"))) {
+      fs.mkdirSync(path.join(pdfDir, "Productos"), { recursive: true });
+    }
+
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream);
+
+    // Encabezado
+    doc
+      .fontSize(12)
+      .text(storeData.DSC_NOMBRE, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15;
+
+    doc
+      .fontSize(10)
+      .text(title, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15;
+
+    doc
+      .fontSize(8)
+      .text(`Fecha del Reporte: ${currentDate}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 25;
+
+    // Cabecera de tabla
+    const colX = {
+      nombre: margin,
+      descripcion: margin + 110,
+      codigo: margin + 230,
+      venta: margin + 340,
+      compra: margin + 400,
+      unidades: margin + 460,
+      estado: margin + 520,
+    };
+
+    doc.fontSize(9).font("Helvetica-Bold");
+    doc.text("Nombre", colX.nombre, currentY);
+    doc.text("Descripción", colX.descripcion, currentY);
+    doc.text("Código", colX.codigo, currentY);
+    doc.text("Venta", colX.venta, currentY);
+    doc.text("Compra", colX.compra, currentY);
+    doc.text("Unidades", colX.unidades, currentY);
+    doc.text("Estado", colX.estado, currentY);
+
+    currentY += 12;
+
+    doc
+      .strokeColor("#000")
+      .lineWidth(0.5)
+      .moveTo(margin, currentY)
+      .lineTo(pageWidthPoints - margin, currentY)
+      .stroke();
+
+    currentY += 5;
+    doc.font("Helvetica");
+
+    // Contenido
+    const productosArray = Object.values(productData);
+    productosArray.forEach((p) => {
+      doc.fontSize(8);
+      doc.text(p.NOMBRE, colX.nombre, currentY, { width: 100 });
+      doc.text(p.DESCRIPCION, colX.descripcion, currentY, { width: 100 });
+      doc.text(p.COD_BARRAS, colX.codigo, currentY);
+      doc.text(p.MON_VENTA.toFixed(2), colX.venta, currentY, {
+        width: 50,
+        align: "right"
+      });
+      doc.text(p.MON_COMPRA.toFixed(2), colX.compra, currentY, {
+        width: 50,
+        align: "right"
+      });
+      doc.text(p.UNID_DISPONIBLE.toString(), colX.unidades, currentY, {
+        width: 40,
+        align: "right"
+      });
+      doc.text(p.ESTADO, colX.estado, currentY);
+      currentY += 12;
+
+      if (currentY > 800) {
+        doc.addPage();
+        currentY = margin;
+      }
     });
+
+    // Línea final
+    currentY += 20;
+    doc
+      .fontSize(8)
+      .text("***Ultima linea***", margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+
+    doc.end();
+
+    writeStream.on("finish", () => {
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de productos generado exitosamente",
+          downloadLink: `${downloadLink}Productos/${fileName}`,
+        },
+      });
+    });
+
+    writeStream.on("error", (error) => {
+      console.error("Error al generar el informe de productos:", error);
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe de productos." },
+      });
+    });
+  });
+}
+
+async function createProductEXCEL(currentDate, productData) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const fileName = `Productos-${formatDateTime(currentDate)}.xlsx`;
+      const filePath = path.join(excelDir, "Productos", fileName);
+      if (!fs.existsSync(path.join(excelDir, "Productos"))) {
+        fs.mkdirSync(path.join(excelDir, "Productos"), { recursive: true });
+      }
+
+      const productosArray = Object.values(productData).map((p) => ({
+        Nombre: p.NOMBRE,
+        Descripción: p.DESCRIPCION,
+        Código: p.COD_BARRAS,
+        Venta: p.MON_VENTA.toFixed(2),
+        Compra: p.MON_COMPRA.toFixed(2),
+        Unidades: p.UNID_DISPONIBLE,
+        Estado: p.ESTADO,
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(productosArray);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Productos");
+      XLSX.writeFile(workbook, filePath);
+
+      resolve({ 
+        status: 200,
+        data: {
+          message: "Informe de productos generado exitosamente en Excel",
+          downloadLink: `${downloadLink}Productos/${fileName}`,
+        },
+      });
+    } catch (error) {
+      console.error("Error al generar el informe de productos en Excel:", error);
+      reject({ 
+        status: 500,
+        data: { error: "Error al generar el informe de productos en Excel." },
+      });
+    }
+  });
 }
