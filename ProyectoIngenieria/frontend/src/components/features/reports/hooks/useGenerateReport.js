@@ -11,6 +11,7 @@ const reportTypeOptions = [
     { value: "VentasXCliente", label: "Ventas por cliente" },
     { value: "ReporteTransaccion", label: "Reporte de transacciones" },
     { value: "ReporteProductos", label: "Reporte de productos" },
+    { value: "ProveedoresActivos", label: "Reportes de proveedores y compras asociadas" },
 ];
 
 const formatOptions = [
@@ -99,16 +100,28 @@ export function useGenerateReport() {
         toast.info("Generando reporte...");
 
         try {
-            let maxFec = endDate?.toISOString().split('T')[0] || '';
+        
+            let minFec = "";
+            let maxFec = "";
 
-            if (reportType === "ReporteTransaccion" && endDate) {
-                maxFec = addOneDay(maxFec);
+            if (reportType === "ProveedoresActivos") {
+                minFec = "2000-01-01";
+                maxFec = "2025-01-01";
+            } else {
+                minFec = startDate?.toISOString().split('T')[0] || '';
+                maxFec = endDate?.toISOString().split('T')[0] || '';
+    
+                if (reportType === "ReporteTransaccion" && endDate) {
+                    maxFec = addOneDay(maxFec);
+                }
+                
             }
-
+            console.log("fechas", minFec);
+            console.log("fechas", maxFec);
             const params = {
                 EXTENSION: format,
                 TYPE: reportType,
-                MIN_FEC: startDate?.toISOString().split('T')[0] || '',
+                MIN_FEC: minFec,
                 MAX_FEC: maxFec,
             };
 
