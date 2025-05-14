@@ -480,7 +480,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
                     return {
                         proveedor_nombre: supplier.proveedor_nombre,
                         direccion: supplier.DSC_DIRECCIONEXACTA,
-                        telefono: supplier.telefonos,
+                        telefonos: supplier.telefonos,
                         correos: supplier.correos,
                         compras: compras
                     };
