@@ -480,12 +480,49 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
                     return {
                         proveedor_nombre: supplier.proveedor_nombre,
                         direccion: supplier.DSC_DIRECCIONEXACTA,
-                        telefonos: supplier.telefonos,
+                        telefono: supplier.telefonos,
                         correos: supplier.correos,
                         compras: compras
                     };
                 });
             return await createSupplierPDF(currentDate, store[0], parsedResults);
+      case "ClientesCreditoActivo":
+
+      const [credit_Client] = await db.query(`CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`, {
+        replacements: { MIN_FEC:MIN_FEC, MAX_FEC:MAX_FEC },
+        type: db.QueryTypes.SELECT,
+    });
+    if (!credit_Client || !credit_Client[0] || Object.keys(credit_Client[0]).length === 0) {
+        return res.status(204).json({ message: "No se encontraron clientes con créditos." });
+    }
+
+    const data_client = Object.values(credit_Client);
+
+    const client_Parsed = data_client.map((client) => {
+        let creditos = [];
+
+        try {
+          if(client.creditos_json !=null){
+            let fixedCreditosStr = `[${client.creditos_json}]`.replace(/},\s*{/g, '},{');
+            creditos = JSON.parse(fixedCreditosStr);
+          }
+        } catch (err) {
+            console.error("Error al parsear créditos para cliente:", client.cliente_nombre, err);
+        }
+
+        return {
+            cedula: client.DSC_CEDULA,
+            nombre: client.cliente_nombre,
+            direccion: client.DSC_DIRECCION,
+            telefono:client.telefono,
+            creditos: creditos,
+            cantidad_creditos: client.cantidad_creditos,
+            saldo_total_Pendiente: client.saldo_total_Pendiente,
+            abonos_total_Pagado: client.abonos_total_Pagado
+        };
+    });
+
+            return await createClientCreditPDF(currentDate, store[0], client_Parsed,MIN_FEC, MAX_FEC);
     default:
       return {
         status: 400,
@@ -1370,6 +1407,43 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
                 };
             });
         return await createSupplierEXCEL(currentDate, store[0], parsedResults);
+        case "ClientesCreditoActivo":
+
+      const [credit_Client] = await db.query(`CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`, {
+        replacements: { MIN_FEC:MIN_FEC, MAX_FEC:MAX_FEC },
+        type: db.QueryTypes.SELECT,
+    });
+    if (!credit_Client || !credit_Client[0] || Object.keys(credit_Client[0]).length === 0) {
+        return res.status(204).json({ message: "No se encontraron clientes con créditos." });
+    }
+
+    const data_client = Object.values(credit_Client);
+
+    const client_Parsed = data_client.map((client) => {
+        let creditos = [];
+
+        try {
+          if(client.creditos_json !=null){
+            let fixedCreditosStr = `[${client.creditos_json}]`.replace(/},\s*{/g, '},{');
+            creditos = JSON.parse(fixedCreditosStr);
+          }
+        } catch (err) {
+            console.error("Error al parsear créditos para cliente:", client.cliente_nombre, err);
+        }
+
+        return {
+            cedula: client.DSC_CEDULA,
+            nombre: client.cliente_nombre,
+            direccion: client.DSC_DIRECCION,
+            telefono:client.telefono,
+            creditos: creditos,
+            cantidad_creditos: client.cantidad_creditos,
+            saldo_total_Pendiente: client.saldo_total_Pendiente,
+            abonos_total_Pagado: client.abonos_total_Pagado
+        };
+    });
+
+      return await createClientCreditEXCEL(currentDate, store[0], client_Parsed,MIN_FEC, MAX_FEC);
     default:
       return {
         status: 400,
@@ -1818,5 +1892,447 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
         } 
       });
     }
+  });
+}
+
+// Función para formatear montos monetarios
+function formatMoney(amount) {
+    return (amount || 0).toLocaleString('es-CR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+export async function createClientCreditPDF(currentDate, storeData, clientsData, MIN_FEC, MAX_FEC) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Configuración del documento
+            const title = "Reporte de Clientes con Créditos Asociados";
+            const pageWidthPoints = 595.28; // Ancho de A4 en puntos
+            const margin = 20;
+            let currentY = margin;
+            
+            // Totales para el reporte
+            let totalSaldoPendiente = 0;
+            let totalAbonado = 0;
+            let totalCreditos = 0;
+
+            // Crear documento PDF
+            const doc = new PDFDocument({
+                size: 'A4',
+                margin: margin,
+                bufferPages: true
+            });
+
+            // Configurar nombre de archivo y ruta
+            const fileName = `Reporte-Creditos-Clientes-${formatDateTime(currentDate)}.pdf`;
+            const folderPath = path.join(pdfDir, 'Cliente_Credito');
+            
+            // Crear directorio si no existe
+            if (!fs.existsSync(folderPath)) {
+                fs.mkdirSync(folderPath, { recursive: true });
+            }
+
+            const filePath = path.join(folderPath, fileName);
+            const writeStream = fs.createWriteStream(filePath);
+            doc.pipe(writeStream);
+
+            // ============= ENCABEZADO DEL DOCUMENTO =============
+            doc.fontSize(14).font('Helvetica-Bold')
+               .text(storeData.DSC_NOMBRE || 'Tienda Zaid & Shayder', margin, currentY, { align: 'center' });
+            currentY += 20;
+            
+            doc.fontSize(12).text(title, margin, currentY, { align: 'center' });
+            currentY += 20;
+            
+            // Información de fechas
+            doc.fontSize(9)
+               .text(`Fecha del reporte: ${formatDate(currentDate)}`, margin, currentY);
+            
+            if (MIN_FEC && MAX_FEC) {
+                doc.text(`Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`, margin, currentY + 12);
+                currentY += 24;
+            } else {
+                currentY += 15;
+            }
+
+
+            const columns = [
+                { header: 'Cliente', key: 'nombre', width: 150, align: 'left' },
+                { header: 'Cédula', key: 'cedula', width: 100, align: 'left' },
+                { header: 'Créditos', key: 'cantidad', width: 70, align: 'center' },
+                { header: 'Abonado', key: 'abonado', width: 90, align: 'right' },
+                { header: 'Saldo', key: 'saldo', width: 100, align: 'right' }
+            ];
+
+            doc.font('Helvetica-Bold').fontSize(9);
+            let x = margin;
+            columns.forEach(col => {
+                doc.text(col.header, x, currentY, { width: col.width, align: col.align });
+                x += col.width;
+            });
+            currentY += 15;
+            
+            // Línea divisoria
+            doc.moveTo(margin, currentY).lineTo(pageWidthPoints - margin, currentY).stroke();
+            currentY += 10;
+
+            doc.font('Helvetica').fontSize(8);
+            
+            clientsData.forEach(cliente => {
+                // Calcular totales
+                totalSaldoPendiente += cliente.saldo_total_Pendiente || 0;
+                totalAbonado += cliente.abonos_total_Pagado || 0;
+                totalCreditos += cliente.cantidad_creditos || 0;
+
+                x = margin;
+                columns.forEach(col => {
+                    const value = col.key === 'nombre' ? cliente.nombre :
+                                col.key === 'cedula' ? cliente.cedula || 'N/A' :
+                                col.key === 'cantidad' ? (cliente.cantidad_creditos || 0).toString() :
+                                col.key === 'abonado' ? `${formatMoney(cliente.abonos_total_Pagado)}` :
+                                `${formatMoney(cliente.saldo_total_Pendiente)}`;
+                    
+                    doc.text(value, x, currentY, { width: col.width, align: col.align });
+                    x += col.width;
+                });
+                currentY += 15;
+
+                // ============= DETALLE DE CRÉDITOS =============
+                if (cliente.creditos && cliente.creditos.length > 0) {
+                    // Subtítulo
+                    doc.font('Helvetica-Bold').text('Detalle de créditos:', margin + 10, currentY);
+                    currentY += 12;
+                    
+                    // Configuración de columnas de detalle
+                    const detailCols = [
+                        { header: 'Último Pago', width: 120 },
+                        { header: 'Vencimiento', width: 120 },
+                        { header: 'Monto Inicial', width: 90, align: 'right' },
+                        { header: 'Abonado', width: 90, align: 'right' },
+                        { header: 'Saldo pendiete', width: 90, align: 'right' }
+                    ];
+                    
+                    // Cabecera de detalle
+                    x = margin + 20;
+                    detailCols.forEach(col => {
+                        doc.text(col.header, x, currentY, { width: col.width, align: col.align || 'left' });
+                        x += col.width;
+                    });
+                    currentY += 12;
+                    
+                    // Contenido de detalle
+                    doc.font('Helvetica');
+                    cliente.creditos.forEach(credito => {
+                        x = margin + 20;
+                        
+                        // Último pago
+                        doc.text(formatDate(credito.fec_ultimo_pago), x, currentY, { width: detailCols[0].width });
+                        x += detailCols[0].width;
+                        
+                        // Vencimiento
+                        doc.text(formatDate(credito.fec_vencimiento), x, currentY, { width: detailCols[1].width });
+                        x += detailCols[1].width;
+                        
+                        // Monto inicial
+                        doc.text(`${formatMoney(credito.monto_subtotal)}`, x, currentY, { 
+                            width: detailCols[2].width, 
+                            align: 'right' 
+                        });
+                        x += detailCols[2].width;
+                        
+                        // Abonado
+                        doc.text(`${formatMoney(credito.total_abonado)}`, x, currentY, { 
+                            width: detailCols[3].width, 
+                            align: 'right' 
+                        });
+                        x += detailCols[3].width;
+                        
+                        // Saldo
+                        doc.text(`${formatMoney(credito.saldo_restante)}`, x, currentY, { 
+                            width: detailCols[4].width, 
+                            align: 'right' 
+                        });
+                        
+                        currentY += 12;
+                    });
+                } else {
+                    doc.font('Helvetica-Oblique').text('No tiene créditos registrados.', margin + 20, currentY);
+                    currentY += 15;
+                }
+
+                // Dirección del cliente
+                if (cliente.direccion) {
+                    doc.font('Helvetica').text(`Dirección: ${cliente.direccion}`, margin + 10, currentY);
+                    currentY += 15; 
+                }
+
+                 if (cliente.telefono) {
+                  doc.font('Helvetica').text(`Telefono: ${(cliente.telefono|| 'N/A')}`, margin + 10, currentY);
+                  currentY += 15;
+              }
+                
+                // Línea separadora entre clientes
+                doc.moveTo(margin, currentY)
+                   .lineTo(pageWidthPoints - margin, currentY)
+                   .stroke();
+                currentY += 15;
+            });
+
+            // ============= TOTALES DEL REPORTE =============
+            doc.font('Helvetica-Bold').fontSize(10);
+            
+            // Total de créditos
+            doc.text(`Total de créditos: ${totalCreditos}`, margin, currentY, { align: 'right' });
+            currentY += 15;
+            
+            // Total abonado
+            doc.text(`Total abonado: ${formatMoney(totalAbonado)}`, margin, currentY, { align: 'right' });
+            currentY += 15;
+            
+            // Saldo pendiente total
+            doc.text(`Saldo pendiente total: ${formatMoney(totalSaldoPendiente)}`, margin, currentY, { align: 'right' });
+            currentY += 20;
+
+            // ============= PIE DE PÁGINA =============
+            doc.font('Helvetica').fontSize(8)
+               .text('*** Fin del reporte ***', margin, currentY, { align: 'center' });
+
+            // Finalizar documento
+            doc.end();
+
+            // Manejar eventos del stream
+            writeStream.on('finish', () => {
+                resolve({
+                    status: 200,
+                    data: {
+                        message: "Informe de créditos generado exitosamente",
+                        downloadLink: `${downloadLink}Cliente_Credito/${fileName}`,
+                        filePath: filePath
+                    }
+                });
+            });
+
+            writeStream.on('error', (error) => {
+                console.error("Error al generar el PDF:", error);
+                reject({
+                    status: 500,
+                    error: "Error al generar el PDF: " + error.message
+                });
+            });
+
+        } catch (error) {
+            console.error("Error en la generación del PDF:", error);
+            reject({
+                status: 500,
+                error: "Error interno al generar el PDF: " + error.message
+            });
+        }
+    });
+}
+
+
+ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_FEC, MAX_FEC) {
+  return new Promise(async (resolve, reject) => {
+      try {
+          const title = "Reporte de Clientes con Créditos Asociados";
+          const fileName = `Creditos-Clientes-${formatDateTime(currentDate)}.xlsx`;
+          const dirPath = path.join(excelDir, "Cliente_Credito");
+          const filePath = path.join(dirPath, fileName);
+
+          if (!fs.existsSync(dirPath)) {
+              fs.mkdirSync(dirPath, { recursive: true });
+          }
+
+          const workbook = XLSX.utils.book_new();
+          const worksheet = XLSX.utils.aoa_to_sheet([]);
+          
+
+          let rowIndex = 0;
+          let totalSaldoPendiente = 0;
+          let totalAbonado = 0;
+          let totalCreditos = 0;
+
+          const styles = {
+              header: {
+                  fill: { fgColor: { rgb: "4472C4" } }, 
+                  font: { bold: true, color: { rgb: "FFFFFF" } },
+                  alignment: { horizontal: "center" }
+              },
+              subHeader: {
+                  fill: { fgColor: { rgb: "8EA9DB" } }, 
+                  font: { bold: true },
+                  alignment: { horizontal: "center" }
+              },
+              tableHeader: {
+                  fill: { fgColor: { rgb: "5B9BD5" } },
+                  font: { bold: true, color: { rgb: "FFFFFF" } }
+              },
+              totalRow: {
+                  fill: { fgColor: { rgb: "70AD47" } }, 
+                  font: { bold: true, color: { rgb: "FFFFFF" } }
+              },
+              currencyFormat: '#,##0.00'
+          };
+
+          XLSX.utils.sheet_add_aoa(worksheet, [[storeData.DSC_NOMBRE || 'Tienda Zaid & Shayder']], { origin: { r: rowIndex, c: 0 } });
+          worksheet["A" + (rowIndex + 1)].s = styles.header;
+          rowIndex++;
+
+          XLSX.utils.sheet_add_aoa(worksheet, [[title]], { origin: { r: rowIndex, c: 0 } });
+          worksheet["A" + (rowIndex + 1)].s = styles.subHeader;
+          rowIndex++;
+
+          XLSX.utils.sheet_add_aoa(worksheet, [[`Fecha del Reporte: ${formatDate(currentDate)}`]], { origin: { r: rowIndex, c: 0 } });
+          rowIndex++;
+
+          if (MIN_FEC && MAX_FEC) {
+              XLSX.utils.sheet_add_aoa(worksheet, [[`Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`]], { origin: { r: rowIndex, c: 0 } });
+              rowIndex++;
+          }
+
+          rowIndex++;
+
+          const mainHeaders = ['Cliente', 'Cédula', 'Créditos', 'Total Abonado', 'Saldo Pendiente', 'Dirección'];
+          XLSX.utils.sheet_add_aoa(worksheet, [mainHeaders], { origin: { r: rowIndex, c: 0 } });
+          
+          for (let col = 0; col < mainHeaders.length; col++) {
+              const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: col });
+              worksheet[cellRef].s = styles.tableHeader;
+          }
+          rowIndex++;
+
+          clientsData.forEach(cliente => {
+              const saldo = cliente.saldo_total_Pendiente || 0;
+              const abonado = cliente.abonos_total_Pagado || 0;
+              const creditos = cliente.cantidad_creditos || 0;
+              
+              totalSaldoPendiente += saldo;
+              totalAbonado += abonado;
+              totalCreditos += creditos;
+
+              // Datos principales
+              XLSX.utils.sheet_add_aoa(worksheet, [
+                  [
+                      cliente.nombre || 'Cliente sin nombre',
+                      cliente.cedula || 'N/A',
+                      creditos,
+                      abonado,
+                      saldo,
+                      cliente.direccion || 'N/A'
+                  ]
+              ], { origin: { r: rowIndex, c: 0 } });
+              
+              ['D', 'E'].forEach(col => {
+                  const cellRef = col + (rowIndex + 1);
+                  if (worksheet[cellRef]) {
+                      worksheet[cellRef].z = styles.currencyFormat;
+                  }
+              });
+              
+              rowIndex++;
+
+              if (cliente.creditos && cliente.creditos.length > 0) {
+                  const detailHeaders = ['', 'Detalle de créditos:', 'Último Pago', 'Vencimiento', 'Monto Inicial', 'Abonado', 'Saldo'];
+                  XLSX.utils.sheet_add_aoa(worksheet, [detailHeaders], { origin: { r: rowIndex, c: 0 } });
+                  
+                  for (let col = 0; col < detailHeaders.length; col++) {
+                      const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: col });
+                      worksheet[cellRef].s = {
+                          fill: { fgColor: { rgb: "D9E1F2" } }, // Azul muy claro
+                          font: { italic: true }
+                      };
+                  }
+                  rowIndex++;
+
+                  // Datos de cada crédito
+                  cliente.creditos.forEach(credito => {
+                      XLSX.utils.sheet_add_aoa(worksheet, [
+                          [
+                              '',
+                              '',
+                              formatDate(credito.fec_ultimo_pago),
+                              formatDate(credito.fec_vencimiento),
+                              credito.monto_subtotal || 0,
+                              credito.total_abonado || 0,
+                              credito.saldo_restante || 0
+                          ]
+                      ], { origin: { r: rowIndex, c: 0 } });
+                      
+                      ['E', 'F', 'G'].forEach(col => {
+                          const cellRef = col + (rowIndex + 1);
+                          if (worksheet[cellRef]) {
+                              worksheet[cellRef].z = styles.currencyFormat;
+                          }
+                      });
+                      
+                      rowIndex++;
+                  });
+              } else {
+                  XLSX.utils.sheet_add_aoa(worksheet, [['', 'No tiene créditos registrados']], { origin: { r: rowIndex, c: 0 } });
+                  rowIndex++;
+              }
+
+              rowIndex++; 
+          });
+
+          rowIndex++; 
+          
+          XLSX.utils.sheet_add_aoa(worksheet, [['', '', 'TOTALES:']], { origin: { r: rowIndex, c: 0 } });
+          worksheet["C" + (rowIndex + 1)].s = { font: { bold: true } };
+          rowIndex++;
+
+          const totals = [
+              ['', '', 'Total Créditos:', totalCreditos],
+              ['', '', 'Total Abonado:', totalAbonado],
+              ['', '', 'Total Saldo Pendiente:', totalSaldoPendiente]
+          ];
+          
+          totals.forEach((totalRow, i) => {
+              XLSX.utils.sheet_add_aoa(worksheet, [totalRow], { origin: { r: rowIndex + i, c: 0 } });
+              
+              // Aplicar estilo a la fila de total
+              ['C', 'D'].forEach(col => {
+                  const cellRef = col + (rowIndex + i + 1);
+                  if (worksheet[cellRef]) {
+                      worksheet[cellRef].s = i === totals.length - 1 ? styles.totalRow : { font: { bold: true } };
+                      
+                      if (col === 'D') {
+                          worksheet[cellRef].z = styles.currencyFormat;
+                      }
+                  }
+              });
+          });
+          rowIndex += totals.length;
+
+          worksheet['!cols'] = [
+              { wch: 30 }, 
+              { wch: 15 }, 
+              { wch: 10 }, 
+              { wch: 15 }, 
+              { wch: 15 }, 
+              { wch: 30 }, 
+              { wch: 20 }  
+          ];
+
+          XLSX.utils.book_append_sheet(workbook, worksheet, "Creditos-Clientes");
+          XLSX.writeFile(workbook, filePath);
+
+          resolve({
+              status: 200,
+              data: {
+                  message: "Informe de créditos generado exitosamente en Excel",
+                  downloadLink: `${downloadLink}Cliente_Credito/${fileName}`,
+                  filePath: filePath
+              }
+          });
+
+      } catch (error) {
+          console.error("Error al generar el Excel:", error);
+          reject({ 
+              status: 500, 
+              error: "Error al generar el informe de créditos en Excel: " + error.message
+          });
+      }
   });
 }
