@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllSuppliers, createSupplier, deleteSupplier, getAllSupplierTypes, updatedSupplier, selectOneSupplier, searchSupplier, getAllSupplierWithoutPagination,supplierReport } from "../controllers/supplier.controller.js";
+import { getAllSuppliers, createSupplier, deleteSupplier, getAllSupplierTypes, updatedSupplier, selectOneSupplier, searchSupplier, getAllSupplierWithoutPagination } from "../controllers/supplier.controller.js";
 import { auth } from "../middlewares/auth.middleware.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { supplierSchema } from "../schemas/supplier.schema.js";
