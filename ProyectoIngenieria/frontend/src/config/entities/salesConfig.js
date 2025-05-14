@@ -90,6 +90,7 @@ export const salesConfig = {
             })) || [],
             FEC_VENCIMIENTO: formData.FEC_VENCIMIENTO,
             ESTADO: formData.ESTADO,
+            DSC_CORREO: formData.DSC_EMAIL
         }),
     },
 
