@@ -14,7 +14,7 @@ router.put("/updateSupplier", auth, updatedSupplier);
 router.get("/selectSupplier", auth, selectOneSupplier);
 router.get("/searchSupplier", auth, searchSupplier);
 router.get("/suppliersWithoutPag", auth, getAllSupplierWithoutPagination);
-router.get("/prueba",supplierReport);
+
 
 
 

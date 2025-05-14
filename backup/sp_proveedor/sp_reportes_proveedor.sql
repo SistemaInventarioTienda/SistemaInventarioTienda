@@ -1,5 +1,5 @@
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_reporte_Proveedor`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getSupplierReport`()
 BEGIN
 
 SELECT
@@ -9,12 +9,10 @@ SELECT
     GROUP_CONCAT(DISTINCT pc.DSC_CORREO SEPARATOR ', ') AS correos,
     GROUP_CONCAT(DISTINCT comp.compras SEPARATOR ', ') AS compras
 FROM tsit_proveedor p
-INNER JOIN tsit_telefonoproveedor pt ON pt.ID_PROVEEDOR = p.ID_PROVEEDOR
-INNER JOIN tsit_correoproveedor pc ON pc.ID_PROVEEDOR = p.ID_PROVEEDOR
-INNER JOIN (
-    -- Subconsulta del paso anterior
+LEFT JOIN tsit_telefonoproveedor pt ON pt.ID_PROVEEDOR = p.ID_PROVEEDOR
+LEFT JOIN tsit_correoproveedor pc ON pc.ID_PROVEEDOR = p.ID_PROVEEDOR
+LEFT JOIN (
     SELECT
-        c.ID_COMPRA,
         c.ID_PROVEEDOR,
         CONCAT(
             '{',
@@ -30,7 +28,8 @@ INNER JOIN (
                         '"cantidad": ', dc.MON_CANTIDAD, ', ',
                         '"precio_compra": ', dc.MON_PRECIO_COMPRA,
                         '}'
-                    ) SEPARATOR ', '
+                    )
+                    SEPARATOR ', '
                 ),
             ']',
             '}'
@@ -40,6 +39,7 @@ INNER JOIN (
     INNER JOIN tsim_producto pr ON pr.DSC_CODIGO_BARRAS = dc.DSC_CODIGO_BARRAS
     GROUP BY c.ID_COMPRA
 ) comp ON comp.ID_PROVEEDOR = p.ID_PROVEEDOR
+WHERE p.ESTADO = 1
 GROUP BY p.ID_PROVEEDOR;
 
 END$$

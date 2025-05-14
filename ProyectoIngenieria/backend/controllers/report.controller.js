@@ -455,6 +455,37 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
       return await createProductPDF(
         currentDate, store[0], products
       );
+      case "ProveedoresActivos":
+            const [supplierReport] = await db.query(
+                'CALL sp_getSupplierReport()',
+                {
+                    type: QueryTypes.SELECT
+                });
+
+
+                const rawData = Object.values(supplierReport); 
+
+                const parsedResults = rawData.map((supplier) => {
+                    let compras = [];
+        
+                    try {
+                      if(supplier.compras !=null){
+                        let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
+                        compras = JSON.parse(fixedComprasStr);
+                      }
+                    } catch (err) {
+                        console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
+                    }
+        
+                    return {
+                        proveedor_nombre: supplier.proveedor_nombre,
+                        direccion: supplier.DSC_DIRECCIONEXACTA,
+                        telefonos: supplier.telefonos,
+                        correos: supplier.correos,
+                        compras: compras
+                    };
+                });
+            return await createSupplierPDF(currentDate, store[0], parsedResults);
     default:
       return {
         status: 400,
@@ -1308,6 +1339,37 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
       return await createProductEXCEL(
         currentDate, products
       );
+      case "ProveedoresActivos":
+        const [supplierReport] = await db.query(
+            'CALL sp_getSupplierReport()',
+            {
+                type: QueryTypes.SELECT
+            });
+
+
+            const rawData = Object.values(supplierReport); 
+
+            const parsedResults = rawData.map((supplier) => {
+                let compras = [];
+    
+                try {
+                  if(supplier.compras !=null){
+                    let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
+                    compras = JSON.parse(fixedComprasStr);
+                  }
+                } catch (err) {
+                    console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
+                }
+    
+                return {
+                    proveedor_nombre: supplier.proveedor_nombre,
+                    direccion: supplier.DSC_DIRECCIONEXACTA,
+                    telefonos: supplier.telefonos,
+                    correos: supplier.correos,
+                    compras: compras
+                };
+            });
+        return await createSupplierEXCEL(currentDate, store[0], parsedResults);
     default:
       return {
         status: 400,
@@ -1504,6 +1566,256 @@ async function createProductEXCEL(currentDate, productData) {
       reject({ 
         status: 500,
         data: { error: "Error al generar el informe de productos en Excel." },
+      });
+    }
+  });
+}
+
+
+//generar reporte pdf de proveedor
+
+async function createSupplierPDF(currentDate, storeData, suppliersData) {
+    return new Promise((resolve, reject) => {
+        const title = "Informe de proveedores y compras asociadas";
+        const pageWidthPoints = 595.28;
+        const pageHeightPoints = 841.89;
+        const margin = 20;
+        let currentY = margin + 20;
+        let totalComprasPeriodo = 0;
+
+        const doc = new PDFDocument({
+            size: 'A4'
+        });
+        const fileName = `Compras-Proveedores-${formatDateTime(currentDate)}.pdf`;
+        const filePath = path.join(pdfDir, 'Proveedor', fileName);
+        if (!fs.existsSync(path.join(pdfDir, 'Proveedor'))) {
+            fs.mkdirSync(path.join(pdfDir, 'Proveedor'), { recursive: true });
+        }
+        const writeStream = fs.createWriteStream(filePath);
+
+        doc.pipe(writeStream);
+
+        // Encabezado del informe
+        doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 15;
+        doc.fontSize(10).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 15;
+        doc.fontSize(8).text(`Fecha del Reporte: ${currentDate}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+        currentY += 25;
+
+        // Tabla de compras por proveedor
+        const tableTop = currentY;
+        let rowY = tableTop;
+        const proveedorX = margin;
+        const contactoX = proveedorX + 150;
+        const fechaX = contactoX + 120;
+        const productoX = margin + 10;
+        const codigoX = productoX + 150;
+        const cantidadX = codigoX + 80;
+        const totalX = pageWidthPoints - margin - 70;
+
+        // Cabecera de la tabla
+        doc.fontSize(9).font('Helvetica-Bold')
+            .text('Proveedor', proveedorX, rowY)
+            .text('Contacto', contactoX, rowY)
+            .text('Fecha Compra', fechaX, rowY)
+            .text('Total Compra', totalX - 100, rowY, { align: 'right' });
+        rowY += 12;
+        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, rowY).lineTo(pageWidthPoints - margin, rowY).stroke();
+        rowY += 5;
+        doc.font('Helvetica');
+
+        // Filas de la tabla
+        suppliersData.forEach(proveedor => {
+            
+        
+            doc.fontSize(9).font('Helvetica-Bold')
+                .text(proveedor.proveedor_nombre || 'Proveedor sin nombre', proveedorX, rowY)
+                .text(`${(proveedor.telefonos || 'N/A').split(',')[0].trim()} / ${(proveedor.correos || 'N/A').split(',')[0].trim()}`, contactoX, rowY);
+            
+            rowY += 10;
+            doc.font('Helvetica');
+
+            if (proveedor.compras.length === 0) {
+              doc.fontSize(8).text(
+                  'No existen compras asignadas',
+                  fechaX,
+                  rowY
+              );
+              
+              doc.fontSize(8).text(
+                  'No existen compras asignadas',
+                  totalX - 100,
+                  rowY,
+                  { align: 'right' }
+              );
+          
+              rowY += 15; 
+          }else{
+
+            proveedor.compras.forEach(compra => {
+              if (!compra.fecha_compra) {
+                  return;
+              }
+          
+              doc.fontSize(8).text(
+                  new Date(compra.fecha_compra).toLocaleDateString(),
+                  fechaX,
+                  rowY
+              );
+          
+              const totalCompra = compra.total_compra || 0;
+              doc.fontSize(8).text(
+                  totalCompra.toFixed(2),
+                  totalX - 100, rowY, { align: 'right' }
+              );
+          
+              totalComprasPeriodo += totalCompra;
+          
+              // Línea separadora
+              const lineY = rowY + 10; 
+              doc.strokeColor('#ccc')
+                  .lineWidth(0.5)
+                  .lineJoin('miter')
+                  .dash(5, { space: 5 })
+                  .moveTo(margin, lineY)
+                  .lineTo(pageWidthPoints - margin, lineY)
+                  .stroke();
+              doc.undash();
+          
+              rowY = lineY + 8; 
+          });
+        }
+
+            if (proveedor.direccion) {
+                doc.fontSize(8).text(`Dirección: ${proveedor.direccion}`, proveedorX, rowY);
+                rowY += 12;
+            }
+            
+            doc.moveDown();
+        });
+      
+        currentY = rowY + 15;
+        doc.fontSize(10).font('Helvetica-Bold')
+            .text(`Monto total en compras: ${totalComprasPeriodo.toFixed(2)}`, margin, currentY, { align: 'right' });
+        doc.font('Helvetica');
+
+        // Línea final del documento
+        currentY += 15;
+        doc.fontSize(8).text('***Ultima linea***', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+
+        doc.end();
+
+        writeStream.on("finish", () => {
+            resolve({
+                status: 200,
+                data: {
+                    message: "Informe de proveedores generado exitosamente",
+                    downloadLink: `${downloadLink}Proveedor/${fileName}`
+                }
+            });
+        });
+
+        writeStream.on("error", (error) => {
+            console.error("Error al generar el informe de proveedores:", error);
+            reject({ status: 500, data: { error: "Error al generar el informe de proveedores." } });
+        });
+    });
+function toArrayList(data) {
+  if (Array.isArray(data)) return data;
+  if (typeof data === 'object' && data !== null) return Object.values(data);
+  return [];
+}
+}
+
+async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const title = "Informe de proveedores y compras asociadas";
+      const fileName = `Compras-Proveedores-${formatDateTime(currentDate)}.xlsx`;
+      const dirPath = path.join(excelDir, "Proveedor");
+      const filePath = path.join(dirPath, fileName);
+
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+
+    
+      const excelData = [];
+      let totalComprasPeriodo = 0;
+
+   
+      excelData.push([storeData.DSC_NOMBRE]);
+      excelData.push([title]);
+      excelData.push([`Fecha del Reporte: ${currentDate}`]);
+      excelData.push([]); 
+
+      suppliersData.forEach(proveedor => {
+
+        excelData.push([
+          proveedor.proveedor_nombre || 'Proveedor sin nombre',
+          `Tel: ${(proveedor.telefonos || 'N/A').split(',')[0].trim()}`,
+          `Email: ${(proveedor.correos || 'N/A').split(',')[0].trim()}`,
+          proveedor.direccion ? `Dir: ${proveedor.direccion}` : ''
+        ]);
+
+        // Cabecera de compras
+        excelData.push(["", "", "Fecha Compra", "Total Compra"]);
+
+        // Procesar compras
+        if (proveedor.compras.length > 0) {
+          proveedor.compras.forEach(compra => {
+            if (!compra.fecha_compra) return;
+
+            const total = compra.total_compra || 0;
+            excelData.push([
+              "", "", // Espacios para alinear con el proveedor
+              new Date(compra.fecha_compra).toLocaleDateString(),
+              total.toFixed(2)
+            ]);
+
+            totalComprasPeriodo += total;
+          });
+        } else {
+          excelData.push(["", "", "No hay compras registradas", "0.00"]);
+        }
+
+        excelData.push([]); 
+      });
+
+      
+      excelData.push(["", "", "TOTAL GENERAL:", totalComprasPeriodo.toFixed(2)]);
+
+      
+      const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+      
+      
+      worksheet['!cols'] = [
+        { wch: 30 }, 
+        { wch: 25 }, 
+        { wch: 15 }, 
+        { wch: 15 }  
+      ];
+
+      // Crear workbook y guardar
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Compras-Proveedores");
+      XLSX.writeFile(workbook, filePath);
+
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de proveedores generado exitosamente en Excel",
+          downloadLink: `${downloadLink}Proveedor/${fileName}`
+        }
+      });
+    } catch (error) {
+      console.error("Error al generar el Excel:", error);
+      reject({ 
+        status: 500, 
+        data: { 
+          error: "Error al generar el informe de proveedores en Excel." 
+        } 
       });
     }
   });
