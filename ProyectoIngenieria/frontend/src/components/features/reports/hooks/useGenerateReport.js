@@ -9,7 +9,8 @@ const reportTypeOptions = [
     { value: "", label: "Seleccionar tipo de reporte" },
     { value: "ComprasXProveedor", label: "Compras por proveedor" },
     { value: "VentasXCliente", label: "Ventas por cliente" },
-    { value: "ReporteTransaccion", label: "Reporte de transacciones" }
+    { value: "ReporteTransaccion", label: "Reporte de transacciones" },
+    { value: "ReporteProductos", label: "Reporte de productos" },
 ];
 
 const formatOptions = [
@@ -28,6 +29,12 @@ export function useGenerateReport() {
     const [showNoDataMessage, setShowNoDataMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [reportURL, setReportURL] = useState(null);
+
+    const addOneDay = (dateStr) => {
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() + 1);
+        return date.toISOString().split('T')[0];
+    };
 
     // Función para actualizar la vista previa
     const updatePreview = useCallback(() => {
@@ -92,11 +99,17 @@ export function useGenerateReport() {
         toast.info("Generando reporte...");
 
         try {
+            let maxFec = endDate?.toISOString().split('T')[0] || '';
+
+            if (reportType === "ReporteTransaccion" && endDate) {
+                maxFec = addOneDay(maxFec);
+            }
+
             const params = {
                 EXTENSION: format,
                 TYPE: reportType,
                 MIN_FEC: startDate?.toISOString().split('T')[0] || '',
-                MAX_FEC: endDate?.toISOString().split('T')[0] || ''
+                MAX_FEC: maxFec,
             };
 
             const response = await generateReport(params);
