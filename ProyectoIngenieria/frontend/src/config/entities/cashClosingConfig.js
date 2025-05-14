@@ -1,4 +1,4 @@
-import { createCashClosing } from "../../api/sale";
+import { createCashClosing, getAllCashClosingData } from "../../api/cashClosing";
 
 export const cashClosingConfig = {
     entityName: "Cierre de caja",
@@ -23,6 +23,7 @@ export const cashClosingConfig = {
     ],
 
     api: {
+        fetchAll: getAllCashClosingData,
         create: createCashClosing,
     },
 
@@ -31,11 +32,7 @@ export const cashClosingConfig = {
             ID: data.ID,
             TIPO: data.TIPO,
             DESCRIPCION: data.DESCRIPCION,
-            HORA: new Date(data.HORA).toLocaleTimeString("es-ES", {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            }),
+            HORA: data.HORA,
             MONTO: data.MONTO,
         }),
 

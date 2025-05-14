@@ -78,13 +78,3 @@ const transformSale = (sale) => {
         MONT_SUBTOTAL: parseFloat(subtotalCalculado.toFixed(2)),
     };
 };
-
-export const createCashClosing = async (id) => {
-    try {
-        const response = await axios.put('/sale/createCashClosing/');
-        return response.data;
-    } catch (error) {
-        console.error('Error creando el cierre de caja:', error.message);
-        throw error;
-    }
-};
