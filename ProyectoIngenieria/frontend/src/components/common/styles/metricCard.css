@@ -43,3 +43,11 @@
     font-weight: bold;
     color: var(--color-font);
 }
+
+.metric-card-value-positive {
+    color: var(--color-success);
+}
+
+.metric-card-value-negative {
+    color: var(--color-error);
+}
