@@ -15,3 +15,4 @@ export { default as ShoppingPage} from './ShoppingPage';
 export { default as CreditSalePage} from './CreditSalePage';
 export { default as ProfilePage } from './ProfilePage';
 export { default as ReportsPage } from './ReportsPage';
+export { default as NotificationPage } from './NotificationPage';
