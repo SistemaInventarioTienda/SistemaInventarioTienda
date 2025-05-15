@@ -53,31 +53,36 @@ function GenerateReport() {
                         </div>
                     </div>
 
-                    <div className="report-filter-item">
-                        <label className="report-filter-label">Fecha de Inicio</label>
-                        <DatePicker
-                            value={startDate}
-                            onChange={handleStartDateChange}
-                            allowPastDates={true}
-                            allowFutureDates={false}
-                            className="report-filter-input"
-                            placeholder="Selecciona fecha inicio"
-                            dateFormat="Y-m-d"
-                        />
-                    </div>
+                    {reportType !== "ProveedoresActivos" && (
+                        <>
+                            <div className="report-filter-item">
+                                <label className="report-filter-label">Fecha de Inicio</label>
+                                <DatePicker
+                                    value={startDate}
+                                    onChange={handleStartDateChange}
+                                    allowPastDates={true}
+                                    allowFutureDates={false}
+                                    className="report-filter-input"
+                                    placeholder="Selecciona fecha inicio"
+                                    dateFormat="Y-m-d"
+                                />
+                            </div>
 
-                    <div className="report-filter-item">
-                        <label className="report-filter-label">Fecha de Fin</label>
-                        <DatePicker
-                            value={endDate}
-                            onChange={handleEndDateChange}
-                            allowPastDates={true}
-                            allowFutureDates={false}
-                            className="report-filter-input"
-                            placeholder="Selecciona fecha fin"
-                            dateFormat="Y-m-d"
-                        />
-                    </div>
+                            <div className="report-filter-item">
+                                <label className="report-filter-label">Fecha de Fin</label>
+                                <DatePicker
+                                    value={endDate}
+                                    onChange={handleEndDateChange}
+                                    allowPastDates={true}
+                                    allowFutureDates={false}
+                                    className="report-filter-input"
+                                    placeholder="Selecciona fecha fin"
+                                    dateFormat="Y-m-d"
+                                />
+                            </div>
+                        </>
+                    )}
+
                 </div>
 
                 <div className="report-actions">
