@@ -4,6 +4,7 @@ import { getDateCR } from "../libs/date.js";
 import { validateSupplierData, validateSupplierDataUpdate } from "../logic/validateFields.logic.js";
 import { Op } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
+import db from "../db.js";
 
 
 
@@ -609,3 +610,5 @@ async function validateEmailsSupplierUpdate(emails, supplierId) {
         throw error; // Propagar el error para manejarlo en el nivel superior
     }
 }
+
+
