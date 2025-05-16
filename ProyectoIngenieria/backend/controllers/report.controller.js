@@ -2336,3 +2336,7 @@ export async function createClientCreditPDF(currentDate, storeData, clientsData,
       }
   });
 }
+
+export const createCashClosing = async (req, res) => {
+  return res.status(200).json({message: "Funciona"})
+};
