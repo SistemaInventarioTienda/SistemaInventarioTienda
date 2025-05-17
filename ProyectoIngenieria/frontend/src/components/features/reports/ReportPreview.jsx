@@ -39,6 +39,7 @@ const ReportPreview = ({ reportType, format, isLoading }) => {
   return (
     <div className="report-preview-card">
       <h3 className="report-preview-title">Vista previa del reporte</h3>
+      <p className="pill disclaimer">Los datos mostrados en esta vista previa son solo de ejemplo y no tienen validez.</p>
 
       {!reportType || !format ? (
         <div className="report-preview-placeholder">
