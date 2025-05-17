@@ -14,7 +14,8 @@ import {
   SettingsPage, ProductPage, SalePage,
   AddSalePage, AddShoppingPage, TransactionPage,
   ShoppingPage, CreditSalePage, ProfilePage,
-  ReportsPage
+  ReportsPage, CashClosingPage,
+  NotificationPage
 } from './pages';
 
 function App() {
@@ -95,6 +96,8 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             {/* ruta al componente de configuraciones */}
+            <Route path="notifications" element={<NotificationPage />} />
+            {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage />} />
             <Route path="product" element={<ProductPage />} />
             <Route path="sales/credit" element={<CreditSalePage />}></Route>
@@ -105,6 +108,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="shopping/new" element={<AddShoppingPage />} />
             <Route path="transaction" element={<TransactionPage />} />
             <Route path="reports" element={<ReportsPage />} />
+            <Route path="cashClosing" element={<CashClosingPage />} />
           </Routes>
         </main>
       </div>

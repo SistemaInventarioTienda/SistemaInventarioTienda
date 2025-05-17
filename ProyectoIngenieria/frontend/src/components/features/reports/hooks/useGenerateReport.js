@@ -9,7 +9,9 @@ const reportTypeOptions = [
     { value: "", label: "Seleccionar tipo de reporte" },
     { value: "ComprasXProveedor", label: "Compras por proveedor" },
     { value: "VentasXCliente", label: "Ventas por cliente" },
-    { value: "ReporteTransaccion", label: "Reporte de transacciones" }
+    { value: "ReporteTransaccion", label: "Reporte de transacciones" },
+    { value: "ReporteProductos", label: "Reporte de productos" },
+    { value: "ProveedoresActivos", label: "Reportes de proveedores y compras asociadas" },
 ];
 
 const formatOptions = [
@@ -28,6 +30,12 @@ export function useGenerateReport() {
     const [showNoDataMessage, setShowNoDataMessage] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [reportURL, setReportURL] = useState(null);
+
+    const addOneDay = (dateStr) => {
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() + 1);
+        return date.toISOString().split('T')[0];
+    };
 
     // Función para actualizar la vista previa
     const updatePreview = useCallback(() => {
@@ -92,11 +100,29 @@ export function useGenerateReport() {
         toast.info("Generando reporte...");
 
         try {
+        
+            let minFec = "";
+            let maxFec = "";
+
+            if (reportType === "ProveedoresActivos") {
+                minFec = "2000-01-01";
+                maxFec = "2025-01-01";
+            } else {
+                minFec = startDate?.toISOString().split('T')[0] || '';
+                maxFec = endDate?.toISOString().split('T')[0] || '';
+    
+                if (reportType === "ReporteTransaccion" && endDate) {
+                    maxFec = addOneDay(maxFec);
+                }
+                
+            }
+            console.log("fechas", minFec);
+            console.log("fechas", maxFec);
             const params = {
                 EXTENSION: format,
                 TYPE: reportType,
-                MIN_FEC: startDate?.toISOString().split('T')[0] || '',
-                MAX_FEC: endDate?.toISOString().split('T')[0] || ''
+                MIN_FEC: minFec,
+                MAX_FEC: maxFec,
             };
 
             const response = await generateReport(params);
