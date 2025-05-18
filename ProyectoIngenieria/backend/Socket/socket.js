@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { FRONTEND_URL } from "../config.js";
 import { getDateCR } from "../libs/date.js";
+import { differenceInDays } from "date-fns";
 import Product from "../models/product.model.js";
 import subcategory from "../models/subcategory.model.js";
 import notification from "../models/notification.model.js";
@@ -22,6 +23,11 @@ export const initSocket = (server) => {
     const interval = setInterval(async () => {
       const status = await getProductStatus();
 
+      const notificaciones = await notification.findAll({
+        order: [["IDENTIFICADOR_NOTIFICACION", "DESC"]],
+      });
+      
+
       if (status.alerta) {
         const message=JSON.stringify({
             tipo: "Alerta: Stock bajo",
@@ -30,12 +36,17 @@ export const initSocket = (server) => {
             fecha: status.fecha,
           })
         socket.emit("receive-notification",message );
+
+        const esRepetido = mensajeEsRepetidoPeroReciente(message, notificaciones);
+
+        if (!esRepetido) {
           notification.create({
             MENSAJE:message,
-            VISTO:1
+            VISTO:0
       })
+    }
       }
-    }, 5000);
+    }, 1800000);
 
     socket.on("disconnect", () => {
       console.log("❌ Cliente desconectado:", socket.id);
@@ -91,6 +102,34 @@ export const initSocket = (server) => {
 }
 
 
+
+
+function mensajeEsRepetidoPeroReciente(mensajeNuevo, notificaciones) {
+  const nuevo = JSON.parse(mensajeNuevo);
+
+  if (notificaciones.length === 0) {
+    return false;
+  }
+
+  for (const noti of notificaciones) {
+    const msg = JSON.parse(noti.MENSAJE);
+
+    const igualContenido =
+      msg.tipo === nuevo.tipo &&
+      msg.mensaje === nuevo.mensaje &&
+      JSON.stringify(msg.productos) === JSON.stringify(nuevo.productos);
+
+    if (igualContenido) {
+      const dias = differenceInDays(
+        new Date(),
+        new Date(msg.fecha)
+      );
+      if (dias < 1) return true; 
+    }
+  }
+
+  return false; 
+}
 
 
 export const getIO = () => io;
