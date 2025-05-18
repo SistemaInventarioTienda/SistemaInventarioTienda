@@ -67,29 +67,155 @@
 // export default NotificationPage;
 
 
-import React, { useEffect, useState } from 'react'; // Import necessary modules from React
-import io from 'socket.io-client'; // Import the socket.io client library
+// import React, { useEffect, useState } from 'react'; // Import necessary modules from React
+// import io from 'socket.io-client'; // Import the socket.io client library
 
-// Establish a socket connection to the server at the specified URL
+// // Establish a socket connection to the server at the specified URL
+// const socket = io.connect('http://localhost:4000');
+
+// export default function NotificationPage() {
+//   const [receiveMessage, setReceiveMessage] = useState(""); // State to store received message
+  
+//   useEffect(() => {
+//     socket.on("receive-notification", (data) => {
+//       console.log("📩 Mensaje recibido del servidor:", data);
+//       setReceiveMessage(data); // Guarda el mensaje recibido
+//     });
+  
+//     return () => {
+//       socket.off("receive-notification");
+//     };
+//   }, []); // Empty dependency array ensures this runs only once when the component mounts
+
+//   return (
+//     <div>
+//       <p>View Receive messages: {receiveMessage}</p> {/* Display the received message */}
+//     </div>
+//   );
+// }
+
+
+import React, { useState, useEffect } from "react";
+import PageLayout from "../components/layout/PageLayout";
+import { Tab, Tabs, TabList, TabPanel } from "../components/common";
+import NotificationItem from "../components/features/notifications/NotificationItem";
+import io from 'socket.io-client';
+
+import "./styles/NotificationPage.css"
+
+// Connect to your backend server
 const socket = io.connect('http://localhost:4000');
 
 export default function NotificationPage() {
-  const [receiveMessage, setReceiveMessage] = useState(""); // State to store received message
-  
+  const [activeTab, setActiveTab] = useState("all");
+  const [notifications, setNotifications] = useState([]); // Lista real de notificaciones
+
+  // Recibe nuevas notificaciones desde el socket
   useEffect(() => {
-    socket.on("receive-notification", (data) => {
-      console.log("📩 Mensaje recibido del servidor:", data);
-      setReceiveMessage(data); // Guarda el mensaje recibido
-    });
-  
-    return () => {
-      socket.off("receive-notification");
-    };
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+  socket.on("receive-notification", (data) => {
+    try {
+      const parsedData = JSON.parse(data); // Convertimos el string a objeto
+
+      console.log("📩 Notificación parseada:", parsedData);
+
+      setNotifications(prev => [
+        {
+          id: Date.now(), // ID único basado en el tiempo
+          read: false,
+          ...parsedData // Incluimos los campos del mensaje
+        },
+        ...prev // Mostrar nuevas al inicio
+      ]);
+    } catch (error) {
+      console.error("❌ Error al parsear la notificación:", error);
+    }
+  });
+
+  return () => {
+    socket.off("receive-notification");
+  };
+}, []);
+
+  // Marca una notificación como leída
+  const markAsRead = (id) => {
+    setNotifications(prev =>
+      prev.map(notif =>
+        notif.id === id ? { ...notif, read: true } : notif
+      )
+    );
+  };
+
+  // Filtra notificaciones según la pestaña activa
+  const filteredNotifications = () => {
+    switch (activeTab) {
+      case "all":
+        return notifications;
+      case "unread":
+        return notifications.filter(n => !n.read);
+      case "read":
+        return notifications.filter(n => n.read);
+      default:
+        return notifications;
+    }
+  };
 
   return (
-    <div>
-      <p>View Receive messages: {receiveMessage}</p> {/* Display the received message */}
-    </div>
+    <PageLayout>
+      <div className="page-header">
+        <div>
+          <h1>Notificaciones</h1>
+          <p>Gestión de notificaciones del sistema</p>
+        </div>
+      </div>
+
+      <div className="notifications-tabs-container">
+        <Tabs activeTab={activeTab} onChange={setActiveTab} className="notifications-tabs">
+          <TabList className="notifications-tab-list">
+            <Tab value="all">Todas</Tab>
+            <Tab value="unread">No leídas</Tab>
+            <Tab value="read">Leídas</Tab>
+          </TabList>
+
+          <TabPanel value="all" active={activeTab === "all"}>
+            {filteredNotifications().map(notification => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onMarkAsRead={() => markAsRead(notification.id)}
+              />
+            ))}
+            {filteredNotifications().length === 0 && (
+              <p>No hay notificaciones.</p>
+            )}
+          </TabPanel>
+
+          <TabPanel value="unread" active={activeTab === "unread"}>
+            {filteredNotifications().map(notification => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onMarkAsRead={() => markAsRead(notification.id)}
+              />
+            ))}
+            {filteredNotifications().length === 0 && (
+              <p>No hay notificaciones no leídas.</p>
+            )}
+          </TabPanel>
+
+          <TabPanel value="read" active={activeTab === "read"}>
+            {filteredNotifications().map(notification => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onMarkAsRead={() => markAsRead(notification.id)}
+              />
+            ))}
+            {filteredNotifications().length === 0 && (
+              <p>No hay notificaciones leídas.</p>
+            )}
+          </TabPanel>
+        </Tabs>
+      </div>
+    </PageLayout>
   );
 }
