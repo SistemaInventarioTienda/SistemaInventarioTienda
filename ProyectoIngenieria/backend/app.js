@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import http from 'http';
+import { initSocket } from "./Socket/socket.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -59,4 +61,8 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-export default app;
+const server = http.createServer(app);
+
+initSocket(server);
+
+export  {server};
