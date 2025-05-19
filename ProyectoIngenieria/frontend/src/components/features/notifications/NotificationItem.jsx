@@ -225,6 +225,16 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
       <div className={styles.content}>
         <strong>{tipo}</strong>
         <p>{mensaje}</p>
+        {/* Mostrar productos si hay */}
+        {productos && productos.length > 0 && (
+          <ul className={styles.productsList}>
+            {productos.map((producto, index) => (
+              <li key={index} className={styles.productItem}>
+                {producto.nombre} - Stock: {producto.stock}
+              </li>
+            ))}
+          </ul>
+        )}
         <small>{timeAgo()} atrás</small>
       </div>
 
