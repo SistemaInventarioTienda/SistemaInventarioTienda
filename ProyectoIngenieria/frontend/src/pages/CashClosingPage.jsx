@@ -7,17 +7,33 @@ import { Button, MetricCard, Table } from "../components/common";
 import { cashClosingConfig } from "../config/entities/cashClosingConfig";
 import { useCashClosing } from "../hooks/useCashClosing";
 import ModalConfirmation from "../components/modals/ModalConfirmation";
+import ReportViewer from "../components/features/reports/ReportViewer";
+import { openReportViewerInNewWindow } from "../components/features/reports/utils/openReportViewer";
 import {
+    ShoppingCart,
+    CreditCard,
+    Package,
     DollarSign,
-    ArrowUpCircle,
-    ArrowDownCircle,
-    Calculator,
+    Repeat,
 } from "lucide-react";
 
 const CashClosingPage = () => {
     const { permissions } = usePermissions();
     const navigate = useNavigate();
-    const { metrics, data, currentDate, handleConfirmCashClosing, isModalOpen, setIsModalOpen } = useCashClosing();
+    const {
+        metrics,
+        sortedData,
+        sortField,
+        sortOrder,
+        handleSort,
+        loading,
+        error,
+        currentDate,
+        handleConfirmCashClosing,
+        isModalOpen,
+        setIsModalOpen,
+        reportLinks
+    } = useCashClosing();
 
     useEffect(() => {
         if (permissions.home === undefined) return;
@@ -26,6 +42,17 @@ const CashClosingPage = () => {
             navigate("/");
         }
     }, [permissions, navigate]);
+
+    useEffect(() => {
+        if (reportLinks?.pdf) {
+            toast.success("Reporte PDF generado correctamente.");
+            openReportViewerInNewWindow("pdf", reportLinks.pdf);
+        }
+        if (reportLinks?.xlsx) {
+            toast.success("Reporte Excel generado correctamente.");
+            openReportViewerInNewWindow("xlsx", reportLinks.xlsx);
+        }
+    }, [reportLinks]);
 
     return (
         <PageLayout>
@@ -44,29 +71,36 @@ const CashClosingPage = () => {
                 </div>
             </div>
 
-            <div className="metric-grid">
+            {/* Cards métricas */}
+            <div className="metric-grid-2">
                 <MetricCard
                     title="Ventas"
                     value={metrics.ventasFormatted}
-                    icon={<DollarSign size={20} />}
+                    icon={<ShoppingCart size={20} />}
                     dynamicColor
                 />
                 <MetricCard
-                    title="Ingresos"
+                    title="Abonos a Créditos"
                     value={metrics.ingresosFormatted}
-                    icon={<ArrowDownCircle size={20} />}
+                    icon={<CreditCard size={20} />}
                     dynamicColor
                 />
                 <MetricCard
-                    title="Egresos"
+                    title="Gastos en Compras"
                     value={metrics.egresosFormatted}
-                    icon={<ArrowUpCircle size={20} />}
+                    icon={<Package size={20} />}
+                    dynamicColor
+                />
+                <MetricCard
+                    title="Transacciones"
+                    value={metrics.transaccionesFormatted}
+                    icon={<Repeat size={20} />}
                     dynamicColor
                 />
                 <MetricCard
                     title="Total"
                     value={metrics.totalFormatted}
-                    icon={<Calculator size={20} />}
+                    icon={<DollarSign size={20} />}
                     dynamicColor
                 />
             </div>
@@ -76,8 +110,11 @@ const CashClosingPage = () => {
             <div className="table-container">
                 <Table
                     columns={cashClosingConfig.columns}
-                    data={data}
+                    data={sortedData}
                     entityKey={cashClosingConfig.entityKey}
+                    onSort={handleSort}
+                    sortField={sortField}
+                    sortOrder={sortOrder}
                 />
             </div>
             <ModalConfirmation
@@ -91,7 +128,7 @@ const CashClosingPage = () => {
                         <strong>¿Está seguro que desea realizar el cierre de caja?</strong><br />
                         Esta acción no se puede deshacer.<br /><br />
                         <span style={{ color: 'darkorange' }}>
-                            Al confirmar el cierre de caja, se registrarán todos los movimientos del día y no se podrán realizar más operaciones con fecha de hoy.
+                            Al confirmar el cierre de caja, se registrarán todos los movimientos del día y se generará unos documentos (pdf y excel) con los datos.
                         </span>
                     </>
                 }
