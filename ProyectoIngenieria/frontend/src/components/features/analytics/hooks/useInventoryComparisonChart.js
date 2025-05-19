@@ -57,8 +57,8 @@ export function useInventoryComparisonChart() {
             setError('');
             const response = await getAllDataFromGraphic({
                 MIN_FEC: dateRange.start,
-                MAX_FEC: dateRange.end,
-                // MAX_FEC: addOneDay(dateRange.end),
+                // MAX_FEC: dateRange.end, -> on deploy
+                MAX_FEC: addOneDay(dateRange.end),
                 CATEGORY: selectedFilter,
             });
             

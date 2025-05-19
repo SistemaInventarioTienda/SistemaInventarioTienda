@@ -1,70 +1,89 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Bell, UserRoundCogIcon, Moon, Sun } from 'lucide-react';
-import { Button } from '../common';
-import { useAuth } from "../../context/authContext";
-import UserMenu from '../features/UserMenu';
-import './styles/navbar.css';
+  import React, { useState, useEffect, useRef } from 'react';
+  import { Bell, UserRoundCogIcon, Moon, Sun } from 'lucide-react';
 
-const Navbar = ({ isDarkMode, toggleDarkMode }) => {
-  const { isAuthenticated, user } = useAuth();
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const userMenuRef = useRef(null);
+  import { useNavigate } from "react-router-dom";
 
-  const toggleUserMenu = () => {
-    setIsUserMenuOpen(prev => !prev);
-  };
+  import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+  import Badge from '@mui/material/Badge';
+  import NotificationBadge from '../features/notifications/NotificationBadge';
 
-  const handleClickOutside = (event) => {
-    if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-      setIsUserMenuOpen(false);
-    }
-  };
+  import { Button } from '../common';
+  import { useAuth } from "../../context/authContext";
+  import UserMenu from '../features/UserMenu';
+  import './styles/navbar.css';
 
-  useEffect(() => {
-    if (isUserMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+  const Navbar = ({ isDarkMode, toggleDarkMode }) => {
+    const { isAuthenticated, user } = useAuth();
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const userMenuRef = useRef(null);
+    const navigate = useNavigate();
+
+    const goToNotificationPage = () => {
+      navigate("/notifications");
     }
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+    const toggleUserMenu = () => {
+      setIsUserMenuOpen(prev => !prev);
     };
-  }, [isUserMenuOpen]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
 
-  return (
-    <nav className="navbar bg-card-custom navbar-custom">
-      <div className="d-flex justify-content-end align-items-center w-100">
-        <span className="text-primary-custom me-3">{user.nombreUsuario}</span>
+    useEffect(() => {
+      if (isUserMenuOpen) {
+        document.addEventListener('mousedown', handleClickOutside);
+      } else {
+        document.removeEventListener('mousedown', handleClickOutside);
+      }
 
-        <Button
-          className="btn icon-button me-3"
-          onClick={toggleDarkMode}
-        >
-          {isDarkMode ? <Sun size={20} className='navbar-icon' /> : <Moon size={20} className='navbar-icon' />}
-        </Button>
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [isUserMenuOpen]);
 
-        <Button className="btn icon-button me-3">
-          <Bell size={20} className="navbar-icon" />
-        </Button>
+    if (!isAuthenticated) {
+      return null;
+    }
 
-        <Button
-          className="btn icon-button me-3"
-          onClick={toggleUserMenu}
-        >
-          <UserRoundCogIcon size={20} className="navbar-icon" />
-        </Button>
+    return (
+      <nav className="navbar bg-card-custom navbar-custom">
+        <div className="d-flex justify-content-end align-items-center w-100">
+          <span className="text-primary-custom me-3">{user.nombreUsuario}</span>
 
-        <div ref={userMenuRef}>
-          <UserMenu isOpen={isUserMenuOpen} />
+          <Button
+            className="btn icon-button me-3"
+            onClick={toggleDarkMode}
+          >
+            {isDarkMode ? <Sun size={20} className='navbar-icon' /> : <Moon size={20} className='navbar-icon' />}
+          </Button>
+
+          <Button className="btn icon-button me-3" onClick={goToNotificationPage}>
+            
+            <NotificationBadge isDarkMode={isDarkMode} />
+            {/* <Badge badgeContent={4} color="primary">
+            
+              <NotificationsNoneIcon className="navbar-icon" 
+              />
+          </Badge> */}
+          </Button>
+          
+
+          <Button
+            className="btn icon-button me-3"
+            onClick={toggleUserMenu}
+          >
+            <UserRoundCogIcon size={20} className="navbar-icon" />
+          </Button>
+
+          <div ref={userMenuRef}>
+            <UserMenu isOpen={isUserMenuOpen} />
+          </div>
         </div>
-      </div>
-    </nav>
-  );
-};
+      </nav>
+    );
+  };
 
-export default Navbar;
+  export default Navbar;

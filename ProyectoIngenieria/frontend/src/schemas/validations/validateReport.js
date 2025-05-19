@@ -12,17 +12,19 @@ export const validateReport = (
         errors.push("Seleccione un formato de reporte.");
     }
 
-    if (!startDate) {
-        errors.push("Seleccione una fecha de inicio.");
-    }
-
-    if (!endDate) {
-        errors.push("Seleccione una fecha de fin.");
-    }
-
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-        errors.push("La fecha de inicio no puede ser posterior a la fecha de fin.");
-    }
+    if (reportType !== "ProveedoresActivos") {
+        if (!startDate) {
+            errors.push("Seleccione una fecha de inicio.");
+        }
+    
+        if (!endDate) {
+            errors.push("Seleccione una fecha de fin.");
+        }
+    
+        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+            errors.push("La fecha de inicio no puede ser posterior a la fecha de fin.");
+        }
+    }    
 
     // Validaciones adicionales solo si es un reporte programado
     if (isProgrammed) {

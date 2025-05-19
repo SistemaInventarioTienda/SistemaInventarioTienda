@@ -70,6 +70,15 @@ const SalesSummaryCard = ({ saleForm }) => {
                     value={saleForm.selectedClient}
                     onChange={(e) => saleForm.setSelectedClient(e.target.value === "null" ? null : e.target.value)}
                 />
+                <label className="sales-card-label">
+                    Correo del cliente(Opcional)
+                </label>
+                <Input
+                    type="text"
+                    value={saleForm.email}
+                    placeholder = "Correo para enviar la factura."
+                    onChange={(e) => saleForm.setEmail(e.target.value)}
+                />
 
                 <label className="sales-card-label">Método de pago</label>
                 <Select
