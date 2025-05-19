@@ -46,7 +46,7 @@ export const initSocket = (server) => {
       })
     }
       }
-    }, 1800000);
+    }, 10000);//1800000
 
     socket.on("disconnect", () => {
       console.log("❌ Cliente desconectado:", socket.id);
