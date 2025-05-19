@@ -28,14 +28,18 @@ export const cashClosingConfig = {
     },
 
     transformData: {
-        toFrontend: (data) => ({
-            ID: data.ID,
-            TIPO: data.TIPO,
-            DESCRIPCION: data.DESCRIPCION,
-            HORA: data.HORA,
-            MONTO: data.MONTO,
-        }),
-
+        toFrontend: (data) => {
+            const date = new Date(data.FECHA);
+            const hora = date.toLocaleTimeString("es-CR", { hour: '2-digit', minute: '2-digit' });
+            return {
+                ID: data.ID,
+                TIPO: data.TIPO,
+                DESCRIPCION: data.DESCRIPCION,
+                HORA: hora,
+                MONTO: data.MONTO,
+                METODOPAGO: data.METODOPAGO,
+            };
+        },
         toBackend: (formData) => ({
             fecha: formData.fecha,
             ventas: formData.ventas,

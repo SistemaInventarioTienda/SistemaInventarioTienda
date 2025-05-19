@@ -455,74 +455,74 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
       return await createProductPDF(
         currentDate, store[0], products
       );
-      case "ProveedoresActivos":
-            const [supplierReport] = await db.query(
-                'CALL sp_getSupplierReport()',
-                {
-                    type: QueryTypes.SELECT
-                });
+    case "ProveedoresActivos":
+      const [supplierReport] = await db.query(
+        'CALL sp_getSupplierReport()',
+        {
+          type: QueryTypes.SELECT
+        });
 
 
-                const rawData = Object.values(supplierReport); 
+      const rawData = Object.values(supplierReport);
 
-                const parsedResults = rawData.map((supplier) => {
-                    let compras = [];
-        
-                    try {
-                      if(supplier.compras !=null){
-                        let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
-                        compras = JSON.parse(fixedComprasStr);
-                      }
-                    } catch (err) {
-                        console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
-                    }
-        
-                    return {
-                        proveedor_nombre: supplier.proveedor_nombre,
-                        direccion: supplier.DSC_DIRECCIONEXACTA,
-                        telefonos: supplier.telefonos,
-                        correos: supplier.correos,
-                        compras: compras
-                    };
-                });
-            return await createSupplierPDF(currentDate, store[0], parsedResults);
-      case "ClientesCreditoActivo":
+      const parsedResults = rawData.map((supplier) => {
+        let compras = [];
+
+        try {
+          if (supplier.compras != null) {
+            let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
+            compras = JSON.parse(fixedComprasStr);
+          }
+        } catch (err) {
+          console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
+        }
+
+        return {
+          proveedor_nombre: supplier.proveedor_nombre,
+          direccion: supplier.DSC_DIRECCIONEXACTA,
+          telefonos: supplier.telefonos,
+          correos: supplier.correos,
+          compras: compras
+        };
+      });
+      return await createSupplierPDF(currentDate, store[0], parsedResults);
+    case "ClientesCreditoActivo":
 
       const [credit_Client] = await db.query(`CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`, {
-        replacements: { MIN_FEC:MIN_FEC, MAX_FEC:MAX_FEC },
+        replacements: { MIN_FEC: MIN_FEC, MAX_FEC: MAX_FEC },
         type: db.QueryTypes.SELECT,
-    });
-    if (!credit_Client || !credit_Client[0] || Object.keys(credit_Client[0]).length === 0) {
+      });
+      if (!credit_Client || !credit_Client[0] || Object.keys(credit_Client[0]).length === 0) {
         return res.status(204).json({ message: "No se encontraron clientes con créditos." });
-    }
+      }
 
-    const data_client = Object.values(credit_Client);
+      const data_client = Object.values(credit_Client);
 
-    const client_Parsed = data_client.map((client) => {
+      const client_Parsed = data_client.map((client) => {
         let creditos = [];
 
         try {
-          if(client.creditos_json !=null){
+          if (client.creditos_json != null) {
             let fixedCreditosStr = `[${client.creditos_json}]`.replace(/},\s*{/g, '},{');
             creditos = JSON.parse(fixedCreditosStr);
           }
         } catch (err) {
-            console.error("Error al parsear créditos para cliente:", client.cliente_nombre, err);
+          console.error("Error al parsear créditos para cliente:", client.cliente_nombre, err);
         }
 
         return {
-            cedula: client.DSC_CEDULA,
-            nombre: client.cliente_nombre,
-            direccion: client.DSC_DIRECCION,
-            telefono:client.telefono,
-            creditos: creditos,
-            cantidad_creditos: client.cantidad_creditos,
-            saldo_total_Pendiente: client.saldo_total_Pendiente,
-            abonos_total_Pagado: client.abonos_total_Pagado
+          cedula: client.DSC_CEDULA,
+          nombre: client.cliente_nombre,
+          direccion: client.DSC_DIRECCION,
+          telefono: client.telefono,
+          creditos: creditos,
+          cantidad_creditos: client.cantidad_creditos,
+          saldo_total_Pendiente: client.saldo_total_Pendiente,
+          abonos_total_Pagado: client.abonos_total_Pagado
         };
-    });
+      });
 
-            return await createClientCreditPDF(currentDate, store[0], client_Parsed,MIN_FEC, MAX_FEC);
+      return await createClientCreditPDF(currentDate, store[0], client_Parsed, MIN_FEC, MAX_FEC);
     default:
       return {
         status: 400,
@@ -1376,74 +1376,74 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
       return await createProductEXCEL(
         currentDate, products
       );
-      case "ProveedoresActivos":
-        const [supplierReport] = await db.query(
-            'CALL sp_getSupplierReport()',
-            {
-                type: QueryTypes.SELECT
-            });
+    case "ProveedoresActivos":
+      const [supplierReport] = await db.query(
+        'CALL sp_getSupplierReport()',
+        {
+          type: QueryTypes.SELECT
+        });
 
 
-            const rawData = Object.values(supplierReport); 
+      const rawData = Object.values(supplierReport);
 
-            const parsedResults = rawData.map((supplier) => {
-                let compras = [];
-    
-                try {
-                  if(supplier.compras !=null){
-                    let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
-                    compras = JSON.parse(fixedComprasStr);
-                  }
-                } catch (err) {
-                    console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
-                }
-    
-                return {
-                    proveedor_nombre: supplier.proveedor_nombre,
-                    direccion: supplier.DSC_DIRECCIONEXACTA,
-                    telefonos: supplier.telefonos,
-                    correos: supplier.correos,
-                    compras: compras
-                };
-            });
-        return await createSupplierEXCEL(currentDate, store[0], parsedResults);
-        case "ClientesCreditoActivo":
+      const parsedResults = rawData.map((supplier) => {
+        let compras = [];
+
+        try {
+          if (supplier.compras != null) {
+            let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
+            compras = JSON.parse(fixedComprasStr);
+          }
+        } catch (err) {
+          console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
+        }
+
+        return {
+          proveedor_nombre: supplier.proveedor_nombre,
+          direccion: supplier.DSC_DIRECCIONEXACTA,
+          telefonos: supplier.telefonos,
+          correos: supplier.correos,
+          compras: compras
+        };
+      });
+      return await createSupplierEXCEL(currentDate, store[0], parsedResults);
+    case "ClientesCreditoActivo":
 
       const [credit_Client] = await db.query(`CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`, {
-        replacements: { MIN_FEC:MIN_FEC, MAX_FEC:MAX_FEC },
+        replacements: { MIN_FEC: MIN_FEC, MAX_FEC: MAX_FEC },
         type: db.QueryTypes.SELECT,
-    });
-    if (!credit_Client || !credit_Client[0] || Object.keys(credit_Client[0]).length === 0) {
+      });
+      if (!credit_Client || !credit_Client[0] || Object.keys(credit_Client[0]).length === 0) {
         return res.status(204).json({ message: "No se encontraron clientes con créditos." });
-    }
+      }
 
-    const data_client = Object.values(credit_Client);
+      const data_client = Object.values(credit_Client);
 
-    const client_Parsed = data_client.map((client) => {
+      const client_Parsed = data_client.map((client) => {
         let creditos = [];
 
         try {
-          if(client.creditos_json !=null){
+          if (client.creditos_json != null) {
             let fixedCreditosStr = `[${client.creditos_json}]`.replace(/},\s*{/g, '},{');
             creditos = JSON.parse(fixedCreditosStr);
           }
         } catch (err) {
-            console.error("Error al parsear créditos para cliente:", client.cliente_nombre, err);
+          console.error("Error al parsear créditos para cliente:", client.cliente_nombre, err);
         }
 
         return {
-            cedula: client.DSC_CEDULA,
-            nombre: client.cliente_nombre,
-            direccion: client.DSC_DIRECCION,
-            telefono:client.telefono,
-            creditos: creditos,
-            cantidad_creditos: client.cantidad_creditos,
-            saldo_total_Pendiente: client.saldo_total_Pendiente,
-            abonos_total_Pagado: client.abonos_total_Pagado
+          cedula: client.DSC_CEDULA,
+          nombre: client.cliente_nombre,
+          direccion: client.DSC_DIRECCION,
+          telefono: client.telefono,
+          creditos: creditos,
+          cantidad_creditos: client.cantidad_creditos,
+          saldo_total_Pendiente: client.saldo_total_Pendiente,
+          abonos_total_Pagado: client.abonos_total_Pagado
         };
-    });
+      });
 
-      return await createClientCreditEXCEL(currentDate, store[0], client_Parsed,MIN_FEC, MAX_FEC);
+      return await createClientCreditEXCEL(currentDate, store[0], client_Parsed, MIN_FEC, MAX_FEC);
     default:
       return {
         status: 400,
@@ -1628,7 +1628,7 @@ async function createProductEXCEL(currentDate, productData) {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Productos");
       XLSX.writeFile(workbook, filePath);
 
-      resolve({ 
+      resolve({
         status: 200,
         data: {
           message: "Informe de productos generado exitosamente en Excel",
@@ -1637,7 +1637,7 @@ async function createProductEXCEL(currentDate, productData) {
       });
     } catch (error) {
       console.error("Error al generar el informe de productos en Excel:", error);
-      reject({ 
+      reject({
         status: 500,
         data: { error: "Error al generar el informe de productos en Excel." },
       });
@@ -1649,157 +1649,157 @@ async function createProductEXCEL(currentDate, productData) {
 //generar reporte pdf de proveedor
 
 async function createSupplierPDF(currentDate, storeData, suppliersData) {
-    return new Promise((resolve, reject) => {
-        const title = "Informe de proveedores y compras asociadas";
-        const pageWidthPoints = 595.28;
-        const pageHeightPoints = 841.89;
-        const margin = 20;
-        let currentY = margin + 20;
-        let totalComprasPeriodo = 0;
+  return new Promise((resolve, reject) => {
+    const title = "Informe de proveedores y compras asociadas";
+    const pageWidthPoints = 595.28;
+    const pageHeightPoints = 841.89;
+    const margin = 20;
+    let currentY = margin + 20;
+    let totalComprasPeriodo = 0;
 
-        const doc = new PDFDocument({
-            size: 'A4'
-        });
-        const fileName = `Compras-Proveedores-${formatDateTime(currentDate)}.pdf`;
-        const filePath = path.join(pdfDir, 'Proveedor', fileName);
-        if (!fs.existsSync(path.join(pdfDir, 'Proveedor'))) {
-            fs.mkdirSync(path.join(pdfDir, 'Proveedor'), { recursive: true });
-        }
-        const writeStream = fs.createWriteStream(filePath);
-
-        doc.pipe(writeStream);
-
-        // Encabezado del informe
-        doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 15;
-        doc.fontSize(10).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 15;
-        doc.fontSize(8).text(`Fecha del Reporte: ${currentDate}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-        currentY += 25;
-
-        // Tabla de compras por proveedor
-        const tableTop = currentY;
-        let rowY = tableTop;
-        const proveedorX = margin;
-        const contactoX = proveedorX + 150;
-        const fechaX = contactoX + 120;
-        const productoX = margin + 10;
-        const codigoX = productoX + 150;
-        const cantidadX = codigoX + 80;
-        const totalX = pageWidthPoints - margin - 70;
-
-        // Cabecera de la tabla
-        doc.fontSize(9).font('Helvetica-Bold')
-            .text('Proveedor', proveedorX, rowY)
-            .text('Contacto', contactoX, rowY)
-            .text('Fecha Compra', fechaX, rowY)
-            .text('Total Compra', totalX - 100, rowY, { align: 'right' });
-        rowY += 12;
-        doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, rowY).lineTo(pageWidthPoints - margin, rowY).stroke();
-        rowY += 5;
-        doc.font('Helvetica');
-
-        // Filas de la tabla
-        suppliersData.forEach(proveedor => {
-            
-        
-            doc.fontSize(9).font('Helvetica-Bold')
-                .text(proveedor.proveedor_nombre || 'Proveedor sin nombre', proveedorX, rowY)
-                .text(`${(proveedor.telefonos || 'N/A').split(',')[0].trim()} / ${(proveedor.correos || 'N/A').split(',')[0].trim()}`, contactoX, rowY);
-            
-            rowY += 10;
-            doc.font('Helvetica');
-
-            if (proveedor.compras.length === 0) {
-              doc.fontSize(8).text(
-                  'No existen compras asignadas',
-                  fechaX,
-                  rowY
-              );
-              
-              doc.fontSize(8).text(
-                  'No existen compras asignadas',
-                  totalX - 100,
-                  rowY,
-                  { align: 'right' }
-              );
-          
-              rowY += 15; 
-          }else{
-
-            proveedor.compras.forEach(compra => {
-              if (!compra.fecha_compra) {
-                  return;
-              }
-          
-              doc.fontSize(8).text(
-                  new Date(compra.fecha_compra).toLocaleDateString(),
-                  fechaX,
-                  rowY
-              );
-          
-              const totalCompra = compra.total_compra || 0;
-              doc.fontSize(8).text(
-                  totalCompra.toFixed(2),
-                  totalX - 100, rowY, { align: 'right' }
-              );
-          
-              totalComprasPeriodo += totalCompra;
-          
-              // Línea separadora
-              const lineY = rowY + 10; 
-              doc.strokeColor('#ccc')
-                  .lineWidth(0.5)
-                  .lineJoin('miter')
-                  .dash(5, { space: 5 })
-                  .moveTo(margin, lineY)
-                  .lineTo(pageWidthPoints - margin, lineY)
-                  .stroke();
-              doc.undash();
-          
-              rowY = lineY + 8; 
-          });
-        }
-
-            if (proveedor.direccion) {
-                doc.fontSize(8).text(`Dirección: ${proveedor.direccion}`, proveedorX, rowY);
-                rowY += 12;
-            }
-            
-            doc.moveDown();
-        });
-      
-        currentY = rowY + 15;
-        doc.fontSize(10).font('Helvetica-Bold')
-            .text(`Monto total en compras: ${totalComprasPeriodo.toFixed(2)}`, margin, currentY, { align: 'right' });
-        doc.font('Helvetica');
-
-        // Línea final del documento
-        currentY += 15;
-        doc.fontSize(8).text('***Ultima linea***', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
-
-        doc.end();
-
-        writeStream.on("finish", () => {
-            resolve({
-                status: 200,
-                data: {
-                    message: "Informe de proveedores generado exitosamente",
-                    downloadLink: `${downloadLink}Proveedor/${fileName}`
-                }
-            });
-        });
-
-        writeStream.on("error", (error) => {
-            console.error("Error al generar el informe de proveedores:", error);
-            reject({ status: 500, data: { error: "Error al generar el informe de proveedores." } });
-        });
+    const doc = new PDFDocument({
+      size: 'A4'
     });
-function toArrayList(data) {
-  if (Array.isArray(data)) return data;
-  if (typeof data === 'object' && data !== null) return Object.values(data);
-  return [];
-}
+    const fileName = `Compras-Proveedores-${formatDateTime(currentDate)}.pdf`;
+    const filePath = path.join(pdfDir, 'Proveedor', fileName);
+    if (!fs.existsSync(path.join(pdfDir, 'Proveedor'))) {
+      fs.mkdirSync(path.join(pdfDir, 'Proveedor'), { recursive: true });
+    }
+    const writeStream = fs.createWriteStream(filePath);
+
+    doc.pipe(writeStream);
+
+    // Encabezado del informe
+    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+    currentY += 15;
+    doc.fontSize(10).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+    currentY += 15;
+    doc.fontSize(8).text(`Fecha del Reporte: ${currentDate}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+    currentY += 25;
+
+    // Tabla de compras por proveedor
+    const tableTop = currentY;
+    let rowY = tableTop;
+    const proveedorX = margin;
+    const contactoX = proveedorX + 150;
+    const fechaX = contactoX + 120;
+    const productoX = margin + 10;
+    const codigoX = productoX + 150;
+    const cantidadX = codigoX + 80;
+    const totalX = pageWidthPoints - margin - 70;
+
+    // Cabecera de la tabla
+    doc.fontSize(9).font('Helvetica-Bold')
+      .text('Proveedor', proveedorX, rowY)
+      .text('Contacto', contactoX, rowY)
+      .text('Fecha Compra', fechaX, rowY)
+      .text('Total Compra', totalX - 100, rowY, { align: 'right' });
+    rowY += 12;
+    doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, rowY).lineTo(pageWidthPoints - margin, rowY).stroke();
+    rowY += 5;
+    doc.font('Helvetica');
+
+    // Filas de la tabla
+    suppliersData.forEach(proveedor => {
+
+
+      doc.fontSize(9).font('Helvetica-Bold')
+        .text(proveedor.proveedor_nombre || 'Proveedor sin nombre', proveedorX, rowY)
+        .text(`${(proveedor.telefonos || 'N/A').split(',')[0].trim()} / ${(proveedor.correos || 'N/A').split(',')[0].trim()}`, contactoX, rowY);
+
+      rowY += 10;
+      doc.font('Helvetica');
+
+      if (proveedor.compras.length === 0) {
+        doc.fontSize(8).text(
+          'No existen compras asignadas',
+          fechaX,
+          rowY
+        );
+
+        doc.fontSize(8).text(
+          'No existen compras asignadas',
+          totalX - 100,
+          rowY,
+          { align: 'right' }
+        );
+
+        rowY += 15;
+      } else {
+
+        proveedor.compras.forEach(compra => {
+          if (!compra.fecha_compra) {
+            return;
+          }
+
+          doc.fontSize(8).text(
+            new Date(compra.fecha_compra).toLocaleDateString(),
+            fechaX,
+            rowY
+          );
+
+          const totalCompra = compra.total_compra || 0;
+          doc.fontSize(8).text(
+            totalCompra.toFixed(2),
+            totalX - 100, rowY, { align: 'right' }
+          );
+
+          totalComprasPeriodo += totalCompra;
+
+          // Línea separadora
+          const lineY = rowY + 10;
+          doc.strokeColor('#ccc')
+            .lineWidth(0.5)
+            .lineJoin('miter')
+            .dash(5, { space: 5 })
+            .moveTo(margin, lineY)
+            .lineTo(pageWidthPoints - margin, lineY)
+            .stroke();
+          doc.undash();
+
+          rowY = lineY + 8;
+        });
+      }
+
+      if (proveedor.direccion) {
+        doc.fontSize(8).text(`Dirección: ${proveedor.direccion}`, proveedorX, rowY);
+        rowY += 12;
+      }
+
+      doc.moveDown();
+    });
+
+    currentY = rowY + 15;
+    doc.fontSize(10).font('Helvetica-Bold')
+      .text(`Monto total en compras: ${totalComprasPeriodo.toFixed(2)}`, margin, currentY, { align: 'right' });
+    doc.font('Helvetica');
+
+    // Línea final del documento
+    currentY += 15;
+    doc.fontSize(8).text('***Ultima linea***', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+
+    doc.end();
+
+    writeStream.on("finish", () => {
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de proveedores generado exitosamente",
+          downloadLink: `${downloadLink}Proveedor/${fileName}`
+        }
+      });
+    });
+
+    writeStream.on("error", (error) => {
+      console.error("Error al generar el informe de proveedores:", error);
+      reject({ status: 500, data: { error: "Error al generar el informe de proveedores." } });
+    });
+  });
+  function toArrayList(data) {
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'object' && data !== null) return Object.values(data);
+    return [];
+  }
 }
 
 async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
@@ -1814,15 +1814,15 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
 
-    
+
       const excelData = [];
       let totalComprasPeriodo = 0;
 
-   
+
       excelData.push([storeData.DSC_NOMBRE]);
       excelData.push([title]);
       excelData.push([`Fecha del Reporte: ${currentDate}`]);
-      excelData.push([]); 
+      excelData.push([]);
 
       suppliersData.forEach(proveedor => {
 
@@ -1854,21 +1854,21 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
           excelData.push(["", "", "No hay compras registradas", "0.00"]);
         }
 
-        excelData.push([]); 
+        excelData.push([]);
       });
 
-      
+
       excelData.push(["", "", "TOTAL GENERAL:", totalComprasPeriodo.toFixed(2)]);
 
-      
+
       const worksheet = XLSX.utils.aoa_to_sheet(excelData);
-      
-      
+
+
       worksheet['!cols'] = [
-        { wch: 30 }, 
-        { wch: 25 }, 
-        { wch: 15 }, 
-        { wch: 15 }  
+        { wch: 30 },
+        { wch: 25 },
+        { wch: 15 },
+        { wch: 15 }
       ];
 
       // Crear workbook y guardar
@@ -1885,11 +1885,11 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
       });
     } catch (error) {
       console.error("Error al generar el Excel:", error);
-      reject({ 
-        status: 500, 
-        data: { 
-          error: "Error al generar el informe de proveedores en Excel." 
-        } 
+      reject({
+        status: 500,
+        data: {
+          error: "Error al generar el informe de proveedores en Excel."
+        }
       });
     }
   });
@@ -1897,442 +1897,691 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
 
 // Función para formatear montos monetarios
 function formatMoney(amount) {
-    return (amount || 0).toLocaleString('es-CR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+  return (amount || 0).toLocaleString('es-CR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 export async function createClientCreditPDF(currentDate, storeData, clientsData, MIN_FEC, MAX_FEC) {
-    return new Promise((resolve, reject) => {
-        try {
-            // Configuración del documento
-            const title = "Reporte de Clientes con Créditos Asociados";
-            const pageWidthPoints = 595.28; // Ancho de A4 en puntos
-            const margin = 20;
-            let currentY = margin;
-            
-            // Totales para el reporte
-            let totalSaldoPendiente = 0;
-            let totalAbonado = 0;
-            let totalCreditos = 0;
+  return new Promise((resolve, reject) => {
+    try {
+      // Configuración del documento
+      const title = "Reporte de Clientes con Créditos Asociados";
+      const pageWidthPoints = 595.28; // Ancho de A4 en puntos
+      const margin = 20;
+      let currentY = margin;
 
-            // Crear documento PDF
-            const doc = new PDFDocument({
-                size: 'A4',
-                margin: margin,
-                bufferPages: true
+      // Totales para el reporte
+      let totalSaldoPendiente = 0;
+      let totalAbonado = 0;
+      let totalCreditos = 0;
+
+      // Crear documento PDF
+      const doc = new PDFDocument({
+        size: 'A4',
+        margin: margin,
+        bufferPages: true
+      });
+
+      // Configurar nombre de archivo y ruta
+      const fileName = `Reporte-Creditos-Clientes-${formatDateTime(currentDate)}.pdf`;
+      const folderPath = path.join(pdfDir, 'Cliente_Credito');
+
+      // Crear directorio si no existe
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true });
+      }
+
+      const filePath = path.join(folderPath, fileName);
+      const writeStream = fs.createWriteStream(filePath);
+      doc.pipe(writeStream);
+
+      // ============= ENCABEZADO DEL DOCUMENTO =============
+      doc.fontSize(14).font('Helvetica-Bold')
+        .text(storeData.DSC_NOMBRE || 'Tienda Zaid & Shayder', margin, currentY, { align: 'center' });
+      currentY += 20;
+
+      doc.fontSize(12).text(title, margin, currentY, { align: 'center' });
+      currentY += 20;
+
+      // Información de fechas
+      doc.fontSize(9)
+        .text(`Fecha del reporte: ${formatDate(currentDate)}`, margin, currentY);
+
+      if (MIN_FEC && MAX_FEC) {
+        doc.text(`Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`, margin, currentY + 12);
+        currentY += 24;
+      } else {
+        currentY += 15;
+      }
+
+
+      const columns = [
+        { header: 'Cliente', key: 'nombre', width: 150, align: 'left' },
+        { header: 'Cédula', key: 'cedula', width: 100, align: 'left' },
+        { header: 'Créditos', key: 'cantidad', width: 70, align: 'center' },
+        { header: 'Abonado', key: 'abonado', width: 90, align: 'right' },
+        { header: 'Saldo', key: 'saldo', width: 100, align: 'right' }
+      ];
+
+      doc.font('Helvetica-Bold').fontSize(9);
+      let x = margin;
+      columns.forEach(col => {
+        doc.text(col.header, x, currentY, { width: col.width, align: col.align });
+        x += col.width;
+      });
+      currentY += 15;
+
+      // Línea divisoria
+      doc.moveTo(margin, currentY).lineTo(pageWidthPoints - margin, currentY).stroke();
+      currentY += 10;
+
+      doc.font('Helvetica').fontSize(8);
+
+      clientsData.forEach(cliente => {
+        // Calcular totales
+        totalSaldoPendiente += cliente.saldo_total_Pendiente || 0;
+        totalAbonado += cliente.abonos_total_Pagado || 0;
+        totalCreditos += cliente.cantidad_creditos || 0;
+
+        x = margin;
+        columns.forEach(col => {
+          const value = col.key === 'nombre' ? cliente.nombre :
+            col.key === 'cedula' ? cliente.cedula || 'N/A' :
+              col.key === 'cantidad' ? (cliente.cantidad_creditos || 0).toString() :
+                col.key === 'abonado' ? `${formatMoney(cliente.abonos_total_Pagado)}` :
+                  `${formatMoney(cliente.saldo_total_Pendiente)}`;
+
+          doc.text(value, x, currentY, { width: col.width, align: col.align });
+          x += col.width;
+        });
+        currentY += 15;
+
+        // ============= DETALLE DE CRÉDITOS =============
+        if (cliente.creditos && cliente.creditos.length > 0) {
+          // Subtítulo
+          doc.font('Helvetica-Bold').text('Detalle de créditos:', margin + 10, currentY);
+          currentY += 12;
+
+          // Configuración de columnas de detalle
+          const detailCols = [
+            { header: 'Último Pago', width: 120 },
+            { header: 'Vencimiento', width: 120 },
+            { header: 'Monto Inicial', width: 90, align: 'right' },
+            { header: 'Abonado', width: 90, align: 'right' },
+            { header: 'Saldo pendiete', width: 90, align: 'right' }
+          ];
+
+          // Cabecera de detalle
+          x = margin + 20;
+          detailCols.forEach(col => {
+            doc.text(col.header, x, currentY, { width: col.width, align: col.align || 'left' });
+            x += col.width;
+          });
+          currentY += 12;
+
+          // Contenido de detalle
+          doc.font('Helvetica');
+          cliente.creditos.forEach(credito => {
+            x = margin + 20;
+
+            // Último pago
+            doc.text(formatDate(credito.fec_ultimo_pago), x, currentY, { width: detailCols[0].width });
+            x += detailCols[0].width;
+
+            // Vencimiento
+            doc.text(formatDate(credito.fec_vencimiento), x, currentY, { width: detailCols[1].width });
+            x += detailCols[1].width;
+
+            // Monto inicial
+            doc.text(`${formatMoney(credito.monto_subtotal)}`, x, currentY, {
+              width: detailCols[2].width,
+              align: 'right'
+            });
+            x += detailCols[2].width;
+
+            // Abonado
+            doc.text(`${formatMoney(credito.total_abonado)}`, x, currentY, {
+              width: detailCols[3].width,
+              align: 'right'
+            });
+            x += detailCols[3].width;
+
+            // Saldo
+            doc.text(`${formatMoney(credito.saldo_restante)}`, x, currentY, {
+              width: detailCols[4].width,
+              align: 'right'
             });
 
-            // Configurar nombre de archivo y ruta
-            const fileName = `Reporte-Creditos-Clientes-${formatDateTime(currentDate)}.pdf`;
-            const folderPath = path.join(pdfDir, 'Cliente_Credito');
-            
-            // Crear directorio si no existe
-            if (!fs.existsSync(folderPath)) {
-                fs.mkdirSync(folderPath, { recursive: true });
-            }
-
-            const filePath = path.join(folderPath, fileName);
-            const writeStream = fs.createWriteStream(filePath);
-            doc.pipe(writeStream);
-
-            // ============= ENCABEZADO DEL DOCUMENTO =============
-            doc.fontSize(14).font('Helvetica-Bold')
-               .text(storeData.DSC_NOMBRE || 'Tienda Zaid & Shayder', margin, currentY, { align: 'center' });
-            currentY += 20;
-            
-            doc.fontSize(12).text(title, margin, currentY, { align: 'center' });
-            currentY += 20;
-            
-            // Información de fechas
-            doc.fontSize(9)
-               .text(`Fecha del reporte: ${formatDate(currentDate)}`, margin, currentY);
-            
-            if (MIN_FEC && MAX_FEC) {
-                doc.text(`Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`, margin, currentY + 12);
-                currentY += 24;
-            } else {
-                currentY += 15;
-            }
-
-
-            const columns = [
-                { header: 'Cliente', key: 'nombre', width: 150, align: 'left' },
-                { header: 'Cédula', key: 'cedula', width: 100, align: 'left' },
-                { header: 'Créditos', key: 'cantidad', width: 70, align: 'center' },
-                { header: 'Abonado', key: 'abonado', width: 90, align: 'right' },
-                { header: 'Saldo', key: 'saldo', width: 100, align: 'right' }
-            ];
-
-            doc.font('Helvetica-Bold').fontSize(9);
-            let x = margin;
-            columns.forEach(col => {
-                doc.text(col.header, x, currentY, { width: col.width, align: col.align });
-                x += col.width;
-            });
-            currentY += 15;
-            
-            // Línea divisoria
-            doc.moveTo(margin, currentY).lineTo(pageWidthPoints - margin, currentY).stroke();
-            currentY += 10;
-
-            doc.font('Helvetica').fontSize(8);
-            
-            clientsData.forEach(cliente => {
-                // Calcular totales
-                totalSaldoPendiente += cliente.saldo_total_Pendiente || 0;
-                totalAbonado += cliente.abonos_total_Pagado || 0;
-                totalCreditos += cliente.cantidad_creditos || 0;
-
-                x = margin;
-                columns.forEach(col => {
-                    const value = col.key === 'nombre' ? cliente.nombre :
-                                col.key === 'cedula' ? cliente.cedula || 'N/A' :
-                                col.key === 'cantidad' ? (cliente.cantidad_creditos || 0).toString() :
-                                col.key === 'abonado' ? `${formatMoney(cliente.abonos_total_Pagado)}` :
-                                `${formatMoney(cliente.saldo_total_Pendiente)}`;
-                    
-                    doc.text(value, x, currentY, { width: col.width, align: col.align });
-                    x += col.width;
-                });
-                currentY += 15;
-
-                // ============= DETALLE DE CRÉDITOS =============
-                if (cliente.creditos && cliente.creditos.length > 0) {
-                    // Subtítulo
-                    doc.font('Helvetica-Bold').text('Detalle de créditos:', margin + 10, currentY);
-                    currentY += 12;
-                    
-                    // Configuración de columnas de detalle
-                    const detailCols = [
-                        { header: 'Último Pago', width: 120 },
-                        { header: 'Vencimiento', width: 120 },
-                        { header: 'Monto Inicial', width: 90, align: 'right' },
-                        { header: 'Abonado', width: 90, align: 'right' },
-                        { header: 'Saldo pendiete', width: 90, align: 'right' }
-                    ];
-                    
-                    // Cabecera de detalle
-                    x = margin + 20;
-                    detailCols.forEach(col => {
-                        doc.text(col.header, x, currentY, { width: col.width, align: col.align || 'left' });
-                        x += col.width;
-                    });
-                    currentY += 12;
-                    
-                    // Contenido de detalle
-                    doc.font('Helvetica');
-                    cliente.creditos.forEach(credito => {
-                        x = margin + 20;
-                        
-                        // Último pago
-                        doc.text(formatDate(credito.fec_ultimo_pago), x, currentY, { width: detailCols[0].width });
-                        x += detailCols[0].width;
-                        
-                        // Vencimiento
-                        doc.text(formatDate(credito.fec_vencimiento), x, currentY, { width: detailCols[1].width });
-                        x += detailCols[1].width;
-                        
-                        // Monto inicial
-                        doc.text(`${formatMoney(credito.monto_subtotal)}`, x, currentY, { 
-                            width: detailCols[2].width, 
-                            align: 'right' 
-                        });
-                        x += detailCols[2].width;
-                        
-                        // Abonado
-                        doc.text(`${formatMoney(credito.total_abonado)}`, x, currentY, { 
-                            width: detailCols[3].width, 
-                            align: 'right' 
-                        });
-                        x += detailCols[3].width;
-                        
-                        // Saldo
-                        doc.text(`${formatMoney(credito.saldo_restante)}`, x, currentY, { 
-                            width: detailCols[4].width, 
-                            align: 'right' 
-                        });
-                        
-                        currentY += 12;
-                    });
-                } else {
-                    doc.font('Helvetica-Oblique').text('No tiene créditos registrados.', margin + 20, currentY);
-                    currentY += 15;
-                }
-
-                // Dirección del cliente
-                if (cliente.direccion) {
-                    doc.font('Helvetica').text(`Dirección: ${cliente.direccion}`, margin + 10, currentY);
-                    currentY += 15; 
-                }
-
-                 if (cliente.telefono) {
-                  doc.font('Helvetica').text(`Telefono: ${(cliente.telefono|| 'N/A')}`, margin + 10, currentY);
-                  currentY += 15;
-              }
-                
-                // Línea separadora entre clientes
-                doc.moveTo(margin, currentY)
-                   .lineTo(pageWidthPoints - margin, currentY)
-                   .stroke();
-                currentY += 15;
-            });
-
-            // ============= TOTALES DEL REPORTE =============
-            doc.font('Helvetica-Bold').fontSize(10);
-            
-            // Total de créditos
-            doc.text(`Total de créditos: ${totalCreditos}`, margin, currentY, { align: 'right' });
-            currentY += 15;
-            
-            // Total abonado
-            doc.text(`Total abonado: ${formatMoney(totalAbonado)}`, margin, currentY, { align: 'right' });
-            currentY += 15;
-            
-            // Saldo pendiente total
-            doc.text(`Saldo pendiente total: ${formatMoney(totalSaldoPendiente)}`, margin, currentY, { align: 'right' });
-            currentY += 20;
-
-            // ============= PIE DE PÁGINA =============
-            doc.font('Helvetica').fontSize(8)
-               .text('*** Fin del reporte ***', margin, currentY, { align: 'center' });
-
-            // Finalizar documento
-            doc.end();
-
-            // Manejar eventos del stream
-            writeStream.on('finish', () => {
-                resolve({
-                    status: 200,
-                    data: {
-                        message: "Informe de créditos generado exitosamente",
-                        downloadLink: `${downloadLink}Cliente_Credito/${fileName}`,
-                        filePath: filePath
-                    }
-                });
-            });
-
-            writeStream.on('error', (error) => {
-                console.error("Error al generar el PDF:", error);
-                reject({
-                    status: 500,
-                    error: "Error al generar el PDF: " + error.message
-                });
-            });
-
-        } catch (error) {
-            console.error("Error en la generación del PDF:", error);
-            reject({
-                status: 500,
-                error: "Error interno al generar el PDF: " + error.message
-            });
+            currentY += 12;
+          });
+        } else {
+          doc.font('Helvetica-Oblique').text('No tiene créditos registrados.', margin + 20, currentY);
+          currentY += 15;
         }
-    });
+
+        // Dirección del cliente
+        if (cliente.direccion) {
+          doc.font('Helvetica').text(`Dirección: ${cliente.direccion}`, margin + 10, currentY);
+          currentY += 15;
+        }
+
+        if (cliente.telefono) {
+          doc.font('Helvetica').text(`Telefono: ${(cliente.telefono || 'N/A')}`, margin + 10, currentY);
+          currentY += 15;
+        }
+
+        // Línea separadora entre clientes
+        doc.moveTo(margin, currentY)
+          .lineTo(pageWidthPoints - margin, currentY)
+          .stroke();
+        currentY += 15;
+      });
+
+      // ============= TOTALES DEL REPORTE =============
+      doc.font('Helvetica-Bold').fontSize(10);
+
+      // Total de créditos
+      doc.text(`Total de créditos: ${totalCreditos}`, margin, currentY, { align: 'right' });
+      currentY += 15;
+
+      // Total abonado
+      doc.text(`Total abonado: ${formatMoney(totalAbonado)}`, margin, currentY, { align: 'right' });
+      currentY += 15;
+
+      // Saldo pendiente total
+      doc.text(`Saldo pendiente total: ${formatMoney(totalSaldoPendiente)}`, margin, currentY, { align: 'right' });
+      currentY += 20;
+
+      // ============= PIE DE PÁGINA =============
+      doc.font('Helvetica').fontSize(8)
+        .text('*** Fin del reporte ***', margin, currentY, { align: 'center' });
+
+      // Finalizar documento
+      doc.end();
+
+      // Manejar eventos del stream
+      writeStream.on('finish', () => {
+        resolve({
+          status: 200,
+          data: {
+            message: "Informe de créditos generado exitosamente",
+            downloadLink: `${downloadLink}Cliente_Credito/${fileName}`,
+            filePath: filePath
+          }
+        });
+      });
+
+      writeStream.on('error', (error) => {
+        console.error("Error al generar el PDF:", error);
+        reject({
+          status: 500,
+          error: "Error al generar el PDF: " + error.message
+        });
+      });
+
+    } catch (error) {
+      console.error("Error en la generación del PDF:", error);
+      reject({
+        status: 500,
+        error: "Error interno al generar el PDF: " + error.message
+      });
+    }
+  });
 }
 
 
- async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_FEC, MAX_FEC) {
+async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_FEC, MAX_FEC) {
   return new Promise(async (resolve, reject) => {
-      try {
-          const title = "Reporte de Clientes con Créditos Asociados";
-          const fileName = `Creditos-Clientes-${formatDateTime(currentDate)}.xlsx`;
-          const dirPath = path.join(excelDir, "Cliente_Credito");
-          const filePath = path.join(dirPath, fileName);
+    try {
+      const title = "Reporte de Clientes con Créditos Asociados";
+      const fileName = `Creditos-Clientes-${formatDateTime(currentDate)}.xlsx`;
+      const dirPath = path.join(excelDir, "Cliente_Credito");
+      const filePath = path.join(dirPath, fileName);
 
-          if (!fs.existsSync(dirPath)) {
-              fs.mkdirSync(dirPath, { recursive: true });
-          }
-
-          const workbook = XLSX.utils.book_new();
-          const worksheet = XLSX.utils.aoa_to_sheet([]);
-          
-
-          let rowIndex = 0;
-          let totalSaldoPendiente = 0;
-          let totalAbonado = 0;
-          let totalCreditos = 0;
-
-          const styles = {
-              header: {
-                  fill: { fgColor: { rgb: "4472C4" } }, 
-                  font: { bold: true, color: { rgb: "FFFFFF" } },
-                  alignment: { horizontal: "center" }
-              },
-              subHeader: {
-                  fill: { fgColor: { rgb: "8EA9DB" } }, 
-                  font: { bold: true },
-                  alignment: { horizontal: "center" }
-              },
-              tableHeader: {
-                  fill: { fgColor: { rgb: "5B9BD5" } },
-                  font: { bold: true, color: { rgb: "FFFFFF" } }
-              },
-              totalRow: {
-                  fill: { fgColor: { rgb: "70AD47" } }, 
-                  font: { bold: true, color: { rgb: "FFFFFF" } }
-              },
-              currencyFormat: '#,##0.00'
-          };
-
-          XLSX.utils.sheet_add_aoa(worksheet, [[storeData.DSC_NOMBRE || 'Tienda Zaid & Shayder']], { origin: { r: rowIndex, c: 0 } });
-          worksheet["A" + (rowIndex + 1)].s = styles.header;
-          rowIndex++;
-
-          XLSX.utils.sheet_add_aoa(worksheet, [[title]], { origin: { r: rowIndex, c: 0 } });
-          worksheet["A" + (rowIndex + 1)].s = styles.subHeader;
-          rowIndex++;
-
-          XLSX.utils.sheet_add_aoa(worksheet, [[`Fecha del Reporte: ${formatDate(currentDate)}`]], { origin: { r: rowIndex, c: 0 } });
-          rowIndex++;
-
-          if (MIN_FEC && MAX_FEC) {
-              XLSX.utils.sheet_add_aoa(worksheet, [[`Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`]], { origin: { r: rowIndex, c: 0 } });
-              rowIndex++;
-          }
-
-          rowIndex++;
-
-          const mainHeaders = ['Cliente', 'Cédula', 'Créditos', 'Total Abonado', 'Saldo Pendiente', 'Dirección'];
-          XLSX.utils.sheet_add_aoa(worksheet, [mainHeaders], { origin: { r: rowIndex, c: 0 } });
-          
-          for (let col = 0; col < mainHeaders.length; col++) {
-              const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: col });
-              worksheet[cellRef].s = styles.tableHeader;
-          }
-          rowIndex++;
-
-          clientsData.forEach(cliente => {
-              const saldo = cliente.saldo_total_Pendiente || 0;
-              const abonado = cliente.abonos_total_Pagado || 0;
-              const creditos = cliente.cantidad_creditos || 0;
-              
-              totalSaldoPendiente += saldo;
-              totalAbonado += abonado;
-              totalCreditos += creditos;
-
-              // Datos principales
-              XLSX.utils.sheet_add_aoa(worksheet, [
-                  [
-                      cliente.nombre || 'Cliente sin nombre',
-                      cliente.cedula || 'N/A',
-                      creditos,
-                      abonado,
-                      saldo,
-                      cliente.direccion || 'N/A'
-                  ]
-              ], { origin: { r: rowIndex, c: 0 } });
-              
-              ['D', 'E'].forEach(col => {
-                  const cellRef = col + (rowIndex + 1);
-                  if (worksheet[cellRef]) {
-                      worksheet[cellRef].z = styles.currencyFormat;
-                  }
-              });
-              
-              rowIndex++;
-
-              if (cliente.creditos && cliente.creditos.length > 0) {
-                  const detailHeaders = ['', 'Detalle de créditos:', 'Último Pago', 'Vencimiento', 'Monto Inicial', 'Abonado', 'Saldo'];
-                  XLSX.utils.sheet_add_aoa(worksheet, [detailHeaders], { origin: { r: rowIndex, c: 0 } });
-                  
-                  for (let col = 0; col < detailHeaders.length; col++) {
-                      const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: col });
-                      worksheet[cellRef].s = {
-                          fill: { fgColor: { rgb: "D9E1F2" } }, // Azul muy claro
-                          font: { italic: true }
-                      };
-                  }
-                  rowIndex++;
-
-                  // Datos de cada crédito
-                  cliente.creditos.forEach(credito => {
-                      XLSX.utils.sheet_add_aoa(worksheet, [
-                          [
-                              '',
-                              '',
-                              formatDate(credito.fec_ultimo_pago),
-                              formatDate(credito.fec_vencimiento),
-                              credito.monto_subtotal || 0,
-                              credito.total_abonado || 0,
-                              credito.saldo_restante || 0
-                          ]
-                      ], { origin: { r: rowIndex, c: 0 } });
-                      
-                      ['E', 'F', 'G'].forEach(col => {
-                          const cellRef = col + (rowIndex + 1);
-                          if (worksheet[cellRef]) {
-                              worksheet[cellRef].z = styles.currencyFormat;
-                          }
-                      });
-                      
-                      rowIndex++;
-                  });
-              } else {
-                  XLSX.utils.sheet_add_aoa(worksheet, [['', 'No tiene créditos registrados']], { origin: { r: rowIndex, c: 0 } });
-                  rowIndex++;
-              }
-
-              rowIndex++; 
-          });
-
-          rowIndex++; 
-          
-          XLSX.utils.sheet_add_aoa(worksheet, [['', '', 'TOTALES:']], { origin: { r: rowIndex, c: 0 } });
-          worksheet["C" + (rowIndex + 1)].s = { font: { bold: true } };
-          rowIndex++;
-
-          const totals = [
-              ['', '', 'Total Créditos:', totalCreditos],
-              ['', '', 'Total Abonado:', totalAbonado],
-              ['', '', 'Total Saldo Pendiente:', totalSaldoPendiente]
-          ];
-          
-          totals.forEach((totalRow, i) => {
-              XLSX.utils.sheet_add_aoa(worksheet, [totalRow], { origin: { r: rowIndex + i, c: 0 } });
-              
-              // Aplicar estilo a la fila de total
-              ['C', 'D'].forEach(col => {
-                  const cellRef = col + (rowIndex + i + 1);
-                  if (worksheet[cellRef]) {
-                      worksheet[cellRef].s = i === totals.length - 1 ? styles.totalRow : { font: { bold: true } };
-                      
-                      if (col === 'D') {
-                          worksheet[cellRef].z = styles.currencyFormat;
-                      }
-                  }
-              });
-          });
-          rowIndex += totals.length;
-
-          worksheet['!cols'] = [
-              { wch: 30 }, 
-              { wch: 15 }, 
-              { wch: 10 }, 
-              { wch: 15 }, 
-              { wch: 15 }, 
-              { wch: 30 }, 
-              { wch: 20 }  
-          ];
-
-          XLSX.utils.book_append_sheet(workbook, worksheet, "Creditos-Clientes");
-          XLSX.writeFile(workbook, filePath);
-
-          resolve({
-              status: 200,
-              data: {
-                  message: "Informe de créditos generado exitosamente en Excel",
-                  downloadLink: `${downloadLink}Cliente_Credito/${fileName}`,
-                  filePath: filePath
-              }
-          });
-
-      } catch (error) {
-          console.error("Error al generar el Excel:", error);
-          reject({ 
-              status: 500, 
-              error: "Error al generar el informe de créditos en Excel: " + error.message
-          });
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
       }
+
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.aoa_to_sheet([]);
+
+
+      let rowIndex = 0;
+      let totalSaldoPendiente = 0;
+      let totalAbonado = 0;
+      let totalCreditos = 0;
+
+      const styles = {
+        header: {
+          fill: { fgColor: { rgb: "4472C4" } },
+          font: { bold: true, color: { rgb: "FFFFFF" } },
+          alignment: { horizontal: "center" }
+        },
+        subHeader: {
+          fill: { fgColor: { rgb: "8EA9DB" } },
+          font: { bold: true },
+          alignment: { horizontal: "center" }
+        },
+        tableHeader: {
+          fill: { fgColor: { rgb: "5B9BD5" } },
+          font: { bold: true, color: { rgb: "FFFFFF" } }
+        },
+        totalRow: {
+          fill: { fgColor: { rgb: "70AD47" } },
+          font: { bold: true, color: { rgb: "FFFFFF" } }
+        },
+        currencyFormat: '#,##0.00'
+      };
+
+      XLSX.utils.sheet_add_aoa(worksheet, [[storeData.DSC_NOMBRE || 'Tienda Zaid & Shayder']], { origin: { r: rowIndex, c: 0 } });
+      worksheet["A" + (rowIndex + 1)].s = styles.header;
+      rowIndex++;
+
+      XLSX.utils.sheet_add_aoa(worksheet, [[title]], { origin: { r: rowIndex, c: 0 } });
+      worksheet["A" + (rowIndex + 1)].s = styles.subHeader;
+      rowIndex++;
+
+      XLSX.utils.sheet_add_aoa(worksheet, [[`Fecha del Reporte: ${formatDate(currentDate)}`]], { origin: { r: rowIndex, c: 0 } });
+      rowIndex++;
+
+      if (MIN_FEC && MAX_FEC) {
+        XLSX.utils.sheet_add_aoa(worksheet, [[`Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`]], { origin: { r: rowIndex, c: 0 } });
+        rowIndex++;
+      }
+
+      rowIndex++;
+
+      const mainHeaders = ['Cliente', 'Cédula', 'Créditos', 'Total Abonado', 'Saldo Pendiente', 'Dirección'];
+      XLSX.utils.sheet_add_aoa(worksheet, [mainHeaders], { origin: { r: rowIndex, c: 0 } });
+
+      for (let col = 0; col < mainHeaders.length; col++) {
+        const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: col });
+        worksheet[cellRef].s = styles.tableHeader;
+      }
+      rowIndex++;
+
+      clientsData.forEach(cliente => {
+        const saldo = cliente.saldo_total_Pendiente || 0;
+        const abonado = cliente.abonos_total_Pagado || 0;
+        const creditos = cliente.cantidad_creditos || 0;
+
+        totalSaldoPendiente += saldo;
+        totalAbonado += abonado;
+        totalCreditos += creditos;
+
+        // Datos principales
+        XLSX.utils.sheet_add_aoa(worksheet, [
+          [
+            cliente.nombre || 'Cliente sin nombre',
+            cliente.cedula || 'N/A',
+            creditos,
+            abonado,
+            saldo,
+            cliente.direccion || 'N/A'
+          ]
+        ], { origin: { r: rowIndex, c: 0 } });
+
+        ['D', 'E'].forEach(col => {
+          const cellRef = col + (rowIndex + 1);
+          if (worksheet[cellRef]) {
+            worksheet[cellRef].z = styles.currencyFormat;
+          }
+        });
+
+        rowIndex++;
+
+        if (cliente.creditos && cliente.creditos.length > 0) {
+          const detailHeaders = ['', 'Detalle de créditos:', 'Último Pago', 'Vencimiento', 'Monto Inicial', 'Abonado', 'Saldo'];
+          XLSX.utils.sheet_add_aoa(worksheet, [detailHeaders], { origin: { r: rowIndex, c: 0 } });
+
+          for (let col = 0; col < detailHeaders.length; col++) {
+            const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: col });
+            worksheet[cellRef].s = {
+              fill: { fgColor: { rgb: "D9E1F2" } }, // Azul muy claro
+              font: { italic: true }
+            };
+          }
+          rowIndex++;
+
+          // Datos de cada crédito
+          cliente.creditos.forEach(credito => {
+            XLSX.utils.sheet_add_aoa(worksheet, [
+              [
+                '',
+                '',
+                formatDate(credito.fec_ultimo_pago),
+                formatDate(credito.fec_vencimiento),
+                credito.monto_subtotal || 0,
+                credito.total_abonado || 0,
+                credito.saldo_restante || 0
+              ]
+            ], { origin: { r: rowIndex, c: 0 } });
+
+            ['E', 'F', 'G'].forEach(col => {
+              const cellRef = col + (rowIndex + 1);
+              if (worksheet[cellRef]) {
+                worksheet[cellRef].z = styles.currencyFormat;
+              }
+            });
+
+            rowIndex++;
+          });
+        } else {
+          XLSX.utils.sheet_add_aoa(worksheet, [['', 'No tiene créditos registrados']], { origin: { r: rowIndex, c: 0 } });
+          rowIndex++;
+        }
+
+        rowIndex++;
+      });
+
+      rowIndex++;
+
+      XLSX.utils.sheet_add_aoa(worksheet, [['', '', 'TOTALES:']], { origin: { r: rowIndex, c: 0 } });
+      worksheet["C" + (rowIndex + 1)].s = { font: { bold: true } };
+      rowIndex++;
+
+      const totals = [
+        ['', '', 'Total Créditos:', totalCreditos],
+        ['', '', 'Total Abonado:', totalAbonado],
+        ['', '', 'Total Saldo Pendiente:', totalSaldoPendiente]
+      ];
+
+      totals.forEach((totalRow, i) => {
+        XLSX.utils.sheet_add_aoa(worksheet, [totalRow], { origin: { r: rowIndex + i, c: 0 } });
+
+        // Aplicar estilo a la fila de total
+        ['C', 'D'].forEach(col => {
+          const cellRef = col + (rowIndex + i + 1);
+          if (worksheet[cellRef]) {
+            worksheet[cellRef].s = i === totals.length - 1 ? styles.totalRow : { font: { bold: true } };
+
+            if (col === 'D') {
+              worksheet[cellRef].z = styles.currencyFormat;
+            }
+          }
+        });
+      });
+      rowIndex += totals.length;
+
+      worksheet['!cols'] = [
+        { wch: 30 },
+        { wch: 15 },
+        { wch: 10 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 30 },
+        { wch: 20 }
+      ];
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Creditos-Clientes");
+      XLSX.writeFile(workbook, filePath);
+
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de créditos generado exitosamente en Excel",
+          downloadLink: `${downloadLink}Cliente_Credito/${fileName}`,
+          filePath: filePath
+        }
+      });
+
+    } catch (error) {
+      console.error("Error al generar el Excel:", error);
+      reject({
+        status: 500,
+        error: "Error al generar el informe de créditos en Excel: " + error.message
+      });
+    }
+  });
+}
+
+export const createCashClosing = async (req, res) => {
+  const currentDay = await getDateCR();
+  const results = await db.query(
+    'CALL sp_cash_closing(:MIN_FEC, :MAX_FEC)',
+    {
+      replacements: {
+        MIN_FEC: currentDay,
+        MAX_FEC: currentDay
+      },
+      type: QueryTypes.SELECT
+    }
+  );
+
+
+  const TOTAL_VENTAS = results[0]?.[0]?.TOTAL_VENTAS || 0;
+  const TOTAL_COMPRAS = results[1]?.[0]?.TOTAL_COMPRAS || 0;
+  const TOTAL_ABONO = results[2]?.[0]?.TOTAL_ABONO || 0;
+  const TOTAL_TRANSACCIONES = results[3]?.[0]?.TOTAL_TRANSACCION || 0;
+  const cashData = results.slice(4)
+    .filter(r => Object.values(r).every(value => typeof value === 'object' && value !== null))
+    .flatMap(r => Object.values(r));
+
+  const store = await Config.findAll();
+  const resultPDF = await createResumenPDF(currentDay, store[0], {
+    totals: {
+      TOTAL_VENTAS,
+      TOTAL_COMPRAS,
+      TOTAL_ABONO,
+      TOTAL_TRANSACCIONES,
+      TOTAL: TOTAL_VENTAS + TOTAL_ABONO - TOTAL_COMPRAS
+    },
+    cashData
+  });
+
+  const resultExcel = await createResumenEXCEL(currentDay, store[0], {
+    totals: {
+      TOTAL_VENTAS,
+      TOTAL_COMPRAS,
+      TOTAL_ABONO,
+      TOTAL_TRANSACCIONES,
+      TOTAL: TOTAL_VENTAS + TOTAL_ABONO - TOTAL_COMPRAS
+    },
+    cashData
+  });
+
+  return res.status(200).json({ PDF: resultPDF.data, EXCEL: resultExcel.data });
+};
+
+async function createResumenPDF(currentDate, storeData, resumenData) {
+  return new Promise((resolve, reject) => {
+    const { TOTAL_VENTAS, TOTAL_COMPRAS, TOTAL_ABONO, TOTAL_TRANSACCIONES, TOTAL } = resumenData.totals;
+    const movimientos = resumenData.cashData.filter(item => typeof item === 'object');
+
+    const title = "Informe General de Transacciones";
+    const pageWidthPoints = 595.28;
+    const pageHeightPoints = 841.89;
+    const margin = 20;
+    let currentY = margin + 20;
+
+    const doc = new PDFDocument({ size: "A4" });
+    const fileName = `Resumen-${formatDateTime(currentDate)}.pdf`;
+    const filePath = path.join(pdfDir, "Resumen", fileName);
+
+    if (!fs.existsSync(path.join(pdfDir, "Resumen"))) {
+      fs.mkdirSync(path.join(pdfDir, "Resumen"), { recursive: true });
+    }
+
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream);
+
+    // Encabezado
+    doc
+      .fontSize(12)
+      .text(storeData.DSC_NOMBRE, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15;
+
+    doc
+      .fontSize(10)
+      .text(title, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 15;
+
+    doc
+      .fontSize(8)
+      .text(`Fecha del Reporte: ${currentDate}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+    currentY += 25;
+
+    // Totales
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .text(`Total Ventas: ${TOTAL_VENTAS.toFixed(2)}`, margin, currentY);
+    currentY += 12;
+    doc.text(`Total Compras: ${TOTAL_COMPRAS.toFixed(2)}`, margin, currentY);
+    currentY += 12;
+    doc.text(`Total Abonos: ${TOTAL_ABONO.toFixed(2)}`, margin, currentY);
+    currentY += 12;
+    doc.text(`Total Transacciones: ${TOTAL_TRANSACCIONES.toFixed(2)}`, margin, currentY);
+    currentY += 12;
+    doc.text(`Total final: ${TOTAL.toFixed(2)}`, margin, currentY);
+    currentY += 20;
+
+    // Cabecera de la tabla
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .text("Tipo", margin, currentY)
+      .text("Fecha", margin + 100, currentY)
+      .text("Monto", margin + 250, currentY)
+      .text("Descripción", margin + 350, currentY);
+    currentY += 12;
+    doc
+      .strokeColor("#000")
+      .lineWidth(0.5)
+      .moveTo(margin, currentY)
+      .lineTo(pageWidthPoints - margin, currentY)
+      .stroke();
+    currentY += 5;
+
+    // Filas de la tabla
+    doc.font("Helvetica").fontSize(8);
+
+    movimientos.forEach((mov) => {
+      if (currentY >= pageHeightPoints - 50) {
+        doc.addPage();
+        currentY = margin;
+      }
+
+      const fechaFormateada = new Date(mov.FECHA).toLocaleString("es-CR");
+
+      doc.text(mov.TIPO, margin, currentY);
+      doc.text(fechaFormateada, margin + 100, currentY);
+      doc.text(mov.MONTO.toFixed(2), margin + 250, currentY);
+      doc.text(mov.DESCRIPCION || "-", margin + 350, currentY, { width: 200 });
+      currentY += 12;
+    });
+
+    // Línea final
+    currentY += 15;
+    doc
+      .fontSize(8)
+      .text("***Fin del informe***", margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
+
+    doc.end();
+
+    writeStream.on("finish", () => {
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de resumen generado exitosamente",
+          downloadLink: `${downloadLink}Resumen/${fileName}`,
+        },
+      });
+    });
+
+    writeStream.on("error", (error) => {
+      console.error("Error al generar el informe resumen:", error);
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe resumen." },
+      });
+    });
+  });
+}
+
+async function createResumenEXCEL(currentDate, storeData, resumenData) {
+  return new Promise((resolve, reject) => {
+    try {
+      const { TOTAL_VENTAS, TOTAL_COMPRAS, TOTAL_ABONO, TOTAL_TRANSACCIONES, TOTAL } = resumenData.totals;
+      const movimientos = resumenData.cashData.filter(item => typeof item === 'object');
+
+      const fileName = `Resumen-${formatDateTime(currentDate)}.xlsx`;
+      const outputPath = path.join(excelDir, 'Resumen');
+
+      if (!fs.existsSync(outputPath)) {
+        fs.mkdirSync(outputPath, { recursive: true });
+      }
+
+      const filePath = path.join(outputPath, fileName);
+
+      const rows = [];
+
+      // Encabezado
+      rows.push([storeData.DSC_NOMBRE || '']);
+      rows.push(['Informe General de Transacciones']);
+      rows.push([`Fecha del Reporte: ${formatDateTime(currentDate)}`]);
+      rows.push([]); // Espacio
+
+      // Totales
+      rows.push([`Total Ventas: ${TOTAL_VENTAS.toFixed(2)}`]);
+      rows.push([`Total Compras: ${TOTAL_COMPRAS.toFixed(2)}`]);
+      rows.push([`Total Abonos: ${TOTAL_ABONO.toFixed(2)}`]);
+      rows.push([`Total Transacciones: ${TOTAL_TRANSACCIONES.toFixed(2)}`]);
+      rows.push([`TOTAL FINAL: ${TOTAL.toFixed(2)}`]);
+      rows.push([]); // Espacio
+
+      // Cabecera de la tabla
+      rows.push(['Tipo', 'Fecha', 'Monto', 'Descripción']);
+
+      // Filas de movimientos
+      movimientos.forEach((mov) => {
+        const fecha = new Date(mov.FECHA).toLocaleString('es-CR');
+        rows.push([
+          mov.TIPO,
+          fecha,
+          mov.MONTO.toFixed(2),
+          mov.DESCRIPCION || '-',
+        ]);
+      });
+
+      rows.push([]);
+      rows.push(['***Fin del informe***']);
+
+      // Crear hoja
+      const worksheet = XLSX.utils.aoa_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Resumen');
+
+      XLSX.writeFile(workbook, filePath);
+
+      resolve({
+        status: 200,
+        data: {
+          message: "Informe de resumen generado exitosamente",
+          downloadLink: `${downloadLink}Resumen/${fileName}`,
+        },
+      });
+
+    } catch (error) {
+      console.error("Error al generar el Excel de resumen:", error);
+      reject({
+        status: 500,
+        data: { error: "Error al generar el Excel de resumen." },
+      });
+    }
   });
 }
