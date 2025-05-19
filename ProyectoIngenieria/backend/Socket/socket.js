@@ -8,6 +8,7 @@ import notification from "../models/notification.model.js";
 let io;
 
 const UMBRAL_ESTABLECIDO=30;
+const mensajeContadores = {}; 
 
 export const initSocket = (server) => {
   io = new Server(server, {
@@ -35,16 +36,27 @@ export const initSocket = (server) => {
             productos: status.productos,
             fecha: status.fecha,
           })
-        socket.emit("receive-notification",message );
 
-        const esRepetido = mensajeEsRepetidoPeroReciente(message, notificaciones);
+          const mensajeKey = `${status.mensaje}-${status.productos.map(p => p.id).join(',')}`;
 
-        if (!esRepetido) {
-          notification.create({
-            MENSAJE:message,
-            VISTO:0
-      })
-    }
+          if (!mensajeContadores[mensajeKey]) {
+            mensajeContadores[mensajeKey] = 0;
+          }
+
+          if (mensajeContadores[mensajeKey] < 3) {
+            socket.emit("receive-notification", message);
+            mensajeContadores[mensajeKey]++;
+  
+            const esRepetido = mensajeEsRepetidoPeroReciente(message, notificaciones);
+  
+            if (!esRepetido) {
+              mensajeContadores[mensajeKey] = 0;
+              await notification.create({
+                MENSAJE: message,
+                VISTO: 0
+              });
+            }
+          }
       }
     }, 10000);//1800000
 
