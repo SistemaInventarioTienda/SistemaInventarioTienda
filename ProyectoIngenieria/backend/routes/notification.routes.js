@@ -5,7 +5,7 @@ import { updateNotification,getAllNotifications } from "../controllers/notificat
 const router = Router();
 
 
-router.get("/viewNotification/:id",auth, updateNotification);
+router.put("/viewNotification/:id",auth, updateNotification);
 router.get("/getNotification", getAllNotifications);
 
 
