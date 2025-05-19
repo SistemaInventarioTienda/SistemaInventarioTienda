@@ -111,11 +111,6 @@ export function useGenerateReport() {
             } else {
                 minFec = startDate?.toISOString().split('T')[0] || '';
                 maxFec = endDate?.toISOString().split('T')[0] || '';
-
-                if (reportType === "ReporteTransaccion" && endDate) {
-                    maxFec = addOneDay(maxFec);
-                }
-
             }
             console.log("fechas", minFec);
             console.log("fechas", maxFec);
