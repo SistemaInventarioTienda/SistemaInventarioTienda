@@ -21,7 +21,7 @@ export const NotificationProvider = ({ children }) => {
 
   // Escuchar notificaciones en tiempo real
   useEffect(() => {
-    const socket = io.connect('http://localhost:4000');
+    const socket = io.connect('https://deploybackend-production-e19f.up.railway.app/api');
 
     socket.on("receive-notification", () => {
       loadNotifications(); // Recargar todas las notificaciones desde la base de datos
