@@ -379,7 +379,7 @@
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.75rem;
-    display: inline-block;
+   
     margin-right: 10px;
 }
 
@@ -394,11 +394,20 @@
 }
 
 .pill.format-excel {
-    background-color: var(--color-status-pill-active);
-    color: var(--color-status-pill-active-text);
+    background-color: var(--color-status-pill-active-bg);
+    color: var(--color-status-pill-active-text)
 }
 
-.icon-preview{
+.pill.disclaimer {
+    background-color: var(--color-status-pill-pending-bg);
+    color: var(--color-status-pill-pending-text);
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.icon-preview {
     margin: 10px;
 }
 
