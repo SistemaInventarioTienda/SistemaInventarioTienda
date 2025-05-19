@@ -1,22 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 import Navbar from "./components/layout/Navbar";
-import Sidebar from './components/layout/Sidebar';
+import Sidebar from "./components/layout/Sidebar";
 import { AuthProvider, useAuth } from "./context/authContext";
-import { AuthPermissionsProvider } from './context/authPermissions';
+import { AuthPermissionsProvider } from "./context/authPermissions";
 import { ProtectedRoute } from "./routes";
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import {
-  CategoryPage, ClientPage, CreditPage,
-  HomePage, UserPage, SupplierPage, LoginPage,
-  SettingsPage, ProductPage, SalePage,
-  AddSalePage, AddShoppingPage, TransactionPage,
-  ShoppingPage, CreditSalePage, ProfilePage,
-  ReportsPage, CashClosingPage,
-  NotificationPage
-} from './pages';
+  CategoryPage,
+  ClientPage,
+  CreditPage,
+  HomePage,
+  UserPage,
+  SupplierPage,
+  LoginPage,
+  SettingsPage,
+  ProductPage,
+  SalePage,
+  AddSalePage,
+  AddShoppingPage,
+  TransactionPage,
+  ShoppingPage,
+  CreditSalePage,
+  ProfilePage,
+  ReportsPage,
+  CashClosingPage,
+  NotificationPage,
+} from "./pages";
+import { NotificationProvider } from "./context/NotificationContext";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -40,6 +53,7 @@ function App() {
   return (
     <AuthProvider>
       <AuthPermissionsProvider>
+        <NotificationProvider>
         <HashRouter>
           <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
           <Toaster
@@ -49,10 +63,11 @@ function App() {
             closeButton
             theme={isDarkMode ? "dark" : "light"}
             toastOptions={{
-              className: 'custom-toaster',
+              className: "custom-toaster",
             }}
           />
         </HashRouter>
+        </NotificationProvider>
       </AuthPermissionsProvider>
     </AuthProvider>
   );
@@ -62,10 +77,10 @@ function AppContent({ isDarkMode, toggleDarkMode }) {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   useEffect(() => {
-    if (location.pathname !== '/login' && isAuthenticated) {
-      document.body.classList.remove('login-page');
+    if (location.pathname !== "/login" && isAuthenticated) {
+      document.body.classList.remove("login-page");
     } else {
-      document.body.classList.add('login-page');
+      document.body.classList.add("login-page");
     }
   }, [location, isAuthenticated]);
   return (
@@ -73,7 +88,12 @@ function AppContent({ isDarkMode, toggleDarkMode }) {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/*" element={<Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}></Route>
+          <Route
+            path="/*"
+            element={
+              <Layout isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+            }
+          ></Route>
         </Route>
       </Routes>
     </div>
@@ -96,7 +116,9 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             {/* ruta al componente de configuraciones */}
+
             <Route path="notifications" element={<NotificationPage />} />
+
             {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage />} />
             <Route path="product" element={<ProductPage />} />

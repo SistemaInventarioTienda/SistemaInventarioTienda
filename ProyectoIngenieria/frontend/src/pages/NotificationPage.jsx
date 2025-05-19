@@ -1,26 +1,35 @@
-import { useState } from "react";
+
+
+import React, { useState, useEffect } from "react";
 import PageLayout from "../components/layout/PageLayout";
-import { Tab, Tabs, TabList, TabPanel } from "../components/common"
-import { mockNotifications } from "../utils/mockNotifications";
+import { Tab, Tabs, TabList, TabPanel } from "../components/common";
 import NotificationItem from "../components/features/notifications/NotificationItem";
+import { notificationConfig } from "../config/entities/notificationConfig.js";
+import { useNotifications } from "../context/NotificationContext.js";
+//import io from "socket.io-client";
 
-import "./styles/NotificationPage.css"
-function NotificationPage() {
-  const [activeTab, setActiveTab] = useState("generate");
+import "./styles/NotificationPage.css";
 
-const filteredNotifications = () => {
+// Connect to your backend server
+//const socket = io.connect("http://localhost:4000");
+
+export default function NotificationPage() {
+  const [activeTab, setActiveTab] = useState("all");
+  const { notifications, markAsRead } = useNotifications();
+
+  // Filtra notificaciones según la pestaña activa
+  const filteredNotifications = () => {
     switch (activeTab) {
       case "all":
-        return mockNotifications;
+        return notifications;
       case "unread":
-        return mockNotifications.filter(n => !n.read);
+        return notifications.filter((n) => !n.visto);
       case "read":
-        return mockNotifications.filter(n => n.read);
+        return notifications.filter((n) => n.visto);
       default:
-        return mockNotifications;
+        return notifications;
     }
   };
-
 
   return (
     <PageLayout>
@@ -32,34 +41,57 @@ const filteredNotifications = () => {
       </div>
 
       <div className="notifications-tabs-container">
-        <Tabs activeTab={activeTab} onChange={setActiveTab} className="notifications-tabs">
-            <TabList className="notifications-tab-list">
-                <Tab value="all">Todas</Tab>
-                <Tab value="unread">No leídas</Tab>
-                <Tab value="read">Leídas</Tab>
-            </TabList>
-            <TabPanel value = "all" active={activeTab === "all"}>
-               
-                {filteredNotifications().map(notification => (
-                <NotificationItem key={notification.id} notification={notification} />
-              ))}
-            </TabPanel>
-            <TabPanel value = "unread" active={activeTab === "unread"}>
-                
-               {mockNotifications.filter(n => !n.read).map(notification => (
-                <NotificationItem key={notification.id} notification={notification} />
-              ))}
-            </TabPanel>
-            <TabPanel value = "read" active={activeTab === "read"}>
-    
-               {mockNotifications.filter(n => n.read).map(notification => (
-                <NotificationItem key={notification.id} notification={notification} />
-              ))}
-            </TabPanel>
+        <Tabs
+          activeTab={activeTab}
+          onChange={setActiveTab}
+          className="notifications-tabs"
+        >
+          <TabList className="notifications-tab-list">
+            <Tab value="all">Todas</Tab>
+            <Tab value="unread">No leídas</Tab>
+            <Tab value="read">Leídas</Tab>
+          </TabList>
+
+          <TabPanel value="all" active={activeTab === "all"}>
+            {filteredNotifications().map((notification) => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onMarkAsRead={() => markAsRead(notification.id)}
+              />
+            ))}
+            {filteredNotifications().length === 0 && (
+              <p>No hay notificaciones.</p>
+            )}
+          </TabPanel>
+
+          <TabPanel value="unread" active={activeTab === "unread"}>
+            {filteredNotifications().map((notification) => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onMarkAsRead={() => markAsRead(notification.id)}
+              />
+            ))}
+            {filteredNotifications().length === 0 && (
+              <p>No hay notificaciones no leídas.</p>
+            )}
+          </TabPanel>
+
+          <TabPanel value="read" active={activeTab === "read"}>
+            {filteredNotifications().map((notification) => (
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                onMarkAsRead={() => markAsRead(notification.id)}
+              />
+            ))}
+            {filteredNotifications().length === 0 && (
+              <p>No hay notificaciones leídas.</p>
+            )}
+          </TabPanel>
         </Tabs>
       </div>
     </PageLayout>
   );
 }
-
-export default NotificationPage;

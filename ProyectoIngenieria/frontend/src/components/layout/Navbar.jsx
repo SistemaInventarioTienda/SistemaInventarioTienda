@@ -5,6 +5,7 @@
 
   import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
   import Badge from '@mui/material/Badge';
+  import NotificationBadge from '../features/notifications/NotificationBadge';
 
   import { Button } from '../common';
   import { useAuth } from "../../context/authContext";
@@ -60,12 +61,13 @@
           </Button>
 
           <Button className="btn icon-button me-3" onClick={goToNotificationPage}>
-            {/* <Bell size={20} className="navbar-icon" /> */}
-            <Badge badgeContent={4} color="primary">
-            {/* <Bell color="action" /> */}
+            
+            <NotificationBadge isDarkMode={isDarkMode} />
+            {/* <Badge badgeContent={4} color="primary">
+            
               <NotificationsNoneIcon className="navbar-icon" 
               />
-          </Badge>
+          </Badge> */}
           </Button>
           
 
