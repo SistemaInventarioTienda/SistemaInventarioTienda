@@ -12,6 +12,9 @@ export const useCashClosing = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [reportLinks, setReportLinks] = useState(null);
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false);    
+
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -111,13 +114,20 @@ export const useCashClosing = () => {
 
     const handleConfirmCashClosing = async () => {
         try {
-            await cashClosingConfig.api.create();
+            setIsGeneratingReport(true);
+            const response = await cashClosingConfig.api.create();
             toast.success("Cierre de caja realizado exitosamente.");
+            setReportLinks({
+                pdf: response.PDF?.downloadLink || null,
+                xlsx: response.EXCEL?.downloadLink || null
+            });
             setIsModalOpen(false);
         } catch (error) {
             toast.error("Error al realizar el cierre de caja.");
+        } finally {
+            setIsGeneratingReport(false);
         }
-    };
+    };    
 
     return {
         metrics,
@@ -132,5 +142,6 @@ export const useCashClosing = () => {
         isModalOpen,
         setIsModalOpen,
         handleConfirmCashClosing,
+        reportLinks,
     };
 };
