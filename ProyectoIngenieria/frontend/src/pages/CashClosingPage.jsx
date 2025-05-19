@@ -8,17 +8,29 @@ import { cashClosingConfig } from "../config/entities/cashClosingConfig";
 import { useCashClosing } from "../hooks/useCashClosing";
 import ModalConfirmation from "../components/modals/ModalConfirmation";
 import {
+    ShoppingCart,
+    CreditCard,
+    Package,
     DollarSign,
-    ArrowUpCircle,
-    ArrowDownCircle,
-    Calculator,
+    Repeat,
 } from "lucide-react";
 
 const CashClosingPage = () => {
     const { permissions } = usePermissions();
     const navigate = useNavigate();
-    const { metrics, data, currentDate, handleConfirmCashClosing, isModalOpen, setIsModalOpen } = useCashClosing();
-
+    const {
+        metrics,
+        sortedData,
+        sortField,
+        sortOrder,
+        handleSort,
+        loading,
+        error,
+        currentDate,
+        handleConfirmCashClosing,
+        isModalOpen,
+        setIsModalOpen
+    } = useCashClosing();
     useEffect(() => {
         if (permissions.home === undefined) return;
         if (!permissions.sales) {
@@ -44,29 +56,36 @@ const CashClosingPage = () => {
                 </div>
             </div>
 
-            <div className="metric-grid">
+            {/* Cards métricas */}
+            <div className="metric-grid-2">
                 <MetricCard
                     title="Ventas"
                     value={metrics.ventasFormatted}
-                    icon={<DollarSign size={20} />}
+                    icon={<ShoppingCart size={20} />}
                     dynamicColor
                 />
                 <MetricCard
-                    title="Ingresos"
+                    title="Abonos a Créditos"
                     value={metrics.ingresosFormatted}
-                    icon={<ArrowDownCircle size={20} />}
+                    icon={<CreditCard size={20} />}
                     dynamicColor
                 />
                 <MetricCard
-                    title="Egresos"
+                    title="Gastos en Compras"
                     value={metrics.egresosFormatted}
-                    icon={<ArrowUpCircle size={20} />}
+                    icon={<Package size={20} />}
+                    dynamicColor
+                />
+                <MetricCard
+                    title="Transacciones"
+                    value={metrics.transaccionesFormatted}
+                    icon={<Repeat size={20} />}
                     dynamicColor
                 />
                 <MetricCard
                     title="Total"
                     value={metrics.totalFormatted}
-                    icon={<Calculator size={20} />}
+                    icon={<DollarSign size={20} />}
                     dynamicColor
                 />
             </div>
@@ -76,8 +95,11 @@ const CashClosingPage = () => {
             <div className="table-container">
                 <Table
                     columns={cashClosingConfig.columns}
-                    data={data}
+                    data={sortedData}
                     entityKey={cashClosingConfig.entityKey}
+                    onSort={handleSort}
+                    sortField={sortField}
+                    sortOrder={sortOrder}
                 />
             </div>
             <ModalConfirmation
