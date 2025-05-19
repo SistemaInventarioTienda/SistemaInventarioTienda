@@ -20,7 +20,10 @@ export const initSocket = (server) => {
 
   io.on("connection", (socket) => {
     console.log("🔌 Cliente conectado:", socket.id);
-
+    setTimeout(() => {
+      socket.emit("receive-notification", "inicio notificaciones");
+      //console.log("💲 Enviando notificación de inicio al cliente:", socket.id);
+    }, 1000);
     const interval = setInterval(async () => {
       const status = await getProductStatus();
 
@@ -49,7 +52,7 @@ export const initSocket = (server) => {
             }
           
       }
-    }, 10000);//1800000
+    }, 1800000);//1800000
 
     socket.on("disconnect", () => {
       console.log("❌ Cliente desconectado:", socket.id);
