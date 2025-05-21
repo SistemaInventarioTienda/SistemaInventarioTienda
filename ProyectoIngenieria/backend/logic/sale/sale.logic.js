@@ -38,12 +38,14 @@ async function validateStock(details_list) {
                 }
             }))
         },
-        attributes: ['DSC_NOMBRE']
+        attributes: ['DSC_NOMBRE','CANTIDAD']
     });
 
     if (existingStock.length > 0) {
-        const noStockProd = existingStock.map(details => details.DSC_NOMBRE);
-        return [`No hay Stock suficiente para: ${noStockProd.join(', ')}.`];
+        const noStockProd = existingStock.map(details => 
+            `${details.DSC_NOMBRE} (Cantidad en Stock: ${details.CANTIDAD})`
+        );
+        return [`No hay stock suficiente para: ${noStockProd.join(', ')}.`];
     }
 
     return false;
