@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { useAuthPermissions } from '../../context/authPermissions';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, 
-    BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, Banknote, 
-    CreditCard, ShoppingBag, ClipboardList, PlusCircle, PackagePlus } from 'lucide-react';
+import {
+    Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText,
+    BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, Banknote,
+    CreditCard, ShoppingBag, ClipboardList, PlusCircle, PackagePlus, HelpCircleIcon
+} from 'lucide-react';
 import SubMenu from './SubMenu';
 import './styles/sidebar.css';
 
@@ -52,6 +54,7 @@ const Sidebar = () => {
         { key: 'transaction', path: '/transaction', icon: FileText, text: 'Transacciones' },
         { key: 'reports', path: '/reports', icon: BarChart2, text: 'Reportes' },
         { key: 'cashClosing', path: '/cashClosing', icon: Banknote, text: 'Cierre de Caja' },
+        { key: 'home', path: '/help-center', icon: HelpCircleIcon, text: 'Centro de Ayuda' },
     ];
 
     return (

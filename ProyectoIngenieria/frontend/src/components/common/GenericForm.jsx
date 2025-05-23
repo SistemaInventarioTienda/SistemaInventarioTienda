@@ -76,7 +76,7 @@ function GenericForm({
     const handleDatePickerChange = (fieldName, date) => {
         setFormValues({ ...formValues, [fieldName]: date });
     };
-   
+
     console.log("Datos Iniciales en GenericForm:", initialData);
     // Renderizador de campos dinámicos
     const renderField = (field) => {
@@ -165,7 +165,7 @@ function GenericForm({
                             const { name, value } = e.target;
                             onFieldChange(name, value);
                         }
-                    }}                    
+                    }}
                     options={options}
                     required={field.required}
                     disabled={
@@ -221,6 +221,9 @@ function GenericForm({
                     if ((field.name === "contrasena" || field.name === "confirmarContrasena") && mode !== "add") {
                         return false;
                     }
+                    if (field.name === "CANTIDAD" && ["add", "edit"].includes(mode)) {
+                        return false; // Oculta cantidad en modos add y edit
+                    }                    
                     return true;
                 })
                 .map((field) => (

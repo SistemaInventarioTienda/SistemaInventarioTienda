@@ -1,0 +1,404 @@
+/* Estilos para el encabezado de la página */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+}
+
+.page-header p {
+    color: var(--color-font);
+    font-size: 0.95rem;
+    max-width: 600px;
+}
+
+/* Contenedor principal */
+.help-center-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Estilos para el contenedor de pestañas */
+.help-center-tabs-container {
+    background-color: var(--color-secondary);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+}
+
+.help-center-tab-list {
+    display: flex;
+    background-color: var(--color-secondary);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 1rem;
+    flex-wrap: wrap;
+    gap: 0.1rem;
+}
+
+.help-center-tab-list button {
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+    color: var(--color-font);
+    border: none;
+    background: transparent;
+    position: relative;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.help-center-tab-list button:hover {
+    color: var(--color-primary);
+}
+
+.help-center-tab-list button[aria-selected="true"] {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.help-center-tab-list button[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+    border-radius: 2px 2px 0 0;
+}
+
+/* Área de contenido */
+.help-center-content-area {
+    padding: 1.5rem;
+}
+
+.help-center-content-area h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+
+.help-center-description {
+    color: var(--color-font);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.help-center-divider {
+    margin: 1.5rem 0;
+    border: none;
+    height: 1px;
+    background-color: var(--color-border);
+}
+
+/* Estilos para el acordeón */
+.help-center-accordion-item {
+    background-color: var(--color-card);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.help-center-accordion-item:hover {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.help-center-accordion-item.active {
+    border-color: var(--color-primary);
+    box-shadow: 0 3px 8px rgba(var(--color-primary-rgb, 5, 0, 78), 0.1);
+}
+
+.help-center-accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    background-color: var(--color-card);
+    border: none;
+    text-align: left;
+    transition: background-color 0.2s ease;
+}
+
+.help-center-accordion-header:hover {
+    background-color: var(--color-background-hover, rgba(0, 0, 0, 0.02));
+}
+
+.help-center-accordion-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-font);
+    margin: 0;
+}
+
+.help-center-accordion-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--color-font);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+.help-center-accordion-icon.expanded {
+    transform: rotate(180deg);
+    color: var(--color-primary);
+}
+
+.help-center-accordion-content {
+    padding: 0 1.5rem;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out, opacity 0.3s ease;
+}
+
+.help-center-accordion-content.expanded {
+    opacity: 1;
+}
+
+.help-center-accordion-answer {
+    margin-bottom: 1.5rem;
+}
+
+.help-center-accordion-answer p {
+    color: var(--color-font);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* Estilos para pasos numerados */
+.help-center-steps {
+    margin-bottom: 1.5rem;
+}
+
+.steps-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--color-font);
+}
+
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step-counter;
+}
+
+.step-item {
+    display: flex;
+    margin-bottom: 1rem;
+    position: relative;
+    padding-left: 3rem;
+    min-height: 2.5rem;
+}
+
+.step-number {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    background-color: var(--color-primary-light, rgba(var(--color-primary-rgb, 5, 0, 78), 0.1));
+    color: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.step-text {
+    flex: 1;
+    padding-top: 0.25rem;
+    color: var(--color-font);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.help-center-text {
+    color: var(--color-font);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Estilos para el reproductor de video con scroll */
+.help-center-video-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    flex: 1;
+    max-width: 100%;
+}
+
+/* Estilos para el scrollbar */
+.help-center-accordion-content::-webkit-scrollbar {
+    width: 16px;
+}
+
+.help-center-accordion-content::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+}
+
+.help-center-accordion-content::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 4px solid var(--scrollbar-arrow-bg);
+    border-top-right-radius: 200px;
+    border-bottom-right-radius: 200px;
+    min-height: 40px;
+}
+
+.help-center-accordion-content::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Estilos para el reproductor de video */
+.help-center-video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 50.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.help-center-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.help-center-video-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: var(--color-input-background);
+    border-radius: 8px;
+    border: 1px dashed var(--color-border);
+    color: var(--color-font);
+}
+
+.video-error-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--color-warning);
+    margin-bottom: 1rem;
+}
+
+/* Estilos para mensajes de no resultados */
+.help-center-no-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--color-font);
+}
+
+.no-results-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+}
+
+.help-center-no-content p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.help-center-accordion-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Layout de acordeón y video en pantallas grandes */
+@media (min-width: 1024px) {
+    .help-center-accordion-body {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .help-center-accordion-answer {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .help-center-video-wrapper {
+        flex: 0 0 50%;
+        max-height: 400px;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .help-center-tab-list {
+        padding: 0 0.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .help-center-tab-list::-webkit-scrollbar {
+        display: none;
+    }
+
+    .help-center-tab-list button {
+        padding: 0.8rem 1rem;
+        white-space: nowrap;
+    }
+
+    .help-center-accordion-header,
+    .help-center-accordion-content {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .help-center-content-area {
+        padding: 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .step-item {
+        padding-left: 2.5rem;
+    }
+
+    .step-number {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 0.8rem;
+    }
+
+    .help-center-video-wrapper {
+        margin: 1rem 0;
+        padding: 0.5rem;
+    }
+}
