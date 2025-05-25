@@ -9,7 +9,7 @@
     width: 280px;
     height: 100vh;
     background-color: var(--color-primary);
-    color: var(--color-card);
+    color: var(--color-secondary);
     position: fixed;
     left: 0;
     top: 0;
@@ -51,14 +51,15 @@
     font-size: 1.125rem;
     text-align: center;
     flex-grow: 1;
-    color: var(--color-card);
+    color: var(--color-secondary);
+    font-weight: bolder;
 }
 
 .toggle-btn {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--color-card);
+    color: var(--color-secondary);
     border-radius: 8px;
     padding: 0.5rem;
 }
@@ -72,13 +73,14 @@
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
-    color: var(--color-card);
+    color: var(--color-secondary);
     text-decoration: none;
     transition: background-color 0.3s, padding 0.3s;
     border-radius: 16px;
     white-space: nowrap;
     overflow: hidden;
     min-height: 48px;
+    font-weight: bolder;
 }
 
 .sidebar-link>svg {
@@ -93,7 +95,7 @@
 }
 
 .sidebar-link.active {
-    background-color: var(--color-card);
+    background-color: var(--color-secondary);
     color: var(--color-primary);
 }
 
@@ -135,7 +137,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1rem;
-    color: var(--color-card);
+    color: var(--color-secondary);
     cursor: pointer;
     transition: background 0.3s ease;
     border-radius: 16px;
@@ -175,11 +177,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1rem;
-    color: var(--color-card);
+    color: var(--color-secondary);
     cursor: pointer;
     transition: background 0.3s ease;
     border-radius: 16px;
     min-height: 48px;
+    font-weight: bolder;
 }
 
 .submenu-header>div {

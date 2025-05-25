@@ -37,17 +37,17 @@ export const productsData = {
                 "Confirma la acción en el cuadro de diálogo que aparecerá haciendo clic en 'Eliminar'.",
                 "El estado del producto cambiará a inactivo; sin embargo, seguirá visible en el sistema para fines de historial o referencia.",
             ],
-            videoUrl: "https://www.youtube.com/embed/V0i15-GpncM?si=I0PQW1dqcwpIN3h_",
+            videoUrl: "https://www.youtube.com/embed/qw33j5t3r_A?si=B1-X43zheZD8yb6V",
         },
         {
             question: "¿Cómo buscar y filtrar productos?",
             answer: [
                 "Navega al módulo de 'Productos' desde la barra lateral.",
-                "Utiliza la barra de búsqueda ubicada en la parte superior para encontrar productos por nombre, código de barras o categoría.",
+                "Utiliza la barra de búsqueda ubicada en la parte superior para encontrar productos por nombre, código de barras o subcategoría.",
                 "También puedes hacer clic en los encabezados de las columnas para ordenar los registros de forma ascendente o descendente según corresponda.",
                 "Los resultados se actualizarán automáticamente mostrando únicamente los productos que coincidan con los criterios establecidos.",
             ],
-            videoUrl: "https://www.youtube.com/embed/1ibRnS5ZRQo?si=y6Kr-AAbjgLR2-fL",
+            videoUrl: "",
         },
     ],
 }

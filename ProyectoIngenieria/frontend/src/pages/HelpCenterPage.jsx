@@ -6,7 +6,7 @@ import Accordion from "../components/features/helpCenter/Accordion";
 
 import { usersData } from "../config/data/usersData";
 import { productsData } from "../config/data/productsData";
-// import { categoriesData } from "../config/data/categoriesData";
+import { categoriesData } from "../config/data/categoriesData";
 // import { suppliersData } from "../config/data/suppliersData";
 // import { clientsData } from "../config/data/clientsData";
 // import { salesData } from "../config/data/salesData";
@@ -19,7 +19,7 @@ import "./styles/HelpCenterPage.css";
 const helpCenterContent = {
     users: usersData,
     products: productsData,
-    // categories: categoriesData,
+    categories: categoriesData,
     // suppliers: suppliersData,
     // clients: clientsData,
     // sales: salesData,
