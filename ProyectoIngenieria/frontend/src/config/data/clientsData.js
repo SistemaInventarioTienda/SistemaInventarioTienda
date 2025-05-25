@@ -48,7 +48,7 @@ export const clientsData = {
                 "Para eliminar un teléfono: haz clic en el ícono de 'Eliminar'. El número se removerá de la lista visualmente y el cambio se aplicará al guardar el formulario.",
                 "Para que los cambios sean efectivos, asegúrate de hacer clic en 'Guardar cambios'.",
             ],
-            videoUrl: "https://player.vimeo.com/video/1087575567?h=06162c22ca&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+            videoUrl: "https://player.vimeo.com/video/1087584547?h=b97e44c576&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo buscar y filtrar clientes?",

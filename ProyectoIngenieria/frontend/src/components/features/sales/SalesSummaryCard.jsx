@@ -3,6 +3,7 @@ import { DatePicker, Select, Button, Textarea, Input } from "../../common";
 import { ModalConfirmation } from "../../modals";
 import { useEntityPage } from "../../../hooks/useEntityPage";
 import { getClients } from "../../../api/client";
+import { paymentMethods } from "../../../constants/paymentOptions";
 
 const SalesSummaryCard = ({ saleForm }) => {
     const { subtotal, discountAmount, subtotalAfterDiscount, taxAmount, total } = saleForm.calculateTotal();
@@ -82,11 +83,7 @@ const SalesSummaryCard = ({ saleForm }) => {
 
                 <label className="sales-card-label">Método de pago</label>
                 <Select
-                    options={[
-                        { value: "", label: "Seleccione una opción válida" },
-                        { value: "Sinpe Movil", label: "Sinpe Movil" },
-                        { value: "Pago en efectivo", label: "Pago en efectivo" },
-                    ]}
+                    options={paymentMethods}
                     label="Seleccionar Método de Pago"
                     value={saleForm.selectedPaymentMethod}
                     onChange={(e) => saleForm.setSelectedPaymentMethod(e.target.value)}

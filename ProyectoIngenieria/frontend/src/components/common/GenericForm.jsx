@@ -4,7 +4,8 @@ import ContactManager from "../features/ContactManager";
 import { Plus } from "lucide-react";
 import { useGenericFormLogic } from "../../hooks/useGenericFormLogic";
 import { toast } from "sonner";
-// import { useBarcodeScanner } from "../../hooks/useBarcodeScanner";
+import { transferMethods } from "../../constants/paymentOptions";
+
 import ModalConfirmation from "../modals/ModalConfirmation";
 
 function GenericForm({
@@ -137,16 +138,9 @@ function GenericForm({
                     })),
                 ];
             } else if (field.name === "METODO_PAGO") {
-                options = [
-                    { value: "", label: "Seleccione un metodo de pago" },
-                    { value: "Efectivo", label: "Efectivo" },
-                    { value: "Tarjeta", label: "Tarjeta" },
-                ];
+                options = transferMethods;
             } else if (field.name === "TIPO_TRANSACCION") {
-                options = [
-                    { value: "", label: "Seleccione un metodo de pago" },
-                    { value: "Sinpe", label: "Sinpe" },
-                ];
+                options = transferMethods;
             } else {
                 options = [
                     { value: "0", label: "Seleccione el estado" },
@@ -223,7 +217,7 @@ function GenericForm({
                     }
                     if (field.name === "CANTIDAD" && ["add", "edit"].includes(mode)) {
                         return false; // Oculta cantidad en modos add y edit
-                    }                    
+                    }
                     return true;
                 })
                 .map((field) => (
