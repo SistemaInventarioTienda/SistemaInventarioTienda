@@ -203,6 +203,15 @@
     height: 24px;
 }
 
+.chevron-icon {
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+.chevron-rotated {
+    transform: rotate(180deg);
+}
+
 /* Responsivo */
 @media (max-width: 768px) {
     .sidebar {
