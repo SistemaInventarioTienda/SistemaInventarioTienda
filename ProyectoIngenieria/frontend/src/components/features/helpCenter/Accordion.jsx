@@ -1,16 +1,20 @@
 import { useRef, useEffect } from "react"
 import VideoPlayer from "./VideoPlayer"
+import Player from "@vimeo/player"
 
 const Accordion = ({ question, answer, videoUrl, isAccordionOpen, onToggle }) => {
     const contentRef = useRef(null)
     const videoRef = useRef(null)
+    const vimeoPlayerRef = useRef(null)
 
     const toggleAccordion = () => {
         onToggle()
     }
 
     useEffect(() => {
-        // Animación de apertura y cierre
+        const iframe = videoRef.current?.querySelector("iframe")
+
+        // Animación
         if (contentRef.current) {
             if (isAccordionOpen) {
                 contentRef.current.style.maxHeight = `${contentRef.current.scrollHeight}px`
@@ -23,19 +27,51 @@ const Accordion = ({ question, answer, videoUrl, isAccordionOpen, onToggle }) =>
             }
         }
 
-        // Pausar el video de YouTube cuando se cierra el accordion
-        if (!isAccordionOpen && videoRef.current) {
-            const iframe = videoRef.current.querySelector("iframe");
-            if (iframe && iframe.contentWindow && iframe.src.includes("youtube.com")) {
+        if (!iframe) return
+
+        const src = iframe.src
+
+        if (!isAccordionOpen) {
+            // PAUSA al cerrar
+            if (src.includes("youtube.com") && iframe.contentWindow) {
                 iframe.contentWindow.postMessage(
                     JSON.stringify({ event: "command", func: "pauseVideo", args: [] }),
                     "*"
-                );
+                )
+            } else if (src.includes("vimeo.com")) {
+                if (!vimeoPlayerRef.current) {
+                    vimeoPlayerRef.current = new Player(iframe)
+                }
+
+                vimeoPlayerRef.current.pause().catch((error) => {
+                    console.warn("Error al pausar video Vimeo:", error)
+                })
+            }
+        } else {
+            // FORZAR CALIDAD al abrir
+            if (src.includes("vimeo.com")) {
+                if (!vimeoPlayerRef.current) {
+                    vimeoPlayerRef.current = new Player(iframe)
+                }
+
+                vimeoPlayerRef.current.on("loaded", async () => {
+                    try {
+                        const qualities = await vimeoPlayerRef.current.getQualities()
+                        const maxQuality = qualities
+                            .filter(q => q.id !== "auto")
+                            .sort((a, b) => b.height - a.height)[0]
+
+                        if (maxQuality) {
+                            await vimeoPlayerRef.current.setQuality(maxQuality.id)
+                        }
+                    } catch (err) {
+                        console.warn("No se pudo establecer calidad máxima:", err)
+                    }
+                })
             }
         }
     }, [isAccordionOpen])
 
-    // Determinar si la respuesta es un array (pasos) o texto simple
     const isStepByStep = Array.isArray(answer)
 
     return (

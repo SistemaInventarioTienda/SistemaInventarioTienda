@@ -14,7 +14,7 @@ export const productsData = {
                 "Haz clic en 'Agregar' para crear el nuevo producto.",
                 "Confirma la acción en el cuadro de diálogo que aparecerá.",
             ],
-            videoUrl: "https://www.youtube.com/embed/dGmvRi8PRq8?si=MIfkBjn6lVo28zGH",
+            videoUrl: "https://player.vimeo.com/video/1087565917?h=8b0be64527&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo modificar la información de un producto?",
@@ -26,7 +26,7 @@ export const productsData = {
                 "Haz clic en 'Guardar cambios' para confirmar la edición.",
                 "Confirma la acción en el cuadro de diálogo que aparecerá para completar el proceso.",
             ],
-            videoUrl: "https://www.youtube.com/embed/rQ7F_GiGtaQ?si=WW65-w1znn5CrNPS",
+            videoUrl: "https://player.vimeo.com/video/1087565810?h=d22ec0dbbe&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo eliminar un producto del sistema?",
@@ -37,7 +37,7 @@ export const productsData = {
                 "Confirma la acción en el cuadro de diálogo que aparecerá haciendo clic en 'Eliminar'.",
                 "El estado del producto cambiará a inactivo; sin embargo, seguirá visible en el sistema para fines de historial o referencia.",
             ],
-            videoUrl: "https://www.youtube.com/embed/qw33j5t3r_A?si=B1-X43zheZD8yb6V",
+            videoUrl: "https://player.vimeo.com/video/1087565876?h=843e9b334d&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo buscar y filtrar productos?",
@@ -47,7 +47,7 @@ export const productsData = {
                 "También puedes hacer clic en los encabezados de las columnas para ordenar los registros de forma ascendente o descendente según corresponda.",
                 "Los resultados se actualizarán automáticamente mostrando únicamente los productos que coincidan con los criterios establecidos.",
             ],
-            videoUrl: "",
+            videoUrl: "https://player.vimeo.com/video/1087565852?h=df388f2e35&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
     ],
 }

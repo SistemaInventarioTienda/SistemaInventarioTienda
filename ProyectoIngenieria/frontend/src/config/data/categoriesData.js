@@ -11,7 +11,7 @@ export const categoriesData = {
                 "Haz clic en el botón 'Agregar' para guardar la categoría.",
                 "Confirma la acción en el cuadro de diálogo que aparecerá.",
             ],
-            videoUrl: "https://www.youtube.com/embed/dANXVozPX24?si=cIj_OpteLnTmuyV0",
+            videoUrl: "https://player.vimeo.com/video/1087566052?h=b768b1affa&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo agregar una subcategoría?",
@@ -24,7 +24,7 @@ export const categoriesData = {
                 "Haz clic en 'Agregar' para guardar la subcategoría.",
                 "Confirma la acción en el cuadro de diálogo que aparecerá.",
             ],
-            videoUrl: "https://www.youtube.com/embed/O4v1kO7SUAE?si=8PeJgpYiG9jvoBgf",
+            videoUrl: "https://player.vimeo.com/video/1087566016?h=bc6f24ec3f&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo editar una categoría o subcategoría?",
@@ -36,7 +36,7 @@ export const categoriesData = {
                 "Ubica la subcategoría que deseas modificar y haz clic en el botón de 'Editar'.",
                 "Realiza los cambios necesarios y confirma la acción.",
             ],
-            videoUrl: "https://www.youtube.com/embed/J7E1ZiWp5xQ?si=_54ZDTY6ZkFQEtS7",
+            videoUrl: "https://player.vimeo.com/video/1087565988?h=9a5eee6ab1&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo eliminar una categoría o subcategoría?",
@@ -48,7 +48,7 @@ export const categoriesData = {
                 "Ubica la subcategoría que deseas eliminar y haz clic en el ícono de papelera.",
                 "Confirma la eliminación en el cuadro de diálogo.",
             ],
-            videoUrl: "https://www.youtube.com/embed/cRCykbU7GSM?si=iRr9s-Lu7_bVydex",
+            videoUrl: "https://player.vimeo.com/video/1087565916?h=fc420873ff&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo buscar o filtrar categorías?",
@@ -57,7 +57,7 @@ export const categoriesData = {
                 "Utiliza la barra de búsqueda para filtrar por el nombre de la categoría.",
                 "Los resultados se actualizarán automáticamente según el texto ingresado.",
             ],
-            videoUrl: "https://www.youtube.com/embed/RdrwC2QnIOc?si=EP6MvYRoOag26OZe",
+            videoUrl: "https://player.vimeo.com/video/1087565887?h=480142358f&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
     ],
 }

@@ -12,7 +12,7 @@ export const usersData = {
                 "Haz clic en 'Guardar' para finalizar y crear el nuevo usuario.",
                 "Confirma la acción en el cuadro de diálogo que aparece.",
             ],
-            videoUrl: "https://www.youtube.com/embed/PEsrN4T5SAI?si=Dnhh7O6BdQ-spuHF",
+            videoUrl: "https://player.vimeo.com/video/1087564053?h=28df1caed4&amp;title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo modificar la información de un usuario?",
@@ -24,7 +24,7 @@ export const usersData = {
                 "Haz clic en 'Guardar cambios' para confirmar la edición.",
                 "Confirma la acción en el cuadro de diálogo que aparecerá para completar el proceso.",
             ],
-            videoUrl: "https://www.youtube.com/embed/ARurxf-hH_8?si=niaHsoSWm3e8ssyy",
+            videoUrl: "https://player.vimeo.com/video/1087564025?h=dabcf5e6ec&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo eliminar un usuario del sistema?",
@@ -35,7 +35,7 @@ export const usersData = {
                 "Confirma la acción en el cuadro de diálogo que aparecerá.",
                 "El estado del usuario cambiará a inactivo; sin embargo, seguirá visible en el sistema para fines de historial o referencia.",
             ],
-            videoUrl: "https://www.youtube.com/embed/V0i15-GpncM?si=I0PQW1dqcwpIN3h_",
+            videoUrl: "https://player.vimeo.com/video/1087563991?h=080df66471&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
         {
             question: "¿Cómo buscar y filtrar usuarios?",
@@ -45,7 +45,7 @@ export const usersData = {
                 "También puedes hacer clic en los encabezados de las columnas para ordenar los registros de forma ascendente o descendente según corresponda.",
                 "Los resultados se actualizarán automáticamente mostrando únicamente los usuarios que coincidan con los criterios establecidos.",
             ],
-            videoUrl: "https://www.youtube.com/embed/1ibRnS5ZRQo?si=y6Kr-AAbjgLR2-fL",
+            videoUrl: "https://player.vimeo.com/video/1087563959?h=0694476d3c&amp;title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },        
         {
             question: "¿Cómo asignar permisos a un usuario?",
@@ -57,7 +57,7 @@ export const usersData = {
                 "Selecciona los módulos a los que el usuario podrá acceder.",
                 "Haz clic en 'Guardar' para aplicar los permisos seleccionados.",
             ],
-            videoUrl: "https://www.youtube.com/embed/P5iKjLfEpAc?si=nMXB4jaDqxc1dF4W",
+            videoUrl: "https://player.vimeo.com/video/1087563914?h=1219a85a9f&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
     ],
 }
