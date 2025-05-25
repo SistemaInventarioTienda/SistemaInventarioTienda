@@ -8,7 +8,7 @@ import { usersData } from "../config/data/usersData";
 import { productsData } from "../config/data/productsData";
 import { categoriesData } from "../config/data/categoriesData";
 import { suppliersData } from "../config/data/suppliersData";
-// import { clientsData } from "../config/data/clientsData";
+import { clientsData } from "../config/data/clientsData.js";
 // import { salesData } from "../config/data/salesData";
 // import { purchasesData } from "../config/data/purchasesData";
 // import { transactionsData } from "../config/data/transactionsData";
@@ -21,7 +21,7 @@ const helpCenterContent = {
     products: productsData,
     categories: categoriesData,
     suppliers: suppliersData,
-    // clients: clientsData,
+    clients: clientsData,
     // sales: salesData,
     // purchases: purchasesData,
     // transacctions: transactionsData,
