@@ -25,7 +25,7 @@ export const reportsData = {
                 "En la columna de acciones, puedes hacer clic en el botón de 'Ver detalles' para revisar la información del reporte.",
                 "También puedes descargar el archivo generado haciendo clic en el ícono de descarga verde (representado por una flecha hacia abajo).",
             ],
-            videoUrl: "",
+            videoUrl: "https://player.vimeo.com/video/1087622342?h=75ff5ff742&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
     ],
 }
