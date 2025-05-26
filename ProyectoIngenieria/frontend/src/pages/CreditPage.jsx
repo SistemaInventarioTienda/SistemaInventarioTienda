@@ -33,8 +33,7 @@ const CreditPage = () => {
     
           // Llamar al endpoint para obtener los datos del crédito
           const response = await creditConfig.api.getCreditById(creditId);
-          console.log("crédito", response);
-          setCreditInfo(response); // Actualizar el estado con los datos nuevos
+          setCreditInfo(response.response); // Actualizar el estado con los datos nuevos
         } catch (error) {
           console.error("Error al obtener los datos del crédito:", error);
         }
@@ -50,11 +49,20 @@ const CreditPage = () => {
     };
 
      //Logica para manejar el envio de datos al y desde el formulario.
-    const formatDate = (isoDate) => {
-        if (!isoDate) return ""; // Manejo de valores nulos o vacíos
-        const date = new Date(isoDate);
-        return date.toLocaleDateString("es-ES", { day: "numeric", month: "numeric", year: "numeric" });
-      };
+     const formatDate = (isoDate) => {
+      if (!isoDate) return ""; 
+    
+      const date = new Date(isoDate);
+      if (isNaN(date.getTime())) {
+        return ""; // Fecha inválida
+      }
+    
+      return date.toLocaleDateString("es-ES", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric"
+      });
+    };
 
 
       const onSubmit = async (data) => {
@@ -71,18 +79,14 @@ const CreditPage = () => {
     
           // Transformar los datos para el backend
           const backendData = await creditConfig.transformData.toBackend(data);
-          console.log("Datos enviados al backend: ", backendData);
-    
           // Enviar la solicitud al backend
           const idCredit = data.ID_CREDITO;
           await handleApiCall(
             () => creditConfig.api.create(idCredit, backendData),
             "Abono registrado exitosamente."
           );
-    
           // Refrescar los datos del crédito
           await fetchCreditData();
-    
           // Cerrar el modal
           setModalOpen(false);
     
@@ -95,11 +99,10 @@ const CreditPage = () => {
 
     const subTotal = creditInfo?.sale?.MONT_SUBTOTAL;
     const credit = {
-        id: creditInfo.ID_CREDITO,
-        issueDate: "2023-07-10",
-        dueDate: creditInfo.FEC_VENCIMIENTO,
-        amount: subTotal,
-        pendingAmount: creditInfo.MON_PENDIENTE,
+        issueDate:formatDate(creditInfo?.sale?.FEC_VENTA),
+        dueDate: formatDate(creditInfo.FEC_VENCIMIENTO)||creditInfo.FEC_VENCIMIENTO,
+        amount: subTotal??0,
+        pendingAmount: creditInfo.MON_PENDIENTE??0,
         status: creditInfo.ESTADO_CREDITO,
         //description: "Crédito para compra de mercadería",
     }
@@ -112,14 +115,15 @@ const CreditPage = () => {
     let firsName = creditInfo.DSC_NOMBRE || "";
     let lastName1 = creditInfo?.sale?.Client.DSC_APELLIDOUNO || "";
     let lastName2 = creditInfo?.sale?.Client.DSC_APELLIDODOS || "";
+    const idClient= creditInfo.sale?.Client.DSC_CEDULA ||"N/D";
     const fullName = `${firsName} ${lastName1} ${lastName2}`.trim();
 
     let phoneNumber = creditInfo.sale?.Client.TelefonoClientes[0].DSC_TELEFONO;
 
     const client = {
         name: fullName,
-        id: "119160537",//Falta este campo
-        phone:phoneNumber,//Falta este campo
+        id: idClient,
+        phone:phoneNumber,
         paid: paid,
         pending: creditInfo.MON_PENDIENTE,
     }
