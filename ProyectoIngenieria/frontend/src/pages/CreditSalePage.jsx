@@ -16,7 +16,7 @@ export default function CreditSalePage() {
     if (permissions.home === undefined) return;
 
     if (!permissions.sales) {
-      toast.error("No tienes permiso para acceder a usuarios");
+      toast.error("No tienes permiso para acceder a credito de ventas");
       navigate("/");
     }
   }, [permissions, navigate]);

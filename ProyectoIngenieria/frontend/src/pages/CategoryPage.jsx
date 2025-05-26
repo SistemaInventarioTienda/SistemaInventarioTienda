@@ -21,7 +21,7 @@ export default function CategoryPage() {
         if (permissions.home === undefined) return;
 
         if (!permissions.categories) {
-            toast.error("No tienes permiso para acceder a usuarios");
+            toast.error("No tienes permiso para acceder a categorias");
             navigate("/");
         }
     }, [permissions, navigate]);

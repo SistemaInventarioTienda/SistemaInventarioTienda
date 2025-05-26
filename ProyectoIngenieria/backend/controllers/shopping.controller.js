@@ -131,7 +131,7 @@ export const registerShopping = async (req, res) => {
             }
         });
         if (!userFound) {
-            return res.status(400).json({ message: "Invalid request." })
+            return res.status(400).json({ message: "Solicitud invalida." })
         }
 
         // creating the product
@@ -156,7 +156,7 @@ export const registerShopping = async (req, res) => {
         });
 
         if (!supplierFound) {
-            return res.status(400).json({ message: "Invalid request." })
+            return res.status(400).json({ message: "Solicitud invalida." })
         }
 
 

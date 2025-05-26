@@ -17,7 +17,7 @@ export default function SupplierPage() {
         if (permissions.home === undefined) return;
 
         if (!permissions.suppliers) {
-            toast.error("No tienes permiso para acceder a usuarios");
+            toast.error("No tienes permiso para acceder a proveedores");
             navigate("/");
         }
     }, [permissions, navigate]);
