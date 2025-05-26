@@ -17,7 +17,7 @@ export default function ProductPage() {
         if (permissions.home === undefined) return;
 
         if (!permissions.product) {
-            toast.error("No tienes permiso para acceder a usuarios");
+            toast.error("No tienes permiso para acceder a productos");
             navigate("/");
         }
     }, [permissions, navigate]);

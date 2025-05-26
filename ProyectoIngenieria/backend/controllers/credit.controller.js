@@ -59,7 +59,7 @@ export const addPayment = async (req, res) => {
       }
       creditId.FEC_ULTIMOPAGO = date;
       await creditId.save();
-      res.status(201).json({ message: "Abono registrado Correctamente" });
+      res.status(200).json({ message: "Abono registrado Correctamente" });
     }
   } catch (error) {
     res
