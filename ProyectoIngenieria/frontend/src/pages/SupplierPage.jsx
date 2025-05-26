@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import handleApiCall from "../utils/handleApiCall";
 import { usePermissions } from "../context/authPermissions";
 import { useNavigate, useLocation } from "react-router-dom";
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 export default function SupplierPage() {
     const { permissions } = usePermissions();
@@ -16,11 +17,11 @@ export default function SupplierPage() {
         if (permissions.home === undefined) return;
 
         if (!permissions.suppliers) {
-            toast.error("No tienes permiso para acceder a usuarios");
+            toast.error("No tienes permiso para acceder a proveedores");
             navigate("/");
         }
     }, [permissions, navigate]);
-    
+
     const {
         entityName,
         titlePage,
@@ -45,7 +46,7 @@ export default function SupplierPage() {
                 );
 
                 if (location.state?.returnTo) {
-                    navigate(location.state.returnTo.pathname, { 
+                    navigate(location.state.returnTo.pathname, {
                         state: {
                             ...location.state.returnTo.state,
                             shouldRefreshSuppliers: true
@@ -68,22 +69,25 @@ export default function SupplierPage() {
     };
 
     return (
-        <EntityPage
-            entityName={entityName}
-            titlePage={titlePage}
-            entityMessage={entityMessage}
-            columns={columns}
-            fields={fields}
-            fetchAll={api.fetchAll}
-            searchByName={api.searchByName}
-            onSubmit={onSubmit}
-            onDelete={(supplier) => api.delete(supplier.IDENTIFICADOR_PROVEEDOR)}
-            modalComponent={SupplierForm}
-            entityKey={entityKey}
-            transformData={transformData.toFrontend}
-            transformConfig={transformConfig}
-            actions={actions}
-            initialModalOpen={location.state?.openSupplierModal || false}
-        />
+        <>
+            <EntityPage
+                entityName={entityName}
+                titlePage={titlePage}
+                entityMessage={entityMessage}
+                columns={columns}
+                fields={fields}
+                fetchAll={api.fetchAll}
+                searchByName={api.searchByName}
+                onSubmit={onSubmit}
+                onDelete={(supplier) => api.delete(supplier.IDENTIFICADOR_PROVEEDOR)}
+                modalComponent={SupplierForm}
+                entityKey={entityKey}
+                transformData={transformData.toFrontend}
+                transformConfig={transformConfig}
+                actions={actions}
+                initialModalOpen={location.state?.openSupplierModal || false}
+            />
+            <FloatingHelpButton />
+        </>
     );
 }

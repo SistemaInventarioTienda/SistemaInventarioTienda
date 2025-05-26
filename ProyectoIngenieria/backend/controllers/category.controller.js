@@ -75,7 +75,7 @@ export const UpdateCategory = async (req, res) => {
 
 export const UpdateCategoryResponse = (status, res) => {
     if (status === true) {
-        return res.status(201).json({
+        return res.status(200).json({
             message: 'Se ha actualizado con éxito la categoría',
         });
     } else if (status === -1) {

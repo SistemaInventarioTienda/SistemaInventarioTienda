@@ -6,6 +6,8 @@ import ClientForm from "./pagesForms/ClientForm";
 import handleApiCall from "../utils/handleApiCall";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
+
 export default function ClientPage() {
 
     const { permissions } = usePermissions();
@@ -16,7 +18,7 @@ export default function ClientPage() {
         if (permissions.home === undefined) return;
 
         if (!permissions.clients) {
-            toast.error("No tienes permiso para acceder a usuarios");
+            toast.error("No tienes permiso para acceder a clientes");
             navigate("/");
         }
     }, [permissions, navigate]);
@@ -80,6 +82,7 @@ export default function ClientPage() {
                 transformConfig={transformConfig}
                 actions={actions}
             />
+            <FloatingHelpButton />
         </>
     );
 }

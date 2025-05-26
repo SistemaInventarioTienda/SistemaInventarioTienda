@@ -3,7 +3,6 @@ import Category from "../models/category.model.js";
 import { validateRegisterSubcategory, validateDeleteSubcategory, validateRegisterSubcategoryUpdate } from "../logic/subcategory/subcategory.logic.js";
 import { getDateCR } from "../libs/date.js";
 import { validateSubcategoryData } from "../logic/validateFields.logic.js";
-import { Op } from 'sequelize';
 
 
 
@@ -117,7 +116,7 @@ export const UpdateSubcategory = async (req, res) => {
             },
             { where: { ID_SUBCATEGORIA } }
         );
-        res.status(201).json({ message: 'Subcategoría actualizada correctamente' });
+        res.status(200).json({ message: 'Subcategoría actualizada correctamente' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al actualizar la subcategoría', error });

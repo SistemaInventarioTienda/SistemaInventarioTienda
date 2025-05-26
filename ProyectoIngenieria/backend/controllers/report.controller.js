@@ -3,13 +3,11 @@ import Config from "../models/config.model.js";
 import db from "../db.js";
 import PDFDocument from "pdfkit";
 import fs from "fs";
-import path, { resolve } from "path";
+import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { QueryTypes } from "sequelize";
 import XLSX from "xlsx";
-import { rejects } from "assert";
-import { object } from "zod";
 
 // See page sizes
 // https://pdfkit.org/docs/paper_sizes.html

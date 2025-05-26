@@ -8,12 +8,12 @@ import { ClientInfoCard, CreditDetailsCard, PaymentHistoryTable } from "../compo
 import PaymentForm from "../pages/pagesForms/PaymentForm";
 
 import { creditConfig } from "../config/entities/creditConfig";
-
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 import "./styles/CreditsPage.css"
 
 
 const CreditPage = () => {
-    const location = useLocation();
+  const location = useLocation();
     const { /*creditInfo,*/ fields, entityName } = location.state || {}; // Obtenemos el estado pasado
 
     //constantes para manejar los estados del modal.
@@ -137,49 +137,52 @@ const CreditPage = () => {
         type: "PARCIAL"                      // Tipo fijo ("PARCIAL")
     })) || [];
 
-    return (
-        <PageLayout>
-            <div className="credits-grid">
-                <div>
-                    <CreditDetailsCard 
-                    credit={credit} 
-                    onRegisterPayment={handleAdd} 
-                    />
-                    
-                </div>
-                <div>
-                    <ClientInfoCard 
-                    client={client} 
-                    credit={credit} />
-                </div>
-                <div style={{ gridColumn: '1 / -1' }}>
-                    <PaymentHistoryTable 
-                    payments={payments}
-                    creditConfig={creditConfig}
-                    fetchCreditData={fetchCreditData}
-                    pendingAmount= {creditInfo.MON_PENDIENTE}
-                     />
-                </div>
-                
-            </div>
-            
-            <ModalComponent
-            isOpen={isModalOpen}
-            title={`Agregar Abono`} 
-            onClose={() => setModalOpen(false)}
-            entityName={entityName}
-            mode={modalMode}
-            >
-                <PaymentForm
-                fields={fields}
-                initialData={creditInfo}
-                onSubmit={onSubmit}
-                onCancel={() => setModalOpen(false)}
+  return (
+    <>
+      <PageLayout>
+        <div className="credits-grid">
+          <div>
+            <CreditDetailsCard
+              credit={credit}
+              onRegisterPayment={handleAdd}
             />
-            </ModalComponent>
-            
-        </PageLayout>
-    )
+
+          </div>
+          <div>
+            <ClientInfoCard
+              client={client}
+              credit={credit} />
+          </div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <PaymentHistoryTable
+              payments={payments}
+              creditConfig={creditConfig}
+              fetchCreditData={fetchCreditData}
+              pendingAmount={creditInfo.MON_PENDIENTE}
+            />
+          </div>
+
+        </div>
+
+        <ModalComponent
+          isOpen={isModalOpen}
+          title={`Agregar Abono`}
+          onClose={() => setModalOpen(false)}
+          entityName={entityName}
+          mode={modalMode}
+        >
+          <PaymentForm
+            fields={fields}
+            initialData={creditInfo}
+            onSubmit={onSubmit}
+            onCancel={() => setModalOpen(false)}
+          />
+        </ModalComponent>
+
+      </PageLayout>
+      <FloatingHelpButton />
+    </>
+  )
 }
 
 export default CreditPage
