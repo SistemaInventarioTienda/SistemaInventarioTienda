@@ -11,7 +11,7 @@ import { suppliersData } from "../config/data/suppliersData";
 import { clientsData } from "../config/data/clientsData.js";
 import { salesData } from "../config/data/salesData";
 import { purchasesData } from "../config/data/purchasesData";
-// import { transactionsData } from "../config/data/transactionsData";
+import { transactionsData } from "../config/data/transactionsData.js";
 import { reportsData } from "../config/data/reportsData.js";
 
 import "./styles/HelpCenterPage.css";
@@ -24,7 +24,7 @@ const helpCenterContent = {
     clients: clientsData,
     sales: salesData,
     purchases: purchasesData,
-    // transacctions: transactionsData,
+    transacctions: transactionsData,
     reports: reportsData,
 };
 
