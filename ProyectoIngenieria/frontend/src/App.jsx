@@ -28,6 +28,7 @@ import {
   ReportsPage,
   CashClosingPage,
   NotificationPage,
+  HelpCenterPage,
 } from "./pages";
 import { NotificationProvider } from "./context/NotificationContext";
 
@@ -54,19 +55,19 @@ function App() {
     <AuthProvider>
       <AuthPermissionsProvider>
         <NotificationProvider>
-        <HashRouter>
-          <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-          <Toaster
-            position="bottom-right"
-            visibleToasts={5}
-            richColors
-            closeButton
-            theme={isDarkMode ? "dark" : "light"}
-            toastOptions={{
-              className: "custom-toaster",
-            }}
-          />
-        </HashRouter>
+          <HashRouter>
+            <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+            <Toaster
+              position="bottom-right"
+              visibleToasts={5}
+              richColors
+              closeButton
+              theme={isDarkMode ? "dark" : "light"}
+              toastOptions={{
+                className: "custom-toaster",
+              }}
+            />
+          </HashRouter>
         </NotificationProvider>
       </AuthPermissionsProvider>
     </AuthProvider>
@@ -131,6 +132,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="transaction" element={<TransactionPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="cashClosing" element={<CashClosingPage />} />
+            <Route path="help-center" element={<HelpCenterPage />}/>
           </Routes>
         </main>
       </div>

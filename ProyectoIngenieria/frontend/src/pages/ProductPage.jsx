@@ -6,6 +6,7 @@ import handleApiCall from "../utils/handleApiCall";
 import { usePermissions } from "../context/authPermissions";
 import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 export default function ProductPage() {
     const { permissions } = usePermissions();
@@ -93,6 +94,7 @@ export default function ProductPage() {
                 actions={actions}
                 initialModalOpen={location.state?.openProductModal || false}
             />
+             <FloatingHelpButton />
         </>
     );
 }

@@ -6,6 +6,7 @@ import { ShoppingDetailsCard, ShoppingSummaryCard } from "../components/features
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
 import "./styles/AddShoppingPage.css"
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 const AddShoppingPage = () => {
     const location = useLocation();
@@ -52,18 +53,21 @@ const AddShoppingPage = () => {
     }, [permissions, navigate]);
 
     return (
-        <PageLayout>
-            <div className="page-header">
-                <div>
-                    <h1>Nueva Compra</h1>
-                    <p>Seleccione o digite los datos correspondientes para realizar una nueva compra</p>
+        <>
+            <PageLayout>
+                <div className="page-header">
+                    <div>
+                        <h1>Nueva Compra</h1>
+                        <p>Seleccione o digite los datos correspondientes para realizar una nueva compra</p>
+                    </div>
                 </div>
-            </div>
-            <div className="sales-grid">
-                <ShoppingDetailsCard shoppingForm={shoppingForm} />
-                <ShoppingSummaryCard shoppingForm={shoppingForm} />
-            </div>
-        </PageLayout>
+                <div className="sales-grid">
+                    <ShoppingDetailsCard shoppingForm={shoppingForm} />
+                    <ShoppingSummaryCard shoppingForm={shoppingForm} />
+                </div>
+            </PageLayout>
+            <FloatingHelpButton />
+        </>
     );
 };
 

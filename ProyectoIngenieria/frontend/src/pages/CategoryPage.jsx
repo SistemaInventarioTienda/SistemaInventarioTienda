@@ -9,6 +9,7 @@ import { ModalComponent, ModalConfirmation } from "../components/modals";
 import { usePermissions } from "../context/authPermissions";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 export default function CategoryPage() {
     const entityPageRef = useRef(); // Crear una referencia a EntityPage
@@ -191,6 +192,7 @@ export default function CategoryPage() {
                 confirmButtonText="Eliminar"
                 cancelButtonText="Cancelar"
             />
+            <FloatingHelpButton />
         </>
     );
 }

@@ -66,17 +66,44 @@ function getReportName(filename) {
         return 'Reporte de ventas';
     } else if (filename.startsWith('Recibo')) {
         return 'Recibo de compra';
+    } else if (filename.startsWith("Transacciones")) {
+        return 'Reporte de transacciones'
+    } else if (filename.startsWith("Productos")) {
+        return 'Reporte de productos'
+    } else if (filename.startsWith("Compras-Proveedor")) {
+        return 'Reporte de compras por proveedor'
+    } else if (filename.startsWith("Resumen")) {
+        return 'Reporte de cierre de caja'
+    } else if (filename.startsWith("Reporte-Creditos-Clientes")) {
+        return 'Reporte de créditos por cliente'
     }
+
     return 'Reporte desconocido';
 }
 
 function getReportType(ruta) {
-    if (ruta.includes('Compras')) {
+    if (ruta.includes('Proveedor')) {
+        return 'Compras por proveedor';
+    } if (ruta.includes('Cliente_Credito')) {
+        return 'Compras por cliente y créditos';
+    } if (ruta.includes('Cliente_Credito')) {
+        return 'Compras por cliente y créditos';
+    } else if (ruta.includes('Compras')) {
         return 'Compras';
+    } else if (ruta.includes('VentasAgrupadas')) {
+        return 'Ventas por cliente';
     } else if (ruta.includes('Ventas')) {
         return 'Ventas';
-    } else if (ruta.includes('Recibos')) {
+    } else if (ruta.includes('Recibo')) {
         return 'Recibo';
+    } else if (ruta.includes('Transacciones')) {
+        return 'Transacciones';
+    } else if (ruta.includes('Productos')) {
+        return 'Productos';
+    } else if (ruta.includes('Resumen')) {
+        return 'Cierre de caja';
+    } else if (ruta.includes('Reporte-Creditos-Clientes')) {
+        return 'Créditos por cliente';
     }
     return 'Desconocido';
 }

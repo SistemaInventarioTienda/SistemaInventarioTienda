@@ -20,7 +20,10 @@ const SubMenu = ({ item, collapsed }) => {
                     {!collapsed && <span>{item.text}</span>}
                 </div>
                 {!collapsed && item.subNav && (
-                    subnav ? <ChevronUp size={20} /> : <ChevronDown size={20} />
+                    <ChevronDown
+                        size={20}
+                        className={`chevron-icon ${subnav ? 'chevron-rotated' : ''}`}
+                    />
                 )}
             </div>
 

@@ -8,7 +8,7 @@ import "./styles/Page.css";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
 import { useNavigate } from "react-router-dom";
-
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 export default function UserPage() {
 
@@ -24,7 +24,7 @@ export default function UserPage() {
             navigate("/");
         }
     }, [permissions, navigate]);
-    
+
     const {
         entityName,
         titlePage,
@@ -104,7 +104,7 @@ export default function UserPage() {
                 onClose={() => setShowPermissionsModal(false)}
                 user={selectedUser}
             />
-
+            <FloatingHelpButton />
         </>
     );
 }
