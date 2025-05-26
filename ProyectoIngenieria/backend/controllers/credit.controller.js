@@ -19,10 +19,9 @@ export const addPayment = async (req, res) => {
         },
       ],
     });
-    console.log("ID del credito por parametro [Controller]", req.params.id);
 
     if (!creditId) {
-      return res.status(204).json({
+      return res.status(404).json({
         message: "Credito no disponible para abonar.",
       });
     }
@@ -103,7 +102,7 @@ export const modifyPayment = async (req, res) => {
       },
     });
     if (!creditId) {
-      return res.status(204).json({
+      return res.status(404).json({
         message: "Credito no disponible para abonar.",
       });
     }
