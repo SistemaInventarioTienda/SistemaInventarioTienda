@@ -41,5 +41,21 @@ export const salesData = {
             ],
             videoUrl: "https://player.vimeo.com/video/1087599338?h=2ae984061b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
+        {
+            question: "¿Cómo consultar y gestionar créditos?",
+            answer: [
+                "Selecciona la opción 'Créditos' desde el módulo de 'Ventas'.",
+                "Verás una página con un buscador y una tabla que muestra todos los créditos registrados.",
+                "Puedes buscar o filtrar créditos por cliente, fecha, estado, etc.",
+                "En la tabla, cada crédito cuenta con una acción para 'Gestionar Crédito' (ícono de dólar).",
+                "Al hacer clic en esta opción, verás los detalles del crédito y la información del cliente.",
+                "Puedes registrar un nuevo pago utilizando el botón 'Registrar Pago'.",
+                "Esto abrirá un formulario donde debes ingresar el monto abonado.",
+                "Haz clic en 'Guardar cambios' y confirma la acción en el cuadro de diálogo.",
+                "En la parte inferior, encontrarás una tabla con el historial de pagos realizados.",
+                "Desde esta tabla puedes editar el monto de un pago anterior si es necesario.",
+            ],
+            videoUrl: "",
+        },
     ],
 }
