@@ -51,7 +51,9 @@ export const getAllReports = async (req, res) => {
     if (reports.length > 0) {
         return res.status(200).json(reports);
     } else {
-        return res.status(200).json("No hay reportes generados");
+        return res.status(204).json({
+            message: "No hay reportes generados."
+        });
     }
 };
 
