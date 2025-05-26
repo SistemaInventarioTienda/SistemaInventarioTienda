@@ -14,124 +14,128 @@ import "./styles/CreditsPage.css"
 
 const CreditPage = () => {
   const location = useLocation();
-  const { /*creditInfo,*/ fields, entityName } = location.state || {}; // Obtenemos el estado pasado
+    const { /*creditInfo,*/ fields, entityName } = location.state || {}; // Obtenemos el estado pasado
 
-  //constantes para manejar los estados del modal.
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState("add");
-  const [modalData, setModalData] = useState(null);
-  //const [isConfirmationModalOpen, setConfirmationModalOpen]= useState(false);
-  const [creditInfo, setCreditInfo] = useState(location.state?.creditInfo || null);
+    //constantes para manejar los estados del modal.
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState("add");
+    const [modalData, setModalData] = useState(null);
+    //const [isConfirmationModalOpen, setConfirmationModalOpen]= useState(false);
+    const [creditInfo, setCreditInfo] = useState(location.state?.creditInfo || null);
+    
+    
 
+    // Función para obtener los datos actualizados del crédito
+    const fetchCreditData = async () => {
+        try {
+          const creditId = creditInfo?.ID_CREDITO;
+          if (!creditId) return;
+    
+          // Llamar al endpoint para obtener los datos del crédito
+          const response = await creditConfig.api.getCreditById(creditId);
+          setCreditInfo(response.response); // Actualizar el estado con los datos nuevos
+        } catch (error) {
+          console.error("Error al obtener los datos del crédito:", error);
+        }
+      };
+    
+  
+    const handleAdd = () => {
+        // Abre el modal para agregar un nuevo pago
+        setModalMode("add");
+        setModalData({});
+        setModalOpen(true);
+        console.log("Presionando boton..");
+    };
 
-
-  // Función para obtener los datos actualizados del crédito
-  const fetchCreditData = async () => {
-    try {
-      const creditId = creditInfo?.ID_CREDITO;
-      if (!creditId) return;
-
-      // Llamar al endpoint para obtener los datos del crédito
-      const response = await creditConfig.api.getCreditById(creditId);
-      console.log("crédito", response);
-      setCreditInfo(response); // Actualizar el estado con los datos nuevos
-    } catch (error) {
-      console.error("Error al obtener los datos del crédito:", error);
-    }
-  };
-
-
-  const handleAdd = () => {
-    // Abre el modal para agregar un nuevo pago
-    setModalMode("add");
-    setModalData({});
-    setModalOpen(true);
-    console.log("Presionando boton..");
-  };
-
-  //Logica para manejar el envio de datos al y desde el formulario.
-  const formatDate = (isoDate) => {
-    if (!isoDate) return ""; // Manejo de valores nulos o vacíos
-    const date = new Date(isoDate);
-    return date.toLocaleDateString("es-ES", { day: "numeric", month: "numeric", year: "numeric" });
-  };
-
-
-  const onSubmit = async (data) => {
-    try {
-      console.log("Data recibida en onSubmit: ", data);
-
-      if (!data || typeof data !== "object") {
-        throw new Error("Los datos recibidos en onSubmit son inválidos.");
+     //Logica para manejar el envio de datos al y desde el formulario.
+     const formatDate = (isoDate) => {
+      if (!isoDate) return ""; 
+    
+      const date = new Date(isoDate);
+      if (isNaN(date.getTime())) {
+        return ""; // Fecha inválida
       }
+    
+      return date.toLocaleDateString("es-ES", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric"
+      });
+    };
 
-      if (!data.MON_ABONADO || !data.ID_CREDITO) {
-        throw new Error("Faltan campos obligatorios (MON_ABONADO o ID_CREDITO).");
-      }
 
-      // Transformar los datos para el backend
-      const backendData = await creditConfig.transformData.toBackend(data);
-      console.log("Datos enviados al backend: ", backendData);
+      const onSubmit = async (data) => {
+        try {
+          console.log("Data recibida en onSubmit: ", data);
+    
+          if (!data || typeof data !== "object") {
+            throw new Error("Los datos recibidos en onSubmit son inválidos.");
+          }
+    
+          if (!data.MON_ABONADO || !data.ID_CREDITO) {
+            throw new Error("Faltan campos obligatorios (MON_ABONADO o ID_CREDITO).");
+          }
+    
+          // Transformar los datos para el backend
+          const backendData = await creditConfig.transformData.toBackend(data);
+          // Enviar la solicitud al backend
+          const idCredit = data.ID_CREDITO;
+          await handleApiCall(
+            () => creditConfig.api.create(idCredit, backendData),
+            "Abono registrado exitosamente."
+          );
+          // Refrescar los datos del crédito
+          await fetchCreditData();
+          // Cerrar el modal
+          setModalOpen(false);
+    
+          return { success: true };
+        } catch (error) {
+          console.error("Error desde CreditSalePage: ", error.message);
+          return { success: false };
+        }
+      };
 
-      // Enviar la solicitud al backend
-      const idCredit = data.ID_CREDITO;
-      await handleApiCall(
-        () => creditConfig.api.create(idCredit, backendData),
-        "Abono registrado exitosamente."
-      );
-
-      // Refrescar los datos del crédito
-      await fetchCreditData();
-
-      // Cerrar el modal
-      setModalOpen(false);
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error desde CreditSalePage: ", error.message);
-      return { success: false };
+    const subTotal = creditInfo?.sale?.MONT_SUBTOTAL;
+    const credit = {
+        issueDate:formatDate(creditInfo?.sale?.FEC_VENTA),
+        dueDate: formatDate(creditInfo.FEC_VENCIMIENTO)||creditInfo.FEC_VENCIMIENTO,
+        amount: subTotal??0,
+        pendingAmount: creditInfo.MON_PENDIENTE??0,
+        status: creditInfo.ESTADO_CREDITO,
+        //description: "Crédito para compra de mercadería",
     }
-  };
 
-  const subTotal = creditInfo?.sale?.MONT_SUBTOTAL;
-  const credit = {
-    id: creditInfo.ID_CREDITO,
-    issueDate: "2023-07-10",
-    dueDate: creditInfo.FEC_VENCIMIENTO,
-    amount: subTotal,
-    pendingAmount: creditInfo.MON_PENDIENTE,
-    status: creditInfo.ESTADO_CREDITO,
-    //description: "Crédito para compra de mercadería",
-  }
+    //Suma los valores de MON_ABONADO y los retorna al valor paid del objeto client.
+    const paid = creditInfo?.payments?.reduce((total, payment) => {
+        return total + (payment.MON_ABONADO || 0);
+    }, 0) || 0;
 
-  //Suma los valores de MON_ABONADO y los retorna al valor paid del objeto client.
-  const paid = creditInfo?.payments?.reduce((total, payment) => {
-    return total + (payment.MON_ABONADO || 0);
-  }, 0) || 0;
+    let firsName = creditInfo.DSC_NOMBRE || "";
+    let lastName1 = creditInfo?.sale?.Client.DSC_APELLIDOUNO || "";
+    let lastName2 = creditInfo?.sale?.Client.DSC_APELLIDODOS || "";
+    const idClient= creditInfo.sale?.Client.DSC_CEDULA ||"N/D";
+    const fullName = `${firsName} ${lastName1} ${lastName2}`.trim();
 
-  let firsName = creditInfo.DSC_NOMBRE || "";
-  let lastName1 = creditInfo?.sale?.Client.DSC_APELLIDOUNO || "";
-  let lastName2 = creditInfo?.sale?.Client.DSC_APELLIDODOS || "";
-  const fullName = `${firsName} ${lastName1} ${lastName2}`.trim();
+    let phoneNumber = creditInfo.sale?.Client.TelefonoClientes[0].DSC_TELEFONO;
 
-  let phoneNumber = creditInfo.sale?.Client.TelefonoClientes[0].DSC_TELEFONO;
-
-  const client = {
-    name: fullName,
-    id: "119160537",//Falta este campo
-    phone: phoneNumber,//Falta este campo
-    paid: paid,
-    pending: creditInfo.MON_PENDIENTE,
-  }
+    const client = {
+        name: fullName,
+        id: idClient,
+        phone:phoneNumber,
+        paid: paid,
+        pending: creditInfo.MON_PENDIENTE,
+    }
 
 
 
-  const payments = creditInfo?.payments?.map(payment => ({
-    id: payment.ID_ABONO, // ID del abono
-    date: formatDate(payment.FEC_ABONO), // Formatear la fecha
-    amount: payment.MON_ABONADO || 0,   // Monto abonado
-    type: "PARCIAL"                      // Tipo fijo ("PARCIAL")
-  })) || [];
+    const payments = creditInfo?.payments?.map(payment => ({
+      id: payment.ID_ABONO, // ID del abono
+      date: formatDate(payment.FEC_ABONO), // Formatear la fecha
+        amount: payment.MON_ABONADO || 0,   // Monto abonado
+        type: "PARCIAL"                      // Tipo fijo ("PARCIAL")
+    })) || [];
 
   return (
     <>

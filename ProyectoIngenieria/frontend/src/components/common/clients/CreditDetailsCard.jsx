@@ -2,8 +2,6 @@ import { Printer, Pencil, DollarSign, Calendar, Clock, Wallet, Coins } from "luc
 
 const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
 
-    console.log("credito: ", credit);
-
     return (
         <div className="credits-card credits-card-fixed">
             <div className="credits-card-header">
@@ -12,10 +10,7 @@ const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
             </div>
             <div className="credits-card-content">
                 <div className="credits-grid-2">
-                    <div className="credits-info-item">
-                        <p className="credits-info-label">Número de Crédito</p>
-                        <p className="credits-info-value">{credit.id}</p>
-                    </div>
+                   
                     <div className="credits-info-item">
                         <p className="credits-info-label">Estado</p>
                         <p className="credits-info-value">
