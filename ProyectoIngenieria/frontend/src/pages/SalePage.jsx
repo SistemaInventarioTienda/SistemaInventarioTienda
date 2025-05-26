@@ -5,6 +5,8 @@ import SaleForm from "./pagesForms/SaleForm";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
+
 export default function SalePage() {
 
     const { permissions } = usePermissions();
@@ -49,6 +51,7 @@ export default function SalePage() {
                 action={"Anular"}
                 confirmButtonText={"Anular"}
             />
+             <FloatingHelpButton />
         </>
     );
 }

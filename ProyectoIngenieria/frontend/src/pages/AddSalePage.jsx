@@ -5,6 +5,7 @@ import PageLayout from "../components/layout/PageLayout";
 import { SalesDetailsCard, SalesSummaryCard } from "../components/features/sales";
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 import "./styles/AddSalePage.css"
 
 const AddSalePage = () => {
@@ -22,18 +23,21 @@ const AddSalePage = () => {
     }, [permissions, navigate]);
 
     return (
-        <PageLayout>
-            <div className="page-header">
-                <div>
-                    <h1>Nueva Venta</h1>
-                    <p>Seleccione o digite los datos correspondientes para realizar una nueva venta</p>
+        <>
+            <PageLayout>
+                <div className="page-header">
+                    <div>
+                        <h1>Nueva Venta</h1>
+                        <p>Seleccione o digite los datos correspondientes para realizar una nueva venta</p>
+                    </div>
                 </div>
-            </div>
-            <div className="sales-grid">
-                <SalesDetailsCard saleForm={saleForm} />
-                <SalesSummaryCard saleForm={saleForm} />
-            </div>
-        </PageLayout>
+                <div className="sales-grid">
+                    <SalesDetailsCard saleForm={saleForm} />
+                    <SalesSummaryCard saleForm={saleForm} />
+                </div>
+            </PageLayout>
+            <FloatingHelpButton />
+        </>
     );
 };
 

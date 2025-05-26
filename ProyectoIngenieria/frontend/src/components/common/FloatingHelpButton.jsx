@@ -10,6 +10,7 @@ const moduleToHelpTab = {
     "/suppliers": "suppliers",
     "/clients": "clients",
     "/sales": "sales",
+    "/credits": "sales",
     "/purchases": "purchases",
     "/transactions": "transacctions",
     "/reports": "reports"
