@@ -8,6 +8,7 @@ import { ReportsHistoryPage } from "../components/features/reports/"
 import { usePermissions } from "../context/authPermissions";
 import { toast } from "sonner";
 import "./styles/ReportsPage.css"
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 function ReportsPage() {
     const { permissions } = usePermissions();
@@ -25,30 +26,33 @@ function ReportsPage() {
     }, [permissions, navigate]);
 
     return (
-        <PageLayout>
-            <div className="page-header">
-                <div>
-                    <h1>Reportes</h1>
-                    <p>Generación, programación y gestión de reportes del sistema</p>
+        <>
+            <PageLayout>
+                <div className="page-header">
+                    <div>
+                        <h1>Reportes</h1>
+                        <p>Generación, programación y gestión de reportes del sistema</p>
+                    </div>
                 </div>
-            </div>
 
-            <div className="reports-tabs-container">
-                <Tabs activeTab={activeTab} onChange={setActiveTab} className="reports-tabs">
-                    <TabList className="reports-tab-list">
-                        <Tab value="generate">Generar Reporte</Tab>
-                        <Tab value="history">Historial de Reportes</Tab>
-                    </TabList>
+                <div className="reports-tabs-container">
+                    <Tabs activeTab={activeTab} onChange={setActiveTab} className="reports-tabs">
+                        <TabList className="reports-tab-list">
+                            <Tab value="generate">Generar Reporte</Tab>
+                            <Tab value="history">Historial de Reportes</Tab>
+                        </TabList>
 
-                    <TabPanel value="generate" active={activeTab === "generate"}>
-                        <GenerateReport />
-                    </TabPanel>
-                    <TabPanel value="history" active={activeTab === "history"}>
-                        <ReportsHistoryPage />
-                    </TabPanel>
-                </Tabs>
-            </div>
-        </PageLayout>
+                        <TabPanel value="generate" active={activeTab === "generate"}>
+                            <GenerateReport />
+                        </TabPanel>
+                        <TabPanel value="history" active={activeTab === "history"}>
+                            <ReportsHistoryPage />
+                        </TabPanel>
+                    </Tabs>
+                </div>
+            </PageLayout>
+            <FloatingHelpButton />
+        </>
     )
 }
 

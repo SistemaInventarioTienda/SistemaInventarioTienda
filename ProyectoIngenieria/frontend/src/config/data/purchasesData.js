@@ -35,7 +35,7 @@ export const purchasesData = {
                 "En la columna de acciones, puedes ver los detalles de una compra haciendo clic en el botón correspondiente.",
                 "También puedes anular una compra si no han transcurrido más de ocho días desde que fue realizada.",
             ],
-            videoUrl: "",
+            videoUrl: "https://player.vimeo.com/video/1087615935?h=5074c5bd07&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         },
     ],
 }

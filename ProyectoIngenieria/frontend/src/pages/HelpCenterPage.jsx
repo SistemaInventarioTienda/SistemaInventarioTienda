@@ -12,7 +12,7 @@ import { clientsData } from "../config/data/clientsData.js";
 import { salesData } from "../config/data/salesData";
 import { purchasesData } from "../config/data/purchasesData";
 // import { transactionsData } from "../config/data/transactionsData";
-// import { reportsData } from "../config/data/reportsData";
+import { reportsData } from "../config/data/reportsData.js";
 
 import "./styles/HelpCenterPage.css";
 
@@ -25,7 +25,7 @@ const helpCenterContent = {
     sales: salesData,
     purchases: purchasesData,
     // transacctions: transactionsData,
-    // reports: reportsData,
+    reports: reportsData,
 };
 
 function HelpCenterPage() {
