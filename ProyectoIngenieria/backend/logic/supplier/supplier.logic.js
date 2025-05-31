@@ -197,7 +197,7 @@ async function validateEqualsEmails(emails){
    return (uniqueEmails.length!== emails.length) ? ["No puede haber correos repetidos."]: false;
 }
 
-// async function validateCRIBAN(iban) {
-//     const ibanPattern = /^CR\d{2}0\d{18}$/;
-//     return ibanPattern.test(iban);
-// }
+async function validateCRIBAN(iban) {
+    const ibanPattern = /^CR\d{2}0\d{18}$/;
+    return ibanPattern.test(iban);
+}

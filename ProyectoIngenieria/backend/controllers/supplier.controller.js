@@ -327,19 +327,19 @@ export const updatedSupplier = async (req, res) => {
         //     });
         // }
 
-        const numberValidation = await validateRegisterPhones(phoneNumbers);
-        if (numberValidation !== true) {
-            return res.status(400).json({
-                message: numberValidation,
-            });
-        }
+        // const numberValidation = await validateRegisterPhones(phoneNumbers);
+        // if (numberValidation !== true) {
+        //     return res.status(400).json({
+        //         message: numberValidation,
+        //     });
+        // }
 
-        const emailValidation = await validateRegisterEmails(emailAddresses);
-        if (emailValidation !== true) {
-            return res.status(400).json({
-                message: emailValidation,
-            });
-        }
+        // const emailValidation = await validateRegisterEmails(emailAddresses);
+        // if (emailValidation !== true) {
+        //     return res.status(400).json({
+        //         message: emailValidation,
+        //     });
+        // }
 
 
 
