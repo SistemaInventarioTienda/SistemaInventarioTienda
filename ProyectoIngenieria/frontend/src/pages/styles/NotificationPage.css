@@ -1,34 +1,13 @@
-/* Estilos de página */
-.page-header {
-    margin-bottom: 1.5rem;
-}
-
-.page-header h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-    color: var(--color-text);
-}
-
-.page-header p {
-    color: var(--color-font);
-    font-size: 0.95rem;
-}
-
 .notifications-tabs-container {
-    background-color: var(--color-background);
+    background-color: var(--color-card);
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px var(--color-border);
     overflow: hidden;
-}
-
-.notifications-tabs {
-    width: 100%;
 }
 
 .notifications-tab-list {
     display: flex;
-    background-color: var(--color-background);
+    background-color: var(--color-card);
     border-bottom: 1px solid var(--color-border);
     padding: 0 1rem;
 }
@@ -62,4 +41,8 @@
     height: 2px;
     background-color: var(--color-primary);
     border-radius: 2px;
+}
+
+p {
+    margin: 10px;
 }

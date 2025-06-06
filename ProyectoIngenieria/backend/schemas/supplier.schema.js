@@ -5,11 +5,11 @@ import { z } from "zod";
 
 export const supplierSchema = z.object({
   IDENTIFICADOR_PROVEEDOR: z
-  .string({
-    required_error: "El identificador del proveedor es obligatorio.",
-  })
-  .min(1, { message: "El identificador del proveedor no puede estar vacío." })
-  .optional(),
+    .string({
+      required_error: "El identificador del proveedor es obligatorio.",
+    })
+    .min(1, { message: "El identificador del proveedor no puede estar vacío." })
+    .optional(),
   DSC_NOMBRE: z
     .string({
       required_error: "El nombre del proveedor es obligatorio.",
@@ -21,18 +21,18 @@ export const supplierSchema = z.object({
     .int()
     .positive()
     .optional(),
-    DSC_VENTA: z
+  DSC_VENTA: z
     .string({
       required_error: "La descripción de venta es obligatoria.",
     })
     .max(500, { message: "La descripción de venta no puede tener más de 500 caracteres." })
     .optional(),
-  CTA_BANCARIA: z
-    .string({
-      required_error: "La cuenta bancaria es obligatoria.",
-    })
-    .max(500, { message: "La cuenta bancaria no puede tener más de 500 caracteres." }),
-    DSC_DIRECCIONEXACTA: z
+  // CTA_BANCARIA: z
+  //   .string({
+  //     required_error: "La cuenta bancaria es obligatoria.",
+  //   })
+  //   .max(500, { message: "La cuenta bancaria no puede tener más de 500 caracteres." }),
+  DSC_DIRECCIONEXACTA: z
     .string({
       required_error: "La dirección exacta es obligatoria.",
     })

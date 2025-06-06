@@ -76,7 +76,7 @@ export const deleteUser = async (req, res) => {
              * 
             */
             return res.status(403).json({ message: "Tu cuenta no puede ser eliminada. Contacta con soporte para más información." })
-        } else if (user.ID_USUARIO === 10) { //Cambiar por el id del administrador debe ser 1
+        } else if (user.ID_USUARIO === 1) {
             /*
              * Cannot delete the administrator user
              * 

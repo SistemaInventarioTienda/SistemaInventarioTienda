@@ -6,6 +6,7 @@
   "author": "Aaron Matarrita, Daniel Briones, Josue Porras y Yeiler Montes",
   "build": {
     "appId": "electronreact",
+    "productName": "Sistema_Inventario",
     "extends": null,
     "files": [
       "dist/**/*",
@@ -17,7 +18,8 @@
     ],
     "directories": {
       "buildResources": "assets"
-    }
+    },
+    "icon": "public/assets/icono.ico"
   },
   "main": "public/electron.js",
   "homepage": "./",

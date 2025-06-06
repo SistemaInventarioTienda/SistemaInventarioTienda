@@ -1,4 +1,6 @@
 import { File, FileText, FileSpreadsheet } from 'lucide-react';
+import { API_URL_RESOURCES } from '../../../config';
+const DEFAULT_IMAGE_URL = `${API_URL_RESOURCES}/images/reports_preview`;
 
 const ReportPreview = ({ reportType, format, isLoading }) => {
   const getReportLabel = (type) => {
@@ -63,12 +65,12 @@ const ReportPreview = ({ reportType, format, isLoading }) => {
 
           <div className="report-preview-image">
             <img
-              src={`/assets/image/reports_preview/${reportType.toLowerCase()}_${format.toLowerCase()}_preview.png`}
+              src={`${DEFAULT_IMAGE_URL}/${reportType.toLowerCase()}_${format.toLowerCase()}_preview.png`}
               alt={`Vista previa del reporte ${reportType} en formato ${format}`}
               className="report-preview-img fade-in"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = "/assets/image/reports_preview/no_image_found.png";
+                e.target.src = `${DEFAULT_IMAGE_URL}/no_image_found.png`;
               }}
             />
           </div>
