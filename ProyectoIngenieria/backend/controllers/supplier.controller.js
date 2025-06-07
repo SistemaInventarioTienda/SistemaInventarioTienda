@@ -63,7 +63,7 @@ export const getAllSuppliers = async (req, res) => {
 
 
 export const createSupplier = async (req, res) => {
-    const { DSC_DIRECCIONEXACTA, DSC_VENTA, DSC_NOMBRE, CTA_BANCARIA, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
+    const { DSC_DIRECCIONEXACTA, DSC_VENTA, DSC_NOMBRE, CTA_BANCARIA='N/D', ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
 
     try {
         const date = await getDateCR();
