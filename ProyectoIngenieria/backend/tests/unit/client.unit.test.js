@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import sinon from 'sinon'; // ← ¡Esta línea faltaba!
+import sinon from 'sinon';
 import Client from '../../models/client.model.js';
 import phoneClient from '../../models/phoneClient.model.js';
 
