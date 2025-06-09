@@ -58,3 +58,5 @@ describe("registerSchema", () => {
     expect(result.error.issues[0].message).to.equal("El nombre de usuario debe tener minimo 3 caracteres.");
   });
 });
+
+// askdkasd
