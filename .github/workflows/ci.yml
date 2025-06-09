@@ -30,7 +30,59 @@ jobs:
     - name: Ejecutar pruebas unitarias puras
       working-directory: ./ProyectoIngenieria/backend
       run: npm run test:unit
+    - name: Enviar correo si CI fue exitoso
+      if: success()
+      uses: dawidd6/action-send-mail@v5
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.MAIL_FROM }}
+        password: ${{ secrets.MAIL_PASSWORD }}
+        to: aaron.matarrita.portuguez@est.una.ac.cr, josue.porras.rojas@est.una.ac.cr, yeiler.montes.rojas@est.una.ac.cr, anthony.briones.vargas@est.una.ac.cr
+        from: SistemaInventario CI <${{ secrets.MAIL_FROM }}>
+        subject: ✅ [${{ github.repository }}] CI - Pruebas Unitarias Puras workflow exitoso
+        body: |
+          Hola,
 
+          La ejecución del workflow CI - Pruebas Unitarias Puras en ${{ github.repository }} ha finalizado exitosamente.
+
+          Workflow: CI - Pruebas Unitarias Puras
+          Repositorio: ${{ github.repository }}
+          Rama: ${{ github.ref }}
+          Commit SHA: ${{ github.sha }}
+          Ejecutado por: ${{ github.actor }}
+
+          Ver ejecución del workflow:
+          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    - name: Enviar correo si CI falló
+      if: failure()
+      uses: dawidd6/action-send-mail@v5
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.MAIL_FROM }}
+        password: ${{ secrets.MAIL_PASSWORD }}
+        to: aaron.matarrita.portuguez@est.una.ac.cr, josue.porras.rojas@est.una.ac.cr, yeiler.montes.rojas@est.una.ac.cr, anthony.briones.vargas@est.una.ac.cr
+        from: SistemaInventario CI <${{ secrets.MAIL_FROM }}>
+        subject: ❌ [${{ github.repository }}] CI - Pruebas Unitarias Puras workflow fallido
+        body: |
+          Hola,
+
+          La ejecución del workflow CI - Pruebas Unitarias Puras en ${{ github.repository }} ha fallado.
+
+          CI - Pruebas Unitarias Puras: Todos los trabajos han fallado.
+          CI - Pruebas Unitarias Puras / run-tests: Falló en ${{ steps.run-tests.outcome }} segundos (Esta parte es compleja, puede que no obtengas la duración exacta aquí directamente)
+
+          Workflow: CI - Pruebas Unitarias Puras
+          Repositorio: ${{ github.repository }}
+          Rama: ${{ github.ref }}
+          Commit SHA: ${{ github.sha }}
+          Ejecutado por: ${{ github.actor }}
+
+          Ver ejecución del workflow:
+          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          
     # - name: Merge DEV-QA → MAIN
     #   if: success()
     #   uses: devops-infra/action-pull-request@v0.5.0
