@@ -35,3 +35,5 @@ describe('Categoría - Validaciones y lógica', () => {
         });
     });
 });
+
+// cambio
