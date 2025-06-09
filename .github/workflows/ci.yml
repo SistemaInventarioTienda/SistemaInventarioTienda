@@ -1,0 +1,42 @@
+name: CI - Pruebas Unitarias Puras
+
+on:
+  push:
+    branches: [ "DEV-QA" ]
+  pull_request:
+    branches: [ "DEV-QA" ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clonar repositorio
+      uses: actions/checkout@v3
+
+    - name: Mover a la carpeta backend
+      working-directory: ./ProyectoIngenieria/backend
+      run: echo "En backend"
+
+    - name: Instalar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Instalar dependencias
+      working-directory: ./ProyectoIngenieria/backend
+      run: npm install
+
+    - name: Ejecutar pruebas unitarias puras
+      working-directory: ./ProyectoIngenieria/backend
+      run: npm run test:unit
+
+    # - name: Merge DEV-QA → MAIN
+    #   if: success()
+    #   uses: devops-infra/action-pull-request@v0.5.0
+    #   with:
+    #     github_token: ${{ secrets.GH_PAT }}
+    #     source_branch: DEV-QA
+    #     target_branch: main
+    #     title: 'Auto Merge DEV-QA to MAIN'
+    #     body: 'Merged automatically after successful unit tests'
