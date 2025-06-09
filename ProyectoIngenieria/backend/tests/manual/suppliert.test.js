@@ -6,6 +6,7 @@ let token = '';
 let supplierName = `ProveedorTest-${Date.now()}`;
 let phone = `12345${Math.floor(Math.random() * 1000)}`;
 let email = `correo-${Date.now()}@proveedortest.com`;
+let iban = `ES6621000418401234567${Math.floor(Math.random() * 1000)}`;
 
 describe('Pruebas del módulo de Proveedores', () => {
 
@@ -36,7 +37,7 @@ describe('Pruebas del módulo de Proveedores', () => {
                 DSC_NOMBRE: supplierName,
                 ID_TIPOPROVEEDOR: 1,
                 ESTADO: 1,
-                CTA_BANCARIA: "ES6621000418401234567890",
+                CTA_BANCARIA: iban,//"ES6621000418401234567890"
                 DSC_DIRECCIONEXACTA: "Calle TEST 123",
                 DSC_VENTA: "Venta de productos",
                 phones: [{ DSC_TELEFONO: phone }],
