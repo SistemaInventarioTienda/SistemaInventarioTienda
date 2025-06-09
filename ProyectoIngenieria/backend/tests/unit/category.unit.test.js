@@ -1,9 +1,6 @@
 import { expect } from 'chai';
-import sinon from 'sinon';
 import { validateCategoryName } from '../../logic/validateFields.logic.js';
 import { categorySchema } from '../../schemas/category.schema.js';
-import { saveCategory } from '../../logic/category/category.logic.js';
-import Category from '../../models/category.model.js';
 
 describe('Categoría - Validaciones y lógica', () => {
     describe('Validación del nombre de categoría - lógica simple', () => {
