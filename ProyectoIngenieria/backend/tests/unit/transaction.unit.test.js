@@ -97,3 +97,5 @@ describe('Eliminar transacciones (Simulación de eliminación para testeo)', () 
 
   
 });
+
+//realizando test
