@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { validateSupplierData } from "../../logic/validateFields.logic.js";
 import { createSupplier } from "../../controllers/supplier.controller.js";
 describe("Proveedor - validacion simple de nombre", () => {
-    //1era Prueba
+  //1era Prueba
   it("Debe rechazar un proveedor sin nombre", () => {
     const req = {
       body: {
@@ -19,7 +19,7 @@ describe("Proveedor - validacion simple de nombre", () => {
       "El campo DSC_NOMBRE es requerido y no puede estar vacío."
     );
   });
-//2da Prueba
+  //2da Prueba
   it("Debe fallar si el correo es inválido", async () => {
     const req = {
       body: {
@@ -27,7 +27,7 @@ describe("Proveedor - validacion simple de nombre", () => {
         DSC_DIRECCIONEXACTA: "Calle Falsa 123",
         ID_TIPOPROVEEDOR: 1,
         ESTADO: 1,
-        phones: [{DSC_TELEFONO: 12345678}],
+        phones: [{ DSC_TELEFONO: 12345678 }],
         emails: [{ DSC_CORREO: "correo-invalido" }],
       },
     };
@@ -45,22 +45,22 @@ describe("Proveedor - validacion simple de nombre", () => {
 
     await createSupplier(req, res);
   });
- //3era Prueba
+  //3era Prueba
   it("Debe aceptar datos válidos", () => {
     const req = {
-        body: {
-            DSC_NOMBRE: "Proveedor Test",
-            DSC_DIRECCIONEXACTA: "Calle Falsa 123",
-            ID_TIPOPROVEEDOR: 1,
-            ESTADO: 1,
-            phones: [{ DSC_TELEFONO: "123456789" }],
-            emails: [{ DSC_CORREO: "test@test.com" }]
-        }
+      body: {
+        DSC_NOMBRE: "Proveedor Test",
+        DSC_DIRECCIONEXACTA: "Calle Falsa 123",
+        ID_TIPOPROVEEDOR: 1,
+        ESTADO: 1,
+        phones: [{ DSC_TELEFONO: "123456789" }],
+        emails: [{ DSC_CORREO: "test@test.com" }],
+      },
     };
 
     const result = validateSupplierData(req);
     expect(result).to.be.true;
-});
+  });
 });
 
 //Prueba para workflow de github
