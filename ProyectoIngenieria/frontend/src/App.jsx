@@ -119,7 +119,6 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             {/* ruta al componente de configuraciones */}
 
             <Route path="notifications" element={<NotificationPage />} />
-
             {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage />} />
             <Route path="product" element={<ProductPage />} />
