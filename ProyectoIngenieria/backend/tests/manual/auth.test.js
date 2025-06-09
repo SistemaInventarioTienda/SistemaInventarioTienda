@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
-import { server } from '../app.js';
-import { TOKEN_SECRET } from '../config.js';
+import { server } from '../../app.js';
+import { TOKEN_SECRET } from '../../config.js';
 
 function generarUsuarioAleatorio() {
   const randomNum = Math.floor(Math.random() * 1000000);

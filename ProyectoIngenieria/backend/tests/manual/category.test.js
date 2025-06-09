@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { server } from '../app.js';
+import { server } from '../../app.js';
 import { expect } from 'chai';
 
 let token = '';
