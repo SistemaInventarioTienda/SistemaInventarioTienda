@@ -22,7 +22,6 @@ export const supplierConfig = {
     // Configuración de columnas para la tabla
     columns: [
         { field: "DSC_NOMBRE", label: "Nombre" },
-        { field: "DSC_TELEFONO", label: "Teléfono" },
         { field: "DSC_TIPOPROVEEDOR", label: "Tipo de Proveedor" },
         { field: "DSC_TELEFONO", label: "Teléfono" },
         { field: "DSC_CORREO", label: "Correo" },
