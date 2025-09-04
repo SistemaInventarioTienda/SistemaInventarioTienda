@@ -30,6 +30,7 @@ import {
   NotificationPage,
   ProformaPage,
   AddProformaPage,
+  ProformaDetailPage,
 } from "./pages";
 import { NotificationProvider } from "./context/NotificationContext";
 
@@ -132,6 +133,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
 
             <Route path="proformas/history" element={<ProformaPage/>} />
             <Route path="proformas/new" element={<AddProformaPage/>} />
+            <Route path="/proformas/:barcode" element={<ProformaDetailPage />} />
           </Routes>
         </main>
       </div>

@@ -70,7 +70,9 @@ export const EntityPage = forwardRef(({
     }, [initialModalOpen]);
 
     const handleAdd = () => {
-        if (entityKey === "sales") {
+        if (entityKey === "proformas") {
+            navigate("/proformas/new");
+        } else if (entityKey === "sales") {
             navigate("/sales/new");
         } else if (entityKey === "shopping") {
             navigate("/shopping/new");
@@ -88,10 +90,13 @@ export const EntityPage = forwardRef(({
     };
 
     const handleView = (rowData) => {
-        setModalMode("view");
-        console.log("Modal view");
-        setModalData(transformData ? transformData(rowData) : rowData);
-        setModalOpen(true);
+        if (entityKey === "proformas") {
+            navigate(`/proformas/${rowData.DSC_CODIGO_BARRAS}`);
+        } else {
+            setModalMode("view");
+            setModalData(transformData ? transformData(rowData) : rowData);
+            setModalOpen(true);
+        }
     };
 
     const handleDeleteConfirmation = (rowData) => {

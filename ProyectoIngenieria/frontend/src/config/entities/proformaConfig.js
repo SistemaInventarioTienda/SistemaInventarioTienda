@@ -42,8 +42,9 @@ export const proformaConfig = {
             MON_TOTAL: proforma.MON_TOTAL,
             ESTADO: proforma.ESTADO,
             PRODUCTS_LIST:
-                proforma.DetailsProformas?.map((d) => ({
+                proforma.detailsproformas?.map((d) => ({
                     id: d.ID_PRODUCTO,
+                    name: d.DSC_PRODUCTO,
                     price: d.PRECIO_UNITARIO,
                     quantity: d.CANTIDAD,
                     tax: d.IMPUESTO,
@@ -59,8 +60,8 @@ export const proformaConfig = {
                     ID_PRODUCT: p.id,
                     PRECIO_UNITARIO: p.price,
                     CANTIDAD: p.quantity,
-                    IMPUESTO: p.tax,
-                    DESCUENTO: p.discount,
+                    IMPUESTO: p.tax ?? 0,
+                    DESCUENTO: p.discount ?? 0,
                 })) || [],
         }),
     },

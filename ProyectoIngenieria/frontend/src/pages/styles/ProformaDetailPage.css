@@ -1,0 +1,406 @@
+/* === Proforma Page === */
+.proforma-page {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 10px 20px;
+    font-family: "Poppins", sans-serif;
+    color: var(--color-font);
+}
+
+/* === Documento principal === */
+.proforma-document {
+    width: 100%;
+    max-width: 100%;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 30px;
+    margin: 10px 0;
+    box-shadow: 0 1px 5px var(--color-metric-card-shadow);
+}
+
+/* === Header Actions === */
+.proforma-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    color: var(--color-font);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 8px 0;
+}
+
+.proforma-header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.secondary-btn,
+.primary-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.secondary-btn {
+    background: var(--color-card);
+    color: var(--color-font);
+}
+
+.secondary-btn:hover {
+    background: var(--color-table-hover);
+}
+
+.primary-btn {
+    background: var(--color-success);
+    color: var(--color-font-secondary);
+    border-color: var(--color-success);
+}
+
+.primary-btn:hover {
+    background: var(--color-button-hover);
+}
+
+/* === Encabezado del documento === */
+.document-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.company-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.logo-circle {
+    width: 60px;
+    height: 60px;
+    background: var(--color-primary);
+    color: var(--color-font-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.company-info {
+    flex: 1;
+}
+
+.company-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-font);
+    margin: 0 0 5px 0;
+}
+
+.company-slogan {
+    color: var(--color-font);
+    opacity: 0.7;
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.company-contact p {
+    margin: 2px 0;
+    font-size: 14px;
+    color: var(--color-font);
+    opacity: 0.8;
+}
+
+.proforma-section {
+    text-align: right;
+    min-width: 300px;
+}
+
+.proforma-title {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--color-primary);
+    margin: 0 0 15px 0;
+}
+
+.proforma-details p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: var(--color-font);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.status-badge.valid {
+    background: var(--color-status-pill-active-bg);
+    color: var(--color-status-pill-active-text);
+}
+
+.status-badge.expired {
+    background: var(--color-status-pill-inactive-bg);
+    color: var(--color-status-pill-inactive-text);
+}
+
+/* === Cliente === */
+.client-section {
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--color-font);
+    margin: 0 0 15px 0;
+}
+
+.client-info {
+    background: var(--color-secondary);
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.client-type {
+    font-weight: bold;
+    margin: 0 0 5px 0;
+}
+
+.client-note {
+    color: var(--color-font);
+    opacity: 0.7;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* === Productos === */
+.products-section {
+    margin-bottom: 40px;
+}
+
+.products-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.products-table {
+    flex: 1;
+}
+
+/* === Resumen === */
+.summary-sidebar {
+    min-width: 300px;
+}
+
+.summary-box {
+    background: var(--color-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.total-row {
+    border-top: 1px solid var(--color-border);
+    padding-top: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.total-amount {
+    color: var(--color-primary);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* === Footer === */
+.document-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-border);
+}
+
+.validity-text,
+.price-text {
+    color: var(--color-font);
+    opacity: 0.7;
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+
+.bar {
+    background: var(--color-font);
+}
+
+.bar.thin {
+    width: 2px;
+    height: 30px;
+}
+
+.bar.thick {
+    width: 4px;
+    height: 40px;
+}
+
+/* === Tabla de Productos === */
+.proforma-table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+.proforma-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    background: var(--color-card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px var(--color-metric-card-shadow);
+}
+
+.proforma-table thead {
+    background: var(--color-table-header);
+}
+
+.proforma-table th {
+    padding: 14px 12px;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-primary);
+    background-color: var(--color-secondary);
+    border-bottom: 2px solid var(--color-border);
+    text-align: left;
+}
+
+.proforma-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-font);
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.proforma-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.proforma-table tbody tr:hover {
+    background: var(--color-table-hover);
+    transition: background 0.2s ease-in-out;
+}
+
+/* --- Producto --- */
+.product-cell {
+    min-width: 220px;
+}
+
+.product-cell strong {
+    display: block;
+    font-weight: 600;
+    color: var(--color-font);
+    margin-bottom: 4px;
+}
+
+.product-detail {
+    font-size: 12px;
+    color: var(--color-font);
+    opacity: 0.7;
+    line-height: 1.4;
+}
+
+/* --- Alinear valores numéricos --- */
+.proforma-table td:nth-child(2),
+.proforma-table td:nth-child(3),
+.proforma-table td:nth-child(4),
+.proforma-table td:nth-child(5),
+.proforma-table td:nth-child(6),
+.proforma-table td:nth-child(7) {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.proforma-table th:nth-child(2),
+.proforma-table th:nth-child(3),
+.proforma-table th:nth-child(4),
+.proforma-table th:nth-child(5),
+.proforma-table th:nth-child(6),
+.proforma-table th:nth-child(7) {
+    text-align: right;
+}
+
+/* === Print Styles === */
+body.pdf-mode #print-area {
+    /* ancho seguro dentro de A4 con margen de 10mm */
+    width: 190mm !important;
+    max-width: 190mm !important;
+}
+
+body.pdf-mode .products-layout {
+    /* columna única para evitar cortes del sidebar */
+    display: block !important;
+}
+
+body.pdf-mode .summary-sidebar {
+    width: 100% !important;
+    margin-top: 20px !important;
+    page-break-inside: avoid !important;
+}
+
+body.pdf-mode .products-table,
+body.pdf-mode .summary-box {
+    page-break-inside: avoid !important;
+}
+
+/* Evita recortes por overflow en contenedores */
+body.pdf-mode * {
+    overflow: visible !important;
+}
+
+/* Ocultar botones y acciones en el PDF */
+body.pdf-mode .proforma-header-actions,
+body.pdf-mode .btn-primary,
+body.pdf-mode .btn-secondary {
+    display: none !important;
+}
+
+/* Limpieza general del documento */
+body.pdf-mode .proforma-document {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+}

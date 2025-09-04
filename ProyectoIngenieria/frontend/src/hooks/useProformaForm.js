@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import handleApiCall from "../utils/handleApiCall";
 import { proformaConfig } from "../config/entities/proformaConfig";
 import { toast } from "sonner";
@@ -10,6 +11,7 @@ const useProformaForm = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [limitDate, setLimitDate] = useState(null);
     const [note, setNote] = useState("");
+    const navigate = useNavigate();
 
     // Calcular el total de la proforma
     const calculateTotal = () => {
@@ -133,24 +135,31 @@ const useProformaForm = () => {
         });
 
         try {
-            await handleApiCall(
-                () => proformaConfig.api.create(proformaData),
-                "Proforma creada exitosamente."
-            );
+            const response = await proformaConfig.api.create(proformaData);
+
+            console.log("Proforma data enviada:", response);
             resetForm();
+            console.log("Proforma creada:", response);
+
+            // FRONTEND (useProformaForm)
+            if (response?.DSC_CODIGO_BARRAS) {
+                navigate(`/proformas/${response.DSC_CODIGO_BARRAS}?download=1`);
+            }
+
         } catch (error) {
             console.error("Error al crear la proforma:", error);
         }
     };
 
-    const handleSubmitWithConfirmation = () => {
+    const handleSubmitWithConfirmation = async () => {
         if (!note) {
             setConfirmationModalOpen(true);
             setConfirmationCallback(() => handleSubmit);
-        } else {
-            handleSubmit();
+            return;
         }
+        return await handleSubmit();
     };
+
 
     return {
         selectedProducts,

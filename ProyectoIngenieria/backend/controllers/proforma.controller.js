@@ -40,8 +40,12 @@ export const createProForma = async (req, res) => {
       await DetailsProforma.bulkCreate(detailsToSave);
 
       // Enviar a crear la proforma en pdf y devolver
+      res.status(200).json({
+        success: true,
+        message: "Factura proforma creada correctamente.",
+        DSC_CODIGO_BARRAS: code
+      });
 
-      res.status(200).json({ message: "Factura proforma creada correctamente.", code: code });
     } else {
       res.status(400).json({ message: "Error al crear la factura proforma." });
     }
