@@ -1,0 +1,102 @@
+import { DataTypes } from 'sequelize';
+import db from '../db.js';
+import Product from '../models/product.model.js';
+import Config from './config.model.js';
+
+const proforma = db.define('proforma',{
+    ID_PROFORMA: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      DSC_CODIGO_BARRAS: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+      },
+      ID_EMPRESA: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        references: {
+          model: Config,
+          key: 'ID_EMPRESA'
+        }
+      },
+      MON_TOTAL:{
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      FEC_CREACION: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      FEC_LIMITE: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      }
+},{
+    timestamps: false,
+    tableName: 'tsit_proforma'
+});
+
+
+const detailsProforma = db.define('detailsproforma',{
+    ID_PRODUCTO_PROFORMA: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      ID_PROFORMA: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: proforma,
+          key: 'ID_PROFORMA'
+        }
+      },
+      ID_PRODUCTO: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: Product ,
+          key: 'ID_PRODUCT'
+        }
+      },
+      PRECIO_UNITARIO:{
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      CANTIDAD:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+      },
+      IMPUESTO : {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
+      DESCUENTO : {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      }
+},{
+    timestamps: false,
+    tableName: 'tsit_productos_proforma'
+});
+
+// Empresa ↔ Proforma
+proforma.belongsTo(Config, { foreignKey: 'ID_EMPRESA', targetKey: 'ID_EMPRESA' });
+Config.hasMany(proforma, { foreignKey: 'ID_EMPRESA', sourceKey: 'ID_EMPRESA' });
+
+// Proforma ↔ Detalles de proforma
+detailsProforma.belongsTo(proforma, { foreignKey: 'ID_PROFORMA', targetKey: 'ID_PROFORMA' });
+proforma.hasMany(detailsProforma, { foreignKey: 'ID_PROFORMA', sourceKey: 'ID_PROFORMA' });
+
+// Producto ↔ Detalles de proforma
+detailsProforma.belongsTo(Product, { foreignKey: 'ID_PRODUCTO', targetKey: 'ID_PRODUCT' });
+Product.hasMany(detailsProforma, { foreignKey: 'ID_PRODUCTO', sourceKey: 'ID_PRODUCT' });
+
+
+
+export default {proforma, detailsProforma};

@@ -21,6 +21,7 @@ import reportRoutes from "./routes/report.routes.js";
 import configRoutes from "./routes/config.routes.js";
 import cashClosing from "./routes/cashClosing.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
+import proformaRoutes from "./routes/proforma.routes.js";
 
 import { FRONTEND_URL } from "./config.js";
 
@@ -54,6 +55,7 @@ app.use('/api/graphics', graphicsRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/cashClosing', cashClosing);
 app.use('/api/notification', notificationRoutes);
+app.use('/api/proforma', proformaRoutes);
 
 if (process.env.NODE_ENV === "production") {
   const path = await import("path");
