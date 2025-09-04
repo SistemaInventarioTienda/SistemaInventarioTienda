@@ -43,15 +43,31 @@ export default function ProformaDetailPage() {
         return <div className="loading-container">Cargando detalle de proforma...</div>
     }
 
-    const subtotal =
-        proforma.detailsproformas?.reduce((acc, item) => {
-            const sub = item.PRECIO_UNITARIO * item.CANTIDAD
-            const desc = ((item.DESCUENTO || 0) * sub) / 100
-            return acc + (sub - desc)
-        }, 0) || 0
+    // ✅ Calcular totales producto por producto
+    const { subtotal, totalDescuentos, totalImpuestos, total } =
+        proforma.detailsproformas?.reduce(
+            (acc, item) => {
+                const sub = item.PRECIO_UNITARIO * item.CANTIDAD
 
-    const impuesto = Math.round(subtotal * 0.13)
-    const total = subtotal + impuesto
+                // descuento (%)
+                const descPct = item.DESCUENTO || 0
+                const desc = (descPct * sub) / 100
+                const subDesc = sub - desc
+
+                // impuesto (%)
+                const impPct = item.IMPUESTO || 0
+                const imp = (impPct * subDesc) / 100
+
+                // acumular
+                acc.subtotal += sub
+                acc.totalDescuentos += desc
+                acc.totalImpuestos += imp
+                acc.total += subDesc + imp
+
+                return acc
+            },
+            { subtotal: 0, totalDescuentos: 0, totalImpuestos: 0, total: 0 }
+        ) || { subtotal: 0, totalDescuentos: 0, totalImpuestos: 0, total: 0 }
 
     const handlePrint = async () => {
         const element = document.getElementById("print-area")
@@ -124,7 +140,7 @@ export default function ProformaDetailPage() {
                         </div>
 
                         <div className="proforma-section">
-                            <h1 className="proforma-title">PROFORMA</h1>
+                            <h1 className="proforma-title">FACTURA PROFORMA</h1>
                             <div className="proforma-details">
                                 <p>
                                     <strong>Código:</strong> {proforma.DSC_CODIGO_BARRAS}
@@ -163,13 +179,15 @@ export default function ProformaDetailPage() {
                                         <span>₡{subtotal.toLocaleString("es-CR")}</span>
                                     </div>
                                     <div className="summary-row">
-                                        <span>Impuesto (13%):</span>
-                                        <span>₡{impuesto.toLocaleString("es-CR")}</span>
+                                        <span>Descuentos:</span>
+                                        <span>- ₡{totalDescuentos.toLocaleString("es-CR")}</span>
+                                    </div>
+                                    <div className="summary-row">
+                                        <span>Impuestos:</span>
+                                        <span>₡{totalImpuestos.toLocaleString("es-CR")}</span>
                                     </div>
                                     <div className="summary-row total-row">
-                                        <span>
-                                            <strong>Total:</strong>
-                                        </span>
+                                        <span><strong>Total:</strong></span>
                                         <span className="total-amount">₡{total.toLocaleString("es-CR")}</span>
                                     </div>
                                 </div>

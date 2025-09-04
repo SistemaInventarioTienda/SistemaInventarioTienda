@@ -92,7 +92,7 @@ export const getAllProForma = async (req, res) => {
 
     return res.json({
       total: count,
-      totalOages: Math.ceil(count / limit),
+      totalPages: Math.ceil(count / limit),
       currentPage: parseInt(page),
       pageSize: limit,
       proformas: rows

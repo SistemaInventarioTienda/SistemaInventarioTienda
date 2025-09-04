@@ -16,20 +16,27 @@ export default function ProformaTable({ items }) {
                 <tbody>
                     {items?.map((item, idx) => {
                         const sub = item.PRECIO_UNITARIO * item.CANTIDAD
-                        const desc = ((item.DESCUENTO || 0) * sub) / 100
+
+                        // descuento en %
+                        const descPct = item.DESCUENTO || 0
+                        const desc = (descPct * sub) / 100
                         const subDesc = sub - desc
-                        const imp = Math.round(subDesc * 0.13)
+
+                        // impuesto en %
+                        const impPct = item.IMPUESTO || 0
+                        const imp = (impPct * subDesc) / 100
+
                         const total = subDesc + imp
 
                         return (
                             <tr key={idx}>
-                                <td>{item.Product.DSC_NOMBRE}</td>
-                                <td>₡{item.PRECIO_UNITARIO.toLocaleString()}</td>
+                                <td>{item.Product?.DSC_NOMBRE}</td>
+                                <td>₡{item.PRECIO_UNITARIO.toLocaleString("es-CR")}</td>
                                 <td>{item.CANTIDAD}</td>
-                                <td>{item.DESCUENTO || 0}%</td>
-                                <td>₡{subDesc.toLocaleString()}</td>
-                                <td>₡{imp.toLocaleString()}</td>
-                                <td>₡{total.toLocaleString()}</td>
+                                <td>{descPct}% (₡{desc.toLocaleString("es-CR")})</td>
+                                <td>₡{subDesc.toLocaleString("es-CR")}</td>
+                                <td>{impPct}% (₡{imp.toLocaleString("es-CR")})</td>
+                                <td>₡{total.toLocaleString("es-CR")}</td>
                             </tr>
                         )
                     })}
