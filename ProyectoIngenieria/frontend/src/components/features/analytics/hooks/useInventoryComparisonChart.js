@@ -45,7 +45,7 @@ export function useInventoryComparisonChart() {
             if (filterType === 'subcategory') {
                 setFilterOptions(options);
             }
-            console.log("SUBCATEGORIES", response.subcategory);
+ 
         } catch (err) {
             console.error("Error al cargar las subcategorías");
         }
@@ -68,9 +68,9 @@ export function useInventoryComparisonChart() {
                 vendidos: Number(item.TOTAL_VENDIDO),
                 ratio: Number(item.TOTAL_VENDIDO) > 0 ? Number(item.TOTAL_VENDIDO) / Number(item.CANTIDAD || 1) : 0,
             }));
-            console.log("TIPO FILTRADO", filterType);
-            console.log("FILTRO SELECCIONADO", filterType, selectedFilter);
-            console.log("RESPONSE", response.products_stock_sold);
+ 
+ 
+ 
             setChartData(parsed);
         } catch (err) {
             setError("Error al cargar los datos.");

@@ -19,7 +19,7 @@ export const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("🔌 Cliente conectado:", socket.id);
+ 
     setTimeout(() => {
       socket.emit("receive-notification", "inicio notificaciones");
       //console.log("💲 Enviando notificación de inicio al cliente:", socket.id);
@@ -55,7 +55,7 @@ export const initSocket = (server) => {
     }, 300000);//1800000
 
     socket.on("disconnect", () => {
-      console.log("❌ Cliente desconectado:", socket.id);
+ 
       clearInterval(interval);
     });
   });

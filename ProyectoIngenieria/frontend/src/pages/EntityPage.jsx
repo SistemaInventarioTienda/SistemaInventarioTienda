@@ -110,12 +110,12 @@ export const EntityPage = forwardRef(({
                 await actions.downloadHandler(rowData);
             }
         } catch (error) {
-            console.log("error", error);
+ 
             toast.error(error.message || 'El documento solicitado no existe');
         }
     };
 
-    console.log("Datos FILTRADOS: ", filteredData);
+ 
     //console.log("TransformData [EntityPage]", transformData);
 
     const tableActions = Object.entries(actions)
@@ -124,7 +124,7 @@ export const EntityPage = forwardRef(({
             if (isEnabled) {
                 acc[actionKey] =
                     actionKey === "manageCredits" ? (rowData) => {
-                        console.log("Estamos en tableActions: ", rowData);
+ 
                         if (actions.manageCreditsHandler) {
                             actions.manageCreditsHandler(rowData);
                         }
@@ -261,11 +261,11 @@ export const EntityPage = forwardRef(({
                         onSubmit={async (formData) => {
                             try {
                                 const response = await onSubmit(modalMode, formData);
-                                console.log(response);
+ 
                                 if (response && response.success) {
                                     await fetchData({ transformConfig });
                                     setModalOpen(false);
-                                    console.log("✅ Modal cerrado correctamente");
+ 
                                 } else {
                                     console.error("❌ Error: Respuesta no exitosa", response);
                                 }

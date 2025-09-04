@@ -92,14 +92,14 @@ function ProfilePage() {
         return date.toLocaleDateString("es-ES", { day: "numeric", month: "numeric", year: "numeric" });
       };
 
-    console.log("Usuario autenticado:", user);
+ 
 
     const handleSubmit = async (formData) => {
         try {
-            console.log("Actualizar perfil:", formData);
+ 
 
             const backendData = await userConfig.transformData.toBackend(formData);
-            console.log("Respuesta del backend:", backendData);
+ 
 
             const userID = user.cedula;
             await handleApiCall(

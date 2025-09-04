@@ -256,7 +256,7 @@ const timeHasPassed = async (dateISO) => { // 2025-04-15T20:42:05.000Z (UTC)
 
         // 4. Calculate the difference in hours.
         const diferenciaHoras = diferenciaMilisegundos / (1000 * 60 * 60);
-        console.log("Diferencia en horas: ", diferenciaHoras);
+ 
 
         // 5. Return true if the difference is greater than or equal to 24 hours.
         return diferenciaHoras >= 24;

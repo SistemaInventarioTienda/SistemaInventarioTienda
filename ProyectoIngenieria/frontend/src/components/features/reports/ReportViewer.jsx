@@ -6,7 +6,7 @@ function ReportViewer({ format, downloadLink }) {
     const containerRef = useRef();
 
     useEffect(() => {
-        console.log("Montando ReportViewer", { format, downloadLink });
+ 
 
         if (!format || !downloadLink || !containerRef.current) return;
 

@@ -180,7 +180,7 @@ export function useGenericFormLogic({
 
 
 
-      console.log("Data to submit: ", dataToSubmit);
+ 
       await onSubmit(dataToSubmit);
     } catch (error) {
       console.error("Error procesando el formulario:", error.message);

@@ -44,7 +44,7 @@ export default function UserPage() {
 
     // handle para permisos
     const handleGrantPermission = async (user) => {
-        console.log("Otorgar permisos a:", user.DSC_CEDULA);
+ 
         setSelectedUser(user);
         setShowPermissionsModal(true);
     };
@@ -53,7 +53,7 @@ export default function UserPage() {
     const onSubmit = async (mode, data) => {
         try {
             const backendData = transformData.toBackend(data);
-            console.log("backendData", backendData);
+ 
             if (mode === "add") {
                 await handleApiCall(
                     () => api.create(backendData),

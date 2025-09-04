@@ -372,7 +372,7 @@ export const updatedSupplier = async (req, res) => {
             });
 
             const existingPhoneIds = existingPhones.map(phone => phone.ID_TELEFONOPROVEEDOR);
-            console.log("Telefonos Existentes [existingPhones]: ", existingPhoneIds);
+ 
             
             const phoneIdInRequest = phones
             .filter(phone => phone.ID_TELEFONOCPROVEEDOR)
@@ -432,14 +432,14 @@ export const updatedSupplier = async (req, res) => {
             for (const email of emails) {
                 const { ID_CORREOPROVEEDOR, DSC_CORREO } = email;
 
-                console.log("Entro al for para modificar el correo/nId del correo: ", ID_CORREOPROVEEDOR);
+ 
                 if (ID_CORREOPROVEEDOR) {
                     await mailSupplier.update(
                         {DSC_CORREO: DSC_CORREO},
                         {where: {ID_CORREOPROVEEDOR: ID_CORREOPROVEEDOR}}
                     );
                 } else {
-                    console.log("Entro al else para crear el correo");
+ 
                     await mailSupplier.create({
                         ID_PROVEEDOR: supplier.ID_PROVEEDOR,
                         DSC_CORREO: DSC_CORREO,

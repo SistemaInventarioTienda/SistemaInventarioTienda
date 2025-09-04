@@ -137,9 +137,9 @@ const useProformaForm = () => {
         try {
             const response = await proformaConfig.api.create(proformaData);
 
-            console.log("Proforma data enviada:", response);
+ 
             resetForm();
-            console.log("Proforma creada:", response);
+ 
 
             // FRONTEND (useProformaForm)
             if (response?.DSC_CODIGO_BARRAS) {

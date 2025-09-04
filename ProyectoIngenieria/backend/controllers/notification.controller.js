@@ -20,7 +20,7 @@ export const getAllNotifications = async (req, res) => {
         };
       });
 
-      console.log("Hola               Aquie Es fdsfsdtan Alsa NoTIFICACIONES", parsedNotifications);
+ 
       return res.status(200).json(parsedNotifications);
     } catch (error) {
       return res.status(500).json({ message: error.message });

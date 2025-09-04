@@ -4,7 +4,7 @@ export const validateSupplier = (formData, phones, emails) => {
 
     const tipoProveedorValue = parseInt(formData.tipoProveedor, 10);
     if (isNaN(tipoProveedorValue) || tipoProveedorValue <= 0) {
-        console.log("TIPO DE PROVEEDOR", formData.tipoProveedor);
+ 
         errors.push('Seleccione un tipo de proveedor válido.');
     }
 

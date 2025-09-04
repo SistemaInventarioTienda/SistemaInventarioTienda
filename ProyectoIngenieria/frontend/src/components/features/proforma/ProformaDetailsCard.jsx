@@ -38,7 +38,7 @@ const ProformaDetailsCard = ({ proformaForm }) => {
                                 toast.success(`¡Producto con el código ${code} agregado correctamente!`);
                             } else {
                                 toast.error(`¡Producto con el código ${code} no encontrado!`);
-                                console.log('Producto no encontrado');
+ 
                             }
                         })
                         .catch(console.error);

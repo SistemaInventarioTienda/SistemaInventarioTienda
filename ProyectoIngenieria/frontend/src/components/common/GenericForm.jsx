@@ -77,7 +77,7 @@ function GenericForm({
         setFormValues({ ...formValues, [fieldName]: date });
     };
    
-    console.log("Datos Iniciales en GenericForm:", initialData);
+ 
     // Renderizador de campos dinámicos
     const renderField = (field) => {
         const fieldValue = formData[field.name] ?? "";

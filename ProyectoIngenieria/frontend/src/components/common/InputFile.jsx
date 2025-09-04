@@ -20,7 +20,7 @@ const InputFile = ({
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
-        console.log("RESOURCE PATH", resourcePath);
+ 
         if (mode === 'add') {
             setPreview(DEFAULT_IMAGE_URL);
         } else if ((mode === 'edit' || mode === 'view') && value) {

@@ -39,7 +39,7 @@ const directoryStructure = getDirectoryStructure(directoryPath);
 // Guarda el resultado en un archivo de texto
 fs.writeFileSync(outputFilePath, directoryStructure, 'utf-8');
 
-console.log(`Estructura guardada en: ${outputFilePath}`);
+ 
 
 
 

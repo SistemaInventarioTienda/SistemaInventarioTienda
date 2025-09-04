@@ -19,7 +19,7 @@ export const addPayment = async (req, res) => {
         },
       ],
     });
-    console.log("ID del credito por parametro [Controller]", req.params.id);
+ 
 
     if (!creditId) {
       return res.status(204).json({
@@ -316,7 +316,7 @@ export const getAllPaymentByCreditByFilter = async (req, res) => {
       }
     );
 
-    console.log(results.ResultadoJSON);
+ 
 
     if (!results.ResultadoJSON) {
       return res.status(204).json({

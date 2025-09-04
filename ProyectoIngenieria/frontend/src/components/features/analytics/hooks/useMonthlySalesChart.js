@@ -29,7 +29,7 @@ export function useMonthlySalesChart() {
                 MAX_FEC: endOfYear,
             });
 
-            console.log("DATA last12sales:", data.last12sales);
+ 
 
             const parsedResults = Array.isArray(data.last12sales)
                 ? data.last12sales

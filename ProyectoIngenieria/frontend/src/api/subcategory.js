@@ -47,7 +47,7 @@ export const searchSubcategories = async (page, pageSize, searchTerm, orderByFie
 };
 
 export const createSubcategory = async (subCategoryData) => {
-    console.log('Creating subcategory', subCategoryData);
+ 
     try {
         const response = await axios.post(`/subcategory/createSubcategory/`, subCategoryData);
         return response.data;
@@ -58,7 +58,7 @@ export const createSubcategory = async (subCategoryData) => {
 };
 
 export const updateSubcategory = async (subCategoryData) => {
-    console.log('Updating subcategory', subCategoryData);
+ 
     try {
         const response = await axios.put(`/subcategory/updateSubcategory/`, subCategoryData);
         return response.data;

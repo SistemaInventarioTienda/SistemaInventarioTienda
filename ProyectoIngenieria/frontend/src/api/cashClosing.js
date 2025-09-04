@@ -3,7 +3,7 @@ import axios from './axios';
 export const createCashClosing = async () => {
     try {
         const response = await axios.post('/cashClosing/createcashclosing');
-        console.log("respuesta", response);
+ 
         return response.data;
     } catch (error) {
         console.error('Error creando el cierre de caja:', error.message);

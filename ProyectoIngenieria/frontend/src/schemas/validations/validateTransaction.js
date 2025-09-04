@@ -19,7 +19,7 @@ export const validateTransaction = (formData) => {
         errors.push("Por favor, ingrese una descripción de la transacción.");
     }
 
-    console.log("ESTADO", formData.estado);
+ 
     if(formData.estado === 0 || formData.estado === undefined){
         errors.push("Por favor, seleccione un estado válido para la transacción.");
     }

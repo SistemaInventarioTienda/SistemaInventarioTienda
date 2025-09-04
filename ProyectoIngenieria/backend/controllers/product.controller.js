@@ -394,7 +394,7 @@ async function deleteFile(file) {
         if (!filePath.includes('PROD')) return;
         try {
             await fs.unlink(filePath); // Elimina el archivo
-            console.log('Archivo eliminado: ', filePath);
+ 
         } catch (error) {
             console.error('Error al eliminar el archivo:', error);
         }

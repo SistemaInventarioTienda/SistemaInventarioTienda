@@ -28,12 +28,12 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
     setModalMode("edit");
     setModalOpen(true);
     setModalData(updateRowData); 
-    console.log("Datos iniciales para el form: ", modalData);
+ 
   };
 
   const onSubmit = async (data) => {
     try {
-      console.log("Data recibida en onSubmit: ", data);
+ 
       if (!data || typeof data !== "object") {
         throw new Error("Los datos recibidos en onSubmit son inválidos.");
       }
@@ -42,10 +42,10 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
         throw new Error("Faltan campos obligatorios (MON_ABONADO o ID_CREDITO).");
       }
       const backendData = await transformData.toBackend(data);
-      console.log("backendData", backendData);
+ 
 
       const idAbono = backendData.ID_ABONO;
-      console.log("ID_ABONO: ", idAbono);
+ 
       await handleApiCall(
         () => api.update(idAbono, backendData),
         "Abono actualizado exitosamente."

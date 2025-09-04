@@ -48,7 +48,7 @@ export const searchSale = async (page, pageSize, termSearch, orderByField, order
         });
         const sales = Array.isArray(response.data.sales) ? response.data.sales : [];
         const transformedSales = sales.map(transformSale);
-        console.log("transformadas", transformSale);
+ 
         return {
             ...response.data,
             sales: transformedSales

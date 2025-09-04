@@ -41,7 +41,7 @@ export const getAllSuppliersWithoutPagination = async () => {
 //funcion para eliminar un proveedor
 export const deleteSupplier = async (IDENTIFICADOR_PROVEEDOR) => {
     try {
-        console.log('Deleting supplier', IDENTIFICADOR_PROVEEDOR);
+ 
         const response = await axios.put('supplier/deleteSupplier', { IDENTIFICADOR_PROVEEDOR });
         return response.data;
     } catch (error) {
@@ -53,7 +53,7 @@ export const deleteSupplier = async (IDENTIFICADOR_PROVEEDOR) => {
 //funcion para actualizar un proveedor
 
 export const updateSupplier = async (supplierData) => {
-    console.log("recibido", supplierData);
+ 
     try {
         const response = await axios.put('/supplier/updateSupplier', supplierData);
         return response.data;

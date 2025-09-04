@@ -67,16 +67,16 @@ function SettingsPage() {
         ...data,
         id: empresaID
       };
-      console.log("onSubmit en SettingPage",updateData);
+ 
       const backendData = await settingConfig.transformData.toBackend(updateData);
-      console.log("Datos transformados para el backend:", backendData);
+ 
       
       // const formDataObj = {};
 
       // for (const [key, value] of Object.entries(backendData)) {
       //   formDataObj[key] = value;
       // }
-      console.log("Datos enviados al BACKEND:", backendData);
+ 
 
         //const settingId = parseInt(backendData.get("ID_EMPRESA"), 10);
         await handleApiCallSetting(
@@ -92,7 +92,7 @@ function SettingsPage() {
 
   
 
-  console.log("Datos Inicializados: ", initialData);
+ 
   if (!initialData) {
     return <p>Cargando configuraciones...</p>
   }

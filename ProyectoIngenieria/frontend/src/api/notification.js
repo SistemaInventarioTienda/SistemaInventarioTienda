@@ -4,7 +4,7 @@ export const getAllNotifications = async() => {
     try {
         const response = await axios.get('/notification/getNotification');
         // const response = await axios.get('https://deploybackend-production-e19f.up.railway.app/api/notification/getNotification');
-        console.log("Notificaciones", response.data);
+ 
         return response.data;
     } catch (error) {
         console.error('Error fetching notifications:', error.message);

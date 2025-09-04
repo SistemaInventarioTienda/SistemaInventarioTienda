@@ -74,7 +74,7 @@ export const getReports = async (page, pageSize, orderByField, order) => {
         const endIndex = startIndex + pageSize;
         const paginatedReports = plainReports.slice(startIndex, endIndex);
 
-        console.log("Reportes", paginatedReports);
+ 
 
         return {
             total,
