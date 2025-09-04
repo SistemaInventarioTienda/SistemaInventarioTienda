@@ -2,6 +2,8 @@
 import { getDateCR } from "../libs/date.js";
 import { createBarCode, isDateValid, isProductsValid } from "../logic/proforma/proforma.logic.js";
 import { Proforma, DetailsProforma } from "../models/proforma.model.js";
+import Config from "../models/config.model.js";
+import Product from "../models/product.model.js";
 
 export const createProForma = async (req, res) => {
   const { FEC_LIMITE, MON_TOTAL, details_list } = req.body;
@@ -50,11 +52,57 @@ export const createProForma = async (req, res) => {
 }
 
 export const getAllProForma = async (req, res) => {
+  try {
+    const { page = 1, pageSize = 5, orderByField = 'DSC_CODIGO_BARRAS', order = 'asc' } = req.query;
+    const limit = parseInt(pageSize);
+    const offset = (parseInt(page) - 1) * limit;
 
+    const field = (orderByField === 'MON_TOTAL' || orderByField === 'FEC_CREACION' || orderByField === 'FEC_LIMITE' || orderByField === 'DSC_CODIGO_BARRAS' || orderByField === 'ESTADO') ? orderByField : 'DSC_CODIGO_BARRAS';
+
+    const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+
+    const { count, rows } = await Proforma.findAndCountAll({
+      limit,
+      offset,
+      order: [[field, sortOrder]],
+      attributes: { exclude: ['ID_EMPRESA'] },
+      include: [
+        {
+          model: Config,
+          attributes: ['ID_EMPRESA', 'DSC_NOMBRE', 'NUM_TELEFONO', 'DSC_CORREO', 'DSC_DIRECCION']
+        },
+        {
+          model: DetailsProforma,
+          attributes: ['ID_PRODUCTO_PROFORMA', 'PRECIO_UNITARIO', 'CANTIDAD', 'IMPUESTO', 'DESCUENTO'],
+          include: [
+            {
+              model: Product,
+              attributes: ['ID_PRODUCT', 'DSC_NOMBRE', 'DSC_DESCRIPTION']
+            }
+          ]
+        }
+      ]
+    });
+
+    if (rows.length === 0) return res.status(204).json({ message: "No se encontraron facturas proformas." })
+
+    return res.json({
+      total: count,
+      totalOages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+      pageSize: limit,
+      proformas: rows
+    })
+
+
+
+
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 }
 
-export const getProForma = async (req, res) => {
-
+export const searchProForma = async (req, res) => {
 }
 
 export const deleteProForma = async (req, res) => {
@@ -62,7 +110,7 @@ export const deleteProForma = async (req, res) => {
     const id = req.params.id;
 
     const proformaFound = await Proforma.findOne({ where: { ID_PROFORMA: id } });
-    if(!proformaFound) return res.status(404).json({ message: "Factura proforma no encontrada." });
+    if (!proformaFound) return res.status(404).json({ message: "Factura proforma no encontrada." });
 
     proformaFound.ESTADO = 0;
     await proformaFound.save();
