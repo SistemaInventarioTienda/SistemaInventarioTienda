@@ -7,7 +7,7 @@ import Product from "../models/product.model.js";
 
 export const createProForma = async (req, res) => {
   const { FEC_LIMITE, MON_TOTAL, details_list } = req.body;
-
+  console.log("REQUEST BODY:", req.body);
   try {
     const currentDate = await getDateCR();
 

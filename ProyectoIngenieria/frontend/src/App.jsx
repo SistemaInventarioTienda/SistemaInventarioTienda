@@ -28,6 +28,8 @@ import {
   ReportsPage,
   CashClosingPage,
   NotificationPage,
+  ProformaPage,
+  AddProformaPage,
 } from "./pages";
 import { NotificationProvider } from "./context/NotificationContext";
 
@@ -115,11 +117,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
 
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
-            {/* ruta al componente de configuraciones */}
-
             <Route path="notifications" element={<NotificationPage />} />
-
-            {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage />} />
             <Route path="product" element={<ProductPage />} />
             <Route path="sales/credit" element={<CreditSalePage />}></Route>
@@ -131,6 +129,9 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="transaction" element={<TransactionPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="cashClosing" element={<CashClosingPage />} />
+
+            <Route path="proformas/history" element={<ProformaPage/>} />
+            <Route path="proformas/new" element={<AddProformaPage/>} />
           </Routes>
         </main>
       </div>

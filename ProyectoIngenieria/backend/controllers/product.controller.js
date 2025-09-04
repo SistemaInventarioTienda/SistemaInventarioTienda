@@ -62,7 +62,7 @@ export const getProductById = async (req, res) => {
     try {
         const product = await Product.findOne({
             where: { ID_PRODUCT: req.params.id },
-            attributes: ['ID_PRODUCT', 'DSC_NOMBRE']
+            attributes: ['ID_PRODUCT', 'DSC_NOMBRE', 'CANTIDAD'], 
         });
 
         if (!product) {
