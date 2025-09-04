@@ -3,7 +3,7 @@ import db from '../db.js';
 import Product from '../models/product.model.js';
 import Config from './config.model.js';
 
-const proforma = db.define('proforma',{
+const Proforma = db.define('proforma',{
     ID_PROFORMA: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -15,7 +15,7 @@ const proforma = db.define('proforma',{
         allowNull: true
       },
       ID_EMPRESA: {
-        type: DataTypes.DATE,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: Config,
@@ -40,8 +40,8 @@ const proforma = db.define('proforma',{
 });
 
 
-const detailsProforma = db.define('detailsproforma',{
-    ID_PRODUCTO_PROFORMA: {
+const DetailsProforma = db.define('detailsproforma',{
+      ID_PRODUCTO_PROFORMA: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
@@ -51,7 +51,7 @@ const detailsProforma = db.define('detailsproforma',{
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: proforma,
+          model: Proforma,
           key: 'ID_PROFORMA'
         }
       },
@@ -86,17 +86,17 @@ const detailsProforma = db.define('detailsproforma',{
 });
 
 // Empresa ↔ Proforma
-proforma.belongsTo(Config, { foreignKey: 'ID_EMPRESA', targetKey: 'ID_EMPRESA' });
-Config.hasMany(proforma, { foreignKey: 'ID_EMPRESA', sourceKey: 'ID_EMPRESA' });
+Proforma.belongsTo(Config, { foreignKey: 'ID_EMPRESA', targetKey: 'ID_EMPRESA' });
+Config.hasMany(Proforma, { foreignKey: 'ID_EMPRESA', sourceKey: 'ID_EMPRESA' });
 
 // Proforma ↔ Detalles de proforma
-detailsProforma.belongsTo(proforma, { foreignKey: 'ID_PROFORMA', targetKey: 'ID_PROFORMA' });
-proforma.hasMany(detailsProforma, { foreignKey: 'ID_PROFORMA', sourceKey: 'ID_PROFORMA' });
+DetailsProforma.belongsTo(Proforma, { foreignKey: 'ID_PROFORMA', targetKey: 'ID_PROFORMA' });
+Proforma.hasMany(DetailsProforma, { foreignKey: 'ID_PROFORMA', sourceKey: 'ID_PROFORMA' });
 
 // Producto ↔ Detalles de proforma
-detailsProforma.belongsTo(Product, { foreignKey: 'ID_PRODUCTO', targetKey: 'ID_PRODUCT' });
-Product.hasMany(detailsProforma, { foreignKey: 'ID_PRODUCTO', sourceKey: 'ID_PRODUCT' });
+DetailsProforma.belongsTo(Product, { foreignKey: 'ID_PRODUCTO', targetKey: 'ID_PRODUCT' });
+Product.hasMany(DetailsProforma, { foreignKey: 'ID_PRODUCTO', sourceKey: 'ID_PRODUCT' });
 
 
 
-export default {proforma, detailsProforma};
+export {Proforma, DetailsProforma};
