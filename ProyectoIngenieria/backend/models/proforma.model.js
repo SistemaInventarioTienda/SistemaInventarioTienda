@@ -33,6 +33,11 @@ const Proforma = db.define('proforma',{
       FEC_LIMITE: {
         type: DataTypes.DATE,
         allowNull: false,
+      },
+      ESTADO: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 1
       }
 },{
     timestamps: false,
