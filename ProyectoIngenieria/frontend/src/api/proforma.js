@@ -45,7 +45,7 @@ export const searchProforma = async (
     order
 ) => {
     try {
-        const response = await axios.get(`/proforma/searchproforma`, {
+        const response = await axios.get(`/proforma/getproforma`, {
             params: { page, pageSize, termSearch, orderByField, order },
         });
         return response.data;
