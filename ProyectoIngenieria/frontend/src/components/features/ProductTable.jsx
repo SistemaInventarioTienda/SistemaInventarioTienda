@@ -118,8 +118,9 @@ const ProductTable = ({
                         <th>Producto</th>
                         <th>Precio</th>
                         <th>Cantidad</th>
-                        {enablePerItemAdjustments && <th>Descuento (%)</th>}
-                        {enablePerItemAdjustments && <th>Impuesto (%)</th>}
+                        {/* Mostrar siempre descuento e impuesto en modo vista */}
+                        {(enablePerItemAdjustments || isViewMode) && <th>Descuento (%)</th>}
+                        {(enablePerItemAdjustments || isViewMode) && <th>Impuesto (%)</th>}
                         <th>Subtotal</th>
                         {!isViewMode && <th>Acciones</th>}
                     </tr>
@@ -132,7 +133,6 @@ const ProductTable = ({
                             const discount = product.discount || 0;
                             const tax = product.tax || 0;
 
-                            // cálculo con descuento/impuesto individual
                             const base = price * quantity;
                             const discountAmount = (base * discount) / 100;
                             const afterDiscount = base - discountAmount;
@@ -162,50 +162,34 @@ const ProductTable = ({
                                         )}
                                     </td>
 
-                                    {enablePerItemAdjustments && (
-                                        <td>
-                                            {isViewMode ? (
-                                                `${discount}%`
-                                            ) : (
-                                                <Input
-                                                    type="number"
-                                                    min="0"
-                                                    max="100"
-                                                    value={discount}
-                                                    onChange={(e) =>
-                                                        handleFieldChange(
-                                                            product.id,
-                                                            "discount",
-                                                            Number(e.target.value)
-                                                        )
-                                                    }
-                                                    style={{ textAlign: "center" }}
-                                                />
-                                            )}
-                                        </td>
+                                    {(enablePerItemAdjustments || isViewMode) && (
+                                        <td>{isViewMode ? `${discount}%` : (
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                                value={discount}
+                                                onChange={(e) =>
+                                                    handleFieldChange(product.id, "discount", Number(e.target.value))
+                                                }
+                                                style={{ textAlign: "center" }}
+                                            />
+                                        )}</td>
                                     )}
 
-                                    {enablePerItemAdjustments && (
-                                        <td>
-                                            {isViewMode ? (
-                                                `${tax}%`
-                                            ) : (
-                                                <Input
-                                                    type="number"
-                                                    min="0"
-                                                    max="100"
-                                                    value={tax}
-                                                    onChange={(e) =>
-                                                        handleFieldChange(
-                                                            product.id,
-                                                            "tax",
-                                                            Number(e.target.value)
-                                                        )
-                                                    }
-                                                    style={{ textAlign: "center" }}
-                                                />
-                                            )}
-                                        </td>
+                                    {(enablePerItemAdjustments || isViewMode) && (
+                                        <td>{isViewMode ? `${tax}%` : (
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                                value={tax}
+                                                onChange={(e) =>
+                                                    handleFieldChange(product.id, "tax", Number(e.target.value))
+                                                }
+                                                style={{ textAlign: "center" }}
+                                            />
+                                        )}</td>
                                     )}
 
                                     <td>₡{subtotal.toLocaleString()}</td>
@@ -230,7 +214,13 @@ const ProductTable = ({
                     ) : (
                         <tr>
                             <td
-                                colSpan={isViewMode ? (enablePerItemAdjustments ? 6 : 4) : enablePerItemAdjustments ? 7 : 5}
+                                colSpan={
+                                    isViewMode
+                                        ? (enablePerItemAdjustments ? 6 : 6)
+                                        : enablePerItemAdjustments
+                                            ? 7
+                                            : 5
+                                }
                                 className="no-data-message"
                             >
                                 No hay productos {isViewMode ? "en esta lista" : "seleccionados"}

@@ -62,15 +62,15 @@ export const salesConfig = {
                 discount: product.PORCENT_DESCUENTO || 0,
             })) || [],
             MONT_TOTAL: (() => {
-                const subtotal = sale.MONT_SUBTOTAL || 0;
-                const descuento = sale.PORCENT_DESCUENTO || 0;
-                const impuesto = sale.PORCENT_IMPUESTO || 0;
+                if (!sale.DETALLES || !Array.isArray(sale.DETALLES)) return sale.MONT_SUBTOTAL || 0;
 
-                const descuentoAplicado = (subtotal * descuento) / 100;
-                const subtotalConDescuento = subtotal - descuentoAplicado;
-                const impuestoAplicado = (subtotalConDescuento * impuesto) / 100;
-
-                return subtotalConDescuento + impuestoAplicado;
+                return sale.DETALLES.reduce((total, item) => {
+                    const base = (item.MONT_UNITARIO || 0) * (item.CANTIDAD || 0);
+                    const desc = (base * (item.PORCENT_DESCUENTO || 0)) / 100;
+                    const afterDesc = base - desc;
+                    const imp = (afterDesc * (item.PORCENT_IMPUESTO || 0)) / 100;
+                    return total + afterDesc + imp;
+                }, 0);
             })(),
             CAN_CANCEL: sale.CAN_CANCEL,
         }),
