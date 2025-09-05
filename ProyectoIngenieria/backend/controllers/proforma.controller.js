@@ -5,6 +5,9 @@ import { Proforma, DetailsProforma } from "../models/proforma.model.js";
 import Config from "../models/config.model.js";
 import Product from "../models/product.model.js";
 
+import { QueryTypes } from 'sequelize';
+import db from '../db.js';
+
 export const createProForma = async (req, res) => {
   const { FEC_LIMITE, MON_TOTAL, details_list } = req.body;
   try {
@@ -106,6 +109,56 @@ export const getAllProForma = async (req, res) => {
 }
 
 export const searchProForma = async (req, res) => {
+  try {
+
+    const { page = 1, pageSize = 5, termSearch = '', orderByField = 'DSC_CODIGO_BARRAS', order = 'desc' } = req.query;
+    const limit = parseInt(pageSize);
+    const offset = (parseInt(page) - 1) * limit;
+
+    const field = (orderByField === 'MON_TOTAL' || orderByField === 'FEC_CREACION' || orderByField === 'FEC_LIMITE' || orderByField === 'DSC_CODIGO_BARRAS' || orderByField === 'ESTADO') ? orderByField : 'DSC_CODIGO_BARRAS';
+
+    const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+
+    const [results] = await db.query(
+      'CALL sp_searchProformas(:field, :sortOrder, :limit, :offset, :expectedMatch)',
+      {
+        replacements: {
+          field: field,
+          sortOrder: sortOrder,
+          limit: limit,
+          offset: offset,
+          expectedMatch: termSearch
+        },
+        type: QueryTypes.SELECT
+      });
+
+    const count = Object.keys(results).length;
+    if (count === 0) {
+      return res.status(204).json({
+        message: "No se encontraron proformas.",
+      });
+    }
+
+    const parsedResults = Object.values(results).map(r => {
+      return {
+        ...r,
+        PRODUCTS_LISTS: r.PRODUCTS_LISTS ? JSON.parse(r.PRODUCTS_LISTS) : []
+      };
+    });
+
+    res.json({
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+      pageSize: limit,
+      proformas: parsedResults
+    })
+
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
 }
 
 export const deleteProForma = async (req, res) => {

@@ -14,7 +14,7 @@ const router = Router();
 
 router.post("/createproforma" /*, auth */, validateSchema(createProformaSchema), createProForma);
 router.get("/getallproforma", /*auth,*/ getAllProForma);
-router.get("/getproforma/:id", /*auth,*/ searchProForma);
+router.get("/getproforma", /*auth,*/ searchProForma);
 router.delete("/deleteproforma/:id", /*auth,*/ deleteProForma);
 
 
