@@ -15,6 +15,8 @@ const ProformaDetailsCard = ({ proformaForm }) => {
             price: product.MON_VENTA,
             quantity: 1,
             subtotal: product.MON_VENTA,
+            tax: product.IMPUESTO || 0,
+            discount: product.DESCUENTO || 0,
         });
     };
 
@@ -38,7 +40,7 @@ const ProformaDetailsCard = ({ proformaForm }) => {
                                 toast.success(`¡Producto con el código ${code} agregado correctamente!`);
                             } else {
                                 toast.error(`¡Producto con el código ${code} no encontrado!`);
- 
+
                             }
                         })
                         .catch(console.error);

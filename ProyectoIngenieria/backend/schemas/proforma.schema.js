@@ -11,8 +11,8 @@ export const createProformaSchema = z.object({
         CANTIDAD: z
         .number().positive({message: "La cantidad no es valida."}),
         DESCUENTO: z
-        .number().positive({message: "El descuento no es valido."}),
+        .number().nonnegative({message: "El descuento no es valido."}),
         IMPUESTO: z
-        .number().positive({message: "El impuesto no es valido."}),
+        .number().nonnegative({message: "El impuesto no es valido."}),
     }))
 })

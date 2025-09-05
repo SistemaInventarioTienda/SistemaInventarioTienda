@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import handleApiCall from "../utils/handleApiCall";
 import { proformaConfig } from "../config/entities/proformaConfig";
 import { toast } from "sonner";
 
@@ -89,7 +88,10 @@ const useProformaForm = () => {
         setSelectedProducts((prevProducts) =>
             prevProducts.map((product) =>
                 product.id === productId
-                    ? { ...product, [field]: value }
+                    ? {
+                        ...product,
+                        [field]: value ?? 0
+                    }
                     : product
             )
         );
@@ -137,9 +139,9 @@ const useProformaForm = () => {
         try {
             const response = await proformaConfig.api.create(proformaData);
 
- 
+
             resetForm();
- 
+
 
             // FRONTEND (useProformaForm)
             if (response?.DSC_CODIGO_BARRAS) {

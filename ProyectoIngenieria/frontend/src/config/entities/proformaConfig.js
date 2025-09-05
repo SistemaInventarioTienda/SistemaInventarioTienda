@@ -60,8 +60,8 @@ export const proformaConfig = {
                     ID_PRODUCT: p.id,
                     PRECIO_UNITARIO: p.price,
                     CANTIDAD: p.quantity,
-                    IMPUESTO: p.tax ?? 0,
-                    DESCUENTO: p.discount ?? 0,
+                    DESCUENTO: p.discount > 0 ? p.discount : 0,
+                    IMPUESTO: p.tax > 0 ? p.tax : 0
                 })) || [],
         }),
     },
