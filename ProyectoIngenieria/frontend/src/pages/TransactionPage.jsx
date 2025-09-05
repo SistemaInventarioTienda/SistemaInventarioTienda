@@ -7,6 +7,7 @@ import { usePermissions } from "../context/authPermissions";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 export default function Transferencias() {
     const { permissions } = usePermissions();
@@ -81,6 +82,7 @@ export default function Transferencias() {
                 action={"Anular"}
                 confirmButtonText={"Anular"}
             />
+            <FloatingHelpButton />
         </>
     );
 }

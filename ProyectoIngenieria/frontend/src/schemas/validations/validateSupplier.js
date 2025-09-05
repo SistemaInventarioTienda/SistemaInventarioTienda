@@ -8,13 +8,13 @@ export const validateSupplier = (formData, phones, emails) => {
         errors.push('Seleccione un tipo de proveedor válido.');
     }
 
-    if (phones.length <= 0) {
-        errors.push("La lista de teléfonos es requerida y no puede estar vacía. Ingrese al menos un teléfono.");
-    }
+    // if (phones.length <= 0) {
+    //     errors.push("La lista de teléfonos es requerida y no puede estar vacía. Ingrese al menos un teléfono.");
+    // }
 
-    if (emails.length <= 0) {
-        errors.push("La lista de correos es requerida y no puede estar vacía. Ingrese al menos un correo.");
-    }
+    // if (emails.length <= 0) {
+    //     errors.push("La lista de correos es requerida y no puede estar vacía. Ingrese al menos un correo.");
+    // }
 
     return errors;
 }

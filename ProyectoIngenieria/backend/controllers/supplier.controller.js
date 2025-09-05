@@ -63,7 +63,7 @@ export const getAllSuppliers = async (req, res) => {
 
 
 export const createSupplier = async (req, res) => {
-    const { DSC_DIRECCIONEXACTA, DSC_VENTA, DSC_NOMBRE, CTA_BANCARIA, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
+    const { DSC_DIRECCIONEXACTA, DSC_VENTA, DSC_NOMBRE, CTA_BANCARIA='N/D', ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
 
     try {
         const date = await getDateCR();
@@ -81,19 +81,19 @@ export const createSupplier = async (req, res) => {
             });
         }
 
-        const validateIban = await validatIbanAccount(CTA_BANCARIA);
-        if (validateIban !== true) {
-            return res.status(400).json({
-                message: validateIban,
-            });
-        }
+        // const validateIban = await validatIbanAccount(CTA_BANCARIA);
+        // if (validateIban !== true) {
+        //     return res.status(400).json({
+        //         message: validateIban,
+        //     });
+        // }
 
-        const verifyIban = await validatIbanBD(CTA_BANCARIA);
-        if (verifyIban !== true) {
-            return res.status(400).json({
-                message: verifyIban,
-            });
-        }
+        // const verifyIban = await validatIbanBD(CTA_BANCARIA);
+        // if (verifyIban !== true) {
+        //     return res.status(400).json({
+        //         message: verifyIban,
+        //     });
+        // }
 
         const validatePhones = await validateEqualsPhonesSupplier(phones);
         if (validatePhones !== true) {
@@ -283,19 +283,19 @@ export const updatedSupplier = async (req, res) => {
             });
         }
 
-        const validateIban = await validatIbanAccount(CTA_BANCARIA);
-        if (validateIban !== true) {
-            return res.status(400).json({
-                message: validateIban,
-            });
-        }
+        // const validateIban = await validatIbanAccount(CTA_BANCARIA);
+        // if (validateIban !== true) {
+        //     return res.status(400).json({
+        //         message: validateIban,
+        //     });
+        // }
 
-        const verifyIban = await validatIbanBDUpdate(CTA_BANCARIA,IDENTIFICADOR_PROVEEDOR);
-        if (verifyIban !== true) {
-            return res.status(400).json({
-                message: verifyIban,
-            });
-        }
+        // const verifyIban = await validatIbanBDUpdate(CTA_BANCARIA,IDENTIFICADOR_PROVEEDOR);
+        // if (verifyIban !== true) {
+        //     return res.status(400).json({
+        //         message: verifyIban,
+        //     });
+        // }
 
         //const phoneNumbers = phones.map(phone => phone.DSC_TELEFONO);
         

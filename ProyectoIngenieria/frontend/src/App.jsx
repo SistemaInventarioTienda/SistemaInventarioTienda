@@ -31,6 +31,7 @@ import {
   ProformaPage,
   AddProformaPage,
   ProformaDetailPage,
+  HelpCenterPage,
 } from "./pages";
 import { NotificationProvider } from "./context/NotificationContext";
 
@@ -57,19 +58,19 @@ function App() {
     <AuthProvider>
       <AuthPermissionsProvider>
         <NotificationProvider>
-        <HashRouter>
-          <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-          <Toaster
-            position="bottom-right"
-            visibleToasts={5}
-            richColors
-            closeButton
-            theme={isDarkMode ? "dark" : "light"}
-            toastOptions={{
-              className: "custom-toaster",
-            }}
-          />
-        </HashRouter>
+          <HashRouter>
+            <AppContent isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+            <Toaster
+              position="bottom-right"
+              visibleToasts={5}
+              richColors
+              closeButton
+              theme={isDarkMode ? "dark" : "light"}
+              toastOptions={{
+                className: "custom-toaster",
+              }}
+            />
+          </HashRouter>
         </NotificationProvider>
       </AuthPermissionsProvider>
     </AuthProvider>
@@ -119,6 +120,7 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="suppliers" element={<SupplierPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="notifications" element={<NotificationPage />} />
+            {/* ruta al componente de configuraciones */}
             <Route path="settings" element={<SettingsPage />} />
             <Route path="product" element={<ProductPage />} />
             <Route path="sales/credit" element={<CreditSalePage />}></Route>
@@ -130,9 +132,9 @@ function Layout({ isDarkMode, toggleDarkMode }) {
             <Route path="transaction" element={<TransactionPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="cashClosing" element={<CashClosingPage />} />
-
-            <Route path="proformas/history" element={<ProformaPage/>} />
-            <Route path="proformas/new" element={<AddProformaPage/>} />
+            <Route path="help-center" element={<HelpCenterPage />} />
+            <Route path="proformas/history" element={<ProformaPage />} />
+            <Route path="proformas/new" element={<AddProformaPage />} />
             <Route path="/proformas/:barcode" element={<ProformaDetailPage />} />
           </Routes>
         </main>

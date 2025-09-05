@@ -133,9 +133,7 @@ export const validateSupplierData = (req) => {
         });
     }
 
-    if (!Array.isArray(emails) || emails.length === 0) {
-        errors.push('La lista de correos es requerida y no puede estar vacía.');
-    } else {
+    if (Array.isArray(emails) || emails.length !== 0) {
         emails.forEach((email, index) => {
             if (!email.DSC_CORREO || !isNotEmpty(email.DSC_CORREO)) {
                 errors.push(`El correo no puede estar vacío.`);
@@ -143,6 +141,8 @@ export const validateSupplierData = (req) => {
                 errors.push(`El correo no es válido.`);
             }
         });
+    }else{
+        emails.push('Sin correo');
     }
 
     return errors.length > 0 ? errors : true;

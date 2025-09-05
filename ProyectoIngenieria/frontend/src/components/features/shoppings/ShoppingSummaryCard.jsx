@@ -5,6 +5,7 @@ import { User } from "lucide-react";
 import { useEntityPage } from "../../../hooks/useEntityPage";
 import { getAllSuppliersWithoutPagination } from "../../../api/supplier";
 import { ModalConfirmation } from "../../modals";
+import { paymentMethods } from "../../../constants/paymentOptions";
 
 const ShoppingSummaryCard = ({ shoppingForm }) => {
     const navigate = useNavigate();
@@ -82,11 +83,7 @@ const ShoppingSummaryCard = ({ shoppingForm }) => {
                     Método de pago
                 </label>
                 <Select
-                    options={[
-                        { value: "", label: "Seleccione método de pago" },
-                        { value: "Transferencia", label: "Transferencia" },
-                        { value: "Efectivo", label: "Efectivo" },
-                    ]}
+                    options={paymentMethods}
                     value={shoppingForm.selectedPaymentMethod}
                     onChange={(e) => shoppingForm.setSelectedPaymentMethod(e.target.value)}
                     name="paymentMethod"

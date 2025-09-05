@@ -6,6 +6,7 @@ import { usePermissions } from "../context/authPermissions";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 //import CreditPage from "./CreditPage";
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 export default function CreditSalePage() {
   const { permissions } = usePermissions();
@@ -15,7 +16,7 @@ export default function CreditSalePage() {
     if (permissions.home === undefined) return;
 
     if (!permissions.sales) {
-      toast.error("No tienes permiso para acceder a usuarios");
+      toast.error("No tienes permiso para acceder a credito de ventas");
       navigate("/");
     }
   }, [permissions, navigate]);
@@ -33,38 +34,40 @@ export default function CreditSalePage() {
     actions
   } = creditConfig; // Falta crear el archivo creditConfig desde esta ruta: ../config/entities
 
-  
+
 
   const enhancedActions = {
     ...actions,
-    manageCreditsHandler : (creditData) => {
-      navigate(`/credits`,{
-        state: { creditInfo: creditData,
-           fields: creditConfig.fields,
-           entityName: creditConfig.entityName,
-           
-         }
+    manageCreditsHandler: (creditData) => {
+      navigate(`/credits`, {
+        state: {
+          creditInfo: creditData,
+          fields: creditConfig.fields,
+          entityName: creditConfig.entityName,
+
+        }
       });
     }
   };
 
-  
+
   return (
     <>
       {/* <CreditPage /> */}
       <EntityPage
-      entityName={entityName}
-      titlePage = {titlePage}
-      entityMessage= {entityMessage}
-      columns= {columns}
-      // fields={fields}
-      entityKey={entityKey}
-      fetchAll={api.fetchAll}
-      transformData={transformData.toFrontend}
-      transformConfig={transformConfig}
-      actions={enhancedActions}
-      searchByName= {api.searchByName}
+        entityName={entityName}
+        titlePage={titlePage}
+        entityMessage={entityMessage}
+        columns={columns}
+        // fields={fields}
+        entityKey={entityKey}
+        fetchAll={api.fetchAll}
+        transformData={transformData.toFrontend}
+        transformConfig={transformConfig}
+        actions={enhancedActions}
+        searchByName={api.searchByName}
       />
+      <FloatingHelpButton />
     </>
   );
 }

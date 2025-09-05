@@ -8,12 +8,12 @@ import { ClientInfoCard, CreditDetailsCard, PaymentHistoryTable } from "../compo
 import PaymentForm from "../pages/pagesForms/PaymentForm";
 
 import { creditConfig } from "../config/entities/creditConfig";
-
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 import "./styles/CreditsPage.css"
 
 
 const CreditPage = () => {
-    const location = useLocation();
+  const location = useLocation();
     const { /*creditInfo,*/ fields, entityName } = location.state || {}; // Obtenemos el estado pasado
 
     //constantes para manejar los estados del modal.
@@ -50,11 +50,20 @@ const CreditPage = () => {
     };
 
      //Logica para manejar el envio de datos al y desde el formulario.
-    const formatDate = (isoDate) => {
-        if (!isoDate) return ""; // Manejo de valores nulos o vacíos
-        const date = new Date(isoDate);
-        return date.toLocaleDateString("es-ES", { day: "numeric", month: "numeric", year: "numeric" });
-      };
+     const formatDate = (isoDate) => {
+      if (!isoDate) return ""; 
+    
+      const date = new Date(isoDate);
+      if (isNaN(date.getTime())) {
+        return ""; // Fecha inválida
+      }
+    
+      return date.toLocaleDateString("es-ES", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric"
+      });
+    };
 
 
       const onSubmit = async (data) => {
@@ -79,10 +88,8 @@ const CreditPage = () => {
             () => creditConfig.api.create(idCredit, backendData),
             "Abono registrado exitosamente."
           );
-    
           // Refrescar los datos del crédito
           await fetchCreditData();
-    
           // Cerrar el modal
           setModalOpen(false);
     
@@ -95,11 +102,10 @@ const CreditPage = () => {
 
     const subTotal = creditInfo?.sale?.MONT_SUBTOTAL;
     const credit = {
-        id: creditInfo.ID_CREDITO,
-        issueDate: "2023-07-10",
-        dueDate: creditInfo.FEC_VENCIMIENTO,
-        amount: subTotal,
-        pendingAmount: creditInfo.MON_PENDIENTE,
+        issueDate:formatDate(creditInfo?.sale?.FEC_VENTA),
+        dueDate: formatDate(creditInfo.FEC_VENCIMIENTO)||creditInfo.FEC_VENCIMIENTO,
+        amount: subTotal??0,
+        pendingAmount: creditInfo.MON_PENDIENTE??0,
         status: creditInfo.ESTADO_CREDITO,
         //description: "Crédito para compra de mercadería",
     }
@@ -112,14 +118,15 @@ const CreditPage = () => {
     let firsName = creditInfo.DSC_NOMBRE || "";
     let lastName1 = creditInfo?.sale?.Client.DSC_APELLIDOUNO || "";
     let lastName2 = creditInfo?.sale?.Client.DSC_APELLIDODOS || "";
+    const idClient= creditInfo.sale?.Client.DSC_CEDULA ||"N/D";
     const fullName = `${firsName} ${lastName1} ${lastName2}`.trim();
 
     let phoneNumber = creditInfo.sale?.Client.TelefonoClientes[0].DSC_TELEFONO;
 
     const client = {
         name: fullName,
-        id: "119160537",//Falta este campo
-        phone:phoneNumber,//Falta este campo
+        id: idClient,
+        phone:phoneNumber,
         paid: paid,
         pending: creditInfo.MON_PENDIENTE,
     }
@@ -133,49 +140,52 @@ const CreditPage = () => {
         type: "PARCIAL"                      // Tipo fijo ("PARCIAL")
     })) || [];
 
-    return (
-        <PageLayout>
-            <div className="credits-grid">
-                <div>
-                    <CreditDetailsCard 
-                    credit={credit} 
-                    onRegisterPayment={handleAdd} 
-                    />
-                    
-                </div>
-                <div>
-                    <ClientInfoCard 
-                    client={client} 
-                    credit={credit} />
-                </div>
-                <div style={{ gridColumn: '1 / -1' }}>
-                    <PaymentHistoryTable 
-                    payments={payments}
-                    creditConfig={creditConfig}
-                    fetchCreditData={fetchCreditData}
-                    pendingAmount= {creditInfo.MON_PENDIENTE}
-                     />
-                </div>
-                
-            </div>
-            
-            <ModalComponent
-            isOpen={isModalOpen}
-            title={`Agregar Abono`} 
-            onClose={() => setModalOpen(false)}
-            entityName={entityName}
-            mode={modalMode}
-            >
-                <PaymentForm
-                fields={fields}
-                initialData={creditInfo}
-                onSubmit={onSubmit}
-                onCancel={() => setModalOpen(false)}
+  return (
+    <>
+      <PageLayout>
+        <div className="credits-grid">
+          <div>
+            <CreditDetailsCard
+              credit={credit}
+              onRegisterPayment={handleAdd}
             />
-            </ModalComponent>
-            
-        </PageLayout>
-    )
+
+          </div>
+          <div>
+            <ClientInfoCard
+              client={client}
+              credit={credit} />
+          </div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <PaymentHistoryTable
+              payments={payments}
+              creditConfig={creditConfig}
+              fetchCreditData={fetchCreditData}
+              pendingAmount={creditInfo.MON_PENDIENTE}
+            />
+          </div>
+
+        </div>
+
+        <ModalComponent
+          isOpen={isModalOpen}
+          title={`Agregar Abono`}
+          onClose={() => setModalOpen(false)}
+          entityName={entityName}
+          mode={modalMode}
+        >
+          <PaymentForm
+            fields={fields}
+            initialData={creditInfo}
+            onSubmit={onSubmit}
+            onCancel={() => setModalOpen(false)}
+          />
+        </ModalComponent>
+
+      </PageLayout>
+      <FloatingHelpButton />
+    </>
+  )
 }
 
 export default CreditPage

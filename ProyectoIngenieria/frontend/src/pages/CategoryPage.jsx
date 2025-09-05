@@ -9,6 +9,7 @@ import { ModalComponent, ModalConfirmation } from "../components/modals";
 import { usePermissions } from "../context/authPermissions";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import FloatingHelpButton from "../components/common/FloatingHelpButton";
 
 export default function CategoryPage() {
     const entityPageRef = useRef(); // Crear una referencia a EntityPage
@@ -20,7 +21,7 @@ export default function CategoryPage() {
         if (permissions.home === undefined) return;
 
         if (!permissions.categories) {
-            toast.error("No tienes permiso para acceder a usuarios");
+            toast.error("No tienes permiso para acceder a categorias");
             navigate("/");
         }
     }, [permissions, navigate]);
@@ -191,6 +192,7 @@ export default function CategoryPage() {
                 confirmButtonText="Eliminar"
                 cancelButtonText="Cancelar"
             />
+            <FloatingHelpButton />
         </>
     );
 }

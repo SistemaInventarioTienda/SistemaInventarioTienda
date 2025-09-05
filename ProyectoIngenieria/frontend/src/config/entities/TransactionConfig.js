@@ -6,7 +6,7 @@ import {
     search_Transaction
 } from "../../api/Transaction";
 
-
+import { paymentMethods } from "../../constants/paymentOptions";
 
 
 export const TransactionConfig = {
@@ -20,40 +20,42 @@ export const TransactionConfig = {
 
     // Configuración de columnas para la tabla
     columns: [
-        { field: "FEC_TRANSACCION", label: "Fecha de Transaccion" },
-        { field: "METODO_PAGO", label: "Metodo de pago" },
+        { field: "FEC_TRANSACCION", label: "Fecha de Transacción" },
+        { field: "METODO_PAGO", label: "Método de entrada" },
         { field: "MONTO_PAGO", label: "Monto" },
-        { field: "DSC_TRANSACCION", label: "Descripcion" },
-        { field: "TIPO_TRANSACCION", label: "Metodo de pago saliente" },
+        { field: "DSC_TRANSACCION", label: "Descripción" },
+        { field: "TIPO_TRANSACCION", label: "Método de salida" },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" },
-    ],
+    ],    
 
     // Configuración de campos del formulario
     fields: [
         {
             name: "METODO_PAGO",
-            label: "Metodo de pago",
+            label: "Método de entrada",
             type: "select",
             required: true,
-            options: [
-                { value: "", label: "Ninguno" },
-                { value: "Efectivo", label: "Efectivo" },
-                { value: "Tarjeta", label: "Tarjeta" },
-                { value: "Sinpe", label: "Sinpe" },
-            ],
+            options: paymentMethods,
         },
-        { name: "MONTO_PAGO", label: "Monto", type: "text", required: true },
-        { name: "DSC_TRANSACCION", label: "Descripcion", type: "textarea", required: true },
+        {
+            name: "MONTO_PAGO",
+            label: "Monto",
+            type: "text",
+            required: true
+        },
+        {
+            name: "DSC_TRANSACCION",
+            label: "Descripción",
+            type: "textarea",
+            required: true
+        },
         {
             name: "TIPO_TRANSACCION",
-            label: "Metodo de pago saliente",
+            label: "Método de salida",
             type: "select",
             required: true,
-            options: [
-                { value: "", label: "Ninguno" },
-                { value: "Sinpe", label: "Sinpe" },
-            ],
+            options: paymentMethods,
         },
         {
             name: "estado",
@@ -65,7 +67,7 @@ export const TransactionConfig = {
                 { value: 0, label: "Inactivo" },
             ],
         },
-    ],
+    ],    
 
     // Funciones API específicas de la entidad
     api: {

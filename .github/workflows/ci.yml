@@ -1,0 +1,100 @@
+name: CI - Pruebas Unitarias Puras
+
+on:
+  push:
+    branches: [ "DEV-QA" ]
+  pull_request:
+    branches: [ "DEV-QA" ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clonar repositorio con historial completo
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_PAT }}
+        fetch-depth: 0  # Clona todo el historial y referencias
+
+    - name: Mover a la carpeta backend
+      working-directory: ./ProyectoIngenieria/backend
+      run: echo "En backend"
+
+    - name: Instalar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Instalar dependencias
+      working-directory: ./ProyectoIngenieria/backend
+      run: npm install
+
+    - name: Ejecutar pruebas unitarias puras
+      working-directory: ./ProyectoIngenieria/backend
+      run: npm run test:unit
+
+    - name: Enviar correo si CI fue exitoso
+      if: success()
+      uses: dawidd6/action-send-mail@v5
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.MAIL_FROM }}
+        password: ${{ secrets.MAIL_PASSWORD }}
+        to: aaron.matarrita.portuguez@est.una.ac.cr, josue.porras.rojas@est.una.ac.cr, yeiler.montes.rojas@est.una.ac.cr, anthony.briones.vargas@est.una.ac.cr
+        from: SistemaInventario CI <${{ secrets.MAIL_FROM }}>
+        subject: ✅ [${{ github.repository }}] CI - Pruebas Unitarias Puras exitoso
+        body: |
+          Hola,
+
+          El workflow CI - Pruebas Unitarias Puras en ${{ github.repository }} finalizó exitosamente.
+
+          Rama: ${{ github.ref }}
+          Commit SHA: ${{ github.sha }}
+          Ejecutado por: ${{ github.actor }}
+
+          Ver ejecución:
+          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    - name: Enviar correo si CI falló
+      if: failure()
+      uses: dawidd6/action-send-mail@v5
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.MAIL_FROM }}
+        password: ${{ secrets.MAIL_PASSWORD }}
+        to: aaron.matarrita.portuguez@est.una.ac.cr, josue.porras.rojas@est.una.ac.cr, yeiler.montes.rojas@est.una.ac.cr, anthony.briones.vargas@est.una.ac.cr
+        from: SistemaInventario CI <${{ secrets.MAIL_FROM }}>
+        subject: ❌ [${{ github.repository }}] CI - Pruebas Unitarias Puras fallido
+        body: |
+          Hola,
+
+          El workflow CI - Pruebas Unitarias Puras ha fallado.
+
+          Rama: ${{ github.ref }}
+          Commit SHA: ${{ github.sha }}
+          Ejecutado por: ${{ github.actor }}
+
+          Ver ejecución:
+          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    - name: Merge directo DEV-QA → main
+      if: success() && github.event_name == 'push' && github.ref == 'refs/heads/DEV-QA'
+      run: |
+        echo "Configurando git..."
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+        echo "Haciendo checkout de main..."
+        git checkout main
+
+        echo "Actualizando main desde remoto..."
+        git pull origin main
+
+        echo "Haciendo merge desde DEV-QA..."
+        git merge DEV-QA --no-ff -m "Auto merge desde DEV-QA tras pruebas exitosas"
+
+        echo "Pusheando cambios a main..."
+        git push origin main

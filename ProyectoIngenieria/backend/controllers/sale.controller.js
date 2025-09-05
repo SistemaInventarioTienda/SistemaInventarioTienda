@@ -1,6 +1,6 @@
 import { sale, details, credit, db } from "../models/sale.model.js";
 import { getDateCR } from "../libs/date.js";
-import { getDiscount, getTaxes, validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
+import { validatedetailsProduct, validateStockProduct } from "../logic/sale/sale.logic.js";
 import Product from "../models/product.model.js";
 import Client from "../models/client.model.js";
 import Config from "../models/config.model.js";
@@ -407,7 +407,7 @@ export const deleteSale = async (req, res) => {
         const messages = [];
         if (creditFound) {
             if (creditFound.MON_PENDIENTE <= 0) {
-                return res.status(400).json({ message: "No se puede anular un credito que ya fue cancelado," });
+                return res.status(400).json({ message: "No se puede anular un credito que ya fue cancelado." });
             }
 
             creditFound.ESTADO_CREDITO = 2;

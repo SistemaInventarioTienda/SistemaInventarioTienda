@@ -39,7 +39,7 @@ export const deleteShopping = async (id) => {
 // Función para buscar un Shoppinge
 export const searchShopping = async (page, pageSize, termSearch, orderByField, order) => {
     try {
-        const response = await axios.get('/Shopping/search_shopping', {
+        const response = await axios.get('/shopping/search_shopping', {
             params: { page, pageSize, termSearch, orderByField, order }
         });
         return response.data;

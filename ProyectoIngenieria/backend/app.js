@@ -57,15 +57,15 @@ app.use('/api/cashClosing', cashClosing);
 app.use('/api/notification', notificationRoutes);
 app.use('/api/proforma', proformaRoutes);
 
-if (process.env.NODE_ENV === "production") {
-  const path = await import("path");
-  app.use(express.static("client/dist"));
+// if (process.env.NODE_ENV === "production") {
+//   const path = await import("path");
+//   app.use(express.static("client/dist"));
 
-  app.get("*", (req, res) => {
- 
-    res.sendFile(path.resolve("client", "build", "index.html"));
-  });
-}
+//   app.get("*", (req, res) => {
+//     console.log(path.resolve("client", "build", "index.html") );
+//     res.sendFile(path.resolve("client", "build", "index.html"));
+//   });
+// }
 
 const server = http.createServer(app);
 

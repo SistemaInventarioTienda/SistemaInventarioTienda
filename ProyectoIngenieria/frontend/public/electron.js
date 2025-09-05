@@ -16,6 +16,7 @@ async function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
     },
+    icon: path.join(__dirname, 'assets/icono.ico')
   });
 
   const isDev = (await import("electron-is-dev")).default;

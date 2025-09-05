@@ -19,10 +19,9 @@ export const addPayment = async (req, res) => {
         },
       ],
     });
- 
 
     if (!creditId) {
-      return res.status(204).json({
+      return res.status(404).json({
         message: "Credito no disponible para abonar.",
       });
     }
@@ -60,7 +59,7 @@ export const addPayment = async (req, res) => {
       }
       creditId.FEC_ULTIMOPAGO = date;
       await creditId.save();
-      res.status(201).json({ message: "Abono registrado Correctamente" });
+      res.status(200).json({ message: "Abono registrado Correctamente" });
     }
   } catch (error) {
     res
@@ -103,7 +102,7 @@ export const modifyPayment = async (req, res) => {
       },
     });
     if (!creditId) {
-      return res.status(204).json({
+      return res.status(404).json({
         message: "Credito no disponible para abonar.",
       });
     }
@@ -163,6 +162,7 @@ export const getCreditById = async (req, res) => {
             "PORCENT_IMPUESTO",
             "MONT_SUBTOTAL",
             "PORCENT_DESCUENTO",
+            "FEC_VENTA"
           ],
           include: [
             {
@@ -172,6 +172,7 @@ export const getCreditById = async (req, res) => {
                 "DSC_NOMBRE",
                 "DSC_APELLIDOUNO",
                 "DSC_APELLIDODOS",
+                "DSC_CEDULA",
               ],
               include: [
                 {
@@ -194,8 +195,21 @@ export const getCreditById = async (req, res) => {
       return res.status(204).json({ message: "Crédito no encontrado" });
     }
 
+   
+      const creditStatus = await getStatusCredi(response.MON_PENDIENTE, new Date(response.FEC_VENCIMIENTO));
+     
+      const statusMap = {
+        0: "ACTIVO",
+        1: "MOROSO",
+        2: "CANCELADO"
+      };
+      
+      const status = statusMap[creditStatus] || "DESCONOCIDO";
+     
+      response.setDataValue('ESTADO_CREDITO', status);
+   
     // Devolver el crédito con sus relaciones
-    res.status(200).json(response);
+    res.status(200).json({response});
   } catch (error) {
     console.error("Error al obtener el crédito:", error.message);
     res
@@ -222,11 +236,11 @@ export const getAllPaymentByCredit = async (req, res) => {
             include: [
                 {
                     model: sale,
-                    attributes: ['ID_VENTA', 'DSC_VENTA', 'PORCENT_IMPUESTO', 'MONT_SUBTOTAL', 'PORCENT_DESCUENTO'],
+                    attributes: ['ID_VENTA', 'DSC_VENTA', 'PORCENT_IMPUESTO', 'MONT_SUBTOTAL', 'PORCENT_DESCUENTO','FEC_VENTA'],
                     include: [
                         {
                             model: Client,
-                            attributes: ['ID_CLIENTE', 'DSC_NOMBRE', 'DSC_APELLIDOUNO', 'DSC_APELLIDODOS'],
+                            attributes: ['ID_CLIENTE', 'DSC_NOMBRE', 'DSC_APELLIDOUNO', 'DSC_APELLIDODOS',"DSC_CEDULA"],
                             include: [
                                 {
                                     model: phoneClient,

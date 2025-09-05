@@ -79,7 +79,7 @@ const Supplier = db.define('Supplier', {
   },
   CTA_BANCARIA: {
     type: DataTypes.STRING(500),
-    allowNull: false,
+    allowNull: true,
   },
   DSC_DIRECCIONEXACTA: {
     type: DataTypes.STRING(255),
