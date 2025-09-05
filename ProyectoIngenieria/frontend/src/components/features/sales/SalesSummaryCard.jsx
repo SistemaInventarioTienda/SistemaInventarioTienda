@@ -77,7 +77,7 @@ const SalesSummaryCard = ({ saleForm }) => {
                 <Input
                     type="text"
                     value={saleForm.email}
-                    placeholder = "Correo para enviar la factura."
+                    placeholder="Correo para enviar la factura."
                     onChange={(e) => saleForm.setEmail(e.target.value)}
                 />
 
@@ -100,41 +100,25 @@ const SalesSummaryCard = ({ saleForm }) => {
                     placeholder="Agregar una nota o comentario"
                 />
 
-                <label className="sales-card-label">Impuesto de la venta</label>
-
-                <Input
-                    type="number"
-                    value={saleForm.taxRate}
-                    onChange={(e) => saleForm.setTaxRate(Number(e.target.value))}
-                />
-
-                <label className="sales-card-label">Descuento a aplicar (Opcional)</label>
-
-                <Input
-                    type="number"
-                    value={saleForm.discount}
-                    onChange={(e) => saleForm.setDiscount(Number(e.target.value))}
-                />
-
                 <div className="sales-summary">
                     <div className="sales-summary-row">
                         <span>Subtotal:</span>
                         <span>₡{subtotal}</span>
                     </div>
                     <div className="sales-summary-row">
-                        <span>Descuento:</span>
+                        <span>Total de descuentos aplicados:</span>
                         <span className="discount">-₡{discountAmount}</span>
                     </div>
                     <div className="sales-summary-row">
-                        <span>Subtotal con descuento:</span>
+                        <span>Subtotal después de descuentos:</span>
                         <span>₡{subtotalAfterDiscount}</span>
                     </div>
                     <div className="sales-summary-row">
-                        <span>Impuesto {saleForm.taxRate}%:</span>
+                        <span>Total de impuestos agregados:</span>
                         <span>₡{taxAmount}</span>
                     </div>
                     <div className="sales-summary-total">
-                        <span>Total:</span>
+                        <span>Total a pagar:</span>
                         <span>₡{total}</span>
                     </div>
                 </div>

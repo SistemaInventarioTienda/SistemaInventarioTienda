@@ -27,14 +27,14 @@ export const validateSale = (saleData) => {
         errors.push("Debe seleccionar un método de pago");
     }
 
-    // Validar porcentajes
-    if (saleData.taxRate < 0 || saleData.taxRate > 100) {
-        errors.push("El impuesto debe estar entre 0% y 100%");
-    }
-
-    if (saleData.discount < 0 || saleData.discount > 100) {
-        errors.push("El descuento debe estar entre 0% y 100%");
-    }
+    saleData.selectedProducts.forEach((p, index) => {
+        if (p.tax < 0 || p.tax > 100) {
+            errors.push(`El impuesto del producto ${p.name || index + 1} debe estar entre 0% y 100%`);
+        }
+        if (p.discount < 0 || p.discount > 100) {
+            errors.push(`El descuento del producto ${p.name || index + 1} debe estar entre 0% y 100%`);
+        }
+    });
 
     return errors;
 };

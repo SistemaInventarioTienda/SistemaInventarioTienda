@@ -3,6 +3,7 @@ import { Button, Input } from "../common";
 import { Plus, Minus, Trash } from "lucide-react";
 import "./styles/productTable.css";
 import { getProductById } from "../../api/product";
+import { toast } from "sonner";
 
 const ActionButton = ({ onClick, color, children }) => (
     <Button
@@ -51,7 +52,7 @@ const ProductTable = ({
     removeProduct,
     updateProductField, // nueva función para actualizar descuento/impuesto
     isViewMode = false,
-    isProforma = false, // FLAG para habilitar descuentos/impuestos por producto
+    enablePerItemAdjustments = false, // FLAG para habilitar descuentos/impuestos por producto
 }) => {
     const [productNames, setProductNames] = useState({});
 
@@ -97,6 +98,13 @@ const ProductTable = ({
     };
 
     const handleFieldChange = (id, field, value) => {
+        if (value < 0 || value > 100) {
+            toast.error(
+                `${field === "discount" ? "El descuento" : "El impuesto"} debe estar entre 0% y 100%`
+            );
+            return;
+        }
+
         if (updateProductField) {
             updateProductField(id, field, value);
         }
@@ -110,8 +118,8 @@ const ProductTable = ({
                         <th>Producto</th>
                         <th>Precio</th>
                         <th>Cantidad</th>
-                        {isProforma && <th>Descuento (%)</th>}
-                        {isProforma && <th>Impuesto (%)</th>}
+                        {enablePerItemAdjustments && <th>Descuento (%)</th>}
+                        {enablePerItemAdjustments && <th>Impuesto (%)</th>}
                         <th>Subtotal</th>
                         {!isViewMode && <th>Acciones</th>}
                     </tr>
@@ -154,7 +162,7 @@ const ProductTable = ({
                                         )}
                                     </td>
 
-                                    {isProforma && (
+                                    {enablePerItemAdjustments && (
                                         <td>
                                             {isViewMode ? (
                                                 `${discount}%`
@@ -177,7 +185,7 @@ const ProductTable = ({
                                         </td>
                                     )}
 
-                                    {isProforma && (
+                                    {enablePerItemAdjustments && (
                                         <td>
                                             {isViewMode ? (
                                                 `${tax}%`
@@ -222,7 +230,7 @@ const ProductTable = ({
                     ) : (
                         <tr>
                             <td
-                                colSpan={isViewMode ? (isProforma ? 6 : 4) : isProforma ? 7 : 5}
+                                colSpan={isViewMode ? (enablePerItemAdjustments ? 6 : 4) : enablePerItemAdjustments ? 7 : 5}
                                 className="no-data-message"
                             >
                                 No hay productos {isViewMode ? "en esta lista" : "seleccionados"}

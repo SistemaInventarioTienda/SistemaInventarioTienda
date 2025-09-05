@@ -27,8 +27,6 @@ export const salesConfig = {
         { name: "FEC_VENTA", label: "Fecha de venta", type: "text" },
         { name: "DSC_SALETYPE", label: "Tipo de venta", type: "text" },
         { name: "METODO_PAGO", label: "Método de pago", type: "text" },
-        { name: "PORCENT_IMPUESTO", label: "Porcentaje de Impuesto", type: "text" },
-        { name: "PORCENT_DESCUENTO", label: "Porcentaje de Descuento", type: "text" },
         { name: "MONT_SUBTOTAL", label: "Subtotal", type: "text" },
         { name: "MONT_TOTAL", label: "Total", type: "text" },
         { name: "DSC_VENTA", label: "Descripción", type: "textarea" },
@@ -60,18 +58,20 @@ export const salesConfig = {
                 id: product.ID_PRODUCTO,
                 price: product.MONT_UNITARIO,
                 quantity: product.CANTIDAD,
+                tax: product.PORCENT_IMPUESTO || 0,
+                discount: product.PORCENT_DESCUENTO || 0,
             })) || [],
             MONT_TOTAL: (() => {
                 const subtotal = sale.MONT_SUBTOTAL || 0;
                 const descuento = sale.PORCENT_DESCUENTO || 0;
                 const impuesto = sale.PORCENT_IMPUESTO || 0;
-            
+
                 const descuentoAplicado = (subtotal * descuento) / 100;
                 const subtotalConDescuento = subtotal - descuentoAplicado;
                 const impuestoAplicado = (subtotalConDescuento * impuesto) / 100;
-            
+
                 return subtotalConDescuento + impuestoAplicado;
-            })(),            
+            })(),
             CAN_CANCEL: sale.CAN_CANCEL,
         }),
 
@@ -87,6 +87,8 @@ export const salesConfig = {
                 ID_PRODUCTO: product.id,
                 MONTO_UNITARIO: product.price,
                 CANTIDAD: product.quantity,
+                PORCENT_IMPUESTO: product.tax || 0,
+                PORCENT_DESCUENTO: product.discount || 0,
             })) || [],
             FEC_VENCIMIENTO: formData.FEC_VENCIMIENTO,
             ESTADO: formData.ESTADO,

@@ -80,7 +80,7 @@ const ProformaDetailsCard = ({ proformaForm }) => {
                 />
 
                 <ProductTable
-                    isProforma
+                    enablePerItemAdjustments 
                     style="margin: 20px"
                     selectedProducts={proformaForm.selectedProducts}
                     updateProductQuantity={proformaForm.updateProductQuantity}

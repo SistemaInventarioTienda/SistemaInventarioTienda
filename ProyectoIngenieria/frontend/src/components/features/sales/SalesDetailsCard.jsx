@@ -76,9 +76,11 @@ const SalesDetailsCard = ({ saleForm }) => {
                 />
 
                 <ProductTable
+                    enablePerItemAdjustments
                     style="margin: 20px"
                     selectedProducts={saleForm.selectedProducts}
                     updateProductQuantity={saleForm.updateProductQuantity}
+                    updateProductField={saleForm.updateProductField}
                     removeProduct={saleForm.removeProduct}
                 />
             </div>

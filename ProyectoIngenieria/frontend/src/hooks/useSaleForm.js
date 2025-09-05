@@ -14,16 +14,30 @@ const useSaleForm = () => {
     const [selectedSaleType, setSelectedSaleType] = useState(3);
     const [creditDueDate, setCreditDueDate] = useState(null);
     const [note, setNote] = useState("");
-    const [taxRate, setTaxRate] = useState(0);
-    const [discount, setDiscount] = useState(0);
     const [email, setEmail] = useState("");
 
     // Calcular el total de la venta
     const calculateTotal = () => {
-        const subtotal = selectedProducts.reduce((total, product) => total + product.subtotal, 0);
-        const discountAmount = (subtotal * discount) / 100;
+        const subtotal = selectedProducts.reduce(
+            (total, product) => total + product.subtotal,
+            0
+        );
+
+        const discountAmount = selectedProducts.reduce(
+            (total, p) => total + (p.subtotal * (p.discount || 0)) / 100,
+            0
+        );
+
         const subtotalAfterDiscount = subtotal - discountAmount;
-        const taxAmount = (subtotalAfterDiscount * taxRate) / 100;
+
+        const taxAmount = selectedProducts.reduce(
+            (total, p) =>
+                total +
+                ((p.subtotal - (p.subtotal * (p.discount || 0)) / 100) *
+                    (p.tax || 0)) / 100,
+            0
+        );
+
         const total = subtotalAfterDiscount + taxAmount;
 
         return {
@@ -31,34 +45,34 @@ const useSaleForm = () => {
             discountAmount,
             subtotalAfterDiscount,
             taxAmount,
-            total
-        }
+            total,
+        };
     };
-
-    useEffect(() => {
-        if (discount < 0 || discount > 100) {
-            if (discount !== 0) {
-                setDiscount(0);
-                toast.error("El descuento debe estar entre 0% y 100%");
-            }
-        }
-        if (taxRate < 0 || taxRate > 100) {
-            setTaxRate(0);
-            toast.error("El impuesto debe estar entre 0% y 100%");
-        }
-    }, [discount, taxRate])
 
     const addProduct = (product) => {
         setSelectedProducts((prevProducts) => {
-            const existingProduct = prevProducts.find(p => p.id === product.id);
+            const existingProduct = prevProducts.find((p) => p.id === product.id);
             if (existingProduct) {
-                return prevProducts.map(p =>
+                return prevProducts.map((p) =>
                     p.id === product.id
-                        ? { ...p, quantity: p.quantity + 1, subtotal: (p.quantity + 1) * p.price }
+                        ? {
+                            ...p,
+                            quantity: p.quantity + 1,
+                            subtotal: (p.quantity + 1) * p.price,
+                        }
                         : p
                 );
             } else {
-                return [...prevProducts, { ...product, quantity: 1, subtotal: product.price }];
+                return [
+                    ...prevProducts,
+                    {
+                        ...product,
+                        quantity: 1,
+                        subtotal: product.price,
+                        tax: product.tax || 0,
+                        discount: product.discount || 0,
+                    },
+                ];
             }
         });
     };
@@ -68,6 +82,16 @@ const useSaleForm = () => {
             prevProducts.map((product) =>
                 product.id === productId
                     ? { ...product, quantity, subtotal: quantity * product.price }
+                    : product
+            )
+        );
+    };
+
+    const updateProductField = (productId, field, value) => {
+        setSelectedProducts((prevProducts) =>
+            prevProducts.map((product) =>
+                product.id === productId
+                    ? { ...product, [field]: value ?? 0 }
                     : product
             )
         );
@@ -85,9 +109,8 @@ const useSaleForm = () => {
         setSelectedClient(null);
         setSelectedPaymentMethod("");
         setNote("");
-        setDiscount(0);
-        setTaxRate(0);
         setEmail("");
+        setCreditDueDate(null);
     };
 
     const handleSubmit = async () => {
@@ -98,8 +121,6 @@ const useSaleForm = () => {
             creditDueDate,
             selectedProducts,
             selectedPaymentMethod,
-            taxRate,
-            discount
         });
 
         if (validationErrors.length > 0) {
@@ -113,19 +134,17 @@ const useSaleForm = () => {
 
         const saleData = salesConfig.transformData.toBackend({
             ID_CLIENTE: selectedClient && selectedClient !== 0 ? Number(selectedClient) : null,
-            PORCENT_IMPUESTO: taxRate,
             METODO_PAGO: selectedPaymentMethod,
             DSC_VENTA: note,
             ESTADO_CREDITO: Number(selectedSaleType),
             MONT_SUBTOTAL: subtotal,
-            PORCENT_DESCUENTO: discount,
             PRODUCTS_LIST: selectedProducts,
             FEC_VENCIMIENTO: creditDueDate,
-            ESTADO: ESTADO, 
+            ESTADO: ESTADO,
             DSC_EMAIL: email
         });
 
- 
+
 
         try {
             const response = await handleApiCall(
@@ -143,7 +162,7 @@ const useSaleForm = () => {
     };
 
     const handleSubmitWithConfirmation = () => {
-        if (!selectedClient || !note || discount === 0) {
+        if (!selectedClient || !note) {
             setConfirmationModalOpen(true);
             setConfirmationCallback(() => handleSubmit);
         } else {
@@ -158,16 +177,13 @@ const useSaleForm = () => {
         selectedSaleType,
         note,
         email,
-        discount,
-        taxRate,
         setSelectedClient,
         setSelectedPaymentMethod,
         setSelectedSaleType,
         setNote,
-        setDiscount,
-        setTaxRate,
         addProduct,
         updateProductQuantity,
+        updateProductField,
         removeProduct,
         handleSubmit: handleSubmitWithConfirmation,
         calculateTotal,
