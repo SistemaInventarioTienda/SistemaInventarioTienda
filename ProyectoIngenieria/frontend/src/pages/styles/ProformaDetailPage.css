@@ -362,6 +362,10 @@
 }
 
 /* === Print Styles === */
+body.pdf-mode .proforma-title {
+    font-size: 28px !important;
+}
+
 body.pdf-mode #print-area {
     /* ancho seguro dentro de A4 con margen de 10mm */
     width: 190mm !important;
