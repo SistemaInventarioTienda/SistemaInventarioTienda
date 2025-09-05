@@ -264,3 +264,53 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE getSaleReport;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getSaleReport`(IN `MIN_FEC` DATE, IN `MAX_FEC` DATE)
+BEGIN
+	SELECT
+		v.MONT_SUBTOTAL,
+		v.METODO_PAGO,
+		v.FEC_VENTA,
+		v.ESTADO,
+		(SELECT CONCAT(cli.DSC_NOMBRE, ' ', cli.DSC_APELLIDOUNO, ' ', cli.DSC_APELLIDODOS)
+		 FROM tsit_cliente cli
+		 WHERE cli.ID_CLIENTE = v.ID_CLIENTE
+		 LIMIT 1) AS CLIENTE,
+		(SELECT telcli.DSC_TELEFONO
+		 FROM tsit_telefonocliente telcli
+		 WHERE telcli.ID_CLIENTE = v.ID_CLIENTE
+		 LIMIT 1) AS TEL_CLIENTE,
+		GROUP_CONCAT(prod.DSC_NOMBRE SEPARATOR ', ') AS PRODUCTOS,
+		GROUP_CONCAT(detv.CANTIDAD SEPARATOR ', ') AS CANTIDADES,
+                GROUP_CONCAT(detv.PORCENT_IMPUESTO SEPARATOR ', ') AS IMPUESTO,
+                GROUP_CONCAT(detv.PORCENT_DESCUENTO SEPARATOR ', ') AS DESCUENTO,
+                GROUP_CONCAT(detv.MONT_UNITARIO SEPARATOR ', ') AS MONT_UNITARIO,
+
+        (
+            SELECT
+                SUM(ab.MON_ABONADO)
+            FROM
+                tsit_credito cred
+            JOIN
+                tsit_abono ab ON cred.ID_CREDITO = ab.ID_CREDITO
+            WHERE 
+                cred.ID_VENTA = v.ID_VENTA
+
+        ) AS TOTAL_ABONOS
+	FROM
+		tsit_venta v
+	JOIN
+		tsit_detalleventa detv ON detv.ID_VENTA = v.ID_VENTA
+	JOIN
+		tsim_producto prod ON prod.ID_PRODUCT = detv.ID_PRODUCTO
+	WHERE
+		 DATE(v.FEC_VENTA) >= MIN_FEC AND DATE(v.FEC_VENTA) <= MAX_FEC
+		AND (v.ESTADO = 1 OR v.ESTADO = 3)
+	GROUP BY
+		v.ID_VENTA
+	ORDER BY
+		v.FEC_VENTA ASC;
+END$$
+DELIMITER ;
