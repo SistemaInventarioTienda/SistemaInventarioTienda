@@ -7,12 +7,6 @@ ID_CLIENTE:z
 .positive({message: "Cliente no seleccionado"})
 .nullable()
 .optional(),
-
-PORCENT_IMPUESTO: z
-.number({
-    required_error: "Porcentaje no valido.",
-}).min(0, { message: "El porcentaje de impuesto debe ser positivo." }),
-
 METODO_PAGO: z
 .string({
   required_error: "El metodo de pago es obligatorio",
@@ -33,11 +27,6 @@ ESTADO_CREDITO: z
 MONT_SUBTOTAL: z
 .number({required_error: "El monto es requerido"})
 .min(0, { message: "El monto debe ser positivo." }),
-
-PORCENT_DESCUENTO: z
-.number()
-.min(0, { message: "El descuento no puede ser negativo." })
-.optional(),
 });
 
 
@@ -55,7 +44,14 @@ ID_PRODUCTO: z
 MONTO_UNITARIO: z
 .number({ required_error: "El monto es requerido" })
 .min(0, { message: "El monto debe ser un valor positivo" }),
-
+PORCENT_IMPUESTO: z
+.number({
+    required_error: "Porcentaje no valido.",
+}).min(0, { message: "El porcentaje de impuesto debe ser positivo." }),
+PORCENT_DESCUENTO: z
+.number()
+.min(0, { message: "El descuento no puede ser negativo." })
+.optional(),
 CANTIDAD: z
 .number()
 .int()

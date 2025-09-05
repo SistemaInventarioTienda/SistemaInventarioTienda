@@ -10,7 +10,7 @@ import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 
 export const createSale = async (req, res) => {
-    const { ID_CLIENTE, PORCENT_IMPUESTO, METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, PORCENT_DESCUENTO, ESTADO, details_list, FEC_VENCIMIENTO, DSC_CORREO = '' } = req.body;
+    const { ID_CLIENTE,  METODO_PAGO, DSC_VENTA, ESTADO_CREDITO, MONT_SUBTOTAL, ESTADO, details_list, FEC_VENCIMIENTO, DSC_CORREO = '' } = req.body;
 
     try {
 
@@ -39,9 +39,6 @@ export const createSale = async (req, res) => {
         }
 
         let date = await getDateCR(); // probando validaciones de datos..
-
-        let porcentImpuesto = PORCENT_IMPUESTO ?? 0;
-        let porcentDescuento = PORCENT_DESCUENTO ?? 0;
         let dscVenta = (!DSC_VENTA || DSC_VENTA.trim() === "") ? "Gracias por la visita, vuelva pronto" : DSC_VENTA;
         let metodoPago = (!METODO_PAGO || METODO_PAGO.trim() === "") ? "Efectivo" : METODO_PAGO;
         // let montSubtotal = (typeof MONT_SUBTOTAL === "number" && MONT_SUBTOTAL >= 0)
@@ -67,12 +64,10 @@ export const createSale = async (req, res) => {
         const crdSale = await sale.create({
             ID_CLIENTE: clientID,
             FEC_VENTA: date,
-            PORCENT_IMPUESTO: porcentImpuesto,
             METODO_PAGO: metodoPago,
             DSC_VENTA: dscVenta,
             ESTADO_CREDITO: estadoCredito,
             MONT_SUBTOTAL: montoSale,
-            PORCENT_DESCUENTO: porcentDescuento,
             ESTADO: ESTADO,
         });
 
@@ -85,6 +80,8 @@ export const createSale = async (req, res) => {
                     ID_VENTA: idSale,
                     ID_PRODUCTO: detailsProd.ID_PRODUCTO,
                     MONT_UNITARIO: detailsProd.MONTO_UNITARIO,
+                    PORCENT_IMPUESTO: detailsProd.PORCENT_IMPUESTO ?? 0,
+                    PORCENT_DESCUENTO: detailsProd.PORCENT_DESCUENTO ?? 0,
                     CANTIDAD: detailsProd.CANTIDAD,
                 }));
 
@@ -125,6 +122,8 @@ export const createSale = async (req, res) => {
                     );
                     products.push({
                         CANTIDAD: detailsProd.CANTIDAD,
+                        PORCENT_IMPUESTO: detailsProd.PORCENT_IMPUESTO,
+                        PORCENT_DESCUENTO: detailsProd.PORCENT_DESCUENTO,
                         MONT_UNITARIO: detailsProd.MONTO_UNITARIO,
                         Product: product.dataValues
                     })
@@ -135,8 +134,7 @@ export const createSale = async (req, res) => {
 
 
         const store = await Config.findAll();
-        const receipt = await createReceiptPDF(date, store[0], {
-            PORCENT_IMPUESTO: crdSale.PORCENT_IMPUESTO, MONT_SUBTOTAL: crdSale.MONT_SUBTOTAL, PORCENT_DESCUENTO: crdSale.PORCENT_DESCUENTO,
+        const receipt = await createReceiptPDF(date, store[0], {MONT_SUBTOTAL: crdSale.MONT_SUBTOTAL,
             FEC_VENTA: crdSale.FEC_VENTA, METODO_PAGO: crdSale.METODO_PAGO, DSC_VENTA: crdSale.DSC_VENTA, ESTADO_CREDITO: crdSale.ESTADO_CREDITO,
             details: products, client: client
         })
@@ -188,7 +186,7 @@ export const getAllSales = async (req, res) => {
                 },
                 {
                     model: details,
-                    attributes: ['ID_DETALLEVENTA', 'ID_PRODUCTO', 'MONT_UNITARIO', 'CANTIDAD'],
+                    attributes: ['ID_DETALLEVENTA', 'ID_PRODUCTO', 'MONT_UNITARIO', 'PORCENT_IMPUESTO','PORCENT_DESCUENTO','CANTIDAD'],
                 }
             ],
             distinct: true
@@ -208,17 +206,17 @@ export const getAllSales = async (req, res) => {
                     ID_CLIENTE: row.ID_CLIENTE,
                     DSC_NOMBRE: row.Client ? row.Client.DSC_NOMBRE : 'Anónimo',
                     FEC_VENTA: row.FEC_VENTA,
-                    PORCENT_IMPUESTO: row.PORCENT_IMPUESTO,
                     METODO_PAGO: row.METODO_PAGO,
                     DSC_VENTA: row.DSC_VENTA,
                     ESTADO_CREDITO: row.ESTADO_CREDITO,
                     MONT_SUBTOTAL: row.MONT_SUBTOTAL,
-                    PORCENT_DESCUENTO: row.PORCENT_DESCUENTO,
                     ESTADO: row.ESTADO,
                     DETALLES: row.details.map((detalle) => ({
                         ID_DETALLEVENTA: detalle.ID_DETALLEVENTA,
                         ID_PRODUCTO: detalle.ID_PRODUCTO,
                         MONT_UNITARIO: detalle.MONT_UNITARIO,
+                        PORCENT_IMPUESTO: detalle.PORCENT_IMPUESTO,
+                        PORCENT_DESCUENTO: detalle.PORCENT_DESCUENTO,
                         CANTIDAD: detalle.CANTIDAD,
                     })),
                     CAN_CANCEL: canCancel,
@@ -251,7 +249,7 @@ export const getSaleDetails = async (req, res) => {
                 },
                 {
                     model: details,
-                    attributes: ['ID_DETALLEVENTA', 'ID_PRODUCTO', 'MONT_UNITARIO', 'CANTIDAD'],
+                    attributes: ['ID_DETALLEVENTA', 'ID_PRODUCTO','PORCENT_IMPUESTO','PORCENT_DESCUENTO', 'MONT_UNITARIO', 'CANTIDAD'],
                 }
             ]
         });
@@ -269,16 +267,16 @@ export const getSaleDetails = async (req, res) => {
                     ID_CLIENTE: row.ID_CLIENTE,
                     DSC_NOMBRE: row.Client ? row.Client.DSC_NOMBRE : 'Anónimo',
                     FEC_VENTA: row.FEC_VENTA,
-                    PORCENT_IMPUESTO: row.PORCENT_IMPUESTO,
                     METODO_PAGO: row.METODO_PAGO,
                     DSC_VENTA: row.DSC_VENTA,
                     ESTADO_CREDITO: row.ESTADO_CREDITO,
                     MONT_SUBTOTAL: row.MONT_SUBTOTAL,
-                    PORCENT_DESCUENTO: row.PORCENT_DESCUENTO,
                     DETALLES: row.details.map((detalle) => ({
                         ID_DETALLEVENTA: detalle.ID_DETALLEVENTA,
                         ID_PRODUCTO: detalle.ID_PRODUCTO,
                         MONT_UNITARIO: detalle.MONT_UNITARIO,
+                        PORCENT_IMPUESTO: detalle.PORCENT_IMPUESTO,
+                        PORCENT_DESCUENTO: detalle.PORCENT_DESCUENTO,
                         CANTIDAD: detalle.CANTIDAD,
                     })),
                     CAN_CANCEL: canCancel,
@@ -337,11 +335,9 @@ export const searchSales = async (req, res) => {
                         ID_VENTA: data.ID_VENTA,
                         ID_CLIENTE: data.ID_CLIENTE,
                         FEC_VENTA: data.FEC_VENTA,
-                        PORCENT_IMPUESTO: data.PORCENT_IMPUESTO,
                         METODO_PAGO: data.METODO_PAGO,
                         DSC_VENTA: data.DSC_VENTA,
                         MONT_SUBTOTAL: data.MONT_SUBTOTAL,
-                        PORCENT_DESCUENTO: data.PORCENT_DESCUENTO,
                         ESTADO: data.ESTADO,
                         DSC_NOMBRE: data.DSC_CLIENTE_NOMBRE,
                         Client: {
@@ -358,6 +354,8 @@ export const searchSales = async (req, res) => {
                 if (data.ID_PRODUCTO) {
                     sale.DETALLES.push({
                         CANTIDAD: data.CANTIDAD,
+                        PORCENT_DESCUENTO: data.PORCENT_DESCUENTO,
+                        PORCENT_IMPUESTO: data.PORCENT_IMPUESTO,
                         MONT_UNITARIO: data.MONT_UNITARIO,
                         DSC_NOMBRE: data.DSC_PRODUCTO_NOMBRE,
                         ID_PRODUCTO: data.ID_PRODUCTO,
