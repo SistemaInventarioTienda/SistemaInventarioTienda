@@ -22,11 +22,6 @@ const sale = db.define('sale',{
         type: DataTypes.DATE,
         allowNull: false,
       },
-      PORCENT_IMPUESTO:{
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-        defaultValue: 0,
-      },
       METODO_PAGO:{
         type: DataTypes.STRING(100),
         allowNull: false,
@@ -43,11 +38,6 @@ const sale = db.define('sale',{
       MONT_SUBTOTAL:{
         type: DataTypes.DOUBLE,
         allowNull: false,
-      },
-      PORCENT_DESCUENTO:{
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-        defaultValue: 0,
       },
       ESTADO: {
         type: DataTypes.INTEGER,
@@ -85,6 +75,16 @@ const details = db.define('details',{
       MONT_UNITARIO:{
         type: DataTypes.DOUBLE,
         allowNull: false,
+      },
+        PORCENT_IMPUESTO:{
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+        defaultValue: 0,
+      },
+       PORCENT_DESCUENTO:{
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+        defaultValue: 0,
       },
       CANTIDAD:{
         type: DataTypes.INTEGER,

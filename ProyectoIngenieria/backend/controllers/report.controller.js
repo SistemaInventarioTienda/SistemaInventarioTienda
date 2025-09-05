@@ -235,11 +235,13 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     // Sale Details Table Header
     currentY += 5;
     doc.fontSize(7).text("Producto", margin, currentY, { width: 80 });
-    doc.text("Cant.", margin + 85, currentY, { width: 30, align: "right" });
-    doc.text("Precio U.", margin + 120, currentY, {
+    doc.text("Cant.", margin + 35, currentY, { width: 30, align: "right" });
+    doc.text("Precio U.", margin + 65, currentY, {
       width: 45,
       align: "right",
     });
+    doc.text("Imp.", margin + 95, currentY, { width: 40, align: "right" });
+    doc.text("Desc.", margin + 125, currentY, { width: 40, align: "right" });
     doc.text("Total", pageWidthPoints - margin - 40, currentY, {
       width: 40,
       align: "right",
@@ -253,21 +255,29 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       .stroke();
     currentY += 3;
 
+  
+
     // Sale Details Table Rows
-    let subtotalProducts = 0;
+    let totalProducts = 0;
     saleData.details.forEach(item => {
       const totalItem = item.CANTIDAD * item.MONT_UNITARIO;
       doc.fontSize(7).text(item.Product.DSC_NOMBRE, margin, currentY, { width: 80 });
-      doc.text(item.CANTIDAD.toString(), margin + 85, currentY, { width: 30, align: 'right' });
-      doc.text(item.MONT_UNITARIO.toFixed(2), margin + 120, currentY, { width: 45, align: 'right' });
-      doc.text(totalItem.toFixed(2), pageWidthPoints - margin - 40, currentY, { width: 40, align: 'right' });
+      doc.text(item.CANTIDAD.toString(), margin + 35, currentY, { width: 30, align: 'right' });
+      doc.text(item.MONT_UNITARIO.toFixed(2), margin + 65, currentY, { width: 45, align: 'right' });
+      doc.text(item.PORCENT_IMPUESTO.toFixed(2), margin + 95, currentY, { width: 40, align: 'right' });
+      doc.text(item.PORCENT_DESCUENTO.toFixed(2), margin + 125, currentY, { width: 40, align: 'right' });
+     
+    const discount = totalItem * (item.PORCENT_DESCUENTO / 100);
+    const tax = (totalItem - discount) * (item.PORCENT_IMPUESTO / 100);
+     const totalProd= (totalItem-discount+tax);
+      doc.text(totalProd.toFixed(2), pageWidthPoints - margin - 40, currentY, { width: 40, align: 'right' });
       currentY += 8;
       if (currentY > pageHeightPoints - 50) {
         doc.addPage({ size: [pageWidthPoints, pageHeightPoints] });
         currentY = margin + 10;
         // Optionally add header again on new page
       }
-      subtotalProducts += totalItem;
+      totalProducts += totalProd;
     });
 
     // Separator before totals
@@ -280,40 +290,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       .stroke();
     currentY += 5;
 
-    // Totals
-    const subTotal = subtotalProducts;
-    const discount = subTotal * (saleData.PORCENT_DESCUENTO / 100);
-    const tax = (subTotal - discount) * (saleData.PORCENT_IMPUESTO / 100);
- 
-
-    doc
-      .fontSize(8)
-      .text("Subtotal:", margin, currentY, {
-        align: "right",
-        width: pageWidthPoints - margin - 50,
-      });
-    doc.text(subTotal.toFixed(2), pageWidthPoints - margin - 40, currentY, {
-      align: "right",
-      width: 40,
-    });
-    currentY += 8;
-
-    doc
-      .fontSize(8)
-      .text(`Impuesto (${saleData.PORCENT_IMPUESTO}%):`, margin, currentY, {
-        align: "right",
-        width: pageWidthPoints - margin - 50,
-      });
-    doc.text(tax.toFixed(2), pageWidthPoints - margin - 40, currentY, {
-      align: "right",
-      width: 40,
-    });
-    currentY += 8;
-
-    doc.fontSize(8).text(`Descuento (${saleData.PORCENT_DESCUENTO}%):`, margin, currentY, { align: 'right', width: pageWidthPoints - margin - 50 });
-    doc.text(`-${discount.toFixed(2)}`, pageWidthPoints - margin - 40, currentY, { align: 'right', width: 40 });
-    currentY += 8;
-
+  
     doc
       .fontSize(9)
       .font("Helvetica-Bold")
@@ -321,8 +298,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
         align: "right",
         width: pageWidthPoints - margin - 50,
       });
-    doc.text(
-      (subTotal - discount + tax).toFixed(2),
+    doc.text(totalProducts.toFixed(2),
       pageWidthPoints - margin - 40,
       currentY,
       { align: "right", width: 40 }
