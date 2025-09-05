@@ -54,11 +54,11 @@ function startBackend() {
     if (stderr) {
       console.error(`stderr: ${stderr}`);
     }
-    console.log(`stdout: ${stdout}`);
+ 
   });
 
   backendProcess.stdout.on("data", (data) => {
-    console.log(`Backend: ${data}`);
+ 
   });
 }
 

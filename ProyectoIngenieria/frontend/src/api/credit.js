@@ -15,7 +15,7 @@ export const getAllCredits = async (page, pageSize, orderByField, order) =>{
 export const getCreditById = async (id) =>{
     try {
         const response = await axios.get(`/credit/getCreditById/${id}`);
-        console.log(response.data);
+ 
         return response.data;
     } catch (error) {
         console.error('Error fetching credit data', error.message);

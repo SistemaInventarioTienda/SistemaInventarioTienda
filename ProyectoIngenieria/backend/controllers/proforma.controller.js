@@ -7,7 +7,6 @@ import Product from "../models/product.model.js";
 
 export const createProForma = async (req, res) => {
   const { FEC_LIMITE, MON_TOTAL, details_list } = req.body;
-
   try {
     const currentDate = await getDateCR();
 
@@ -40,8 +39,12 @@ export const createProForma = async (req, res) => {
       await DetailsProforma.bulkCreate(detailsToSave);
 
       // Enviar a crear la proforma en pdf y devolver
+      res.status(200).json({
+        success: true,
+        message: "Factura proforma creada correctamente.",
+        DSC_CODIGO_BARRAS: code
+      });
 
-      res.status(200).json({ message: "Factura proforma creada correctamente.", code: code });
     } else {
       res.status(400).json({ message: "Error al crear la factura proforma." });
     }
@@ -88,7 +91,7 @@ export const getAllProForma = async (req, res) => {
 
     return res.json({
       total: count,
-      totalOages: Math.ceil(count / limit),
+      totalPages: Math.ceil(count / limit),
       currentPage: parseInt(page),
       pageSize: limit,
       proformas: rows

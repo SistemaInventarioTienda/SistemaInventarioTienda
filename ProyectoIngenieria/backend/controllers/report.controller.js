@@ -286,7 +286,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     const subTotal = subtotalProducts;
     const discount = subTotal * (saleData.PORCENT_DESCUENTO / 100);
     const tax = (subTotal - discount) * (saleData.PORCENT_IMPUESTO / 100);
-    console.log(subTotal, discount, tax);
+ 
 
     doc
       .fontSize(8)

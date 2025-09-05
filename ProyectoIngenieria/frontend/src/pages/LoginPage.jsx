@@ -64,7 +64,7 @@ export function LoginPage() {
   // Mostrar errores de autenticación con Sonner
   useEffect(() => {
     if (loginErrors && loginErrors.length > 0) {
-      console.log('Length', loginErrors.length);
+ 
       loginErrors.forEach((error) => {
         toast.error(error);
       });

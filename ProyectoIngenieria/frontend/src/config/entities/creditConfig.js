@@ -48,7 +48,7 @@ export const creditConfig = {
             })) || [],
           }),
         toBackend: async (formData) => {
-            console.log("FormData de creditConfig.js: ", formData);
+ 
             return {
               ID_CREDITO: formData.ID_CREDITO,
               ID_ABONO: formData.ID_ABONO,

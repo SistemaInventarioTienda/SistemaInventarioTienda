@@ -62,7 +62,7 @@ export const register = async (req, res) => {
       });
 
       if (permissionsBD.length === 0) {
-        console.log("No hay permisos disponibles.");
+
         return res.json({
           id: userSaved.ID_USUARIO,
           DSC_NOMBREUSUARIO: userSaved.DSC_NOMBREUSUARIO,
@@ -86,7 +86,7 @@ export const register = async (req, res) => {
       if (permissionsToAssign.length > 0) {
         await PermissionUser.bulkCreate(permissionsToAssign);
       } else {
-        console.log("Ningún permiso de la lista coincide con los permisos existentes.");
+        console.error("Ningún permiso de la lista coincide con los permisos existentes.");
       }
     }
     res.json({
@@ -147,10 +147,10 @@ export const login = async (req, res) => {
 
     const roleDetails = role
       ? {
-          nombre: role.DSC_NOMBRE,
-          descripcion: role.DSC_DESCRIPCION,
-          estado: role.ESTADO
-        }
+        nombre: role.DSC_NOMBRE,
+        descripcion: role.DSC_DESCRIPCION,
+        estado: role.ESTADO
+      }
       : null;
 
 
@@ -206,10 +206,10 @@ export const verifyToken = async (req, res) => {
 
     const roleDetails = role
       ? {
-          nombre: role.DSC_NOMBRE,
-          descripcion: role.DSC_DESCRIPCION,
-          estado: role.ESTADO
-        }
+        nombre: role.DSC_NOMBRE,
+        descripcion: role.DSC_DESCRIPCION,
+        estado: role.ESTADO
+      }
       : null;
 
     return res.json({

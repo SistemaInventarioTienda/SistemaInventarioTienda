@@ -45,7 +45,7 @@ export default function ProductPage() {
             for (const [key, value] of backendData.entries()) {
                 formDataObj[key] = value;
             }
-            console.log("Datos enviados al backend:", formDataObj);
+ 
             if (mode === "add") {
                 await handleApiCall(
                     () => api.create(backendData),

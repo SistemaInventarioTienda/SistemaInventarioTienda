@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { SearchSelect } from '../../common';
 import { searchProduct } from '../../../api/product';
-import ProductTable from '../../features/ProductTable';
+import ProductTable from '../ProductTable';
 import { toast } from 'sonner';
 
-const SalesDetailsCard = ({ saleForm }) => {
+const ProformaDetailsCard = ({ proformaForm }) => {
     const barcodeBuffer = useRef('');
     const timeoutId = useRef(null);
 
     const handleSelectProduct = (product) => {
-        saleForm.addProduct({
+        proformaForm.addProduct({
             id: product.ID_PRODUCT,
             name: product.DSC_NOMBRE,
             price: product.MON_VENTA,
@@ -59,31 +59,36 @@ const SalesDetailsCard = ({ saleForm }) => {
         };
     }, []);
 
+
     return (
-        <div className="sales-card sales-card-fixed">
-            <div className="sales-card-header">
-                <h2 className="sales-card-title">Productos Seleccionados</h2>
+        <div className='proforma-card proforma-card-fixed'>
+            <div className='proforma-card-header'>
+                <h2 className='proforma-card-title'>Productos seleccionados</h2>
             </div>
-            <div className="sales-card-content">
+            <div className='proforma-card-content'>
                 <SearchSelect
-                    placeholder="Buscar producto..."
+                    placeholder="Buscar producto por nombre o código de barras"
+
                     fetchOptions={(term, page, size) =>
                         searchProduct(page, size, term, "DSC_NOMBRE", "asc")
                     }
                     onSelect={handleSelectProduct}
-                    displayField="DSC_NOMBRE"
-                    valueField="ID_PRODUCT"
+                    displayField='DSC_NOMBRE'
+                    valueField='ID_PRODUCT'
                 />
 
                 <ProductTable
+                    isProforma
                     style="margin: 20px"
-                    selectedProducts={saleForm.selectedProducts}
-                    updateProductQuantity={saleForm.updateProductQuantity}
-                    removeProduct={saleForm.removeProduct}
+                    selectedProducts={proformaForm.selectedProducts}
+                    updateProductQuantity={proformaForm.updateProductQuantity}
+                    updateProductField={proformaForm.updateProductField}
+                    removeProduct={proformaForm.removeProduct}
                 />
             </div>
         </div>
-    );
-};
+    )
 
-export default SalesDetailsCard;
+}
+
+export default ProformaDetailsCard;

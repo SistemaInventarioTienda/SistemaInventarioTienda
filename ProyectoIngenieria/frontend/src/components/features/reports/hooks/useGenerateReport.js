@@ -112,8 +112,8 @@ export function useGenerateReport() {
                 minFec = startDate?.toISOString().split('T')[0] || '';
                 maxFec = endDate?.toISOString().split('T')[0] || '';
             }
-            console.log("fechas", minFec);
-            console.log("fechas", maxFec);
+ 
+ 
             const params = {
                 EXTENSION: format,
                 TYPE: reportType,

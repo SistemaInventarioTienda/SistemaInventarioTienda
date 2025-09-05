@@ -7,7 +7,7 @@ function ShoppingForm({ initialData, onSubmit, onCancel }) {
     const [selectedProducts, setSelectedProducts] = useState([]);
 
     useEffect(() => {
-        console.log("datos pasados", initialData);
+ 
         if (initialData?.PRODUCTS_LIST) {
             setSelectedProducts(initialData.PRODUCTS_LIST);
         }

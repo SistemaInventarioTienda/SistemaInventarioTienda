@@ -78,7 +78,7 @@ export const clientConfig = {
 
         // Transformar datos desde el formulario hacia la API
         toBackend: async (formData) => {
-            console.log("toBackend[clientConfig]", formData);
+ 
             const base64Image = formData.foto instanceof File
                 ? await convertToBase64(formData.foto)
                 : formData.foto;

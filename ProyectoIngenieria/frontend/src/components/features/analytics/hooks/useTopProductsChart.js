@@ -12,8 +12,8 @@ export function useTopProductsChart() {
     const isDateValid = (date) => date && !isNaN(new Date(date).getTime());
 
     useEffect(() => {
-        console.log("FEC INICIO", dateRange.start);
-        console.log("FEC FINAL", dateRange.end);
+ 
+ 
     }, [dateRange]);    
 
     const addOneDay = (dateStr) => {
@@ -43,7 +43,7 @@ export function useTopProductsChart() {
                 CATEGORY: '',
                 FEC_CURRENT: '',
             });
-            console.log("DATA", data.top5Products);
+ 
             const parsedResults = Array.isArray(data.top5Products)
                 ? data.top5Products
                 : Object.values(data.top5Products || {});

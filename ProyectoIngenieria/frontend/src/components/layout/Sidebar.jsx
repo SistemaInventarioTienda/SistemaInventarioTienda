@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { useAuthPermissions } from '../../context/authPermissions';
-import { Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText, 
-    BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, Banknote, 
-    CreditCard, ShoppingBag, ClipboardList, PlusCircle, PackagePlus } from 'lucide-react';
+import {
+    Home, Users, Tag, Box, Truck, UserCheck, ShoppingCart, FileText,
+    BarChart2, Menu, PanelLeftClose, ChevronDown, ChevronUp, Banknote,
+    CreditCard, ShoppingBag, ClipboardList, PlusCircle, PackagePlus
+} from 'lucide-react';
 import SubMenu from './SubMenu';
 import './styles/sidebar.css';
 
@@ -25,6 +27,17 @@ const Sidebar = () => {
         { key: 'categories', path: '/category', icon: Tag, text: 'Categorías' },
         { key: 'suppliers', path: '/suppliers', icon: Truck, text: 'Proveedores' },
         { key: 'clients', path: '/clients', icon: UserCheck, text: 'Clientes' },
+        {
+            key: 'proforma',
+            text: 'Proformas',
+            icon: CreditCard,
+            iconOpened: <ChevronDown size={24} />,
+            iconClosed: <ChevronUp size={24} />,
+            subNav: [
+                { path: '/proformas/history', icon: FileText, text: 'Historial de proformas' },
+                { path: '/proformas/new', icon: PlusCircle, text: 'Nueva Proforma' }
+            ]
+        },
         {
             key: 'sales',
             text: 'Ventas',

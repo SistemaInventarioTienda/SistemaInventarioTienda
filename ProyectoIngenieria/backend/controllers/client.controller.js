@@ -21,7 +21,7 @@ function isNotEmpty(value) {
 
 export const registerClient = async (req, res) => {
   try {
-    console.log("Hola estamos en [registerClient] y estos son los datos: ", req.body);
+ 
     const {
       DSC_CEDULA,
       DSC_NOMBRE,
@@ -210,7 +210,7 @@ export const getAllClients = async (req, res) => {
 };
 
 export const deleteClient = async (req, res) => {
-  console.log("Hola el id es: ", req.params.id);
+ 
   try {
     const client = await Client.findOne({
       attributes: {
@@ -306,7 +306,7 @@ export const updateClient = async (req, res) => {
     //await phoneClient.update(updatedTelefonos, { where: { ID_CLIENTE: req.params.id } });
 
     if (telefonos && telefonos.length > 0) {
-      console.log("Entro al if para modificar los telefonos");
+ 
 
       const existingPhones = await phoneClient.findAll({
         where: {ID_CLIENTE: client.ID_CLIENTE},
@@ -314,7 +314,7 @@ export const updateClient = async (req, res) => {
       });
 
       const existingPhoneIds = existingPhones.map(phone => phone.ID_TELEFONOCLIENTE);
-      console.log("Telefonos Existentes [existingPhones]: ", existingPhoneIds);
+ 
 
       const phoneIdInRequest = telefonos
       .filter(phone => phone.idTelefonoCliente)

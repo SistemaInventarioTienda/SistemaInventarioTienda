@@ -43,7 +43,7 @@ export default function ClientPage() {
 
         try {
             const backendData = await clientConfig.transformData.toBackend(data);
-            console.log("backendData", backendData);
+ 
             if (mode === "add") {
                 await handleApiCall(
                     () => api.create(backendData),

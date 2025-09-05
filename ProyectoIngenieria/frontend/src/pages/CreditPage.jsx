@@ -33,7 +33,7 @@ const CreditPage = () => {
     
           // Llamar al endpoint para obtener los datos del crédito
           const response = await creditConfig.api.getCreditById(creditId);
-          console.log("crédito", response);
+ 
           setCreditInfo(response); // Actualizar el estado con los datos nuevos
         } catch (error) {
           console.error("Error al obtener los datos del crédito:", error);
@@ -46,7 +46,7 @@ const CreditPage = () => {
         setModalMode("add");
         setModalData({});
         setModalOpen(true);
-        console.log("Presionando boton..");
+ 
     };
 
      //Logica para manejar el envio de datos al y desde el formulario.
@@ -59,7 +59,7 @@ const CreditPage = () => {
 
       const onSubmit = async (data) => {
         try {
-          console.log("Data recibida en onSubmit: ", data);
+ 
     
           if (!data || typeof data !== "object") {
             throw new Error("Los datos recibidos en onSubmit son inválidos.");
@@ -71,7 +71,7 @@ const CreditPage = () => {
     
           // Transformar los datos para el backend
           const backendData = await creditConfig.transformData.toBackend(data);
-          console.log("Datos enviados al backend: ", backendData);
+ 
     
           // Enviar la solicitud al backend
           const idCredit = data.ID_CREDITO;

@@ -99,7 +99,7 @@ export default function CategoryPage() {
     // Lógica para eliminar subcategorías
     const handleConfirmDelete = async () => {
         try {
-            console.log("A eliminar: " + itemToDelete.ID_SUBCATEGORIA);
+ 
             await handleApiCall(
                 () => subcategoryConfig.api.deleteSub(itemToDelete.ID_SUBCATEGORIA),
                 "Subcategoría eliminada exitosamente."
@@ -121,7 +121,7 @@ export default function CategoryPage() {
     };
 
     const handleEditSubcategory = (subcategory) => {
-        console.log("Edit Subcategory: " + JSON.stringify(subcategoryConfig.transformData.toFrontend(subcategory), null, 2));
+ 
         setSubcategoryModalMode("edit");
         setSubcategoryModalData(subcategoryConfig.transformData.toFrontend(subcategory));
         setParentCategoryId(subcategory.ID_CATEGORIA);

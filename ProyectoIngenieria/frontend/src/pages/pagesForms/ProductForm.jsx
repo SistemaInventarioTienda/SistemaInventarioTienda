@@ -75,7 +75,7 @@ function ProductForm({ mode, initialData, onSubmit, onCancel }) {
             const filtered = subcategoriesTypes.filter(
                 (sub) => sub.ID_CATEGORIA === formData.CATEGORIA
             );
-            console.log("Subcategorías filtradas:", filtered);
+ 
         }
     }, [formData?.CATEGORIA, subcategoriesTypes]);
     

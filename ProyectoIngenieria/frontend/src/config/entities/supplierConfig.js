@@ -84,7 +84,7 @@ export const supplierConfig = {
 
         // Transformar datos desde el formulario hacia la API
         toBackend: async (formData) => {
-            console.log("toBackend[supplierConfig]", formData);
+ 
             const data = {
                 IDENTIFICADOR_PROVEEDOR: formData.id,
                 DSC_NOMBRE: formData.nombre,
@@ -104,7 +104,7 @@ export const supplierConfig = {
                 })) || [],
                 ESTADO: formData.estado,
             };
-            console.log("data procesada de toBackend[supplierConfig]", data);
+ 
 
             return data;
         },

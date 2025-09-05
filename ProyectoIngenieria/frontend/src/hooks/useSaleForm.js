@@ -125,7 +125,7 @@ const useSaleForm = () => {
             DSC_EMAIL: email
         });
 
-        console.log("Datos de la venta:", JSON.stringify(saleData, null, 2));
+ 
 
         try {
             const response = await handleApiCall(

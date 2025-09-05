@@ -166,7 +166,7 @@ export function useContactManager(initialContacts = [], onContactsChange, type) 
                 id: undefined,//newId
                 [type === 'phone' ? 'numeroTelefono' : 'correoElectronico']: value,
             };
-            console.log(`Este es el nuevo contacto a agregar: `, newContactToAdd);
+ 
             updatedContacts = [...contacts, newContactToAdd];
         }
 

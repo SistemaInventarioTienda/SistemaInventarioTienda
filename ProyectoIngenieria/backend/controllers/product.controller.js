@@ -62,7 +62,7 @@ export const getProductById = async (req, res) => {
     try {
         const product = await Product.findOne({
             where: { ID_PRODUCT: req.params.id },
-            attributes: ['ID_PRODUCT', 'DSC_NOMBRE']
+            attributes: ['ID_PRODUCT', 'DSC_NOMBRE', 'CANTIDAD'], 
         });
 
         if (!product) {
@@ -394,7 +394,7 @@ async function deleteFile(file) {
         if (!filePath.includes('PROD')) return;
         try {
             await fs.unlink(filePath); // Elimina el archivo
-            console.log('Archivo eliminado: ', filePath);
+ 
         } catch (error) {
             console.error('Error al eliminar el archivo:', error);
         }

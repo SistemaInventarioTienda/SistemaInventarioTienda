@@ -2,7 +2,7 @@ import { Printer, Pencil, DollarSign, Calendar, Clock, Wallet, Coins } from "luc
 
 const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
 
-    console.log("credito: ", credit);
+ 
 
     return (
         <div className="credits-card credits-card-fixed">

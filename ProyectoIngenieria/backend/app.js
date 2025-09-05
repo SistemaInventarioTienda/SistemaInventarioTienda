@@ -62,7 +62,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/dist"));
 
   app.get("*", (req, res) => {
-    console.log(path.resolve("client", "build", "index.html") );
+ 
     res.sendFile(path.resolve("client", "build", "index.html"));
   });
 }

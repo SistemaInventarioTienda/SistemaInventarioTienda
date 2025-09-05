@@ -17,3 +17,6 @@ export { default as ProfilePage } from './ProfilePage';
 export { default as ReportsPage } from './ReportsPage';
 export { default as CashClosingPage } from './CashClosingPage';
 export { default as NotificationPage } from './NotificationPage';
+export { default as ProformaPage } from './ProformaPage';
+export { default as AddProformaPage } from './AddProformaPage';
+export { default as ProformaDetailPage } from './ProformaDetailPage';

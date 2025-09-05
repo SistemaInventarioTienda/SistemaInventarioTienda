@@ -45,7 +45,7 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
       onClick={() => {
         if (!visto) {
           onMarkAsRead(id);
-          console.log(`Notificación ${id} marcada como leída.`);
+ 
         }
       }}
       style={{ cursor: visto ? 'default' : 'pointer' }}

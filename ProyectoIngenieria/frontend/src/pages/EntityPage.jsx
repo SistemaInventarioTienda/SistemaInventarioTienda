@@ -70,7 +70,9 @@ export const EntityPage = forwardRef(({
     }, [initialModalOpen]);
 
     const handleAdd = () => {
-        if (entityKey === "sales") {
+        if (entityKey === "proformas") {
+            navigate("/proformas/new");
+        } else if (entityKey === "sales") {
             navigate("/sales/new");
         } else if (entityKey === "shopping") {
             navigate("/shopping/new");
@@ -88,10 +90,13 @@ export const EntityPage = forwardRef(({
     };
 
     const handleView = (rowData) => {
-        setModalMode("view");
-        console.log("Modal view");
-        setModalData(transformData ? transformData(rowData) : rowData);
-        setModalOpen(true);
+        if (entityKey === "proformas") {
+            navigate(`/proformas/${rowData.DSC_CODIGO_BARRAS}`);
+        } else {
+            setModalMode("view");
+            setModalData(transformData ? transformData(rowData) : rowData);
+            setModalOpen(true);
+        }
     };
 
     const handleDeleteConfirmation = (rowData) => {
@@ -105,12 +110,12 @@ export const EntityPage = forwardRef(({
                 await actions.downloadHandler(rowData);
             }
         } catch (error) {
-            console.log("error", error);
+ 
             toast.error(error.message || 'El documento solicitado no existe');
         }
     };
 
-    console.log("Datos FILTRADOS: ", filteredData);
+ 
     //console.log("TransformData [EntityPage]", transformData);
 
     const tableActions = Object.entries(actions)
@@ -119,7 +124,7 @@ export const EntityPage = forwardRef(({
             if (isEnabled) {
                 acc[actionKey] =
                     actionKey === "manageCredits" ? (rowData) => {
-                        console.log("Estamos en tableActions: ", rowData);
+ 
                         if (actions.manageCreditsHandler) {
                             actions.manageCreditsHandler(rowData);
                         }
@@ -256,11 +261,11 @@ export const EntityPage = forwardRef(({
                         onSubmit={async (formData) => {
                             try {
                                 const response = await onSubmit(modalMode, formData);
-                                console.log(response);
+ 
                                 if (response && response.success) {
                                     await fetchData({ transformConfig });
                                     setModalOpen(false);
-                                    console.log("✅ Modal cerrado correctamente");
+ 
                                 } else {
                                     console.error("❌ Error: Respuesta no exitosa", response);
                                 }
