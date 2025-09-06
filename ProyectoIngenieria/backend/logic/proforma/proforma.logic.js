@@ -54,10 +54,6 @@ export async function isProductsValid(products) {
         // Validar que precio unitario, impuesto, descuento y cantidad no sean negativos
         const result = validateProformaItem(prod);
         if (!result.success) return { success: false, message: result.message };
-
-        // Validar en la base de datos que exista esa cantidad
-        const isAmountValid = await validateAmount(prod.ID_PRODUCT, prod.CANTIDAD);
-        if (!isAmountValid.success) return { success: false, message: isAmountValid.message };
     }
     return { success: true };
 }
@@ -78,42 +74,4 @@ function validateProformaItem(product) {
         return { success: false, message: 'El impuesto no puede ser un valor negativo.' };
     }
     return { success: true };
-}
-
-async function validateAmount(productId, requestedAmount) {
-
-    productId = productId > 0 ? productId : 0;
-
-    try {
-        const product = await Product.findOne({
-            where: {
-                ID_PRODUCT: productId
-            }
-        });
-
-        if (!product) return {
-            success: false,
-            message: `El producto con ID ${productId} no fue encontrado.`
-        };
-
-        const availableStock = product.CANTIDAD;
-        if (requestedAmount > availableStock) {
-            return {
-                success: false,
-                message: `No hay suficiente stock para el producto ${product.DSC_NOMBRE}. Stock disponible: ${availableStock}, solicitado: ${requestedAmount}.`
-            };
-        }
-
-        return {
-            success: true,
-            message: `Stock suficiente para el producto con ID ${productId}.`
-        };
-    } catch (error) {
-        console.error(error)
-        return {
-            success: false,
-            message: "Error interno del servidor al verificar el stock."
-        };
-    }
-
 }
