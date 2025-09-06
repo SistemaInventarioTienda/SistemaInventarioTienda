@@ -133,7 +133,7 @@ const useProformaForm = () => {
             FEC_LIMITE: formattedDate,
             MON_TOTAL: total,
             PRODUCTS_LIST: selectedProducts,
-            DSC_PROFORMA: note,
+            DSC_PROFORMA: "",
         });
 
         try {

@@ -23,14 +23,14 @@ const ProformaSummaryCard = ({ proformaForm }) => {
                     firstDayOfWeek={1}
                 />
 
-                <label className="sales-card-label">Nota o comentario (Opcional)</label>
+                {/* <label className="sales-card-label">Nota o comentario (Opcional)</label>
                 <Textarea
                     onChange={(e) => proformaForm.setNote(e.target.value)}
                     value={proformaForm.note}
                     style={{ height: "100px" }}
                     className="sales-textarea"
                     placeholder="Agregar una nota o comentario"
-                />
+                /> */}
 
                 <div className="sales-summary">
                     <div className="sales-summary-row">

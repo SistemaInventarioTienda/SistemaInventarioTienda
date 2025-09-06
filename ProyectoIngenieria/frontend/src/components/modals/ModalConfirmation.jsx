@@ -22,7 +22,8 @@ const ModalConfirmation = ({
     anulate: "Anular",
     logout: "Cerrar Sesión",
     make_sale: "Realizar nueva",
-    make_purchase: "Realizar nueva"
+    make_purchase: "Realizar nueva",
+    make_proforma: "Generar proforma",
   };
 
   const translatedAction = actionTranslations[action] || action;
