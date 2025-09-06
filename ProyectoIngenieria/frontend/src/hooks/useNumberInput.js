@@ -5,8 +5,6 @@ import { useState } from 'react';
 const useNumberInput = ({ min , max , initialValue , onChange }) => {
   const [value, setValue] = useState(initialValue);
 
-
-  console.log("Estado interno de useNumberInput:", value); // Debug
   // Función para incrementar el valor
   const handleIncrement = () => {
     if (value < max) {

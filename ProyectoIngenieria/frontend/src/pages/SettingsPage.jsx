@@ -13,10 +13,6 @@ function SettingsPage() {
   const [initialData, setInitialData] = useState(null);
   const [empresaID, setEmpresaID] = useState(null);
 
-
-  // const response = await handleApiCallSetting(() => {settingConfig.api.fetchAll(), "Datos Cargados Correctamente"});
-  //console.log("Settings Page: ", settingConfig.api.fetchAll());
-
   useEffect(() => {
     document.title = "Perfil";
     if (!isAuthenticated) {
@@ -28,14 +24,10 @@ function SettingsPage() {
           () => settingConfig.api.fetchAll(),"Datos cargados correctamente."
         );
     
-        console.log("Respuesta completa del backend:", data); // Debug
-    
         // Verifica que la respuesta tenga éxito y contenga datos
         if (Array.isArray(data) && data.length > 0) {
-          //console.log("Datos del backend:", data[0]); // Debug
     
           const frontendData = settingConfig.transformData.toFrontend(data[0]);
-          //console.log("Datos transformados:", frontendData);
     
           setInitialData(frontendData);
           setEmpresaID(data[0].ID_EMPRESA); // Debug

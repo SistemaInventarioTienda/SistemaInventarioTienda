@@ -12,7 +12,7 @@ const NumberInput = ({
   label,
   mode
 }) => {
-  //console.log("Valor inicial en componente [NumberInput]: ", initialValue);
+ 
   const { value, handleIncrement, handleDecrement, handleChange } =
     useNumberInput({
       min,

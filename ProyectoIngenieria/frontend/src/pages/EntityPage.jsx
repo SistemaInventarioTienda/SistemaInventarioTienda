@@ -116,8 +116,6 @@ export const EntityPage = forwardRef(({
     };
 
  
-    //console.log("TransformData [EntityPage]", transformData);
-
     const tableActions = Object.entries(actions)
         .filter(([actionKey, isEnabled]) => isEnabled)
         .reduce((acc, [actionKey, isEnabled]) => {

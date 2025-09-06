@@ -38,7 +38,7 @@ export function createDeleteTransaction({ timeHasPassed }) {
 
       return res.status(200).json({ message: "Transacción eliminada con éxito." });
     } catch (error) {
-      console.log("Error: ", error);
+      console.error("Error: ", error);
       return res.status(500).json({ message: error.message });
     }
   };

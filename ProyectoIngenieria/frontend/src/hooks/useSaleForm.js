@@ -151,7 +151,6 @@ const useSaleForm = () => {
                 () => salesConfig.api.create(saleData),
                 "Venta registrada exitosamente."
             );
-            console.log(response)
             if (response && response.downloadLink) {
                 openReportViewerInNewWindow("pdf", response.downloadLink)
             }

@@ -101,12 +101,9 @@ export function useGenericFormLogic({
   };
 
   const handleSubmit = async (e) => {
-    //console.log("DATOS ENVIADOS", formData);
     e.preventDefault();
     setIsProcessing(true);
 
-    // console.log("EntityName: ", entityName);
-    // console.log("formData: ", formData);
     try {
       let errors = [];
 
@@ -154,8 +151,6 @@ export function useGenericFormLogic({
         };
       }
 
-      //console.log("Estado en useGenericForm: ", formData.estado);
-      //console.log("ID del credito: ", formData.ID_CREDITO);
       // Elimina el campo estado si es un ajuste y no se ha seleccionado un estado
       if (entityName === "Ajuste" && !formData.estado) {
         delete dataToSubmit.correos;
@@ -171,7 +166,6 @@ export function useGenericFormLogic({
         delete dataToSubmit.estado;
         delete dataToSubmit.rango;
       } else if (entityName === "Usuario") {
-        //console.log("Usuario: ", formData.estado);
         delete dataToSubmit.correos;
         delete dataToSubmit.telefonos; // Elimina el campo telefonos si no existen
         delete dataToSubmit.rango;

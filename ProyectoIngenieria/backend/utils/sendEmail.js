@@ -112,7 +112,7 @@ const sendEmail = async (data) => {
     let info = await transporter.sendMail(mailOptions);
     return info;
   } catch (error) {
-    console.log("Error al enviar el correo: ", error)
+    console.error(error);
   }
 };
 

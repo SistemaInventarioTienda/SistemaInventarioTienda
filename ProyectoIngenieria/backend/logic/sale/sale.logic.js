@@ -38,11 +38,11 @@ async function validateStock(details_list) {
                 }
             }))
         },
-        attributes: ['DSC_NOMBRE','CANTIDAD']
+        attributes: ['DSC_NOMBRE', 'CANTIDAD']
     });
 
     if (existingStock.length > 0) {
-        const noStockProd = existingStock.map(details => 
+        const noStockProd = existingStock.map(details =>
             `${details.DSC_NOMBRE} (Cantidad en Stock: ${details.CANTIDAD})`
         );
         return [`No hay stock suficiente para: ${noStockProd.join(', ')}.`];
@@ -51,14 +51,12 @@ async function validateStock(details_list) {
     return false;
 }
 
-export function getTaxes(MONT_SUBTOTAL,PORCENT_IMPUESTO){
-    console.log(PORCENT_IMPUESTO)
-return MONT_SUBTOTAL*(PORCENT_IMPUESTO/100);
+export function getTaxes(MONT_SUBTOTAL, PORCENT_IMPUESTO) {
+    return MONT_SUBTOTAL * (PORCENT_IMPUESTO / 100);
 }
-export function getDiscount(MONT_SUBTOTAL,PORCENT_DESCUENTO){
-    console.log(PORCENT_DESCUENTO)
-    return MONT_SUBTOTAL*(PORCENT_DESCUENTO/100);
-    }
+export function getDiscount(MONT_SUBTOTAL, PORCENT_DESCUENTO) {
+    return MONT_SUBTOTAL * (PORCENT_DESCUENTO / 100);
+}
 
 async function verifyProduct(details_list) { //voy a probar some
     if (details_list.some(details => details.CANTIDAD === 0)) {

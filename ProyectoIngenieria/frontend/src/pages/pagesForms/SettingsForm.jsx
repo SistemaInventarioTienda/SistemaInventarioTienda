@@ -8,8 +8,6 @@ import GenericForm from '../../components/common/GenericForm';
 // FileInput
 const SettingsForm = ({ initialData, fields, onSubmit, onCancel }) => {
     
-    //console.log("onSubmit recibido en SettingsForm:", onSubmit);
-    
     return(
         <GenericForm
             entityName={"Ajuste"}

@@ -31,7 +31,6 @@ describe('Pruebas del módulo de Categorías', () => {
             .set('Cookie', `token=${token}`)
             .end((err, res) => {
                 if (res.status === 204) {
-                    console.log('✔ No hay categorías registradas actualmente (204)');
                     return done(); // pasa la prueba igual
                 }
 
@@ -76,7 +75,6 @@ describe('Pruebas del módulo de Categorías', () => {
             .end((err, res) => {
                 if (err) return done(err);
 
-                console.log('✔ Sesión terminada después del test');
                 token = ''; 
                 done();
             });

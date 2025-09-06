@@ -6,22 +6,11 @@ async function main() {
   try {
     // dbConecction();
     server.listen(PORT);
- 
-    // console.log(`Environment: ${process.env.NODE_ENV}`)
+
   } catch (error) {
     console.error(error);
 
   } 
 }
-
-// async function dbConecction() {
-//   try {
-//     await db.authenticate();
-//     console.log("Database online");
-
-//   } catch (error) {
-//     throw new Error ( error );
-//   }
-// }
 
 main();

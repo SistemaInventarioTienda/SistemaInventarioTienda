@@ -49,8 +49,6 @@ export const useEntityPage = ({ fetchAll, searchByValue, entityKey, transformCon
             const transformedData = items.map(item =>
                 applyTransformations(item, transformConfig)
             );
-            console.log("Datos transformados: ",transformedData)
-            //console.log("transformed", transformedData);
             setData(transformedData);
             setFilteredData(transformedData);
             setTotalPages(response.totalPages);

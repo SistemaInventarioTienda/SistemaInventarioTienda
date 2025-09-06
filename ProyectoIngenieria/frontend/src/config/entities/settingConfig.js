@@ -110,5 +110,3 @@ export const settingConfig = {
     view: true,
   },
 };
-
-//console.log("Settings Configurations: ", settingConfig.api.fetchAll());

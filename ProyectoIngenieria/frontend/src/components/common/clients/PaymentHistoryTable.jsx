@@ -18,7 +18,6 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
     transformData,
     api,
   } = creditConfig;
-  //console.log("Payments recibidos: ", payments);
   const handleEdit = (rowData) => {
     const updateRowData = {
       ...rowData,

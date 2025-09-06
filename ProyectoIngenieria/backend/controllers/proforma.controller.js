@@ -52,7 +52,7 @@ export const createProForma = async (req, res) => {
       res.status(400).json({ message: "Error al crear la factura proforma." });
     }
   } catch (error) {
-    console.log(error)
+    console.error(error)
     res.status(500).json({ message: "Error al crear la factura proforma.", error: error.message });
   }
 }

@@ -301,7 +301,6 @@ export const updateProduct = [
         const currentDate = await getDateCR();
         if (req.file) {
             if (product.URL_IMAGEN) {
-                console.log(product.URL_IMAGEN, req.file)
                 await deleteFile(product.URL_IMAGEN)
             }
             product.URL_IMAGEN = req.file.filename;

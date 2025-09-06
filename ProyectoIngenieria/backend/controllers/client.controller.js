@@ -242,10 +242,6 @@ export const deleteClient = async (req, res) => {
 export const updateClient = async (req, res) => {
   try {
 
-    console.log(
-      "Hola estamos en [updateClient] y estos son los datos del backend: ",
-      req.body
-    );
     const {
       DSC_CEDULA,
       DSC_NOMBRE,

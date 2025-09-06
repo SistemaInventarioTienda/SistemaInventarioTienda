@@ -258,13 +258,8 @@ export const getAllSupplierTypes = async (req, res) => {
 
 
 export const updatedSupplier = async (req, res) => {
-    //console.log("req.body [updatedSupplier]", req.body.DSC_DIRECCIONEXACTA);
     const { IDENTIFICADOR_PROVEEDOR, DSC_DIRECCIONEXACTA, DSC_VENTA, CTA_BANCARIA, DSC_NOMBRE, ID_TIPOPROVEEDOR, ESTADO, phones, emails } = req.body;
 
-    console.log(
-        "Hola estamos en [updateSupplier] y estos son los datos del backend: ",
-        req.body
-      );
     try {
         const date = await getDateCR();
         const supplier = await Supplier.findOne({where: {IDENTIFICADOR_PROVEEDOR: IDENTIFICADOR_PROVEEDOR}});
@@ -364,7 +359,6 @@ export const updatedSupplier = async (req, res) => {
 
         //manejo de los telefonos
         if ((phones && phones.length > 0) ) { //|| (emails && emails.length > 0)
-            //console.log("Entro al if para modificar los telefonos o los correos");
 
             const existingPhones = await numberSupplier.findAll({
                 where: {ID_PROVEEDOR: supplier.ID_PROVEEDOR},

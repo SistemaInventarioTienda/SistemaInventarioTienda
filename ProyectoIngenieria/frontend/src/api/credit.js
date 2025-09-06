@@ -4,7 +4,6 @@ export const getAllCredits = async (page, pageSize, orderByField, order) =>{
     try {
         
         const response = await axios.get(`/credit/getpayment`, {params: {page, pageSize, orderByField, order}}); //Falta la ruta del endpoint.
-        console.log(response.data)
         return response.data;
     } catch (error) {
         console.error('Error fetching credits: ', error.message);

@@ -45,7 +45,6 @@ describe('Pruebas del módulo de Proveedores', () => {
             })
             .expect(201)
             .end((err, res) => {
-                console.log(res.body); //Muestra el mensaje del backend
                 expect(res.body).to.have.property('message');
                 done(err);
             });

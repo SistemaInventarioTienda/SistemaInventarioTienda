@@ -109,7 +109,7 @@ async function validateAmount(productId, requestedAmount) {
             message: `Stock suficiente para el producto con ID ${productId}.`
         };
     } catch (error) {
-        console.log(error)
+        console.error(error)
         return {
             success: false,
             message: "Error interno del servidor al verificar el stock."

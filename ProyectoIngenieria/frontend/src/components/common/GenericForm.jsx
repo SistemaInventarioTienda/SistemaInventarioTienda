@@ -21,8 +21,6 @@ function GenericForm({
     onFieldChange
 }) {
 
-    //console.log("onSubmit recibido en GenericForm:", onSubmit);
-
     const [errorMessages, setErrorMessages] = useState([]);
     const {
         formData,
