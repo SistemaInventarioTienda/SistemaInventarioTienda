@@ -715,24 +715,22 @@ async function createSalePDF(
   return new Promise((resolve, reject) => {
     const title = "Informe de Ventas por Cliente";
     const pageWidthPoints = 595.28;
-    const pageHeightPoints = 841.89;
     const margin = 20;
     let currentY = margin + 20;
     let totalVentasPeriodo = 0;
 
-    const doc = new PDFDocument({
-      size: "A4",
-    });
+    const doc = new PDFDocument({ size: "A4" });
     const fileName = `Ventas-${formatDateTime(currentDate)}.pdf`;
     const filePath = path.join(pdfDir, "Ventas", fileName);
+
     if (!fs.existsSync(path.join(pdfDir, "Ventas"))) {
       fs.mkdirSync(path.join(pdfDir, "Ventas"), { recursive: true });
     }
-    const writeStream = fs.createWriteStream(filePath);
 
+    const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
-    // Encabezado del informe
+    // Encabezado
     doc
       .fontSize(12)
       .text(storeData.DSC_NOMBRE, margin, currentY, {
@@ -762,43 +760,50 @@ async function createSalePDF(
       });
     currentY += 25;
 
-    // Convertir el objeto salesData a un array
+    // Convertir ventas a array
     const ventasArray = Object.values(salesData);
 
-    // Agrupar ventas por cliente
+    // Agrupar por cliente
     const ventasPorCliente = ventasArray.reduce((acc, venta) => {
-      const cliente = venta.CLIENTE || 'Cliente Anónimo';
+      const cliente = venta.CLIENTE || "Cliente Anónimo";
       if (!acc[cliente]) {
         acc[cliente] = {
           nombre: cliente,
-          telefono: venta.TEL_CLIENTE || 'N/A',
-          ventas: []
+          telefono: venta.TEL_CLIENTE || "N/A",
+          ventas: [],
         };
       }
-      const subtotal = venta.MONT_SUBTOTAL;
-      const descuento = (subtotal * (venta.DESCUENTO / 100));
-      const impuesto = (subtotal - descuento) * (venta.PORCENT_IMPUESTO / 100);
       acc[cliente].ventas.push({
         fecha: new Date(venta.FEC_VENTA).toLocaleDateString(),
-        total: (venta.ESTADO === 1 && venta.ESTADO_CREDITO === 0) ? subtotal - descuento + impuesto : subtotal,
-        productos: venta.PRODUCTOS ? venta.PRODUCTOS.split(',').map(p => p.trim()) : [],
-        cantidades: venta.CANTIDADES ? venta.CANTIDADES.split(',').map(c => c.trim()) : [],
-        total_abono: venta.TOTAL_ABONOS || 0
+        productos: venta.PRODUCTOS
+          ? venta.PRODUCTOS.split(",").map((p) => p.trim())
+          : [],
+        cantidades: venta.CANTIDADES
+          ? venta.CANTIDADES.split(",").map((c) => parseFloat(c.trim()) || 0)
+          : [],
+        impuestos: venta.IMPUESTO
+          ? venta.IMPUESTO.split(",").map((c) => parseFloat(c.trim()) || 0)
+          : [],
+        descuentos: venta.DESCUENTO
+          ? venta.DESCUENTO.split(",").map((c) => parseFloat(c.trim()) || 0)
+          : [],
+        precios_unitarios: venta.MONT_UNITARIO
+          ? venta.MONT_UNITARIO.split(",").map((c) => parseFloat(c.trim()) || 0)
+          : [],
+        total_abono: venta.TOTAL_ABONOS || 0,
       });
       return acc;
     }, {});
 
-    // Tabla de ventas por cliente
-    const tableTop = currentY;
-    let rowY = tableTop;
+    // Tabla
+    let rowY = currentY;
     const clienteX = margin;
     const telefonoX = clienteX + 180;
     const fechaX = telefonoX + 120;
     const productoX = margin + 10;
-    const cantidadX = productoX + 150;
     const montoX = pageWidthPoints - margin - 70;
 
-    // Cabecera de la tabla
+    // Cabecera
     doc
       .fontSize(9)
       .font("Helvetica-Bold")
@@ -816,7 +821,7 @@ async function createSalePDF(
     rowY += 5;
     doc.font("Helvetica");
 
-    // Filas de la tabla
+    // Filas
     for (const cliente in ventasPorCliente) {
       const clienteData = ventasPorCliente[cliente];
       doc
@@ -830,27 +835,58 @@ async function createSalePDF(
       clienteData.ventas.forEach((venta) => {
         doc.fontSize(8).text(venta.fecha, fechaX, rowY);
 
-        const ventaStartY = rowY;
+        let totalVenta = 0;
         let lastProductY = rowY;
 
         venta.productos.forEach((producto, index) => {
-          doc.fontSize(8).text(`- ${producto}`, productoX, rowY);
-          if (venta.cantidades[index]) {
-            doc.text(`(${venta.cantidades[index]})`, cantidadX, rowY);
-          }
+          const cantidad = venta.cantidades[index] || 0;
+          const precioBase = venta.precios_unitarios[index] || 0;
+          const desc = venta.descuentos[index] || 0;
+          const imp = venta.impuestos[index] || 0;
+
+          // Calcular PU con desc e imp
+          let precioFinal = precioBase;
+          if (desc > 0) precioFinal -= precioFinal * (desc / 100);
+          if (imp > 0) precioFinal += precioFinal * (imp / 100);
+
+          const subtotal = precioFinal * cantidad;
+          totalVenta += subtotal;
+
+          // Línea producto
+          let lineaProducto =
+            `- ${producto} (x${cantidad}) | ` +
+            `PU: ${precioBase.toFixed(2)} | ` +
+            `Desc: ${desc}% | Imp: ${imp}% | ` +
+            `Subt: ${subtotal.toFixed(2)}`;
+
+          doc.fontSize(8).text(lineaProducto, productoX, rowY);
           lastProductY = rowY;
-          rowY += 8;
+          rowY += 10;
         });
 
+        // Totales
         if (venta.total_abono === 0) {
-          doc.fontSize(8).text(venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
-          totalVentasPeriodo += venta.total;
+          doc
+            .fontSize(8)
+            .font("Helvetica-Bold")
+            .text(totalVenta.toFixed(2), montoX - 175, lastProductY, {
+              align: "right",
+            });
+          totalVentasPeriodo += totalVenta;
         } else {
-          doc.fontSize(8).text(venta.total_abono.toFixed(2) + " / " + venta.total.toFixed(2), montoX - 175, lastProductY, { align: 'right' });
+          doc
+            .fontSize(8)
+            .font("Helvetica-Bold")
+            .text(
+              `${venta.total_abono.toFixed(2)} / ${totalVenta.toFixed(2)}`,
+              montoX - 175,
+              lastProductY,
+              { align: "right" }
+            );
           totalVentasPeriodo += venta.total_abono;
         }
 
-
+        // Separador
         const lineY = rowY + 2;
         doc
           .strokeColor("#ccc")
@@ -866,7 +902,7 @@ async function createSalePDF(
       doc.moveDown();
     }
 
-    // Mostrar el monto total de ventas en el periodo
+    // Total periodo
     currentY = rowY + 15;
     doc
       .fontSize(10)
@@ -879,7 +915,7 @@ async function createSalePDF(
       );
     doc.font("Helvetica");
 
-    // Línea final del documento
+    // Línea final
     currentY += 15;
     doc
       .fontSize(8)
