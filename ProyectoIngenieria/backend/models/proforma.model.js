@@ -27,11 +27,11 @@ const Proforma = db.define('proforma',{
         allowNull: false,
       },
       FEC_CREACION: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
       FEC_LIMITE: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
       ESTADO: {
