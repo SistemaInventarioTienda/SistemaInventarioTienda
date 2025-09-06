@@ -177,4 +177,41 @@ export const deleteProForma = async (req, res) => {
   }
 }
 
+export const proformaSale = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const [results] = await db.query(
+      'CALL sp_searchProformas(:field, :sortOrder, :limit, :offset, :expectedMatch)',
+      {
+        replacements: {
+          field: 'DSC_CODIGO_BARRAS',
+          sortOrder: 'asc',
+          limit: 1,
+          offset: 0,
+          expectedMatch: id
+        },
+        type: QueryTypes.SELECT
+      });
+
+    const count = Object.keys(results).length;
+    if (count === 0) {
+      return res.status(204).json({
+        message: "No se encontró la proforma",
+      });
+    }
+
+    const parsedResults = Object.values(results).map(r => {
+      return {
+        ...r,
+        PRODUCTS_LISTS: r.PRODUCTS_LISTS ? JSON.parse(r.PRODUCTS_LISTS) : []
+      };
+    });
+
+    res.status(200).json({ message: "Proforma encontrada correctamente.", proforma: parsedResults})
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 
