@@ -6,12 +6,14 @@ import { SalesDetailsCard, SalesSummaryCard } from "../components/features/sales
 import { toast } from "sonner";
 import { usePermissions } from "../context/authPermissions";
 import FloatingHelpButton from "../components/common/FloatingHelpButton";
+import { useLocation } from "react-router-dom";
 import "./styles/AddSalePage.css"
 
 const AddSalePage = () => {
     const saleForm = useSaleForm();
     const { permissions } = usePermissions();
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         if (permissions.home === undefined) return;
@@ -21,6 +23,38 @@ const AddSalePage = () => {
             navigate("/");
         }
     }, [permissions, navigate]);
+
+    useEffect(() => {
+        if (location.state?.proforma) {
+            const { proforma } = location.state;
+
+            // Cliente
+            if (proforma.ID_CLIENTE) {
+                saleForm.setSelectedClient(proforma.ID_CLIENTE);
+            }
+
+            // Nota
+            if (proforma.DSC_PROFORMA) {
+                saleForm.setNote(proforma.DSC_PROFORMA);
+            }
+
+            // Productos
+            if (proforma.PRODUCTS_LISTS?.length > 0) {
+                proforma.PRODUCTS_LISTS.forEach((prod) => {
+                    saleForm.addProduct({
+                        id: prod.ID,
+                        name: prod.DSC_NOMBRE,
+                        price: prod.PRECIO_UNITARIO,
+                        quantity: prod.CANTIDAD || 1,
+                        subtotal: prod.PRECIO_UNITARIO * (prod.CANTIDAD || 1),
+                        tax: prod.IMPUESTO,
+                        discount: prod.DESCUENTO
+                    });
+                });
+            }
+
+        }
+    }, [location.state]);
 
     return (
         <>

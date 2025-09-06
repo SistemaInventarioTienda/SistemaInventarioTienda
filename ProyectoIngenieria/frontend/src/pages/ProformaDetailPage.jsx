@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams, useLocation } from "react-router-dom"
-import { getAllProformas } from "../api/proforma"
+import { getAllProformas, getProformaSale } from "../api/proforma"
 import ProformaTable from "../components/features/proforma/ProformaTable"
 import "./styles/ProformaDetailPage.css"
 import PageLayout from "../components/layout/PageLayout"
 import { Printer, ArrowLeft, ShoppingCart } from "lucide-react"
 import Barcode from "react-barcode"
 import html2pdf from "html2pdf.js"
+import { toast } from "sonner"
 
 export default function ProformaDetailPage() {
     const [proforma, setProforma] = useState(null)
@@ -105,6 +106,21 @@ export default function ProformaDetailPage() {
         navigate("/proformas/history")
     }
 
+    const handleConvertToSale = async () => {
+        try {
+            const data = await getProformaSale(proforma.DSC_CODIGO_BARRAS);
+            if (!data?.proforma?.length) {
+                return toast.error("No se pudo cargar la proforma");
+            }
+
+            const selected = data.proforma[0];
+            navigate("/sales/new", { state: { proforma: selected } });
+
+        } catch (error) {
+            toast.error("Error al convertir la proforma a venta");
+        }
+    };
+
     return (
         <PageLayout>
             <div className="proforma-page">
@@ -116,7 +132,7 @@ export default function ProformaDetailPage() {
                         <button className="secondary-btn" onClick={handlePrint}>
                             <Printer size={16} style={{ marginRight: 6 }} /> Imprimir
                         </button>
-                        <button className="primary-btn">
+                        <button className="primary-btn" onClick={handleConvertToSale}>
                             <ShoppingCart size={16} style={{ marginRight: 6 }} /> Convertir a venta
                         </button>
                     </div>

@@ -54,3 +54,14 @@ export const searchProforma = async (
         throw error;
     }
 };
+
+// Obtener proforma lista para convertir en venta
+export const getProformaSale = async (id) => {
+    try {
+        const response = await axios.get(`/proforma/proformasale/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error obteniendo proforma para venta:", error.message);
+        throw error;
+    }
+};
