@@ -236,7 +236,7 @@ export const getAllPaymentByCredit = async (req, res) => {
             include: [
                 {
                     model: sale,
-                    attributes: ['ID_VENTA', 'DSC_VENTA', 'PORCENT_IMPUESTO', 'MONT_SUBTOTAL', 'PORCENT_DESCUENTO','FEC_VENTA'],
+                    attributes: ['ID_VENTA', 'DSC_VENTA', 'MONT_SUBTOTAL','FEC_VENTA'],
                     include: [
                         {
                             model: Client,
