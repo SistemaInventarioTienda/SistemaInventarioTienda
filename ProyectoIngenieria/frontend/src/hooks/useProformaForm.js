@@ -145,7 +145,7 @@ const useProformaForm = () => {
 
             // FRONTEND (useProformaForm)
             if (response?.DSC_CODIGO_BARRAS) {
-                navigate(`/proformas/${response.DSC_CODIGO_BARRAS}?download=1`);
+                navigate(`/proformas/${response.DSC_CODIGO_BARRAS}?download=0`);
             }
 
         } catch (error) {
