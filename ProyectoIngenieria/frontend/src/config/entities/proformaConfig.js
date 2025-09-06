@@ -79,11 +79,11 @@ export const proformaConfig = {
         },
         FEC_CREACION: (item) =>
             item.FEC_CREACION
-                ? new Date(item.FEC_CREACION).toLocaleDateString("es-ES")
+                ? item.FEC_CREACION
                 : null,
         FEC_LIMITE: (item) =>
             item.FEC_LIMITE
-                ? new Date(item.FEC_LIMITE).toLocaleDateString("es-ES")
+                ? item.FEC_LIMITE
                 : null,
     },
 

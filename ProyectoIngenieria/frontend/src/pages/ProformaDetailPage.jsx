@@ -75,6 +75,14 @@ export default function ProformaDetailPage() {
         return <div className="loading-container">Cargando detalle de proforma...</div>
     }
 
+    function reverseDate(dateStr) {
+        // Separa la fecha en partes: [YYYY, MM, DD]
+        const parts = dateStr.split("-");
+
+        // Retorna en orden invertido: DD-MM-YYYY
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
     // ✅ Calcular totales producto por producto
     const { subtotal, totalDescuentos, totalImpuestos, total } =
         proforma.detailsproformas?.reduce(
@@ -193,10 +201,10 @@ export default function ProformaDetailPage() {
                                     <strong>Código:</strong> {proforma.DSC_CODIGO_BARRAS}
                                 </p>
                                 <p>
-                                    <strong>Fecha:</strong> {new Date(proforma.FEC_CREACION).toLocaleDateString("es-CR")}
+                                    <strong>Fecha:</strong> {reverseDate(proforma.FEC_CREACION)}
                                 </p>
                                 <p>
-                                    <strong>Válida hasta:</strong> {new Date(proforma.FEC_LIMITE).toLocaleDateString("es-CR")}
+                                    <strong>Válida hasta:</strong> {reverseDate(proforma.FEC_LIMITE)}
                                 </p>
                             </div>
                             <div className={`status-badge ${new Date(proforma.FEC_LIMITE) < new Date() ? "expired" : "valid"}`}>
