@@ -30,7 +30,7 @@ export default function ProformaTable({ items }) {
 
                         return (
                             <tr key={idx}>
-                                <td>{item.Product?.DSC_NOMBRE}</td>
+                                <td>{item.DSC_NOMBRE}</td>
                                 <td>₡{item.PRECIO_UNITARIO.toLocaleString("es-CR")}</td>
                                 <td>{item.CANTIDAD}</td>
                                 <td>{descPct}% (₡{desc.toLocaleString("es-CR")})</td>

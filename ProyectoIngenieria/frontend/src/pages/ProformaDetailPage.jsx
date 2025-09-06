@@ -18,15 +18,46 @@ export default function ProformaDetailPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getAllProformas()
-                const selected = data.proformas.find(p => p.DSC_CODIGO_BARRAS === barcode)
-                setProforma(selected || null)
+                const data = await getProformaSale(barcode);
+                if (!data?.proforma?.length) {
+                    setProforma(null);
+                } else {
+                    const pf = data.proforma[0];
+
+                    // Normalizamos la estructura
+                    const normalized = {
+                        ...pf,
+                        detailsproformas: pf.PRODUCTS_LISTS.map(p => ({
+                            ...p,
+                            ID_PRODUCTO: p.ID,
+                            DSC_NOMBRE: p.DSC_NOMBRE,
+                            DSC_DESCRIPTION: p.DSC_DESCRIPTION,
+                            PRECIO_UNITARIO: p.PRECIO_UNITARIO,
+                            CANTIDAD: p.CANTIDAD,
+                            IMPUESTO: p.IMPUESTO,
+                            DESCUENTO: p.DESCUENTO
+                        })),
+                        Config: {
+                            DSC_NOMBRE: pf.DSC_NOMBRE,
+                            DSC_CORREO: pf.DSC_CORREO,
+                            DSC_DIRECCION: pf.DSC_DIRECCION,
+                            NUM_TELEFONO: pf.NUM_TELEFONO,
+                            DSC_SLOGAN: pf.DSC_ESLOGAN
+                        },
+                        Cliente: {
+                            TIPO_CLIENTE: "Cliente general",
+                            NOTA: ""
+                        }
+                    };
+
+                    setProforma(normalized);
+                }
             } catch (err) {
-                console.error(err)
+                console.error(err);
             }
-        }
-        fetchData()
-    }, [barcode])
+        };
+        fetchData();
+    }, [barcode]);
 
     // Descarga automática si viene con ?download=1
     useEffect(() => {
