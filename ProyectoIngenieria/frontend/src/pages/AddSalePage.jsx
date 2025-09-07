@@ -41,15 +41,18 @@ const AddSalePage = () => {
             // Productos
             if (proforma.PRODUCTS_LISTS?.length > 0) {
                 proforma.PRODUCTS_LISTS.forEach((prod) => {
-                    saleForm.addProduct({
-                        id: prod.ID,
-                        name: prod.DSC_NOMBRE,
-                        price: prod.PRECIO_UNITARIO,
-                        quantity: prod.CANTIDAD || 1,
-                        subtotal: prod.PRECIO_UNITARIO * (prod.CANTIDAD || 1),
-                        tax: prod.IMPUESTO,
-                        discount: prod.DESCUENTO
-                    });
+                    saleForm.addProduct(
+                        {
+                            id: prod.ID,
+                            name: prod.DSC_NOMBRE,
+                            price: prod.PRECIO_UNITARIO,
+                            quantity: prod.CANTIDAD || 1,
+                            subtotal: prod.PRECIO_UNITARIO * (prod.CANTIDAD || 1),
+                            tax: prod.IMPUESTO,
+                            discount: prod.DESCUENTO
+                        },
+                        true
+                    );
                 });
             }
 

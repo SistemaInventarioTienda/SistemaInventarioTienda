@@ -49,26 +49,33 @@ const useSaleForm = () => {
         };
     };
 
-    const addProduct = (product) => {
+    const addProduct = (product, override = false) => {
         setSelectedProducts((prevProducts) => {
             const existingProduct = prevProducts.find((p) => p.id === product.id);
+
             if (existingProduct) {
                 return prevProducts.map((p) =>
                     p.id === product.id
                         ? {
                             ...p,
-                            quantity: p.quantity + 1,
-                            subtotal: (p.quantity + 1) * p.price,
+                            quantity: override
+                                ? product.quantity // sobrescribe (cuando viene de proforma)
+                                : (p.quantity || 0) + (product.quantity || 1),
+                            subtotal:
+                                (override
+                                    ? product.quantity
+                                    : (p.quantity || 0) + (product.quantity || 1)) * p.price,
                         }
                         : p
                 );
             } else {
+                const qty = product.quantity ?? 1;
                 return [
                     ...prevProducts,
                     {
                         ...product,
-                        quantity: 1,
-                        subtotal: product.price,
+                        quantity: qty,
+                        subtotal: qty * product.price,
                         tax: product.tax || 0,
                         discount: product.discount || 0,
                     },

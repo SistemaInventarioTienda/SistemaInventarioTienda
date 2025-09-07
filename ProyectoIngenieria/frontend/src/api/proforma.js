@@ -59,6 +59,7 @@ export const searchProforma = async (
 export const getProformaSale = async (id) => {
     try {
         const response = await axios.get(`/proforma/proformasale/${id}`);
+        console.log("Proforma para venta obtenida:", response.data);
         return response.data;
     } catch (error) {
         console.error("Error obteniendo proforma para venta:", error.message);
