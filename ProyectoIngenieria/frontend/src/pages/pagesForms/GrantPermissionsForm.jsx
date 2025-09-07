@@ -19,6 +19,7 @@ function GrantPermissionsForm({ isOpen, onClose, user }) {
         { value: "sales", label: "Ventas" },
         { value: "reports", label: "Reportes" },
         {value: "transactions", label: "Transacciones"},
+        {value: "proforma", label: "Proforma"},
     ];
 
     const [permissions, setPermissions] = useState(() => {
