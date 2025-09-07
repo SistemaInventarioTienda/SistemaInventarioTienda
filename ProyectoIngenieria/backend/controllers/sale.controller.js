@@ -53,10 +53,7 @@ export const createSale = async (req, res) => {
         let montoTotalCredito = montSubtotal;
         let estadoCredito = +(ESTADO_CREDITO == 1);
         if (estadoCredito) {
-            const montoConDescuento = montSubtotal - (montSubtotal * porcentDescuento / 100);
-            montoTotalCredito = montoConDescuento + (montoConDescuento * porcentImpuesto / 100);
-
-            montoSale = montoTotalCredito;
+            
         } else {
             montoSale = montSubtotal;
         }
@@ -67,7 +64,7 @@ export const createSale = async (req, res) => {
             METODO_PAGO: metodoPago,
             DSC_VENTA: dscVenta,
             ESTADO_CREDITO: estadoCredito,
-            MONT_SUBTOTAL: montoSale,
+            MONT_SUBTOTAL: MONT_SUBTOTAL,
             ESTADO: ESTADO,
         });
 
@@ -75,7 +72,12 @@ export const createSale = async (req, res) => {
 
         if (idSale) {
             if (details_list && Array.isArray(details_list) && details_list.length > 0) {
-
+                //formulas a utilizar por cada producto
+                const totalItem = item.CANTIDAD * item.MONT_UNITARIO;
+                const discount = totalItem * (item.PORCENT_DESCUENTO / 100);
+                const tax = (totalItem - discount) * (item.PORCENT_IMPUESTO / 100);
+               const totalProd= (totalItem-discount+tax);
+               //leer la lista de detalle de productos
                 const productList = details_list.map(detailsProd => ({
                     ID_VENTA: idSale,
                     ID_PRODUCTO: detailsProd.ID_PRODUCTO,
@@ -94,7 +96,7 @@ export const createSale = async (req, res) => {
                 ID_VENTA: idSale,
                 FEC_ULTIMOPAGO: date,
                 FEC_VENCIMIENTO: FEC_VENCIMIENTO,
-                MON_PENDIENTE: montoSale,
+                MON_PENDIENTE: MONT_SUBTOTAL,//agregar sumatoria
                 ESTADO_CREDITO: estadoCredito,
             });
 

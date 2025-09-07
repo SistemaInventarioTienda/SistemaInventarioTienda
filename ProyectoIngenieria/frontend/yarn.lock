@@ -2780,10 +2780,10 @@
 "@ungap/structured-clone@^1.2.0":
   version "1.2.1"
 
-"@vimeo/player@^2.29.0":
-  version "2.29.3"
-  resolved "https://registry.npmjs.org/@vimeo/player/-/player-2.29.3.tgz"
-  integrity sha512-pS2LsZbcbuQmV9BatpxdjcsFsjuas1jslCzY48o1qsXJ/sQuPiWIuk5B/dSaLbY3AcnS4M1IPphPgA7PRSMdxA==
+"@vimeo/player@^2.29.4":
+  version "2.29.4"
+  resolved "https://registry.npmjs.org/@vimeo/player/-/player-2.29.4.tgz"
+  integrity sha512-vKAWNYs/maJ1U3YQDjpF8+LFc/NHvJnqNbxczoVLdCrFu6dBwncDFjF9denomLc0yIsc2v9GJTIsnHDTXBIERw==
   dependencies:
     native-promise-only "0.8.1"
     weakmap-polyfill "2.0.4"
