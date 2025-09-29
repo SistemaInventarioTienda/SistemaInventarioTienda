@@ -17,6 +17,7 @@ const __dirname = dirname(__filename);
 const downloadLink = 'http://localhost:4000/api/reports/download_report?file='
 const pdfDir = path.join(__dirname, "../uploads/pdf");
 const excelDir = path.join(__dirname, "../uploads/excel");
+const dataFile = path.join(__dirname, 'FAC_consecutivos.json');
 // Create routes if they do not exist
 if (!fs.existsSync(pdfDir)) {
   fs.mkdirSync(pdfDir, { recursive: true });
@@ -171,9 +172,9 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     const doc = new PDFDocument({
       size: [pageWidthPoints, pageHeightPoints]
     });
-    const consecutivo = formatDateTime(currentDate).replace(/-/g, "");
-    const fileName = `Recibo-${consecutivo}.pdf`;
-    const title = `Recibo - ${consecutivo}`;
+    const consecutivo = generateConsecutive();
+    const fileName = `${consecutivo}.pdf`;
+    const title = `${consecutivo}`;
     const filePath = path.join(pdfDir, 'Recibos', fileName);
     if (!fs.existsSync(path.join(pdfDir, 'Recibos'))) {
       fs.mkdirSync(path.join(pdfDir, 'Recibos'), { recursive: true });
@@ -2593,4 +2594,34 @@ async function createResumenEXCEL(currentDate, storeData, resumenData) {
       });
     }
   });
+}
+
+function loadConsecutive() {
+  if (!fs.existsSync(dataFile)) {
+    return { year: new Date().getFullYear(), number: 0 };
+  }
+  const rawData = fs.readFileSync(dataFile);
+  return JSON.parse(rawData);
+}
+
+function saveData(data) {
+  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+}
+
+function generateConsecutive() {
+  const now = new Date();
+  const year = now.getFullYear();
+
+  let data = loadConsecutive();
+  if (data.year !== year) {
+    data.year = year;
+    data.number = 0;
+  }
+
+  data.number += 1;
+
+  saveData(data);
+
+  const numFormat = String(data.number).padStart(7,'0');
+  return `FAC-${year}-${numFormat}`;
 }
