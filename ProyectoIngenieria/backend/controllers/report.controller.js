@@ -242,7 +242,6 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       align: "right",
     });
     doc.text("Imp.", margin + 95, currentY, { width: 40, align: "right" });
-    doc.text("Desc.", margin + 125, currentY, { width: 40, align: "right" });
     doc.text("Total", pageWidthPoints - margin - 40, currentY, {
       width: 40,
       align: "right",
@@ -266,7 +265,6 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       doc.text(item.CANTIDAD.toString(), margin + 35, currentY, { width: 30, align: 'right' });
       doc.text(item.MONT_UNITARIO.toFixed(2), margin + 65, currentY, { width: 45, align: 'right' });
       doc.text(item.PORCENT_IMPUESTO.toFixed(2), margin + 95, currentY, { width: 40, align: 'right' });
-      doc.text(0, margin + 125, currentY, { width: 40, align: 'right' });
 
       const discount = totalItem * (item.PORCENT_DESCUENTO / 100);
       const tax = (totalItem - discount) * (item.PORCENT_IMPUESTO / 100);
