@@ -7,7 +7,6 @@ export default function ProformaTable({ items }) {
                         <th>Producto</th>
                         <th>Precio Unit.</th>
                         <th>Cantidad</th>
-                        <th>Descuento</th>
                         <th>Subtotal</th>
                         <th>Impuesto</th>
                         <th>Total</th>
@@ -33,7 +32,6 @@ export default function ProformaTable({ items }) {
                                 <td>{item.DSC_NOMBRE}</td>
                                 <td>₡{item.PRECIO_UNITARIO.toLocaleString("es-CR")}</td>
                                 <td>{item.CANTIDAD}</td>
-                                <td>0% ₡0</td>
                                 <td>₡{subDesc.toLocaleString("es-CR")}</td>
                                 <td>{impPct}% (₡{imp.toLocaleString("es-CR")})</td>
                                 <td>₡{total.toLocaleString("es-CR")}</td>
