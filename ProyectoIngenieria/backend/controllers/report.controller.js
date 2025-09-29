@@ -162,7 +162,6 @@ function validateDate(dateString) {
 // Function to create a PDF SALE
 export async function createReceiptPDF(currentDate, storeData, saleData) {
   return new Promise((resolve, reject) => {
-    const title = "***Recibo***";
 
     const pageWidthPoints = 227;
     const pageHeightPoints = 623;
@@ -172,7 +171,9 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     const doc = new PDFDocument({
       size: [pageWidthPoints, pageHeightPoints]
     });
-    const fileName = `Recibo-${formatDateTime(currentDate)}.pdf`;
+    const consecutivo = formatDateTime(currentDate).replace(/-/g, "");
+    const fileName = `Recibo-${consecutivo}.pdf`;
+    const title = `Recibo - ${consecutivo}`;
     const filePath = path.join(pdfDir, 'Recibos', fileName);
     if (!fs.existsSync(path.join(pdfDir, 'Recibos'))) {
       fs.mkdirSync(path.join(pdfDir, 'Recibos'), { recursive: true });
@@ -212,10 +213,10 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
         align: "center",
         width: pageWidthPoints - 2 * margin,
       });
-    currentY += 10; // Space after direction
+    currentY += 20; // Space after direction
 
     doc
-      .fontSize(9)
+      .fontSize(8)
       .text(storeData.DSC_ESLOGAN, margin, currentY, {
         align: "center",
         width: pageWidthPoints - 2 * margin,
@@ -225,7 +226,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
 
     // Title
     doc
-      .fontSize(12)
+      .fontSize(9)
       .text(title, margin, currentY, {
         align: "center",
         width: pageWidthPoints - 2 * margin,
@@ -255,7 +256,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       .stroke();
     currentY += 3;
 
-  
+
 
     // Sale Details Table Rows
     let totalProducts = 0;
@@ -265,11 +266,11 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       doc.text(item.CANTIDAD.toString(), margin + 35, currentY, { width: 30, align: 'right' });
       doc.text(item.MONT_UNITARIO.toFixed(2), margin + 65, currentY, { width: 45, align: 'right' });
       doc.text(item.PORCENT_IMPUESTO.toFixed(2), margin + 95, currentY, { width: 40, align: 'right' });
-      doc.text(item.PORCENT_DESCUENTO.toFixed(2), margin + 125, currentY, { width: 40, align: 'right' });
-     
-    const discount = totalItem * (item.PORCENT_DESCUENTO / 100);
-    const tax = (totalItem - discount) * (item.PORCENT_IMPUESTO / 100);
-     const totalProd= (totalItem-discount+tax);
+      doc.text(0, margin + 125, currentY, { width: 40, align: 'right' });
+
+      const discount = totalItem * (item.PORCENT_DESCUENTO / 100);
+      const tax = (totalItem - discount) * (item.PORCENT_IMPUESTO / 100);
+      const totalProd = (totalItem - discount + tax);
       doc.text(totalProd.toFixed(2), pageWidthPoints - margin - 40, currentY, { width: 40, align: 'right' });
       currentY += 8;
       if (currentY > pageHeightPoints - 50) {
@@ -290,7 +291,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       .stroke();
     currentY += 5;
 
-  
+
     doc
       .fontSize(9)
       .font("Helvetica-Bold")
@@ -355,7 +356,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
 }
 
 function formatDateTime(fechaHora) {
-  return fechaHora.replace(/[:\s]/g, "-");
+  return fechaHora.replace(/[:\s]/g, "");
 }
 
 async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
