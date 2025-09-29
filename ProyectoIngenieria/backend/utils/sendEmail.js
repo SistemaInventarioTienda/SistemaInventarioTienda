@@ -2,7 +2,7 @@ import { USEREMAIL, USERPASSEMAIL } from "../config.js";
 import nodemailer from "nodemailer";
 
 export const changePasswordEmail = async (data) => {
-  data['html'] = `
+    data['html'] = `
         <!DOCTYPE html>
         <html lang="es">
         <head>
@@ -80,44 +80,44 @@ export const changePasswordEmail = async (data) => {
         </body>
         </html>
     `;
-  data['subject'] = "Alerta Cambio de contraseña";
-  sendEmail(data);
+    data['subject'] = "Alerta Cambio de contraseña";
+    sendEmail(data);
 }
 
 const sendEmail = async (data) => {
-  // Create a transporter
-  let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: USEREMAIL,
-      pass: USERPASSEMAIL,
-    },
-  });
+    // Create a transporter
+    let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: USEREMAIL,
+            pass: USERPASSEMAIL,
+        },
+    });
 
-  // Set up email options
-  let mailOptions = {
-    from: USEREMAIL,
-    to: data.to,
-    subject: data.subject,
-    html: data.html,
-    attachments: data.files?.map(file => ({
-      filename: file.name,
-      path: file.path,
-      contentType: file.type
-    }))
-  };
+    // Set up email options
+    let mailOptions = {
+        from: USEREMAIL,
+        to: data.to,
+        subject: data.subject,
+        html: data.html,
+        attachments: data.files?.map(file => ({
+            filename: file.name,
+            path: file.path,
+            contentType: file.type
+        }))
+    };
 
-  // Send the email
-  try {
-    let info = await transporter.sendMail(mailOptions);
-    return info;
-  } catch (error) {
-    console.error(error);
-  }
+    // Send the email
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        return info;
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 export const sendReceiptEmail = async (data) => {
-  data['html'] = `
+    data['html'] = `
         <!DOCTYPE html>
         <html lang="es">
 
@@ -187,6 +187,80 @@ export const sendReceiptEmail = async (data) => {
 
         </html>
     `;
-  data['subject'] = "Recibo de compra";
-  sendEmail(data);
+    data['subject'] = "Recibo de compra";
+    sendEmail(data);
 }
+
+export const sendBackupEmail = async (data) => {
+    data['html'] = `
+    <!DOCTYPE html>
+    <html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Respaldo de la base de datos</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+
+            .container {
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                width: 90%;
+                max-width: 600px;
+                text-align: center;
+            }
+
+            h1 {
+                color: #007bff; /* Azul para respaldo */
+                margin-bottom: 20px;
+            }
+
+            p {
+                color: #555;
+                margin-bottom: 15px;
+            }
+
+            .greeting {
+                font-style: italic;
+                color: #777;
+                margin-bottom: 20px;
+            }
+
+            .footer {
+                font-size: 0.8em;
+                color: #999;
+                margin-top: 30px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Respaldo de Base de Datos</h1>
+            <p class="greeting">Estimado,</p>
+            <p>Se ha generado un respaldo reciente de la base de datos de su sistema.</p>
+            <p>Adjunto encontrará el archivo correspondiente para su almacenamiento y seguridad.</p>
+            <p>Por favor, conserve este archivo en un lugar seguro.</p>
+            <div class="footer">
+                Este es un correo electrónico automático. Por favor, no responda a este mensaje.
+            </div>
+        </div>
+    </body>
+
+    </html>
+    `;
+    data['subject'] = "Respaldo de la base de datos";
+    sendEmail(data);
+};
