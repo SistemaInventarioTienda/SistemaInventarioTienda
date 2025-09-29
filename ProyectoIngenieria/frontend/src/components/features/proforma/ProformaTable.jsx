@@ -33,7 +33,7 @@ export default function ProformaTable({ items }) {
                                 <td>{item.DSC_NOMBRE}</td>
                                 <td>₡{item.PRECIO_UNITARIO.toLocaleString("es-CR")}</td>
                                 <td>{item.CANTIDAD}</td>
-                                <td>{descPct}% (₡{desc.toLocaleString("es-CR")})</td>
+                                <td>0% ₡0</td>
                                 <td>₡{subDesc.toLocaleString("es-CR")}</td>
                                 <td>{impPct}% (₡{imp.toLocaleString("es-CR")})</td>
                                 <td>₡{total.toLocaleString("es-CR")}</td>
