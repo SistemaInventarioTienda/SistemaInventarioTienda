@@ -1,0 +1,17 @@
+# API
+PORT=4000
+TOKEN_SECRET=secret
+
+# FRONT-END
+FRONTEND_URL=http://localhost:3000
+
+# DATABASE
+USER_DB=root
+PASSWORD_DB=
+HOST_DB=localhost
+PORT_DB=3306
+DATABASE=dbtiendasistemainventario
+
+# EMAIL
+USEREMAIL=xxxxxxxxx@gmail.com
+USERPASSEMAIL=
