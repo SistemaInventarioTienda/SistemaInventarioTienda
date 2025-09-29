@@ -234,10 +234,6 @@ export default function ProformaDetailPage() {
                                         <span>₡{subtotal.toLocaleString("es-CR")}</span>
                                     </div>
                                     <div className="summary-row">
-                                        <span>Descuentos:</span>
-                                        <span>- ₡0</span>
-                                    </div>
-                                    <div className="summary-row">
                                         <span>Impuestos:</span>
                                         <span>₡{totalImpuestos.toLocaleString("es-CR")}</span>
                                     </div>
