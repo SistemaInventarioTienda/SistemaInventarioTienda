@@ -9,13 +9,13 @@ export const TOKEN_SECRET = process.env.TOKEN_SECRET || "secret";
 export const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
 // DATABASE
-const user = process.env.USER_DB || 'root';
-const password = process.env.PASSWORD_DB || '';
-const host = process.env.HOST_DB || 'localhost';
-const port = process.env.PORT_DB || 3306;
-const database = process.env.DATABASE || 'dbtiendasistemainventario';
-export const MYSQL_URI = `mysql://${user}:${password}@${host}:${port}/${database}`;
+export const USER_DB = process.env.USER_DB || 'root';
+export const PASSWORD_DB = process.env.PASSWORD_DB || '';
+export const HOST_DB = process.env.HOST_DB || 'localhost';
+const PORT_DB = process.env.PORT_DB || 3306;
+export const DATABASE = process.env.DATABASE || 'dbtiendasistemainventario';
+export const MYSQL_URI = `mysql://${USER_DB}:${PASSWORD_DB}@${HOST_DB}:${PORT_DB}/${DATABASE}`;
 
 // EMAIL
 export const USEREMAIL = process.env.USEREMAIL || 'zairysnaydertienda@gmail.com';
-export const USERPASSEMAIL = process.env.USERPASSEMAIL || 'pctf kfpi fazc kwlq';
+export const USERPASSEMAIL = process.env.USERPASSEMAIL || 'pctf kfpi fazc kwlq';
