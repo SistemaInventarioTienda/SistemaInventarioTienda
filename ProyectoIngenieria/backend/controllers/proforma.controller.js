@@ -4,7 +4,6 @@ import { createBarCode, isDateValid, isProductsValid } from "../logic/proforma/p
 import { Proforma, DetailsProforma } from "../models/proforma.model.js";
 import Config from "../models/config.model.js";
 import Product from "../models/product.model.js";
-
 import { QueryTypes } from 'sequelize';
 import db from '../db.js';
 

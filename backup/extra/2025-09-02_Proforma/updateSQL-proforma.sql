@@ -171,6 +171,7 @@ BEGIN
         e.DSC_ESLOGAN,
         
         (
+            SET SESSION group_concat_max_len = 1000000;
 			SELECT JSON_OBJECT(
                 'DSC_NOMBRE', prod.DSC_NOMBRE,
                 'DSC_DESCRIPTION', prod.DSC_DESCRIPTION
