@@ -393,10 +393,13 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
           type: QueryTypes.SELECT,
         }
       );
+
+      const normalizedRowsSupplier = normalizeRows(shoppingBySupplier);
+      const reportSupplier = buildShoppingReport(normalizedRowsSupplier);
       return await createShoppingPDF(
         currentDate,
         store[0],
-        shoppingBySupplier,
+        reportSupplier,
         MIN_FEC,
         MAX_FEC
       );
@@ -607,24 +610,26 @@ async function createShoppingPDF(
     currentY += 15; // Espacio después de la fecha del reporte
 
     // Convertir el objeto shoppingData a un array
-    const comprasArray = Object.values(shoppingData);
+    const comprasArray = shoppingData;
 
     // Agrupar compras por proveedor
     const comprasPorProveedor = comprasArray.reduce((acc, compra) => {
-      const proveedor = compra.PROVEEDOR;
-      if (!acc[proveedor]) {
-        acc[proveedor] = {
-          nombre: proveedor,
-          telefono: compra.TEL_PROVEEDOR,
+      const proveedorNombre = compra.proveedor.nombre;
+
+      if (!acc[proveedorNombre]) {
+        acc[proveedorNombre] = {
+          nombre: proveedorNombre,
+          telefono: compra.proveedor.telefono,
           compras: [],
         };
       }
-      acc[proveedor].compras.push({
-        fecha: compra.FEC_COMPRA,
-        total: compra.MON_TOTAL,
-        productos: compra.PRODUCTOS.split(",").map((p) => p.trim()),
-        cantidades: compra.CANTIDADES.split(",").map((c) => c.trim()),
+
+      acc[proveedorNombre].compras.push({
+        fecha: compra.fechaCompra,
+        total: compra.total,
+        productos: compra.productos,
       });
+
       return acc;
     }, {});
 
@@ -673,11 +678,9 @@ async function createShoppingPDF(
         const compraStartY = rowY;
         let lastProductY = rowY;
 
-        compra.productos.forEach((producto, index) => {
-          doc.fontSize(8).text(`- ${producto}`, productoX, rowY);
-          if (compra.cantidades[index]) {
-            doc.text(`(${compra.cantidades[index]})`, cantidadX, rowY);
-          }
+        compra.productos.forEach((producto) => {
+          doc.fontSize(8).text(`- ${producto.nombre}`, productoX, rowY);
+          doc.text(`(${producto.cantidad})`, cantidadX, rowY);
           lastProductY = rowY;
           rowY += 8;
         });
@@ -2964,4 +2967,39 @@ function normalizeRows(rawRows) {
   }
 
   throw new Error("Formato de rows no soportado");
+}
+
+function buildShoppingReport(rows) {
+  if (!Array.isArray(rows)) return [];
+
+  const comprasMap = rows.reduce((acc, row) => {
+    const idCompra = row.ID_COMPRA;
+
+    if (!acc[idCompra]) {
+      acc[idCompra] = {
+        idCompra: idCompra,
+        fechaCompra: row.FEC_COMPRA,
+        fechaEntrada: row.FEC_ENTRADA,
+        metodoPago: row.DSC_METODO_PAGO,
+        estado: Number(row.ESTADO),
+        total: Number(row.MON_TOTAL) || 0,
+        proveedor: {
+          id: row.ID_PROVEEDOR,
+          nombre: row.PROVEEDOR || "Proveedor no definido",
+          telefono: row.TEL_PROVEEDOR || "N/A",
+        },
+        productos: [],
+      };
+    }
+
+    acc[idCompra].productos.push({
+      idProducto: row.ID_PRODUCT,
+      nombre: row.PRODUCTO,
+      cantidad: Number(row.CANTIDAD) || 0,
+    });
+
+    return acc;
+  }, {});
+
+  return Object.values(comprasMap);
 }
