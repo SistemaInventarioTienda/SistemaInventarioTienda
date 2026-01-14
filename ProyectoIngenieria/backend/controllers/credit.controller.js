@@ -27,11 +27,9 @@ export const addPayment = async (req, res) => {
     }
 
     if (MON_ABONADO > creditId.MON_PENDIENTE) {
-      return res
-        .status(400)
-        .json({
-          message: "El monto a rebajar es mayor que el saldo pendiente",
-        });
+      return res.status(400).json({
+        message: "El monto a rebajar es mayor que el saldo pendiente",
+      });
     }
 
     if (MON_ABONADO <= 0) {
@@ -48,13 +46,13 @@ export const addPayment = async (req, res) => {
 
     if (addPay) {
       creditId.MON_PENDIENTE -= MON_ABONADO;
-      if(creditId.MON_PENDIENTE === 0){
+      if (creditId.MON_PENDIENTE === 0) {
         creditId.ESTADO_CREDITO = 0;
         // Actualizar el estado de la venta a 1
         const saleToUpdate = await sale.findByPk(creditId.ID_VENTA);
-        if(saleToUpdate){
-            saleToUpdate.ESTADO = 1;
-            await saleToUpdate.save();
+        if (saleToUpdate) {
+          saleToUpdate.ESTADO = 1;
+          await saleToUpdate.save();
         }
       }
       creditId.FEC_ULTIMOPAGO = date;
@@ -110,11 +108,9 @@ export const modifyPayment = async (req, res) => {
     creditId.MON_PENDIENTE += paymentObj.MON_ABONADO;
 
     if (MON_ABONADO > creditId.MON_PENDIENTE) {
-      return res
-        .status(400)
-        .json({
-          message: "El monto a rebajar es mayor que el saldo pendiente",
-        });
+      return res.status(400).json({
+        message: "El monto a rebajar es mayor que el saldo pendiente",
+      });
     }
 
     if (MON_ABONADO <= 0) {
@@ -162,7 +158,7 @@ export const getCreditById = async (req, res) => {
             "PORCENT_IMPUESTO",
             "MONT_SUBTOTAL",
             "PORCENT_DESCUENTO",
-            "FEC_VENTA"
+            "FEC_VENTA",
           ],
           include: [
             {
@@ -195,21 +191,23 @@ export const getCreditById = async (req, res) => {
       return res.status(204).json({ message: "Crédito no encontrado" });
     }
 
-   
-      const creditStatus = await getStatusCredi(response.MON_PENDIENTE, new Date(response.FEC_VENCIMIENTO));
-     
-      const statusMap = {
-        0: "ACTIVO",
-        1: "MOROSO",
-        2: "CANCELADO"
-      };
-      
-      const status = statusMap[creditStatus] || "DESCONOCIDO";
-     
-      response.setDataValue('ESTADO_CREDITO', status);
-   
+    const creditStatus = await getStatusCredi(
+      response.MON_PENDIENTE,
+      new Date(response.FEC_VENCIMIENTO)
+    );
+
+    const statusMap = {
+      0: "ACTIVO",
+      1: "MOROSO",
+      2: "CANCELADO",
+    };
+
+    const status = statusMap[creditStatus] || "DESCONOCIDO";
+
+    response.setDataValue("ESTADO_CREDITO", status);
+
     // Devolver el crédito con sus relaciones
-    res.status(200).json({response});
+    res.status(200).json({ response });
   } catch (error) {
     console.error("Error al obtener el crédito:", error.message);
     res
@@ -219,80 +217,111 @@ export const getCreditById = async (req, res) => {
 };
 
 export const getAllPaymentByCredit = async (req, res) => {
-    try {
-        const { page = 1, pageSize = 5, orderByField = 'FEC_VENCIMIENTO', order = 'desc' } = req.query;
-        const limit = parseInt(pageSize);
-        const offset = (parseInt(page) - 1) * limit;
+  try {
+    const {
+      page = 1,
+      pageSize = 5,
+      orderByField = "FEC_VENCIMIENTO",
+      order = "desc",
+    } = req.query;
+    const limit = parseInt(pageSize);
+    const offset = (parseInt(page) - 1) * limit;
 
-        const field = ['FEC_VENCIMIENTO', 'ESTADO_CREDITO', 'MON_PENDIENTE', 'FEC_ULTIMOPAGO'].includes(orderByField) ? orderByField : 'FEC_VENTA';
-        //const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
-        const sortOrder = typeof order === 'string' && (order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc') ? order : 'asc';
+    const field = [
+      "FEC_VENCIMIENTO",
+      "ESTADO_CREDITO",
+      "MON_PENDIENTE",
+      "FEC_ULTIMOPAGO",
+    ].includes(orderByField)
+      ? orderByField
+      : "FEC_VENTA";
+    //const sortOrder = order.toLowerCase() === 'asc' || order.toLowerCase() === 'desc' ? order : 'asc';
+    const sortOrder =
+      typeof order === "string" &&
+      (order.toLowerCase() === "asc" || order.toLowerCase() === "desc")
+        ? order
+        : "asc";
 
-        const { count, rows } = await credit.findAndCountAll({
-            attributes: { exclude: [] },
-            limit,
-            offset,
-            order: [[field, sortOrder]],
-            include: [
+    const { count, rows } = await credit.findAndCountAll({
+      attributes: { exclude: [] },
+      limit,
+      offset,
+      order: [[field, sortOrder]],
+      include: [
+        {
+          model: sale,
+          attributes: ["ID_VENTA", "DSC_VENTA", "MONT_SUBTOTAL", "FEC_VENTA"],
+          include: [
+            {
+              model: Client,
+              attributes: [
+                "ID_CLIENTE",
+                "DSC_NOMBRE",
+                "DSC_APELLIDOUNO",
+                "DSC_APELLIDODOS",
+                "DSC_CEDULA",
+              ],
+              include: [
                 {
-                    model: sale,
-                    attributes: ['ID_VENTA', 'DSC_VENTA', 'MONT_SUBTOTAL','FEC_VENTA'],
-                    include: [
-                        {
-                            model: Client,
-                            attributes: ['ID_CLIENTE', 'DSC_NOMBRE', 'DSC_APELLIDOUNO', 'DSC_APELLIDODOS',"DSC_CEDULA"],
-                            include: [
-                                {
-                                    model: phoneClient,
-                                    attributes: ['DSC_TELEFONO']
-                                },
-                            ]
-                        },
-                    ]
+                  model: phoneClient,
+                  attributes: ["DSC_TELEFONO"],
                 },
-                {
-                    model: payment,
-                    attributes: ['ID_ABONO', 'FEC_ABONO', 'MON_ABONADO'],
-                }
-            ],
-            distinct: true
-        });
+              ],
+            },
+          ],
+        },
+        {
+          model: payment,
+          attributes: ["ID_ABONO", "FEC_ABONO", "MON_ABONADO"],
+        },
+      ],
+      distinct: true,
+    });
 
-        const updatedRows = await Promise.all(rows.map(async (row) => {
-            const creditStatus = await getStatusCredi(row.MON_PENDIENTE, new Date(row.FEC_VENCIMIENTO));
-            const updatedPayments = await Promise.all(row.payments.map(async (payment) => {
-                const paymentDate = new Date(payment.FEC_ABONO);
-                const disableCancelButton = await ThirtyMinutesHavePassed(paymentDate);
-
-                return {
-                    ...payment.toJSON(),
-                    BTN_CANCEL: disableCancelButton,
-                };
-            }));
+    const updatedRows = await Promise.all(
+      rows.map(async (row) => {
+        const creditStatus = await getStatusCredi(
+          row.MON_PENDIENTE,
+          new Date(row.FEC_VENCIMIENTO)
+        );
+        const updatedPayments = await Promise.all(
+          row.payments.map(async (payment) => {
+            const paymentDate = new Date(payment.FEC_ABONO);
+            const disableCancelButton = await ThirtyMinutesHavePassed(
+              paymentDate
+            );
 
             return {
-                ...row.toJSON(),
-                ESTADO_CREDITO: creditStatus,
-                payments: updatedPayments
+              ...payment.toJSON(),
+              BTN_CANCEL: disableCancelButton,
             };
-        }));
+          })
+        );
 
-        if (updatedRows.length === 0) {
-            return res.status(204).json({
-                message: "No se encontraron abonos realizados.",
-            });
-        }
+        return {
+          ...row.toJSON(),
+          ESTADO_CREDITO: creditStatus,
+          payments: updatedPayments,
+        };
+      })
+    );
 
-        res.json({
-            total: count,
-            totalPages: Math.ceil(count / limit),
-            currentPage: parseInt(page),
-            pageSize: limit,
-            credit: updatedRows,
-        });
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
+    if (updatedRows.length === 0) {
+      return res.status(204).json({
+        message: "No se encontraron abonos realizados.",
+      });
     }
+
+    res.json({
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+      pageSize: limit,
+      credit: updatedRows,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 async function ThirtyMinutesHavePassed(dateSale) {
@@ -330,22 +359,20 @@ export const getAllPaymentByCreditByFilter = async (req, res) => {
       }
     );
 
- 
-
-    if (!results.ResultadoJSON) {
+    // Nueva estructura: ResultadoJSON ya es un array
+    if (
+      !results ||
+      !results.ResultadoJSON ||
+      results.ResultadoJSON.length === 0
+    ) {
       return res.status(204).json({
         message: "No se encontraron resultados.",
       });
     }
 
-    const toJson = JSON.parse(results.ResultadoJSON);
-
-    const rows = toJson.map((item) => ({
+    const rows = results.ResultadoJSON.map((item) => ({
       ...item,
-      payments:
-        typeof item.payments === "string"
-          ? JSON.parse(item.payments)
-          : item.payments,
+      payments: Array.isArray(item.payments) ? item.payments : [],
     }));
 
     const updatedRows = await Promise.all(
@@ -354,6 +381,7 @@ export const getAllPaymentByCreditByFilter = async (req, res) => {
           row.MON_PENDIENTE,
           new Date(row.FEC_VENCIMIENTO)
         );
+
         const updatedPayments = await Promise.all(
           row.payments.map(async (payment) => {
             const paymentDate = new Date(payment.FEC_ABONO);

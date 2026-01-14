@@ -281,7 +281,8 @@ END
 
 DROP PROCEDURE IF EXISTS sp_getSupplierReport;
 
-DELIMITER / /
+DELIMITER /
+/
 
 CREATE PROCEDURE sp_getSupplierReport()
 BEGIN
@@ -341,6 +342,84 @@ BEGIN
 
     FROM tsit_proveedor p
     WHERE p.ESTADO = 1;
-END //
+END
+/
+/
 
 DELIMITER;
+
+CREATE PROCEDURE `Sp_SearchCredits`(
+    IN termSearch VARCHAR(255),
+    IN page INT,
+    IN pageSize INT
+)
+BEGIN
+    DECLARE offset INT;
+    SET offset = (page - 1) * pageSize;
+
+    SELECT
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'ID_CREDITO', cr.ID_CREDITO,
+                'ID_VENTA', cr.ID_VENTA,
+                'FEC_ULTIMOPAGO', cr.FEC_ULTIMOPAGO,
+                'FEC_VENCIMIENTO', cr.FEC_VENCIMIENTO,
+                'MON_PENDIENTE', cr.MON_PENDIENTE,
+                'ESTADO_CREDITO', cr.ESTADO_CREDITO,
+
+                'sale', JSON_OBJECT(
+                    'ID_VENTA', v.ID_VENTA,
+                    'DSC_VENTA', v.DSC_VENTA,
+                    'PORCENT_IMPUESTO', v.PORCENT_IMPUESTO,
+                    'MONT_SUBTOTAL', v.MONT_SUBTOTAL,
+                    'PORCENT_DESCUENTO', v.PORCENT_DESCUENTO,
+
+                    'Client', JSON_OBJECT(
+                        'ID_CLIENTE', cl.ID_CLIENTE,
+                        'DSC_NOMBRE', cl.DSC_NOMBRE,
+                        'DSC_APELLIDOUNO', cl.DSC_APELLIDOUNO,
+                        'DSC_APELLIDODOS', cl.DSC_APELLIDODOS,
+
+                        'TelefonoClientes',
+                        IFNULL(
+                            (
+                                SELECT JSON_ARRAYAGG(
+                                    JSON_OBJECT(
+                                        'DSC_TELEFONO', t.DSC_TELEFONO
+                                    )
+                                )
+                                FROM tsit_telefonocliente t
+                                WHERE t.ID_CLIENTE = cl.ID_CLIENTE
+                            ),
+                            JSON_ARRAY()
+                        )
+                    )
+                ),
+
+                'payments',
+                IFNULL(
+                    (
+                        SELECT JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'ID_ABONO', ab.ID_ABONO,
+                                'FEC_ABONO', ab.FEC_ABONO,
+                                'MON_ABONADO', ab.MON_ABONADO
+                            )
+                        )
+                        FROM tsit_abono ab
+                        WHERE ab.ID_CREDITO = cr.ID_CREDITO
+                    ),
+                    JSON_ARRAY()
+                )
+            )
+        ) AS ResultadoJSON
+    FROM tsit_credito cr
+    JOIN tsit_venta v ON cr.ID_VENTA = v.ID_VENTA
+    JOIN tsit_cliente cl ON v.ID_CLIENTE = cl.ID_CLIENTE
+    WHERE
+        cl.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%')
+        OR cl.DSC_APELLIDOUNO LIKE CONCAT('%', termSearch, '%')
+        OR cl.DSC_APELLIDODOS LIKE CONCAT('%', termSearch, '%')
+        OR DATE_FORMAT(cr.FEC_VENCIMIENTO, '%Y-%m-%d') LIKE CONCAT('%', termSearch, '%')
+    LIMIT offset, pageSize;
+END;
