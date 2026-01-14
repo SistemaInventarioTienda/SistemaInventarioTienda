@@ -1204,20 +1204,18 @@ async function createShoppingEXCEL(
         fs.mkdirSync(path.join(excelDir, "Compras"), { recursive: true });
       }
 
-      const comprasArray = Object.values(shoppingData).reduce((acc, compra) => {
-        const productos = compra.PRODUCTOS.split(",").map((p) => p.trim());
-        const cantidades = compra.CANTIDADES.split(",").map((c) => c.trim());
-
-        productos.forEach((producto, index) => {
+      const comprasArray = shoppingData.reduce((acc, compra) => {
+        compra.productos.forEach((producto) => {
           acc.push({
-            Proveedor: compra.PROVEEDOR,
-            "Teléfono Proveedor": compra.TEL_PROVEEDOR,
-            "Fecha Compra": compra.FEC_COMPRA,
-            Producto: producto,
-            Cantidad: cantidades[index] || "",
-            "Monto Total Compra": compra.MON_TOTAL,
+            Proveedor: compra.proveedor.nombre,
+            "Teléfono Proveedor": compra.proveedor.telefono,
+            "Fecha Compra": compra.fechaCompra,
+            Producto: producto.nombre,
+            Cantidad: producto.cantidad,
+            "Monto Total Compra": compra.total,
           });
         });
+
         return acc;
       }, []);
 
@@ -1414,10 +1412,12 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
           type: QueryTypes.SELECT,
         }
       );
+      const normalizedRowsSupplier = normalizeRows(shoppingBySupplier);
+      const reportSupplier = buildShoppingReport(normalizedRowsSupplier);
       return await createShoppingEXCEL(
         currentDate,
         store[0],
-        shoppingBySupplier,
+        reportSupplier,
         MIN_FEC,
         MAX_FEC
       );
