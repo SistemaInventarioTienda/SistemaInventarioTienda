@@ -466,31 +466,63 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
 
       const parsedResults = rawData.map((supplier) => {
         let compras = [];
+        let telefonos = [];
+        let correos = [];
 
         try {
-          if (supplier.compras != null) {
-            let fixedComprasStr = `[${supplier.compras}]`.replace(
-              /},\s*{/g,
-              "},{"
-            );
-            compras = JSON.parse(fixedComprasStr);
+          if (supplier.compras) {
+            compras =
+              typeof supplier.compras === "string"
+                ? JSON.parse(supplier.compras)
+                : supplier.compras;
           }
-        } catch (err) {
+        } catch (error) {
           console.error(
             "Error al parsear compras para proveedor:",
             supplier.proveedor_nombre,
-            err
+            error
+          );
+        }
+
+        try {
+          if (supplier.telefonos) {
+            telefonos =
+              typeof supplier.telefonos === "string"
+                ? JSON.parse(supplier.telefonos)
+                : supplier.telefonos;
+          }
+        } catch (error) {
+          console.error(
+            "Error al parsear teléfonos para proveedor:",
+            supplier.proveedor_nombre,
+            error
+          );
+        }
+
+        try {
+          if (supplier.correos) {
+            correos =
+              typeof supplier.correos === "string"
+                ? JSON.parse(supplier.correos)
+                : supplier.correos;
+          }
+        } catch (error) {
+          console.error(
+            "Error al parsear correos para proveedor:",
+            supplier.proveedor_nombre,
+            error
           );
         }
 
         return {
           proveedor_nombre: supplier.proveedor_nombre,
           direccion: supplier.DSC_DIRECCIONEXACTA,
-          telefonos: supplier.telefonos,
-          correos: supplier.correos,
-          compras: compras,
+          telefonos,
+          correos,
+          compras,
         };
       });
+
       return await createSupplierPDF(currentDate, store[0], parsedResults);
     case "ClientesCreditoActivo":
       const [credit_Client] = await db.query(
@@ -1482,29 +1514,60 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
 
       const parsedResults = rawData.map((supplier) => {
         let compras = [];
+        let telefonos = [];
+        let correos = [];
 
         try {
-          if (supplier.compras != null) {
-            let fixedComprasStr = `[${supplier.compras}]`.replace(
-              /},\s*{/g,
-              "},{"
-            );
-            compras = JSON.parse(fixedComprasStr);
+          if (supplier.compras) {
+            compras =
+              typeof supplier.compras === "string"
+                ? JSON.parse(supplier.compras)
+                : supplier.compras;
           }
-        } catch (err) {
+        } catch (error) {
           console.error(
             "Error al parsear compras para proveedor:",
             supplier.proveedor_nombre,
-            err
+            error
+          );
+        }
+
+        try {
+          if (supplier.telefonos) {
+            telefonos =
+              typeof supplier.telefonos === "string"
+                ? JSON.parse(supplier.telefonos)
+                : supplier.telefonos;
+          }
+        } catch (error) {
+          console.error(
+            "Error al parsear teléfonos para proveedor:",
+            supplier.proveedor_nombre,
+            error
+          );
+        }
+
+        try {
+          if (supplier.correos) {
+            correos =
+              typeof supplier.correos === "string"
+                ? JSON.parse(supplier.correos)
+                : supplier.correos;
+          }
+        } catch (error) {
+          console.error(
+            "Error al parsear correos para proveedor:",
+            supplier.proveedor_nombre,
+            error
           );
         }
 
         return {
           proveedor_nombre: supplier.proveedor_nombre,
           direccion: supplier.DSC_DIRECCIONEXACTA,
-          telefonos: supplier.telefonos,
-          correos: supplier.correos,
-          compras: compras,
+          telefonos,
+          correos,
+          compras,
         };
       });
       return await createSupplierEXCEL(currentDate, store[0], parsedResults);
@@ -1775,29 +1838,32 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
     let currentY = margin + 20;
     let totalComprasPeriodo = 0;
 
-    const doc = new PDFDocument({
-      size: "A4",
-    });
-    const fileName = `Compras-Proveedores-${formatDateTime(currentDate)}.pdf`;
-    const filePath = path.join(pdfDir, "Proveedor", fileName);
-    if (!fs.existsSync(path.join(pdfDir, "Proveedor"))) {
-      fs.mkdirSync(path.join(pdfDir, "Proveedor"), { recursive: true });
-    }
-    const writeStream = fs.createWriteStream(filePath);
+    const doc = new PDFDocument({ size: "A4" });
 
+    const fileName = `Compras-Proveedores-${formatDateTime(currentDate)}.pdf`;
+    const folderPath = path.join(pdfDir, "Proveedor");
+    const filePath = path.join(folderPath, fileName);
+
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+
+    const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
-    // Encabezado del informe
+    // Encabezado
     doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
       align: "center",
       width: pageWidthPoints - 2 * margin,
     });
     currentY += 15;
+
     doc.fontSize(10).text(title, margin, currentY, {
       align: "center",
       width: pageWidthPoints - 2 * margin,
     });
     currentY += 15;
+
     doc
       .fontSize(8)
       .text(`Fecha del Reporte: ${currentDate}`, margin, currentY, {
@@ -1806,18 +1872,14 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
       });
     currentY += 25;
 
-    // Tabla de compras por proveedor
-    const tableTop = currentY;
-    let rowY = tableTop;
     const proveedorX = margin;
     const contactoX = proveedorX + 150;
     const fechaX = contactoX + 120;
-    const productoX = margin + 10;
-    const codigoX = productoX + 150;
-    const cantidadX = codigoX + 80;
     const totalX = pageWidthPoints - margin - 70;
 
-    // Cabecera de la tabla
+    let rowY = currentY;
+
+    // Cabecera
     doc
       .fontSize(9)
       .font("Helvetica-Bold")
@@ -1825,18 +1887,26 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
       .text("Contacto", contactoX, rowY)
       .text("Fecha Compra", fechaX, rowY)
       .text("Total Compra", totalX - 100, rowY, { align: "right" });
+
     rowY += 12;
     doc
-      .strokeColor("#000")
-      .lineWidth(0.5)
       .moveTo(margin, rowY)
       .lineTo(pageWidthPoints - margin, rowY)
       .stroke();
     rowY += 5;
+
     doc.font("Helvetica");
 
-    // Filas de la tabla
     suppliersData.forEach((proveedor) => {
+      const telefonos = Array.isArray(proveedor.telefonos)
+        ? proveedor.telefonos
+        : [];
+
+      const correos = Array.isArray(proveedor.correos) ? proveedor.correos : [];
+
+      const contactoTexto =
+        (telefonos[0] || "N/A") + " / " + (correos[0] || "N/A");
+
       doc
         .fontSize(9)
         .font("Helvetica-Bold")
@@ -1845,34 +1915,22 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
           proveedorX,
           rowY
         )
-        .text(
-          `${(proveedor.telefonos || "N/A").split(",")[0].trim()} / ${(
-            proveedor.correos || "N/A"
-          )
-            .split(",")[0]
-            .trim()}`,
-          contactoX,
-          rowY
-        );
+        .text(contactoTexto, contactoX, rowY);
 
       rowY += 10;
       doc.font("Helvetica");
 
-      if (proveedor.compras.length === 0) {
+      if (!proveedor.compras || proveedor.compras.length === 0) {
         doc.fontSize(8).text("No existen compras asignadas", fechaX, rowY);
-
         doc
           .fontSize(8)
           .text("No existen compras asignadas", totalX - 100, rowY, {
             align: "right",
           });
-
         rowY += 15;
       } else {
         proveedor.compras.forEach((compra) => {
-          if (!compra.fecha_compra) {
-            return;
-          }
+          if (!compra.fecha_compra) return;
 
           doc
             .fontSize(8)
@@ -1889,17 +1947,15 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
 
           totalComprasPeriodo += totalCompra;
 
-          // Línea separadora
           const lineY = rowY + 10;
           doc
             .strokeColor("#ccc")
             .lineWidth(0.5)
-            .lineJoin("miter")
             .dash(5, { space: 5 })
             .moveTo(margin, lineY)
             .lineTo(pageWidthPoints - margin, lineY)
-            .stroke();
-          doc.undash();
+            .stroke()
+            .undash();
 
           rowY = lineY + 8;
         });
@@ -1925,9 +1981,7 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
         currentY,
         { align: "right" }
       );
-    doc.font("Helvetica");
 
-    // Línea final del documento
     currentY += 15;
     doc.fontSize(8).text("***Ultima linea***", margin, currentY, {
       align: "center",
@@ -1947,18 +2001,12 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
     });
 
     writeStream.on("error", (error) => {
-      console.error("Error al generar el informe de proveedores:", error);
       reject({
         status: 500,
         data: { error: "Error al generar el informe de proveedores." },
       });
     });
   });
-  function toArrayList(data) {
-    if (Array.isArray(data)) return data;
-    if (typeof data === "object" && data !== null) return Object.values(data);
-    return [];
-  }
 }
 
 async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
@@ -1984,10 +2032,18 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
       excelData.push([]);
 
       suppliersData.forEach((proveedor) => {
+        const telefonos = Array.isArray(proveedor.telefonos)
+          ? proveedor.telefonos
+          : [];
+
+        const correos = Array.isArray(proveedor.correos)
+          ? proveedor.correos
+          : [];
+
         excelData.push([
           proveedor.proveedor_nombre || "Proveedor sin nombre",
-          `Tel: ${(proveedor.telefonos || "N/A").split(",")[0].trim()}`,
-          `Email: ${(proveedor.correos || "N/A").split(",")[0].trim()}`,
+          `Tel: ${telefonos[0] || "N/A"}`,
+          `Email: ${correos[0] || "N/A"}`,
           proveedor.direccion ? `Dir: ${proveedor.direccion}` : "",
         ]);
 
@@ -1995,14 +2051,15 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
         excelData.push(["", "", "Fecha Compra", "Total Compra"]);
 
         // Procesar compras
-        if (proveedor.compras.length > 0) {
+        if (proveedor.compras && proveedor.compras.length > 0) {
           proveedor.compras.forEach((compra) => {
             if (!compra.fecha_compra) return;
 
             const total = compra.total_compra || 0;
+
             excelData.push([
               "",
-              "", // Espacios para alinear con el proveedor
+              "",
               new Date(compra.fecha_compra).toLocaleDateString(),
               total.toFixed(2),
             ]);
@@ -2027,7 +2084,6 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
 
       worksheet["!cols"] = [{ wch: 30 }, { wch: 25 }, { wch: 15 }, { wch: 15 }];
 
-      // Crear workbook y guardar
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Compras-Proveedores");
       XLSX.writeFile(workbook, filePath);

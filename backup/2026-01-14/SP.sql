@@ -278,3 +278,69 @@ BEGIN
     ORDER BY cl.DSC_CEDULA;
 
 END
+
+DROP PROCEDURE IF EXISTS sp_getSupplierReport;
+
+DELIMITER / /
+
+CREATE PROCEDURE sp_getSupplierReport()
+BEGIN
+    SELECT
+        p.DSC_NOMBRE AS proveedor_nombre,
+        p.DSC_DIRECCIONEXACTA,
+
+        /* Teléfonos: Usamos una subconsulta con DISTINCT antes del AGG */
+        (
+            SELECT JSON_ARRAYAGG(t_telefonos.tel)
+            FROM (
+                SELECT DISTINCT pt.DSC_TELEFONO AS tel
+                FROM tsit_telefonoproveedor pt
+                WHERE pt.ID_PROVEEDOR = p.ID_PROVEEDOR
+            ) AS t_telefonos
+        ) AS telefonos,
+
+        /* Correos: Usamos una subconsulta con DISTINCT antes del AGG */
+        (
+            SELECT JSON_ARRAYAGG(t_correos.mail)
+            FROM (
+                SELECT DISTINCT pc.DSC_CORREO AS mail
+                FROM tsit_correoproveedor pc
+                WHERE pc.ID_PROVEEDOR = p.ID_PROVEEDOR
+            ) AS t_correos
+        ) AS correos,
+
+        /* Compras */
+        (
+            SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'fecha_compra', c.FEC_COMPRA,
+                    'total_compra', (
+                        SELECT SUM(dc_t.MON_CANTIDAD * dc_t.MON_PRECIO_COMPRA)
+                        FROM tsit_detalles_compras dc_t
+                        WHERE dc_t.ID_COMPRA = c.ID_COMPRA
+                    ),
+                    'productos', (
+                        SELECT JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'producto_nombre', pr.DSC_NOMBRE,
+                                'producto_descripcion', pr.DSC_DESCRIPTION,
+                                'codigo_barras', pr.DSC_CODIGO_BARRAS,
+                                'cantidad', dc_p.MON_CANTIDAD,
+                                'precio_compra', dc_p.MON_PRECIO_COMPRA
+                            )
+                        )
+                        FROM tsit_detalles_compras dc_p
+                        INNER JOIN tsim_producto pr ON pr.DSC_CODIGO_BARRAS = dc_p.DSC_CODIGO_BARRAS
+                        WHERE dc_p.ID_COMPRA = c.ID_COMPRA
+                    )
+                )
+            )
+            FROM tsit_compras c
+            WHERE c.ID_PROVEEDOR = p.ID_PROVEEDOR
+        ) AS compras
+
+    FROM tsit_proveedor p
+    WHERE p.ESTADO = 1;
+END //
+
+DELIMITER;
