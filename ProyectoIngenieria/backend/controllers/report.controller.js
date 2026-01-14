@@ -415,7 +415,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
       const rawRows = salesByClient;
       const normalizedRows = normalizeRows(rawRows);
       const report = buildSalesReport(normalizedRows);
-      console.log(report);
+
       return await createSalePDF(
         currentDate,
         store[0],
@@ -1255,27 +1255,25 @@ async function createSaleEXCEL(
         fs.mkdirSync(path.join(excelDir, "Ventas"), { recursive: true });
       }
 
-      const ventasArray = Object.values(salesData).reduce((acc, venta) => {
-        const productos = venta.PRODUCTOS
-          ? venta.PRODUCTOS.split(",").map((p) => p.trim())
-          : [];
-        const cantidades = venta.CANTIDADES
-          ? venta.CANTIDADES.split(",").map((c) => c.trim())
-          : [];
+      const ventasArray = salesData.reduce((acc, venta) => {
+        const nombreCliente = venta.cliente?.nombre || "Cliente Anónimo";
+        const telefonoCliente = venta.cliente?.telefono || "N/A";
+        const fechaVenta = new Date(venta.fechaVenta).toLocaleDateString();
 
-        productos.forEach((producto, index) => {
+        venta.productos.forEach((producto) => {
           acc.push({
-            Cliente: venta.CLIENTE || "Cliente Anónimo",
-            "Teléfono Cliente": venta.TEL_CLIENTE || "N/A",
-            "Fecha Venta": new Date(venta.FEC_VENTA).toLocaleDateString(),
-            Producto: producto,
-            Cantidad: cantidades[index] || "",
-            "Monto Subtotal": venta.MONT_SUBTOTAL,
-            Descuento: venta.DESCUENTO || 0,
-            "Impuesto (%)": venta.PORCENT_IMPUESTO,
-            "Método de Pago": venta.METODO_PAGO,
+            Cliente: nombreCliente,
+            "Teléfono Cliente": telefonoCliente,
+            "Fecha Venta": fechaVenta,
+            Producto: producto.nombre,
+            Cantidad: producto.cantidad || "",
+            "Monto Subtotal": venta.subtotal || 0,
+            Descuento: producto.descuento || 0,
+            "Impuesto (%)": producto.impuesto || 0,
+            "Método de Pago": venta.metodoPago,
           });
         });
+
         return acc;
       }, []);
 
@@ -1431,10 +1429,15 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
           type: QueryTypes.SELECT,
         }
       );
+
+      const rawRows = salesByClient;
+      const normalizedRows = normalizeRows(rawRows);
+      const report = buildSalesReport(normalizedRows);
+
       return await createSaleEXCEL(
         currentDate,
         store[0],
-        salesByClient,
+        report,
         MIN_FEC,
         MAX_FEC
       );
