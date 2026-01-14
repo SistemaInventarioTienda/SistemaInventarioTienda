@@ -8,16 +8,17 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { QueryTypes } from "sequelize";
 import XLSX from "xlsx";
+import { reporters } from "mocha";
 
 // See page sizes
 // https://pdfkit.org/docs/paper_sizes.html
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const downloadLink = 'http://localhost:4000/api/reports/download_report?file='
+const downloadLink = "http://localhost:4000/api/reports/download_report?file=";
 const pdfDir = path.join(__dirname, "../uploads/pdf");
 const excelDir = path.join(__dirname, "../uploads/excel");
-const dataFile = path.join(__dirname, 'FAC_consecutivos.json');
+const dataFile = path.join(__dirname, "FAC_consecutivos.json");
 // Create routes if they do not exist
 if (!fs.existsSync(pdfDir)) {
   fs.mkdirSync(pdfDir, { recursive: true });
@@ -31,11 +32,9 @@ export const createReport = async (req, res) => {
 
   // validate extension {PDF / EXCEL}
   if (EXTENSION === "" || (EXTENSION !== "pdf" && EXTENSION !== "xlsx"))
-    return res
-      .status(400)
-      .json({
-        message: "El formato a generar no es valido. Debe ser pdf o excel",
-      });
+    return res.status(400).json({
+      message: "El formato a generar no es valido. Debe ser pdf o excel",
+    });
 
   // validate dates
   const min_f = validateDate(MIN_FEC);
@@ -85,11 +84,9 @@ export const createReport = async (req, res) => {
     }
   }
 
-  return res
-    .status(400)
-    .json({
-      message: "El formato a generar no es valido. Debe ser pdf o excel",
-    });
+  return res.status(400).json({
+    message: "El formato a generar no es valido. Debe ser pdf o excel",
+  });
 };
 
 export const downloadReport = async (req, res) => {
@@ -163,33 +160,30 @@ function validateDate(dateString) {
 // Function to create a PDF SALE
 export async function createReceiptPDF(currentDate, storeData, saleData) {
   return new Promise((resolve, reject) => {
-
     const pageWidthPoints = 227;
     const pageHeightPoints = 623;
     const margin = 10;
     let currentY = margin;
 
     const doc = new PDFDocument({
-      size: [pageWidthPoints, pageHeightPoints]
+      size: [pageWidthPoints, pageHeightPoints],
     });
     const consecutivo = generateConsecutive();
     const fileName = `${consecutivo}.pdf`;
     const title = `${consecutivo}`;
-    const filePath = path.join(pdfDir, 'Recibos', fileName);
-    if (!fs.existsSync(path.join(pdfDir, 'Recibos'))) {
-      fs.mkdirSync(path.join(pdfDir, 'Recibos'), { recursive: true });
+    const filePath = path.join(pdfDir, "Recibos", fileName);
+    if (!fs.existsSync(path.join(pdfDir, "Recibos"))) {
+      fs.mkdirSync(path.join(pdfDir, "Recibos"), { recursive: true });
     }
     const writeStream = fs.createWriteStream(filePath);
 
     doc.pipe(writeStream);
 
     // Store Information (Header)
-    doc
-      .fontSize(10)
-      .text(storeData.DSC_NOMBRE, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(10).text(storeData.DSC_NOMBRE, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 12; // Space after name
 
     doc
@@ -200,38 +194,30 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       });
     currentY += 10; // Space after phone
 
-    doc
-      .fontSize(8)
-      .text(storeData.DSC_CORREO, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(8).text(storeData.DSC_CORREO, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 10; // Space after email
 
-    doc
-      .fontSize(8)
-      .text(storeData.DSC_DIRECCION, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(8).text(storeData.DSC_DIRECCION, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 20; // Space after direction
 
-    doc
-      .fontSize(8)
-      .text(storeData.DSC_ESLOGAN, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-        italic: true,
-      });
+    doc.fontSize(8).text(storeData.DSC_ESLOGAN, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+      italic: true,
+    });
     currentY += 20; // Space after slogan
 
     // Title
-    doc
-      .fontSize(9)
-      .text(title, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(9).text(title, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15; // Space after title
 
     // Sale Details Table Header
@@ -256,21 +242,33 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       .stroke();
     currentY += 3;
 
-
-
     // Sale Details Table Rows
     let totalProducts = 0;
-    saleData.details.forEach(item => {
+    saleData.details.forEach((item) => {
       const totalItem = item.CANTIDAD * item.MONT_UNITARIO;
-      doc.fontSize(7).text(item.Product.DSC_NOMBRE, margin, currentY, { width: 80 });
-      doc.text(item.CANTIDAD.toString(), margin + 35, currentY, { width: 30, align: 'right' });
-      doc.text(item.MONT_UNITARIO.toFixed(2), margin + 65, currentY, { width: 45, align: 'right' });
-      doc.text(item.PORCENT_IMPUESTO.toFixed(2), margin + 95, currentY, { width: 40, align: 'right' });
+      doc
+        .fontSize(7)
+        .text(item.Product.DSC_NOMBRE, margin, currentY, { width: 80 });
+      doc.text(item.CANTIDAD.toString(), margin + 35, currentY, {
+        width: 30,
+        align: "right",
+      });
+      doc.text(item.MONT_UNITARIO.toFixed(2), margin + 65, currentY, {
+        width: 45,
+        align: "right",
+      });
+      doc.text(item.PORCENT_IMPUESTO.toFixed(2), margin + 95, currentY, {
+        width: 40,
+        align: "right",
+      });
 
       const discount = totalItem * (item.PORCENT_DESCUENTO / 100);
       const tax = (totalItem - discount) * (item.PORCENT_IMPUESTO / 100);
-      const totalProd = (totalItem - discount + tax);
-      doc.text(totalProd.toFixed(2), pageWidthPoints - margin - 40, currentY, { width: 40, align: 'right' });
+      const totalProd = totalItem - discount + tax;
+      doc.text(totalProd.toFixed(2), pageWidthPoints - margin - 40, currentY, {
+        width: 40,
+        align: "right",
+      });
       currentY += 8;
       if (currentY > pageHeightPoints - 50) {
         doc.addPage({ size: [pageWidthPoints, pageHeightPoints] });
@@ -290,7 +288,6 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       .stroke();
     currentY += 5;
 
-
     doc
       .fontSize(9)
       .font("Helvetica-Bold")
@@ -298,7 +295,8 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
         align: "right",
         width: pageWidthPoints - margin - 50,
       });
-    doc.text(totalProducts.toFixed(2),
+    doc.text(
+      totalProducts.toFixed(2),
       pageWidthPoints - margin - 40,
       currentY,
       { align: "right", width: 40 }
@@ -307,32 +305,56 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     currentY += 12;
 
     // Customer and Payment Information
-    doc.fontSize(8).text(`Cliente: ${saleData.client?.DSC_NOMBRE || "Anónimo"}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+    doc
+      .fontSize(8)
+      .text(
+        `Cliente: ${saleData.client?.DSC_NOMBRE || "Anónimo"}`,
+        margin,
+        currentY,
+        { width: pageWidthPoints - 2 * margin }
+      );
     currentY += 8;
-    doc.fontSize(8).text(`Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(saleData.FEC_VENTA).toLocaleTimeString()}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+    doc
+      .fontSize(8)
+      .text(
+        `Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(
+          saleData.FEC_VENTA
+        ).toLocaleTimeString()}`,
+        margin,
+        currentY,
+        { width: pageWidthPoints - 2 * margin }
+      );
     currentY += 8;
-    doc.fontSize(8).text(`Método de Pago: ${saleData.METODO_PAGO}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+    doc
+      .fontSize(8)
+      .text(`Método de Pago: ${saleData.METODO_PAGO}`, margin, currentY, {
+        width: pageWidthPoints - 2 * margin,
+      });
     currentY += 8;
     if (saleData.DSC_VENTA) {
-      doc.fontSize(8).text(`Nota: ${saleData.DSC_VENTA}`, margin, currentY, { width: pageWidthPoints - 2 * margin });
+      doc.fontSize(8).text(`Nota: ${saleData.DSC_VENTA}`, margin, currentY, {
+        width: pageWidthPoints - 2 * margin,
+      });
       currentY += 8;
     }
     if (saleData.ESTADO_CREDITO === 0) {
-      doc.fontSize(8).text('Estado: Cancelado', margin, currentY, { width: pageWidthPoints - 2 * margin });
+      doc.fontSize(8).text("Estado: Cancelado", margin, currentY, {
+        width: pageWidthPoints - 2 * margin,
+      });
       currentY += 8;
     } else {
-      doc.fontSize(8).text('Estado: Pendiente', margin, currentY, { width: pageWidthPoints - 2 * margin });
+      doc.fontSize(8).text("Estado: Pendiente", margin, currentY, {
+        width: pageWidthPoints - 2 * margin,
+      });
       currentY += 8;
     }
 
     // Footer (Optional)
     currentY += 15;
-    doc
-      .fontSize(6)
-      .text("Gracias por su compra!", margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(6).text("Gracias por su compra!", margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
 
     doc.end();
 
@@ -342,8 +364,8 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
         data: {
           message: "PDF generado exitosamente",
           downloadLink: `${downloadLink}Recibos/${fileName}`,
-          filename: fileName
-        }
+          filename: fileName,
+        },
       });
     });
 
@@ -389,10 +411,15 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
           type: QueryTypes.SELECT,
         }
       );
+
+      const rawRows = salesByClient;
+      const normalizedRows = normalizeRows(rawRows);
+      const report = buildSalesReport(normalizedRows);
+      console.log(report);
       return await createSalePDF(
         currentDate,
         store[0],
-        salesByClient,
+        report,
         MIN_FEC,
         MAX_FEC
       );
@@ -415,7 +442,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
         MIN_FEC,
         MAX_FEC
       );
-    case 'ReporteProductos':
+    case "ReporteProductos":
       const [products] = await db.query(
         "CALL sp_products_report(:MIN_FEC, :MAX_FEC)",
         {
@@ -423,19 +450,14 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MIN_FEC: MIN_FEC,
             MAX_FEC: MAX_FEC,
           },
-          type: QueryTypes.SELECT
+          type: QueryTypes.SELECT,
         }
-      )
-      return await createProductPDF(
-        currentDate, store[0], products
       );
+      return await createProductPDF(currentDate, store[0], products);
     case "ProveedoresActivos":
-      const [supplierReport] = await db.query(
-        'CALL sp_getSupplierReport()',
-        {
-          type: QueryTypes.SELECT
-        });
-
+      const [supplierReport] = await db.query("CALL sp_getSupplierReport()", {
+        type: QueryTypes.SELECT,
+      });
 
       const rawData = Object.values(supplierReport);
 
@@ -444,11 +466,18 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
 
         try {
           if (supplier.compras != null) {
-            let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
+            let fixedComprasStr = `[${supplier.compras}]`.replace(
+              /},\s*{/g,
+              "},{"
+            );
             compras = JSON.parse(fixedComprasStr);
           }
         } catch (err) {
-          console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
+          console.error(
+            "Error al parsear compras para proveedor:",
+            supplier.proveedor_nombre,
+            err
+          );
         }
 
         return {
@@ -456,18 +485,26 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
           direccion: supplier.DSC_DIRECCIONEXACTA,
           telefonos: supplier.telefonos,
           correos: supplier.correos,
-          compras: compras
+          compras: compras,
         };
       });
       return await createSupplierPDF(currentDate, store[0], parsedResults);
     case "ClientesCreditoActivo":
-
-      const [credit_Client] = await db.query(`CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`, {
-        replacements: { MIN_FEC: MIN_FEC, MAX_FEC: MAX_FEC },
-        type: db.QueryTypes.SELECT,
-      });
-      if (!credit_Client || !credit_Client[0] || Object.keys(credit_Client[0]).length === 0) {
-        return res.status(204).json({ message: "No se encontraron clientes con créditos." });
+      const [credit_Client] = await db.query(
+        `CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`,
+        {
+          replacements: { MIN_FEC: MIN_FEC, MAX_FEC: MAX_FEC },
+          type: db.QueryTypes.SELECT,
+        }
+      );
+      if (
+        !credit_Client ||
+        !credit_Client[0] ||
+        Object.keys(credit_Client[0]).length === 0
+      ) {
+        return res
+          .status(204)
+          .json({ message: "No se encontraron clientes con créditos." });
       }
 
       const data_client = Object.values(credit_Client);
@@ -477,11 +514,18 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
 
         try {
           if (client.creditos_json != null) {
-            let fixedCreditosStr = `[${client.creditos_json}]`.replace(/},\s*{/g, '},{');
+            let fixedCreditosStr = `[${client.creditos_json}]`.replace(
+              /},\s*{/g,
+              "},{"
+            );
             creditos = JSON.parse(fixedCreditosStr);
           }
         } catch (err) {
-          console.error("Error al parsear créditos para cliente:", client.cliente_nombre, err);
+          console.error(
+            "Error al parsear créditos para cliente:",
+            client.cliente_nombre,
+            err
+          );
         }
 
         return {
@@ -492,11 +536,17 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
           creditos: creditos,
           cantidad_creditos: client.cantidad_creditos,
           saldo_total_Pendiente: client.saldo_total_Pendiente,
-          abonos_total_Pagado: client.abonos_total_Pagado
+          abonos_total_Pagado: client.abonos_total_Pagado,
         };
       });
 
-      return await createClientCreditPDF(currentDate, store[0], client_Parsed, MIN_FEC, MAX_FEC);
+      return await createClientCreditPDF(
+        currentDate,
+        store[0],
+        client_Parsed,
+        MIN_FEC,
+        MAX_FEC
+      );
     default:
       return {
         status: 400,
@@ -533,19 +583,15 @@ async function createShoppingPDF(
     doc.pipe(writeStream);
 
     // Encabezado del informe
-    doc
-      .fontSize(12)
-      .text(storeData.DSC_NOMBRE, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
-    doc
-      .fontSize(10)
-      .text(title, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(10).text(title, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
     doc
       .fontSize(8)
@@ -554,12 +600,10 @@ async function createShoppingPDF(
         width: pageWidthPoints - 2 * margin,
       });
     currentY += 12;
-    doc
-      .fontSize(8)
-      .text(`Reporte generado: ${currentDate}`, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15; // Espacio después de la fecha del reporte
 
     // Convertir el objeto shoppingData a un array
@@ -639,11 +683,9 @@ async function createShoppingPDF(
         });
 
         // Dibujar el monto total después del último producto
-        doc
-          .fontSize(8)
-          .text(compra.total.toFixed(2), montoX, lastProductY, {
-            align: "right",
-          });
+        doc.fontSize(8).text(compra.total.toFixed(2), montoX, lastProductY, {
+          align: "right",
+        });
         totalGastadoPeriodo += compra.total;
 
         const lineY = rowY + 2;
@@ -676,12 +718,10 @@ async function createShoppingPDF(
 
     // Línea final del documento
     currentY += 15;
-    doc
-      .fontSize(8)
-      .text("***Ultima linea***", margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(8).text("***Ultima linea***", margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
 
     doc.end();
 
@@ -731,19 +771,15 @@ async function createSalePDF(
     doc.pipe(writeStream);
 
     // Encabezado
-    doc
-      .fontSize(12)
-      .text(storeData.DSC_NOMBRE, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
-    doc
-      .fontSize(10)
-      .text(title, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(10).text(title, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
     doc
       .fontSize(8)
@@ -761,37 +797,38 @@ async function createSalePDF(
     currentY += 25;
 
     // Convertir ventas a array
-    const ventasArray = Object.values(salesData);
+    const ventasArray = Array.isArray(salesData)
+      ? salesData
+      : Object.values(salesData);
 
     // Agrupar por cliente
     const ventasPorCliente = ventasArray.reduce((acc, venta) => {
-      const cliente = venta.CLIENTE || "Cliente Anónimo";
-      if (!acc[cliente]) {
-        acc[cliente] = {
-          nombre: cliente,
-          telefono: venta.TEL_CLIENTE || "N/A",
+      const nombreCliente = venta.cliente?.nombre || "Cliente Anónimo";
+      const telefonoCliente = venta.cliente?.telefono || "N/A";
+
+      if (!acc[nombreCliente]) {
+        acc[nombreCliente] = {
+          nombre: nombreCliente,
+          telefono: telefonoCliente,
           ventas: [],
         };
       }
-      acc[cliente].ventas.push({
-        fecha: new Date(venta.FEC_VENTA).toLocaleDateString(),
-        productos: venta.PRODUCTOS
-          ? venta.PRODUCTOS.split(",").map((p) => p.trim())
-          : [],
-        cantidades: venta.CANTIDADES
-          ? venta.CANTIDADES.split(",").map((c) => parseFloat(c.trim()) || 0)
-          : [],
-        impuestos: venta.IMPUESTO
-          ? venta.IMPUESTO.split(",").map((c) => parseFloat(c.trim()) || 0)
-          : [],
-        descuentos: venta.DESCUENTO
-          ? venta.DESCUENTO.split(",").map((c) => parseFloat(c.trim()) || 0)
-          : [],
-        precios_unitarios: venta.MONT_UNITARIO
-          ? venta.MONT_UNITARIO.split(",").map((c) => parseFloat(c.trim()) || 0)
-          : [],
-        total_abono: venta.TOTAL_ABONOS || 0,
+
+      acc[nombreCliente].ventas.push({
+        idVenta: venta.idVenta,
+        fecha: new Date(venta.fechaVenta).toLocaleDateString(),
+        metodoPago: venta.metodoPago,
+        subtotal: Number(venta.subtotal) || 0,
+        total_abono: Number(venta.totalAbonos) || 0,
+        productos: venta.productos.map((p) => ({
+          nombre: p.nombre,
+          cantidad: Number(p.cantidad) || 0,
+          montoUnitario: Number(p.montoUnitario) || 0,
+          descuento: Number(p.descuento) || 0,
+          impuesto: Number(p.impuesto) || 0,
+        })),
       });
+
       return acc;
     }, {});
 
@@ -838,11 +875,11 @@ async function createSalePDF(
         let totalVenta = 0;
         let lastProductY = rowY;
 
-        venta.productos.forEach((producto, index) => {
-          const cantidad = venta.cantidades[index] || 0;
-          const precioBase = venta.precios_unitarios[index] || 0;
-          const desc = venta.descuentos[index] || 0;
-          const imp = venta.impuestos[index] || 0;
+        venta.productos.forEach((producto) => {
+          const cantidad = producto.cantidad || 0;
+          const precioBase = producto.montoUnitario || 0;
+          const desc = producto.descuento || 0;
+          const imp = producto.impuesto || 0;
 
           // Calcular PU con desc e imp
           let precioFinal = precioBase;
@@ -854,7 +891,7 @@ async function createSalePDF(
 
           // Línea producto
           let lineaProducto =
-            `- ${producto} (x${cantidad}) | ` +
+            `- ${producto.nombre} (x${cantidad}) | ` +
             `PU: ${precioBase.toFixed(2)} | ` +
             `Desc: ${desc}% | Imp: ${imp}% | ` +
             `Subt: ${subtotal.toFixed(2)}`;
@@ -917,12 +954,10 @@ async function createSalePDF(
 
     // Línea final
     currentY += 15;
-    doc
-      .fontSize(8)
-      .text("***Ultima linea***", margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(8).text("***Ultima linea***", margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
 
     doc.end();
 
@@ -946,7 +981,13 @@ async function createSalePDF(
   });
 }
 
-async function createTransactionPDF(currentDate, storeData, transactionsData, MIN_FEC, MAX_FEC) {
+async function createTransactionPDF(
+  currentDate,
+  storeData,
+  transactionsData,
+  MIN_FEC,
+  MAX_FEC
+) {
   return new Promise((resolve, reject) => {
     const title = "Informe de Transacciones SINPE";
     const pageWidthPoints = 595.28; // A4 width in points
@@ -955,12 +996,12 @@ async function createTransactionPDF(currentDate, storeData, transactionsData, MI
     let currentY = margin + 20;
     let totalEgresos = 0;
 
-    const doc = new PDFDocument({ size: 'A4' });
+    const doc = new PDFDocument({ size: "A4" });
     const fileName = `Transacciones-${formatDateTime(currentDate)}.pdf`;
-    const filePath = path.join(pdfDir, 'Transacciones', fileName);
+    const filePath = path.join(pdfDir, "Transacciones", fileName);
 
-    if (!fs.existsSync(path.join(pdfDir, 'Transacciones'))) {
-      fs.mkdirSync(path.join(pdfDir, 'Transacciones'), { recursive: true });
+    if (!fs.existsSync(path.join(pdfDir, "Transacciones"))) {
+      fs.mkdirSync(path.join(pdfDir, "Transacciones"), { recursive: true });
     }
 
     const writeStream = fs.createWriteStream(filePath);
@@ -968,23 +1009,25 @@ async function createTransactionPDF(currentDate, storeData, transactionsData, MI
 
     // Encabezado del informe
     doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
-      align: 'center',
-      width: pageWidthPoints - 2 * margin
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
     });
     currentY += 15;
     doc.fontSize(10).text(title, margin, currentY, {
-      align: 'center',
-      width: pageWidthPoints - 2 * margin
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
     });
     currentY += 15;
-    doc.fontSize(8).text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
-      align: 'center',
-      width: pageWidthPoints - 2 * margin
-    });
+    doc
+      .fontSize(8)
+      .text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
     currentY += 12;
     doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, {
-      align: 'center',
-      width: pageWidthPoints - 2 * margin
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
     });
     currentY += 15;
 
@@ -998,19 +1041,23 @@ async function createTransactionPDF(currentDate, storeData, transactionsData, MI
     const montoX = pageWidthPoints - margin - 100;
 
     // Cabecera de tabla
-    doc.fontSize(9).font('Helvetica-Bold')
-      .text('Fecha', fechaX, rowY)
-      .text('Descripción', descripcionX, rowY)
-      .text('Método Entrada', metodoX, rowY)
-      .text('Monto', montoX, rowY, { align: 'right' });
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .text("Fecha", fechaX, rowY)
+      .text("Descripción", descripcionX, rowY)
+      .text("Método Entrada", metodoX, rowY)
+      .text("Monto", montoX, rowY, { align: "right" });
 
     rowY += 12;
-    doc.strokeColor('#000').lineWidth(0.5)
+    doc
+      .strokeColor("#000")
+      .lineWidth(0.5)
       .moveTo(margin, rowY)
       .lineTo(pageWidthPoints - margin, rowY)
       .stroke();
     rowY += 5;
-    doc.font('Helvetica');
+    doc.font("Helvetica");
 
     // Convertir objeto a array si es necesario
     const transactionsArray = toArrayList(transactionsData);
@@ -1020,54 +1067,64 @@ async function createTransactionPDF(currentDate, storeData, transactionsData, MI
       console.error("transactionsData no es un array:", transactionsArray);
       return reject({
         status: 500,
-        data: { error: "Datos de transacciones inválidos." }
+        data: { error: "Datos de transacciones inválidos." },
       });
     }
 
     // Dibujar filas
-    transactionsArray.forEach(transaccion => {
+    transactionsArray.forEach((transaccion) => {
       // Si se acaba el espacio, agregar nueva página
       if (rowY > pageHeightPoints - 40) {
         doc.addPage();
         rowY = margin + 20;
 
         // Redibujar encabezado en nueva página
-        doc.fontSize(9).font('Helvetica-Bold')
-          .text('Fecha', fechaX, rowY)
-          .text('Descripción', descripcionX, rowY)
-          .text('Método Entrada', metodoX, rowY)
-          .text('Monto', montoX, rowY, { align: 'right' });
+        doc
+          .fontSize(9)
+          .font("Helvetica-Bold")
+          .text("Fecha", fechaX, rowY)
+          .text("Descripción", descripcionX, rowY)
+          .text("Método Entrada", metodoX, rowY)
+          .text("Monto", montoX, rowY, { align: "right" });
         rowY += 12;
 
-        doc.strokeColor('#000').lineWidth(0.5)
+        doc
+          .strokeColor("#000")
+          .lineWidth(0.5)
           .moveTo(margin, rowY)
           .lineTo(pageWidthPoints - margin, rowY)
           .stroke();
         rowY += 5;
-        doc.font('Helvetica');
+        doc.font("Helvetica");
       }
 
       // Formatear fecha
       const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
 
       // Establecer color según método de pago
-      if (transaccion.METODO_PAGO === 'Efectivo') {
-        doc.fillColor('green'); // Efectivo en verde
-      } else if (transaccion.METODO_PAGO === 'Tarjeta') {
-        doc.fillColor('blue'); // Tarjeta en azul
+      if (transaccion.METODO_PAGO === "Efectivo") {
+        doc.fillColor("green"); // Efectivo en verde
+      } else if (transaccion.METODO_PAGO === "Tarjeta") {
+        doc.fillColor("blue"); // Tarjeta en azul
       } else {
-        doc.fillColor('black'); // Otros en negro
+        doc.fillColor("black"); // Otros en negro
       }
 
       // Mostrar datos de la transacción
-      doc.fontSize(8)
-        .text(formattedDate || '--', fechaX, rowY)
-        .text(transaccion.DSC_TRANSACCION || '--', descripcionX, rowY)
-        .text(transaccion.METODO_PAGO || '--', metodoX, rowY)
-        .text(parseFloat(transaccion.MONTO_PAGO || 0).toFixed(2), montoX, rowY, { align: 'right' });
+      doc
+        .fontSize(8)
+        .text(formattedDate || "--", fechaX, rowY)
+        .text(transaccion.DSC_TRANSACCION || "--", descripcionX, rowY)
+        .text(transaccion.METODO_PAGO || "--", metodoX, rowY)
+        .text(
+          parseFloat(transaccion.MONTO_PAGO || 0).toFixed(2),
+          montoX,
+          rowY,
+          { align: "right" }
+        );
 
       // Restaurar color predeterminado
-      doc.fillColor('black');
+      doc.fillColor("black");
 
       // Acumular totales (todas son salidas)
       totalEgresos += parseFloat(transaccion.MONTO_PAGO || 0);
@@ -1077,22 +1134,34 @@ async function createTransactionPDF(currentDate, storeData, transactionsData, MI
 
     // Totales
     currentY = rowY + 15;
-    doc.fontSize(10).font('Helvetica-Bold')
-      .text(`Total Transferencias: ${transactionsArray.length}`, margin, currentY)
-      .text(`Monto Total Enviado: ${totalEgresos.toFixed(2)}`, margin + 200, currentY)
+    doc
+      .fontSize(10)
+      .font("Helvetica-Bold")
       .text(
-        `Promedio por Envío: ${(totalEgresos / transactionsArray.length || 0).toFixed(2)}`,
+        `Total Transferencias: ${transactionsArray.length}`,
+        margin,
+        currentY
+      )
+      .text(
+        `Monto Total Enviado: ${totalEgresos.toFixed(2)}`,
+        margin + 200,
+        currentY
+      )
+      .text(
+        `Promedio por Envío: ${(
+          totalEgresos / transactionsArray.length || 0
+        ).toFixed(2)}`,
         margin + 400,
         currentY,
-        { align: 'right' }
+        { align: "right" }
       );
-    doc.font('Helvetica');
+    doc.font("Helvetica");
 
     // Pie de página
     currentY += 20;
-    doc.fontSize(8).text('*** Última línea ***', margin, currentY, {
-      align: 'center',
-      width: pageWidthPoints - 2 * margin
+    doc.fontSize(8).text("*** Última línea ***", margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
     });
 
     doc.end();
@@ -1102,14 +1171,17 @@ async function createTransactionPDF(currentDate, storeData, transactionsData, MI
         status: 200,
         data: {
           message: `${title} generado exitosamente`,
-          downloadLink: `${downloadLink}Transacciones/${fileName}`
-        }
+          downloadLink: `${downloadLink}Transacciones/${fileName}`,
+        },
       });
     });
 
     writeStream.on("error", (error) => {
       console.error("Error al generar el informe de transacciones:", error);
-      reject({ status: 500, data: { error: "Error al generar el informe de transacciones." } });
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe de transacciones." },
+      });
     });
   });
 }
@@ -1229,15 +1301,21 @@ async function createSaleEXCEL(
   });
 }
 
-async function createTransactionEXCEL(currentDate, storeData, transactionsData, MIN_FEC, MAX_FEC) {
+async function createTransactionEXCEL(
+  currentDate,
+  storeData,
+  transactionsData,
+  MIN_FEC,
+  MAX_FEC
+) {
   return new Promise((resolve, reject) => {
     try {
       const title = "Informe de Transacciones SINPE";
       const fileName = `Transacciones-${formatDateTime(currentDate)}.xlsx`;
-      const filePath = path.join(excelDir, 'Transacciones', fileName);
+      const filePath = path.join(excelDir, "Transacciones", fileName);
 
-      if (!fs.existsSync(path.join(excelDir, 'Transacciones'))) {
-        fs.mkdirSync(path.join(excelDir, 'Transacciones'), { recursive: true });
+      if (!fs.existsSync(path.join(excelDir, "Transacciones"))) {
+        fs.mkdirSync(path.join(excelDir, "Transacciones"), { recursive: true });
       }
 
       // Convertir objeto a array si es necesario
@@ -1247,7 +1325,7 @@ async function createTransactionEXCEL(currentDate, storeData, transactionsData, 
         console.error("transactionsData no es un array:", transactionsData);
         return reject({
           status: 500,
-          data: { error: "Datos de transacciones inválidos." }
+          data: { error: "Datos de transacciones inválidos." },
         });
       }
 
@@ -1264,18 +1342,18 @@ async function createTransactionEXCEL(currentDate, storeData, transactionsData, 
       excelRows.push([]); // Espacio
 
       // Encabezado de tabla
-      excelRows.push(['Fecha', 'Descripción', 'Método Entrada', 'Monto']);
+      excelRows.push(["Fecha", "Descripción", "Método Entrada", "Monto"]);
 
       // Datos de cada transacción
-      transactionsArray.forEach(transaccion => {
+      transactionsArray.forEach((transaccion) => {
         const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
         const monto = parseFloat(transaccion.MONTO_PAGO || 0);
 
         excelRows.push([
           formattedDate,
-          transaccion.DSC_TRANSACCION || '--',
-          transaccion.METODO_PAGO || '--',
-          monto.toFixed(2)
+          transaccion.DSC_TRANSACCION || "--",
+          transaccion.METODO_PAGO || "--",
+          monto.toFixed(2),
         ]);
 
         totalEgresos += monto;
@@ -1286,14 +1364,16 @@ async function createTransactionEXCEL(currentDate, storeData, transactionsData, 
       excelRows.push([
         `Total Transferencias: ${transactionsArray.length}`,
         `Monto Total Enviado: ${totalEgresos.toFixed(2)}`,
-        `Promedio por Envío: ${(totalEgresos / transactionsArray.length || 0).toFixed(2)}`
+        `Promedio por Envío: ${(
+          totalEgresos / transactionsArray.length || 0
+        ).toFixed(2)}`,
       ]);
-      excelRows.push(['*** Última línea ***']);
+      excelRows.push(["*** Última línea ***"]);
 
       // Crear libro y hoja
       const worksheet = XLSX.utils.aoa_to_sheet(excelRows);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Transacciones');
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Transacciones");
 
       // Guardar archivo
       XLSX.writeFile(workbook, filePath);
@@ -1302,15 +1382,19 @@ async function createTransactionEXCEL(currentDate, storeData, transactionsData, 
         status: 200,
         data: {
           message: `${title} generado exitosamente en Excel`,
-          downloadLink: `${downloadLink}Transacciones/${fileName}`
-        }
+          downloadLink: `${downloadLink}Transacciones/${fileName}`,
+        },
       });
-
     } catch (error) {
-      console.error("Error al generar el informe de transacciones en Excel:", error);
+      console.error(
+        "Error al generar el informe de transacciones en Excel:",
+        error
+      );
       reject({
         status: 500,
-        data: { error: "Error al generar el informe de transacciones en Excel." }
+        data: {
+          error: "Error al generar el informe de transacciones en Excel.",
+        },
       });
     }
   });
@@ -1372,7 +1456,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
         MIN_FEC,
         MAX_FEC
       );
-    case 'ReporteProductos':
+    case "ReporteProductos":
       const [products] = await db.query(
         "CALL sp_products_report(:MIN_FEC, :MAX_FEC)",
         {
@@ -1380,19 +1464,14 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MIN_FEC: MIN_FEC,
             MAX_FEC: MAX_FEC,
           },
-          type: QueryTypes.SELECT
+          type: QueryTypes.SELECT,
         }
-      )
-      return await createProductEXCEL(
-        currentDate, products
       );
+      return await createProductEXCEL(currentDate, products);
     case "ProveedoresActivos":
-      const [supplierReport] = await db.query(
-        'CALL sp_getSupplierReport()',
-        {
-          type: QueryTypes.SELECT
-        });
-
+      const [supplierReport] = await db.query("CALL sp_getSupplierReport()", {
+        type: QueryTypes.SELECT,
+      });
 
       const rawData = Object.values(supplierReport);
 
@@ -1401,11 +1480,18 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
 
         try {
           if (supplier.compras != null) {
-            let fixedComprasStr = `[${supplier.compras}]`.replace(/},\s*{/g, '},{');
+            let fixedComprasStr = `[${supplier.compras}]`.replace(
+              /},\s*{/g,
+              "},{"
+            );
             compras = JSON.parse(fixedComprasStr);
           }
         } catch (err) {
-          console.error("Error al parsear compras para proveedor:", supplier.proveedor_nombre, err);
+          console.error(
+            "Error al parsear compras para proveedor:",
+            supplier.proveedor_nombre,
+            err
+          );
         }
 
         return {
@@ -1413,18 +1499,26 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
           direccion: supplier.DSC_DIRECCIONEXACTA,
           telefonos: supplier.telefonos,
           correos: supplier.correos,
-          compras: compras
+          compras: compras,
         };
       });
       return await createSupplierEXCEL(currentDate, store[0], parsedResults);
     case "ClientesCreditoActivo":
-
-      const [credit_Client] = await db.query(`CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`, {
-        replacements: { MIN_FEC: MIN_FEC, MAX_FEC: MAX_FEC },
-        type: db.QueryTypes.SELECT,
-      });
-      if (!credit_Client || !credit_Client[0] || Object.keys(credit_Client[0]).length === 0) {
-        return res.status(204).json({ message: "No se encontraron clientes con créditos." });
+      const [credit_Client] = await db.query(
+        `CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`,
+        {
+          replacements: { MIN_FEC: MIN_FEC, MAX_FEC: MAX_FEC },
+          type: db.QueryTypes.SELECT,
+        }
+      );
+      if (
+        !credit_Client ||
+        !credit_Client[0] ||
+        Object.keys(credit_Client[0]).length === 0
+      ) {
+        return res
+          .status(204)
+          .json({ message: "No se encontraron clientes con créditos." });
       }
 
       const data_client = Object.values(credit_Client);
@@ -1434,11 +1528,18 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
 
         try {
           if (client.creditos_json != null) {
-            let fixedCreditosStr = `[${client.creditos_json}]`.replace(/},\s*{/g, '},{');
+            let fixedCreditosStr = `[${client.creditos_json}]`.replace(
+              /},\s*{/g,
+              "},{"
+            );
             creditos = JSON.parse(fixedCreditosStr);
           }
         } catch (err) {
-          console.error("Error al parsear créditos para cliente:", client.cliente_nombre, err);
+          console.error(
+            "Error al parsear créditos para cliente:",
+            client.cliente_nombre,
+            err
+          );
         }
 
         return {
@@ -1449,11 +1550,17 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
           creditos: creditos,
           cantidad_creditos: client.cantidad_creditos,
           saldo_total_Pendiente: client.saldo_total_Pendiente,
-          abonos_total_Pagado: client.abonos_total_Pagado
+          abonos_total_Pagado: client.abonos_total_Pagado,
         };
       });
 
-      return await createClientCreditEXCEL(currentDate, store[0], client_Parsed, MIN_FEC, MAX_FEC);
+      return await createClientCreditEXCEL(
+        currentDate,
+        store[0],
+        client_Parsed,
+        MIN_FEC,
+        MAX_FEC
+      );
     default:
       return {
         status: 400,
@@ -1464,20 +1571,24 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
 
 function toArrayList(data) {
   if (Array.isArray(data)) return data;
-  if (typeof data === 'object' && data !== null) return Object.values(data);
+  if (typeof data === "object" && data !== null) return Object.values(data);
   return [];
 }
 
 function formatDate(dateString) {
   const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }) + ' ' + date.toLocaleTimeString('es-ES', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  return (
+    date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }) +
+    " " +
+    date.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  );
 }
 
 async function createProductPDF(currentDate, storeData, productData) {
@@ -1499,20 +1610,16 @@ async function createProductPDF(currentDate, storeData, productData) {
     doc.pipe(writeStream);
 
     // Encabezado
-    doc
-      .fontSize(12)
-      .text(storeData.DSC_NOMBRE, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
 
-    doc
-      .fontSize(10)
-      .text(title, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(10).text(title, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
 
     doc
@@ -1564,15 +1671,15 @@ async function createProductPDF(currentDate, storeData, productData) {
       doc.text(p.COD_BARRAS, colX.codigo, currentY);
       doc.text(p.MON_VENTA.toFixed(2), colX.venta, currentY, {
         width: 50,
-        align: "right"
+        align: "right",
       });
       doc.text(p.MON_COMPRA.toFixed(2), colX.compra, currentY, {
         width: 50,
-        align: "right"
+        align: "right",
       });
       doc.text(p.UNID_DISPONIBLE.toString(), colX.unidades, currentY, {
         width: 40,
-        align: "right"
+        align: "right",
       });
       doc.text(p.ESTADO, colX.estado, currentY);
       currentY += 12;
@@ -1585,12 +1692,10 @@ async function createProductPDF(currentDate, storeData, productData) {
 
     // Línea final
     currentY += 20;
-    doc
-      .fontSize(8)
-      .text("***Ultima linea***", margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(8).text("***Ultima linea***", margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
 
     doc.end();
 
@@ -1646,7 +1751,10 @@ async function createProductEXCEL(currentDate, productData) {
         },
       });
     } catch (error) {
-      console.error("Error al generar el informe de productos en Excel:", error);
+      console.error(
+        "Error al generar el informe de productos en Excel:",
+        error
+      );
       reject({
         status: 500,
         data: { error: "Error al generar el informe de productos en Excel." },
@@ -1654,7 +1762,6 @@ async function createProductEXCEL(currentDate, productData) {
     }
   });
 }
-
 
 //generar reporte pdf de proveedor
 
@@ -1668,23 +1775,34 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
     let totalComprasPeriodo = 0;
 
     const doc = new PDFDocument({
-      size: 'A4'
+      size: "A4",
     });
     const fileName = `Compras-Proveedores-${formatDateTime(currentDate)}.pdf`;
-    const filePath = path.join(pdfDir, 'Proveedor', fileName);
-    if (!fs.existsSync(path.join(pdfDir, 'Proveedor'))) {
-      fs.mkdirSync(path.join(pdfDir, 'Proveedor'), { recursive: true });
+    const filePath = path.join(pdfDir, "Proveedor", fileName);
+    if (!fs.existsSync(path.join(pdfDir, "Proveedor"))) {
+      fs.mkdirSync(path.join(pdfDir, "Proveedor"), { recursive: true });
     }
     const writeStream = fs.createWriteStream(filePath);
 
     doc.pipe(writeStream);
 
     // Encabezado del informe
-    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
-    doc.fontSize(10).text(title, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+    doc.fontSize(10).text(title, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
-    doc.fontSize(8).text(`Fecha del Reporte: ${currentDate}`, margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+    doc
+      .fontSize(8)
+      .text(`Fecha del Reporte: ${currentDate}`, margin, currentY, {
+        align: "center",
+        width: pageWidthPoints - 2 * margin,
+      });
     currentY += 25;
 
     // Tabla de compras por proveedor
@@ -1699,68 +1817,83 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
     const totalX = pageWidthPoints - margin - 70;
 
     // Cabecera de la tabla
-    doc.fontSize(9).font('Helvetica-Bold')
-      .text('Proveedor', proveedorX, rowY)
-      .text('Contacto', contactoX, rowY)
-      .text('Fecha Compra', fechaX, rowY)
-      .text('Total Compra', totalX - 100, rowY, { align: 'right' });
+    doc
+      .fontSize(9)
+      .font("Helvetica-Bold")
+      .text("Proveedor", proveedorX, rowY)
+      .text("Contacto", contactoX, rowY)
+      .text("Fecha Compra", fechaX, rowY)
+      .text("Total Compra", totalX - 100, rowY, { align: "right" });
     rowY += 12;
-    doc.strokeColor('#000').lineWidth(0.5).moveTo(margin, rowY).lineTo(pageWidthPoints - margin, rowY).stroke();
+    doc
+      .strokeColor("#000")
+      .lineWidth(0.5)
+      .moveTo(margin, rowY)
+      .lineTo(pageWidthPoints - margin, rowY)
+      .stroke();
     rowY += 5;
-    doc.font('Helvetica');
+    doc.font("Helvetica");
 
     // Filas de la tabla
-    suppliersData.forEach(proveedor => {
-
-
-      doc.fontSize(9).font('Helvetica-Bold')
-        .text(proveedor.proveedor_nombre || 'Proveedor sin nombre', proveedorX, rowY)
-        .text(`${(proveedor.telefonos || 'N/A').split(',')[0].trim()} / ${(proveedor.correos || 'N/A').split(',')[0].trim()}`, contactoX, rowY);
-
-      rowY += 10;
-      doc.font('Helvetica');
-
-      if (proveedor.compras.length === 0) {
-        doc.fontSize(8).text(
-          'No existen compras asignadas',
-          fechaX,
+    suppliersData.forEach((proveedor) => {
+      doc
+        .fontSize(9)
+        .font("Helvetica-Bold")
+        .text(
+          proveedor.proveedor_nombre || "Proveedor sin nombre",
+          proveedorX,
+          rowY
+        )
+        .text(
+          `${(proveedor.telefonos || "N/A").split(",")[0].trim()} / ${(
+            proveedor.correos || "N/A"
+          )
+            .split(",")[0]
+            .trim()}`,
+          contactoX,
           rowY
         );
 
-        doc.fontSize(8).text(
-          'No existen compras asignadas',
-          totalX - 100,
-          rowY,
-          { align: 'right' }
-        );
+      rowY += 10;
+      doc.font("Helvetica");
+
+      if (proveedor.compras.length === 0) {
+        doc.fontSize(8).text("No existen compras asignadas", fechaX, rowY);
+
+        doc
+          .fontSize(8)
+          .text("No existen compras asignadas", totalX - 100, rowY, {
+            align: "right",
+          });
 
         rowY += 15;
       } else {
-
-        proveedor.compras.forEach(compra => {
+        proveedor.compras.forEach((compra) => {
           if (!compra.fecha_compra) {
             return;
           }
 
-          doc.fontSize(8).text(
-            new Date(compra.fecha_compra).toLocaleDateString(),
-            fechaX,
-            rowY
-          );
+          doc
+            .fontSize(8)
+            .text(
+              new Date(compra.fecha_compra).toLocaleDateString(),
+              fechaX,
+              rowY
+            );
 
           const totalCompra = compra.total_compra || 0;
-          doc.fontSize(8).text(
-            totalCompra.toFixed(2),
-            totalX - 100, rowY, { align: 'right' }
-          );
+          doc.fontSize(8).text(totalCompra.toFixed(2), totalX - 100, rowY, {
+            align: "right",
+          });
 
           totalComprasPeriodo += totalCompra;
 
           // Línea separadora
           const lineY = rowY + 10;
-          doc.strokeColor('#ccc')
+          doc
+            .strokeColor("#ccc")
             .lineWidth(0.5)
-            .lineJoin('miter')
+            .lineJoin("miter")
             .dash(5, { space: 5 })
             .moveTo(margin, lineY)
             .lineTo(pageWidthPoints - margin, lineY)
@@ -1772,7 +1905,9 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
       }
 
       if (proveedor.direccion) {
-        doc.fontSize(8).text(`Dirección: ${proveedor.direccion}`, proveedorX, rowY);
+        doc
+          .fontSize(8)
+          .text(`Dirección: ${proveedor.direccion}`, proveedorX, rowY);
         rowY += 12;
       }
 
@@ -1780,13 +1915,23 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
     });
 
     currentY = rowY + 15;
-    doc.fontSize(10).font('Helvetica-Bold')
-      .text(`Monto total en compras: ${totalComprasPeriodo.toFixed(2)}`, margin, currentY, { align: 'right' });
-    doc.font('Helvetica');
+    doc
+      .fontSize(10)
+      .font("Helvetica-Bold")
+      .text(
+        `Monto total en compras: ${totalComprasPeriodo.toFixed(2)}`,
+        margin,
+        currentY,
+        { align: "right" }
+      );
+    doc.font("Helvetica");
 
     // Línea final del documento
     currentY += 15;
-    doc.fontSize(8).text('***Ultima linea***', margin, currentY, { align: 'center', width: pageWidthPoints - 2 * margin });
+    doc.fontSize(8).text("***Ultima linea***", margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
 
     doc.end();
 
@@ -1795,19 +1940,22 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
         status: 200,
         data: {
           message: "Informe de proveedores generado exitosamente",
-          downloadLink: `${downloadLink}Proveedor/${fileName}`
-        }
+          downloadLink: `${downloadLink}Proveedor/${fileName}`,
+        },
       });
     });
 
     writeStream.on("error", (error) => {
       console.error("Error al generar el informe de proveedores:", error);
-      reject({ status: 500, data: { error: "Error al generar el informe de proveedores." } });
+      reject({
+        status: 500,
+        data: { error: "Error al generar el informe de proveedores." },
+      });
     });
   });
   function toArrayList(data) {
     if (Array.isArray(data)) return data;
-    if (typeof data === 'object' && data !== null) return Object.values(data);
+    if (typeof data === "object" && data !== null) return Object.values(data);
     return [];
   }
 }
@@ -1816,7 +1964,9 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
   return new Promise(async (resolve, reject) => {
     try {
       const title = "Informe de proveedores y compras asociadas";
-      const fileName = `Compras-Proveedores-${formatDateTime(currentDate)}.xlsx`;
+      const fileName = `Compras-Proveedores-${formatDateTime(
+        currentDate
+      )}.xlsx`;
       const dirPath = path.join(excelDir, "Proveedor");
       const filePath = path.join(dirPath, fileName);
 
@@ -1824,23 +1974,20 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
 
-
       const excelData = [];
       let totalComprasPeriodo = 0;
-
 
       excelData.push([storeData.DSC_NOMBRE]);
       excelData.push([title]);
       excelData.push([`Fecha del Reporte: ${currentDate}`]);
       excelData.push([]);
 
-      suppliersData.forEach(proveedor => {
-
+      suppliersData.forEach((proveedor) => {
         excelData.push([
-          proveedor.proveedor_nombre || 'Proveedor sin nombre',
-          `Tel: ${(proveedor.telefonos || 'N/A').split(',')[0].trim()}`,
-          `Email: ${(proveedor.correos || 'N/A').split(',')[0].trim()}`,
-          proveedor.direccion ? `Dir: ${proveedor.direccion}` : ''
+          proveedor.proveedor_nombre || "Proveedor sin nombre",
+          `Tel: ${(proveedor.telefonos || "N/A").split(",")[0].trim()}`,
+          `Email: ${(proveedor.correos || "N/A").split(",")[0].trim()}`,
+          proveedor.direccion ? `Dir: ${proveedor.direccion}` : "",
         ]);
 
         // Cabecera de compras
@@ -1848,14 +1995,15 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
 
         // Procesar compras
         if (proveedor.compras.length > 0) {
-          proveedor.compras.forEach(compra => {
+          proveedor.compras.forEach((compra) => {
             if (!compra.fecha_compra) return;
 
             const total = compra.total_compra || 0;
             excelData.push([
-              "", "", // Espacios para alinear con el proveedor
+              "",
+              "", // Espacios para alinear con el proveedor
               new Date(compra.fecha_compra).toLocaleDateString(),
-              total.toFixed(2)
+              total.toFixed(2),
             ]);
 
             totalComprasPeriodo += total;
@@ -1867,19 +2015,16 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
         excelData.push([]);
       });
 
-
-      excelData.push(["", "", "TOTAL GENERAL:", totalComprasPeriodo.toFixed(2)]);
-
+      excelData.push([
+        "",
+        "",
+        "TOTAL GENERAL:",
+        totalComprasPeriodo.toFixed(2),
+      ]);
 
       const worksheet = XLSX.utils.aoa_to_sheet(excelData);
 
-
-      worksheet['!cols'] = [
-        { wch: 30 },
-        { wch: 25 },
-        { wch: 15 },
-        { wch: 15 }
-      ];
+      worksheet["!cols"] = [{ wch: 30 }, { wch: 25 }, { wch: 15 }, { wch: 15 }];
 
       // Crear workbook y guardar
       const workbook = XLSX.utils.book_new();
@@ -1890,16 +2035,16 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
         status: 200,
         data: {
           message: "Informe de proveedores generado exitosamente en Excel",
-          downloadLink: `${downloadLink}Proveedor/${fileName}`
-        }
+          downloadLink: `${downloadLink}Proveedor/${fileName}`,
+        },
       });
     } catch (error) {
       console.error("Error al generar el Excel:", error);
       reject({
         status: 500,
         data: {
-          error: "Error al generar el informe de proveedores en Excel."
-        }
+          error: "Error al generar el informe de proveedores en Excel.",
+        },
       });
     }
   });
@@ -1907,13 +2052,19 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
 
 // Función para formatear montos monetarios
 function formatMoney(amount) {
-  return (amount || 0).toLocaleString('es-CR', {
+  return (amount || 0).toLocaleString("es-CR", {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   });
 }
 
-export async function createClientCreditPDF(currentDate, storeData, clientsData, MIN_FEC, MAX_FEC) {
+export async function createClientCreditPDF(
+  currentDate,
+  storeData,
+  clientsData,
+  MIN_FEC,
+  MAX_FEC
+) {
   return new Promise((resolve, reject) => {
     try {
       // Configuración del documento
@@ -1929,14 +2080,16 @@ export async function createClientCreditPDF(currentDate, storeData, clientsData,
 
       // Crear documento PDF
       const doc = new PDFDocument({
-        size: 'A4',
+        size: "A4",
         margin: margin,
-        bufferPages: true
+        bufferPages: true,
       });
 
       // Configurar nombre de archivo y ruta
-      const fileName = `Reporte-Creditos-Clientes-${formatDateTime(currentDate)}.pdf`;
-      const folderPath = path.join(pdfDir, 'Cliente_Credito');
+      const fileName = `Reporte-Creditos-Clientes-${formatDateTime(
+        currentDate
+      )}.pdf`;
+      const folderPath = path.join(pdfDir, "Cliente_Credito");
 
       // Crear directorio si no existe
       if (!fs.existsSync(folderPath)) {
@@ -1948,60 +2101,86 @@ export async function createClientCreditPDF(currentDate, storeData, clientsData,
       doc.pipe(writeStream);
 
       // ============= ENCABEZADO DEL DOCUMENTO =============
-      doc.fontSize(14).font('Helvetica-Bold')
-        .text(storeData.DSC_NOMBRE || 'Tienda Zaid & Shayder', margin, currentY, { align: 'center' });
+      doc
+        .fontSize(14)
+        .font("Helvetica-Bold")
+        .text(
+          storeData.DSC_NOMBRE || "Tienda Zaid & Shayder",
+          margin,
+          currentY,
+          { align: "center" }
+        );
       currentY += 20;
 
-      doc.fontSize(12).text(title, margin, currentY, { align: 'center' });
+      doc.fontSize(12).text(title, margin, currentY, { align: "center" });
       currentY += 20;
 
       // Información de fechas
-      doc.fontSize(9)
-        .text(`Fecha del reporte: ${formatDate(currentDate)}`, margin, currentY);
+      doc
+        .fontSize(9)
+        .text(
+          `Fecha del reporte: ${formatDate(currentDate)}`,
+          margin,
+          currentY
+        );
 
       if (MIN_FEC && MAX_FEC) {
-        doc.text(`Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`, margin, currentY + 12);
+        doc.text(
+          `Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`,
+          margin,
+          currentY + 12
+        );
         currentY += 24;
       } else {
         currentY += 15;
       }
 
-
       const columns = [
-        { header: 'Cliente', key: 'nombre', width: 150, align: 'left' },
-        { header: 'Cédula', key: 'cedula', width: 100, align: 'left' },
-        { header: 'Créditos', key: 'cantidad', width: 70, align: 'center' },
-        { header: 'Abonado', key: 'abonado', width: 90, align: 'right' },
-        { header: 'Saldo', key: 'saldo', width: 100, align: 'right' }
+        { header: "Cliente", key: "nombre", width: 150, align: "left" },
+        { header: "Cédula", key: "cedula", width: 100, align: "left" },
+        { header: "Créditos", key: "cantidad", width: 70, align: "center" },
+        { header: "Abonado", key: "abonado", width: 90, align: "right" },
+        { header: "Saldo", key: "saldo", width: 100, align: "right" },
       ];
 
-      doc.font('Helvetica-Bold').fontSize(9);
+      doc.font("Helvetica-Bold").fontSize(9);
       let x = margin;
-      columns.forEach(col => {
-        doc.text(col.header, x, currentY, { width: col.width, align: col.align });
+      columns.forEach((col) => {
+        doc.text(col.header, x, currentY, {
+          width: col.width,
+          align: col.align,
+        });
         x += col.width;
       });
       currentY += 15;
 
       // Línea divisoria
-      doc.moveTo(margin, currentY).lineTo(pageWidthPoints - margin, currentY).stroke();
+      doc
+        .moveTo(margin, currentY)
+        .lineTo(pageWidthPoints - margin, currentY)
+        .stroke();
       currentY += 10;
 
-      doc.font('Helvetica').fontSize(8);
+      doc.font("Helvetica").fontSize(8);
 
-      clientsData.forEach(cliente => {
+      clientsData.forEach((cliente) => {
         // Calcular totales
         totalSaldoPendiente += cliente.saldo_total_Pendiente || 0;
         totalAbonado += cliente.abonos_total_Pagado || 0;
         totalCreditos += cliente.cantidad_creditos || 0;
 
         x = margin;
-        columns.forEach(col => {
-          const value = col.key === 'nombre' ? cliente.nombre :
-            col.key === 'cedula' ? cliente.cedula || 'N/A' :
-              col.key === 'cantidad' ? (cliente.cantidad_creditos || 0).toString() :
-                col.key === 'abonado' ? `${formatMoney(cliente.abonos_total_Pagado)}` :
-                  `${formatMoney(cliente.saldo_total_Pendiente)}`;
+        columns.forEach((col) => {
+          const value =
+            col.key === "nombre"
+              ? cliente.nombre
+              : col.key === "cedula"
+              ? cliente.cedula || "N/A"
+              : col.key === "cantidad"
+              ? (cliente.cantidad_creditos || 0).toString()
+              : col.key === "abonado"
+              ? `${formatMoney(cliente.abonos_total_Pagado)}`
+              : `${formatMoney(cliente.saldo_total_Pendiente)}`;
 
           doc.text(value, x, currentY, { width: col.width, align: col.align });
           x += col.width;
@@ -2011,138 +2190,176 @@ export async function createClientCreditPDF(currentDate, storeData, clientsData,
         // ============= DETALLE DE CRÉDITOS =============
         if (cliente.creditos && cliente.creditos.length > 0) {
           // Subtítulo
-          doc.font('Helvetica-Bold').text('Detalle de créditos:', margin + 10, currentY);
+          doc
+            .font("Helvetica-Bold")
+            .text("Detalle de créditos:", margin + 10, currentY);
           currentY += 12;
 
           // Configuración de columnas de detalle
           const detailCols = [
-            { header: 'Último Pago', width: 120 },
-            { header: 'Vencimiento', width: 120 },
-            { header: 'Monto Inicial', width: 90, align: 'right' },
-            { header: 'Abonado', width: 90, align: 'right' },
-            { header: 'Saldo pendiete', width: 90, align: 'right' }
+            { header: "Último Pago", width: 120 },
+            { header: "Vencimiento", width: 120 },
+            { header: "Monto Inicial", width: 90, align: "right" },
+            { header: "Abonado", width: 90, align: "right" },
+            { header: "Saldo pendiete", width: 90, align: "right" },
           ];
 
           // Cabecera de detalle
           x = margin + 20;
-          detailCols.forEach(col => {
-            doc.text(col.header, x, currentY, { width: col.width, align: col.align || 'left' });
+          detailCols.forEach((col) => {
+            doc.text(col.header, x, currentY, {
+              width: col.width,
+              align: col.align || "left",
+            });
             x += col.width;
           });
           currentY += 12;
 
           // Contenido de detalle
-          doc.font('Helvetica');
-          cliente.creditos.forEach(credito => {
+          doc.font("Helvetica");
+          cliente.creditos.forEach((credito) => {
             x = margin + 20;
 
             // Último pago
-            doc.text(formatDate(credito.fec_ultimo_pago), x, currentY, { width: detailCols[0].width });
+            doc.text(formatDate(credito.fec_ultimo_pago), x, currentY, {
+              width: detailCols[0].width,
+            });
             x += detailCols[0].width;
 
             // Vencimiento
-            doc.text(formatDate(credito.fec_vencimiento), x, currentY, { width: detailCols[1].width });
+            doc.text(formatDate(credito.fec_vencimiento), x, currentY, {
+              width: detailCols[1].width,
+            });
             x += detailCols[1].width;
 
             // Monto inicial
             doc.text(`${formatMoney(credito.monto_subtotal)}`, x, currentY, {
               width: detailCols[2].width,
-              align: 'right'
+              align: "right",
             });
             x += detailCols[2].width;
 
             // Abonado
             doc.text(`${formatMoney(credito.total_abonado)}`, x, currentY, {
               width: detailCols[3].width,
-              align: 'right'
+              align: "right",
             });
             x += detailCols[3].width;
 
             // Saldo
             doc.text(`${formatMoney(credito.saldo_restante)}`, x, currentY, {
               width: detailCols[4].width,
-              align: 'right'
+              align: "right",
             });
 
             currentY += 12;
           });
         } else {
-          doc.font('Helvetica-Oblique').text('No tiene créditos registrados.', margin + 20, currentY);
+          doc
+            .font("Helvetica-Oblique")
+            .text("No tiene créditos registrados.", margin + 20, currentY);
           currentY += 15;
         }
 
         // Dirección del cliente
         if (cliente.direccion) {
-          doc.font('Helvetica').text(`Dirección: ${cliente.direccion}`, margin + 10, currentY);
+          doc
+            .font("Helvetica")
+            .text(`Dirección: ${cliente.direccion}`, margin + 10, currentY);
           currentY += 15;
         }
 
         if (cliente.telefono) {
-          doc.font('Helvetica').text(`Telefono: ${(cliente.telefono || 'N/A')}`, margin + 10, currentY);
+          doc
+            .font("Helvetica")
+            .text(
+              `Telefono: ${cliente.telefono || "N/A"}`,
+              margin + 10,
+              currentY
+            );
           currentY += 15;
         }
 
         // Línea separadora entre clientes
-        doc.moveTo(margin, currentY)
+        doc
+          .moveTo(margin, currentY)
           .lineTo(pageWidthPoints - margin, currentY)
           .stroke();
         currentY += 15;
       });
 
       // ============= TOTALES DEL REPORTE =============
-      doc.font('Helvetica-Bold').fontSize(10);
+      doc.font("Helvetica-Bold").fontSize(10);
 
       // Total de créditos
-      doc.text(`Total de créditos: ${totalCreditos}`, margin, currentY, { align: 'right' });
+      doc.text(`Total de créditos: ${totalCreditos}`, margin, currentY, {
+        align: "right",
+      });
       currentY += 15;
 
       // Total abonado
-      doc.text(`Total abonado: ${formatMoney(totalAbonado)}`, margin, currentY, { align: 'right' });
+      doc.text(
+        `Total abonado: ${formatMoney(totalAbonado)}`,
+        margin,
+        currentY,
+        { align: "right" }
+      );
       currentY += 15;
 
       // Saldo pendiente total
-      doc.text(`Saldo pendiente total: ${formatMoney(totalSaldoPendiente)}`, margin, currentY, { align: 'right' });
+      doc.text(
+        `Saldo pendiente total: ${formatMoney(totalSaldoPendiente)}`,
+        margin,
+        currentY,
+        { align: "right" }
+      );
       currentY += 20;
 
       // ============= PIE DE PÁGINA =============
-      doc.font('Helvetica').fontSize(8)
-        .text('*** Fin del reporte ***', margin, currentY, { align: 'center' });
+      doc
+        .font("Helvetica")
+        .fontSize(8)
+        .text("*** Fin del reporte ***", margin, currentY, { align: "center" });
 
       // Finalizar documento
       doc.end();
 
       // Manejar eventos del stream
-      writeStream.on('finish', () => {
+      writeStream.on("finish", () => {
         resolve({
           status: 200,
           data: {
             message: "Informe de créditos generado exitosamente",
             downloadLink: `${downloadLink}Cliente_Credito/${fileName}`,
-            filePath: filePath
-          }
+            filePath: filePath,
+          },
         });
       });
 
-      writeStream.on('error', (error) => {
+      writeStream.on("error", (error) => {
         console.error("Error al generar el PDF:", error);
         reject({
           status: 500,
-          error: "Error al generar el PDF: " + error.message
+          error: "Error al generar el PDF: " + error.message,
         });
       });
-
     } catch (error) {
       console.error("Error en la generación del PDF:", error);
       reject({
         status: 500,
-        error: "Error interno al generar el PDF: " + error.message
+        error: "Error interno al generar el PDF: " + error.message,
       });
     }
   });
 }
 
-
-async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_FEC, MAX_FEC) {
+async function createClientCreditEXCEL(
+  currentDate,
+  storeData,
+  clientsData,
+  MIN_FEC,
+  MAX_FEC
+) {
   return new Promise(async (resolve, reject) => {
     try {
       const title = "Reporte de Clientes con Créditos Asociados";
@@ -2157,7 +2374,6 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.aoa_to_sheet([]);
 
-
       let rowIndex = 0;
       let totalSaldoPendiente = 0;
       let totalAbonado = 0;
@@ -2167,44 +2383,73 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
         header: {
           fill: { fgColor: { rgb: "4472C4" } },
           font: { bold: true, color: { rgb: "FFFFFF" } },
-          alignment: { horizontal: "center" }
+          alignment: { horizontal: "center" },
         },
         subHeader: {
           fill: { fgColor: { rgb: "8EA9DB" } },
           font: { bold: true },
-          alignment: { horizontal: "center" }
+          alignment: { horizontal: "center" },
         },
         tableHeader: {
           fill: { fgColor: { rgb: "5B9BD5" } },
-          font: { bold: true, color: { rgb: "FFFFFF" } }
+          font: { bold: true, color: { rgb: "FFFFFF" } },
         },
         totalRow: {
           fill: { fgColor: { rgb: "70AD47" } },
-          font: { bold: true, color: { rgb: "FFFFFF" } }
+          font: { bold: true, color: { rgb: "FFFFFF" } },
         },
-        currencyFormat: '#,##0.00'
+        currencyFormat: "#,##0.00",
       };
 
-      XLSX.utils.sheet_add_aoa(worksheet, [[storeData.DSC_NOMBRE || 'Tienda Zaid & Shayder']], { origin: { r: rowIndex, c: 0 } });
+      XLSX.utils.sheet_add_aoa(
+        worksheet,
+        [[storeData.DSC_NOMBRE || "Tienda Zaid & Shayder"]],
+        { origin: { r: rowIndex, c: 0 } }
+      );
       worksheet["A" + (rowIndex + 1)].s = styles.header;
       rowIndex++;
 
-      XLSX.utils.sheet_add_aoa(worksheet, [[title]], { origin: { r: rowIndex, c: 0 } });
+      XLSX.utils.sheet_add_aoa(worksheet, [[title]], {
+        origin: { r: rowIndex, c: 0 },
+      });
       worksheet["A" + (rowIndex + 1)].s = styles.subHeader;
       rowIndex++;
 
-      XLSX.utils.sheet_add_aoa(worksheet, [[`Fecha del Reporte: ${formatDate(currentDate)}`]], { origin: { r: rowIndex, c: 0 } });
+      XLSX.utils.sheet_add_aoa(
+        worksheet,
+        [[`Fecha del Reporte: ${formatDate(currentDate)}`]],
+        { origin: { r: rowIndex, c: 0 } }
+      );
       rowIndex++;
 
       if (MIN_FEC && MAX_FEC) {
-        XLSX.utils.sheet_add_aoa(worksheet, [[`Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`]], { origin: { r: rowIndex, c: 0 } });
+        XLSX.utils.sheet_add_aoa(
+          worksheet,
+          [
+            [
+              `Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(
+                MAX_FEC
+              )}`,
+            ],
+          ],
+          { origin: { r: rowIndex, c: 0 } }
+        );
         rowIndex++;
       }
 
       rowIndex++;
 
-      const mainHeaders = ['Cliente', 'Cédula', 'Créditos', 'Total Abonado', 'Saldo Pendiente', 'Dirección'];
-      XLSX.utils.sheet_add_aoa(worksheet, [mainHeaders], { origin: { r: rowIndex, c: 0 } });
+      const mainHeaders = [
+        "Cliente",
+        "Cédula",
+        "Créditos",
+        "Total Abonado",
+        "Saldo Pendiente",
+        "Dirección",
+      ];
+      XLSX.utils.sheet_add_aoa(worksheet, [mainHeaders], {
+        origin: { r: rowIndex, c: 0 },
+      });
 
       for (let col = 0; col < mainHeaders.length; col++) {
         const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: col });
@@ -2212,7 +2457,7 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
       }
       rowIndex++;
 
-      clientsData.forEach(cliente => {
+      clientsData.forEach((cliente) => {
         const saldo = cliente.saldo_total_Pendiente || 0;
         const abonado = cliente.abonos_total_Pagado || 0;
         const creditos = cliente.cantidad_creditos || 0;
@@ -2222,18 +2467,22 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
         totalCreditos += creditos;
 
         // Datos principales
-        XLSX.utils.sheet_add_aoa(worksheet, [
+        XLSX.utils.sheet_add_aoa(
+          worksheet,
           [
-            cliente.nombre || 'Cliente sin nombre',
-            cliente.cedula || 'N/A',
-            creditos,
-            abonado,
-            saldo,
-            cliente.direccion || 'N/A'
-          ]
-        ], { origin: { r: rowIndex, c: 0 } });
+            [
+              cliente.nombre || "Cliente sin nombre",
+              cliente.cedula || "N/A",
+              creditos,
+              abonado,
+              saldo,
+              cliente.direccion || "N/A",
+            ],
+          ],
+          { origin: { r: rowIndex, c: 0 } }
+        );
 
-        ['D', 'E'].forEach(col => {
+        ["D", "E"].forEach((col) => {
           const cellRef = col + (rowIndex + 1);
           if (worksheet[cellRef]) {
             worksheet[cellRef].z = styles.currencyFormat;
@@ -2243,33 +2492,47 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
         rowIndex++;
 
         if (cliente.creditos && cliente.creditos.length > 0) {
-          const detailHeaders = ['', 'Detalle de créditos:', 'Último Pago', 'Vencimiento', 'Monto Inicial', 'Abonado', 'Saldo'];
-          XLSX.utils.sheet_add_aoa(worksheet, [detailHeaders], { origin: { r: rowIndex, c: 0 } });
+          const detailHeaders = [
+            "",
+            "Detalle de créditos:",
+            "Último Pago",
+            "Vencimiento",
+            "Monto Inicial",
+            "Abonado",
+            "Saldo",
+          ];
+          XLSX.utils.sheet_add_aoa(worksheet, [detailHeaders], {
+            origin: { r: rowIndex, c: 0 },
+          });
 
           for (let col = 0; col < detailHeaders.length; col++) {
             const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: col });
             worksheet[cellRef].s = {
               fill: { fgColor: { rgb: "D9E1F2" } }, // Azul muy claro
-              font: { italic: true }
+              font: { italic: true },
             };
           }
           rowIndex++;
 
           // Datos de cada crédito
-          cliente.creditos.forEach(credito => {
-            XLSX.utils.sheet_add_aoa(worksheet, [
+          cliente.creditos.forEach((credito) => {
+            XLSX.utils.sheet_add_aoa(
+              worksheet,
               [
-                '',
-                '',
-                formatDate(credito.fec_ultimo_pago),
-                formatDate(credito.fec_vencimiento),
-                credito.monto_subtotal || 0,
-                credito.total_abonado || 0,
-                credito.saldo_restante || 0
-              ]
-            ], { origin: { r: rowIndex, c: 0 } });
+                [
+                  "",
+                  "",
+                  formatDate(credito.fec_ultimo_pago),
+                  formatDate(credito.fec_vencimiento),
+                  credito.monto_subtotal || 0,
+                  credito.total_abonado || 0,
+                  credito.saldo_restante || 0,
+                ],
+              ],
+              { origin: { r: rowIndex, c: 0 } }
+            );
 
-            ['E', 'F', 'G'].forEach(col => {
+            ["E", "F", "G"].forEach((col) => {
               const cellRef = col + (rowIndex + 1);
               if (worksheet[cellRef]) {
                 worksheet[cellRef].z = styles.currencyFormat;
@@ -2279,7 +2542,11 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
             rowIndex++;
           });
         } else {
-          XLSX.utils.sheet_add_aoa(worksheet, [['', 'No tiene créditos registrados']], { origin: { r: rowIndex, c: 0 } });
+          XLSX.utils.sheet_add_aoa(
+            worksheet,
+            [["", "No tiene créditos registrados"]],
+            { origin: { r: rowIndex, c: 0 } }
+          );
           rowIndex++;
         }
 
@@ -2288,26 +2555,33 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
 
       rowIndex++;
 
-      XLSX.utils.sheet_add_aoa(worksheet, [['', '', 'TOTALES:']], { origin: { r: rowIndex, c: 0 } });
+      XLSX.utils.sheet_add_aoa(worksheet, [["", "", "TOTALES:"]], {
+        origin: { r: rowIndex, c: 0 },
+      });
       worksheet["C" + (rowIndex + 1)].s = { font: { bold: true } };
       rowIndex++;
 
       const totals = [
-        ['', '', 'Total Créditos:', totalCreditos],
-        ['', '', 'Total Abonado:', totalAbonado],
-        ['', '', 'Total Saldo Pendiente:', totalSaldoPendiente]
+        ["", "", "Total Créditos:", totalCreditos],
+        ["", "", "Total Abonado:", totalAbonado],
+        ["", "", "Total Saldo Pendiente:", totalSaldoPendiente],
       ];
 
       totals.forEach((totalRow, i) => {
-        XLSX.utils.sheet_add_aoa(worksheet, [totalRow], { origin: { r: rowIndex + i, c: 0 } });
+        XLSX.utils.sheet_add_aoa(worksheet, [totalRow], {
+          origin: { r: rowIndex + i, c: 0 },
+        });
 
         // Aplicar estilo a la fila de total
-        ['C', 'D'].forEach(col => {
+        ["C", "D"].forEach((col) => {
           const cellRef = col + (rowIndex + i + 1);
           if (worksheet[cellRef]) {
-            worksheet[cellRef].s = i === totals.length - 1 ? styles.totalRow : { font: { bold: true } };
+            worksheet[cellRef].s =
+              i === totals.length - 1
+                ? styles.totalRow
+                : { font: { bold: true } };
 
-            if (col === 'D') {
+            if (col === "D") {
               worksheet[cellRef].z = styles.currencyFormat;
             }
           }
@@ -2315,14 +2589,14 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
       });
       rowIndex += totals.length;
 
-      worksheet['!cols'] = [
+      worksheet["!cols"] = [
         { wch: 30 },
         { wch: 15 },
         { wch: 10 },
         { wch: 15 },
         { wch: 15 },
         { wch: 30 },
-        { wch: 20 }
+        { wch: 20 },
       ];
 
       XLSX.utils.book_append_sheet(workbook, worksheet, "Creditos-Clientes");
@@ -2333,15 +2607,15 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
         data: {
           message: "Informe de créditos generado exitosamente en Excel",
           downloadLink: `${downloadLink}Cliente_Credito/${fileName}`,
-          filePath: filePath
-        }
+          filePath: filePath,
+        },
       });
-
     } catch (error) {
       console.error("Error al generar el Excel:", error);
       reject({
         status: 500,
-        error: "Error al generar el informe de créditos en Excel: " + error.message
+        error:
+          "Error al generar el informe de créditos en Excel: " + error.message,
       });
     }
   });
@@ -2349,25 +2623,26 @@ async function createClientCreditEXCEL(currentDate, storeData, clientsData, MIN_
 
 export const createCashClosing = async (req, res) => {
   const currentDay = await getDateCR();
-  const results = await db.query(
-    'CALL sp_cash_closing(:MIN_FEC, :MAX_FEC)',
-    {
-      replacements: {
-        MIN_FEC: currentDay,
-        MAX_FEC: currentDay
-      },
-      type: QueryTypes.SELECT
-    }
-  );
-
+  const results = await db.query("CALL sp_cash_closing(:MIN_FEC, :MAX_FEC)", {
+    replacements: {
+      MIN_FEC: currentDay,
+      MAX_FEC: currentDay,
+    },
+    type: QueryTypes.SELECT,
+  });
 
   const TOTAL_VENTAS = results[0]?.[0]?.TOTAL_VENTAS || 0;
   const TOTAL_COMPRAS = results[1]?.[0]?.TOTAL_COMPRAS || 0;
   const TOTAL_ABONO = results[2]?.[0]?.TOTAL_ABONO || 0;
   const TOTAL_TRANSACCIONES = results[3]?.[0]?.TOTAL_TRANSACCION || 0;
-  const cashData = results.slice(4)
-    .filter(r => Object.values(r).every(value => typeof value === 'object' && value !== null))
-    .flatMap(r => Object.values(r));
+  const cashData = results
+    .slice(4)
+    .filter((r) =>
+      Object.values(r).every(
+        (value) => typeof value === "object" && value !== null
+      )
+    )
+    .flatMap((r) => Object.values(r));
 
   const store = await Config.findAll();
   const resultPDF = await createResumenPDF(currentDay, store[0], {
@@ -2376,9 +2651,9 @@ export const createCashClosing = async (req, res) => {
       TOTAL_COMPRAS,
       TOTAL_ABONO,
       TOTAL_TRANSACCIONES,
-      TOTAL: TOTAL_VENTAS + TOTAL_ABONO - TOTAL_COMPRAS
+      TOTAL: TOTAL_VENTAS + TOTAL_ABONO - TOTAL_COMPRAS,
     },
-    cashData
+    cashData,
   });
 
   const resultExcel = await createResumenEXCEL(currentDay, store[0], {
@@ -2387,9 +2662,9 @@ export const createCashClosing = async (req, res) => {
       TOTAL_COMPRAS,
       TOTAL_ABONO,
       TOTAL_TRANSACCIONES,
-      TOTAL: TOTAL_VENTAS + TOTAL_ABONO - TOTAL_COMPRAS
+      TOTAL: TOTAL_VENTAS + TOTAL_ABONO - TOTAL_COMPRAS,
     },
-    cashData
+    cashData,
   });
 
   return res.status(200).json({ PDF: resultPDF.data, EXCEL: resultExcel.data });
@@ -2397,8 +2672,16 @@ export const createCashClosing = async (req, res) => {
 
 async function createResumenPDF(currentDate, storeData, resumenData) {
   return new Promise((resolve, reject) => {
-    const { TOTAL_VENTAS, TOTAL_COMPRAS, TOTAL_ABONO, TOTAL_TRANSACCIONES, TOTAL } = resumenData.totals;
-    const movimientos = resumenData.cashData.filter(item => typeof item === 'object');
+    const {
+      TOTAL_VENTAS,
+      TOTAL_COMPRAS,
+      TOTAL_ABONO,
+      TOTAL_TRANSACCIONES,
+      TOTAL,
+    } = resumenData.totals;
+    const movimientos = resumenData.cashData.filter(
+      (item) => typeof item === "object"
+    );
 
     const title = "Informe General de Transacciones";
     const pageWidthPoints = 595.28;
@@ -2418,20 +2701,16 @@ async function createResumenPDF(currentDate, storeData, resumenData) {
     doc.pipe(writeStream);
 
     // Encabezado
-    doc
-      .fontSize(12)
-      .text(storeData.DSC_NOMBRE, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
 
-    doc
-      .fontSize(10)
-      .text(title, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(10).text(title, margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
     currentY += 15;
 
     doc
@@ -2452,7 +2731,11 @@ async function createResumenPDF(currentDate, storeData, resumenData) {
     currentY += 12;
     doc.text(`Total Abonos: ${TOTAL_ABONO.toFixed(2)}`, margin, currentY);
     currentY += 12;
-    doc.text(`Total Transacciones: ${TOTAL_TRANSACCIONES.toFixed(2)}`, margin, currentY);
+    doc.text(
+      `Total Transacciones: ${TOTAL_TRANSACCIONES.toFixed(2)}`,
+      margin,
+      currentY
+    );
     currentY += 12;
     doc.text(`Total final: ${TOTAL.toFixed(2)}`, margin, currentY);
     currentY += 20;
@@ -2494,12 +2777,10 @@ async function createResumenPDF(currentDate, storeData, resumenData) {
 
     // Línea final
     currentY += 15;
-    doc
-      .fontSize(8)
-      .text("***Fin del informe***", margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
+    doc.fontSize(8).text("***Fin del informe***", margin, currentY, {
+      align: "center",
+      width: pageWidthPoints - 2 * margin,
+    });
 
     doc.end();
 
@@ -2526,11 +2807,19 @@ async function createResumenPDF(currentDate, storeData, resumenData) {
 async function createResumenEXCEL(currentDate, storeData, resumenData) {
   return new Promise((resolve, reject) => {
     try {
-      const { TOTAL_VENTAS, TOTAL_COMPRAS, TOTAL_ABONO, TOTAL_TRANSACCIONES, TOTAL } = resumenData.totals;
-      const movimientos = resumenData.cashData.filter(item => typeof item === 'object');
+      const {
+        TOTAL_VENTAS,
+        TOTAL_COMPRAS,
+        TOTAL_ABONO,
+        TOTAL_TRANSACCIONES,
+        TOTAL,
+      } = resumenData.totals;
+      const movimientos = resumenData.cashData.filter(
+        (item) => typeof item === "object"
+      );
 
       const fileName = `Resumen-${formatDateTime(currentDate)}.xlsx`;
-      const outputPath = path.join(excelDir, 'Resumen');
+      const outputPath = path.join(excelDir, "Resumen");
 
       if (!fs.existsSync(outputPath)) {
         fs.mkdirSync(outputPath, { recursive: true });
@@ -2541,8 +2830,8 @@ async function createResumenEXCEL(currentDate, storeData, resumenData) {
       const rows = [];
 
       // Encabezado
-      rows.push([storeData.DSC_NOMBRE || '']);
-      rows.push(['Informe General de Transacciones']);
+      rows.push([storeData.DSC_NOMBRE || ""]);
+      rows.push(["Informe General de Transacciones"]);
       rows.push([`Fecha del Reporte: ${formatDateTime(currentDate)}`]);
       rows.push([]); // Espacio
 
@@ -2555,26 +2844,26 @@ async function createResumenEXCEL(currentDate, storeData, resumenData) {
       rows.push([]); // Espacio
 
       // Cabecera de la tabla
-      rows.push(['Tipo', 'Fecha', 'Monto', 'Descripción']);
+      rows.push(["Tipo", "Fecha", "Monto", "Descripción"]);
 
       // Filas de movimientos
       movimientos.forEach((mov) => {
-        const fecha = new Date(mov.FECHA).toLocaleString('es-CR');
+        const fecha = new Date(mov.FECHA).toLocaleString("es-CR");
         rows.push([
           mov.TIPO,
           fecha,
           mov.MONTO.toFixed(2),
-          mov.DESCRIPCION || '-',
+          mov.DESCRIPCION || "-",
         ]);
       });
 
       rows.push([]);
-      rows.push(['***Fin del informe***']);
+      rows.push(["***Fin del informe***"]);
 
       // Crear hoja
       const worksheet = XLSX.utils.aoa_to_sheet(rows);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Resumen');
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Resumen");
 
       XLSX.writeFile(workbook, filePath);
 
@@ -2585,7 +2874,6 @@ async function createResumenEXCEL(currentDate, storeData, resumenData) {
           downloadLink: `${downloadLink}Resumen/${fileName}`,
         },
       });
-
     } catch (error) {
       console.error("Error al generar el Excel de resumen:", error);
       reject({
@@ -2622,6 +2910,55 @@ function generateConsecutive() {
 
   saveData(data);
 
-  const numFormat = String(data.number).padStart(7,'0');
+  const numFormat = String(data.number).padStart(7, "0");
   return `FAC-${year}-${numFormat}`;
+}
+
+function buildSalesReport(rows) {
+  const salesMap = new Map();
+  for (const row of rows) {
+    const saleId = row.ID_VENTA;
+
+    if (!salesMap.has(saleId)) {
+      salesMap.set(saleId, {
+        idVenta: row.ID_VENTA,
+        fechaVenta: row.FEC_VENTA,
+        subtotal: row.MONT_SUBTOTAL,
+        metodoPago: row.METODO_PAGO,
+        estado: row.ESTADO,
+        cliente: row.ID_CLIENTE
+          ? {
+              idCliente: row.ID_CLIENTE,
+              nombre: row.CLIENTE,
+              telefono: row.TEL_CLIENTE,
+            }
+          : null,
+        totalAbonos: row.TOTAL_ABONOS ?? 0,
+        productos: [],
+      });
+    }
+
+    salesMap.get(saleId).productos.push({
+      idProducto: row.ID_PRODUCT,
+      nombre: row.PRODUCTO,
+      cantidad: row.CANTIDAD,
+      impuesto: row.PORCENT_IMPUESTO,
+      descuento: row.PORCENT_DESCUENTO,
+      montoUnitario: row.MONT_UNITARIO,
+    });
+  }
+
+  return Array.from(salesMap.values());
+}
+
+function normalizeRows(rawRows) {
+  if (Array.isArray(rawRows)) {
+    return rawRows;
+  }
+
+  if (rawRows && typeof rawRows === "object") {
+    return Object.values(rawRows);
+  }
+
+  throw new Error("Formato de rows no soportado");
 }
