@@ -496,10 +496,11 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
       const [credit_Client] = await db.query(
         `CALL sp_getClientCreditReport(:MIN_FEC, :MAX_FEC);`,
         {
-          replacements: { MIN_FEC: MIN_FEC, MAX_FEC: MAX_FEC },
+          replacements: { MIN_FEC, MAX_FEC },
           type: db.QueryTypes.SELECT,
         }
       );
+
       if (
         !credit_Client ||
         !credit_Client[0] ||
@@ -510,36 +511,33 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
           .json({ message: "No se encontraron clientes con créditos." });
       }
 
+      // Sequelize devuelve objeto indexado
       const data_client = Object.values(credit_Client);
 
       const client_Parsed = data_client.map((client) => {
-        let creditos = [];
-
-        try {
-          if (client.creditos_json != null) {
-            let fixedCreditosStr = `[${client.creditos_json}]`.replace(
-              /},\s*{/g,
-              "},{"
-            );
-            creditos = JSON.parse(fixedCreditosStr);
-          }
-        } catch (err) {
-          console.error(
-            "Error al parsear créditos para cliente:",
-            client.cliente_nombre,
-            err
-          );
-        }
-
         return {
           cedula: client.DSC_CEDULA,
-          nombre: client.cliente_nombre,
+
+          // cliente_nombre ahora es objeto JSON
+          nombre: client.cliente_nombre
+            ? `${client.cliente_nombre.nombre} ${client.cliente_nombre.apellido_uno} ${client.cliente_nombre.apellido_dos}`
+            : "",
+
           direccion: client.DSC_DIRECCION,
-          telefono: client.telefono,
-          creditos: creditos,
+
+          // telefonos ahora es array JSON
+          telefono: Array.isArray(client.telefonos)
+            ? client.telefonos.join(", ")
+            : "",
+
+          // creditos_json ahora es array JSON real
+          creditos: Array.isArray(client.creditos_json)
+            ? client.creditos_json
+            : [],
+
           cantidad_creditos: client.cantidad_creditos,
-          saldo_total_Pendiente: client.saldo_total_Pendiente,
-          abonos_total_Pagado: client.abonos_total_Pagado,
+          saldo_total_Pendiente: client.saldo_total_pendiente,
+          abonos_total_Pagado: client.abonos_total_pagado,
         };
       });
 
@@ -550,6 +548,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
         MIN_FEC,
         MAX_FEC
       );
+
     default:
       return {
         status: 400,
