@@ -62,3 +62,41 @@ BEGIN
         v.FEC_VENTA ASC,
         v.ID_VENTA ASC;
 END
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getShoppingsReport`(IN MIN_FEC DATE, IN MAX_FEC DATE)
+BEGIN
+    SELECT
+        c.ID_COMPRA,
+        c.MON_TOTAL,
+        c.DSC_METODO_PAGO,
+        c.FEC_COMPRA,
+        c.FEC_ENTRADA,
+        c.ESTADO,
+
+        prov.ID_PROVEEDOR,
+        prov.DSC_NOMBRE AS PROVEEDOR,
+        telprov.DSC_TELEFONO AS TEL_PROVEEDOR,
+
+        prod.ID_PRODUCT,
+        prod.DSC_NOMBRE AS PRODUCTO,
+        detc.MON_CANTIDAD AS CANTIDAD
+
+    FROM tsit_compras c
+    JOIN tsit_detalles_compras detc 
+        ON detc.ID_COMPRA = c.ID_COMPRA
+    JOIN tsim_producto prod 
+        ON prod.DSC_CODIGO_BARRAS = detc.DSC_CODIGO_BARRAS
+    LEFT JOIN tsit_proveedor prov 
+        ON prov.ID_PROVEEDOR = c.ID_PROVEEDOR
+    LEFT JOIN tsit_telefonoproveedor telprov 
+        ON telprov.ID_PROVEEDOR = c.ID_PROVEEDOR
+
+    WHERE
+        c.FEC_COMPRA >= MIN_FEC
+        AND c.FEC_COMPRA < DATE_ADD(MAX_FEC, INTERVAL 1 DAY)
+        AND c.ESTADO = 1
+
+    ORDER BY
+        c.FEC_COMPRA ASC,
+        c.ID_COMPRA ASC;
+END
