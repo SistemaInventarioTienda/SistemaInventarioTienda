@@ -530,3 +530,59 @@ BEGIN
     LIMIT p_limit OFFSET p_offset;
 
 END
+
+CREATE PROCEDURE `Sp_SearchSales`(
+    IN termSearch VARCHAR(255),
+    IN page INT,
+    IN pageSize INT
+)
+BEGIN
+    DECLARE offset INT;
+    SET offset = (page - 1) * pageSize;
+
+    SELECT 
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'ID_VENTA', v.ID_VENTA, 
+                'ID_CLIENTE', v.ID_CLIENTE,
+                'FEC_VENTA', v.FEC_VENTA,
+                'METODO_PAGO', v.METODO_PAGO,
+                'DSC_VENTA', v.DSC_VENTA,
+                'MONT_SUBTOTAL', v.MONT_SUBTOTAL,
+                'ESTADO', v.ESTADO,
+
+                'CLIENTE', JSON_OBJECT(
+                    'DSC_NOMBRE', c.DSC_NOMBRE,
+                    'DSC_APELLIDOUNO', c.DSC_APELLIDOUNO,
+                    'DSC_APELLIDODOS', c.DSC_APELLIDODOS
+                ),
+
+                'PRODUCTO', JSON_OBJECT(
+                    'ID_PRODUCTO', p.ID_PRODUCT,
+                    'DSC_PRODUCTO_NOMBRE', p.DSC_NOMBRE,
+                    'MON_PRODUCTO_VENTA', p.MON_VENTA
+                ),
+
+                'DETALLE', JSON_OBJECT(
+                    'CANTIDAD', pd.CANTIDAD,
+                    'MONT_UNITARIO', pd.MONT_UNITARIO,
+                    'PORCENT_DESCUENTO', pd.PORCENT_DESCUENTO,
+                    'PORCENT_IMPUESTO', pd.PORCENT_IMPUESTO
+                )
+            )
+        ) AS ResultadoJSON
+    FROM tsit_venta v
+    JOIN tsit_cliente c 
+        ON v.ID_CLIENTE = c.ID_CLIENTE
+    LEFT JOIN tsit_detalleventa pd 
+        ON v.ID_VENTA = pd.ID_VENTA
+    LEFT JOIN tsim_producto p 
+        ON pd.ID_PRODUCTO = p.ID_PRODUCT
+    WHERE 
+        v.DSC_VENTA LIKE CONCAT('%', termSearch, '%')
+        OR c.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%')
+        OR c.DSC_APELLIDOUNO LIKE CONCAT('%', termSearch, '%')
+        OR c.DSC_APELLIDODOS LIKE CONCAT('%', termSearch, '%')
+        OR p.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%')
+    LIMIT offset, pageSize;
+END;
