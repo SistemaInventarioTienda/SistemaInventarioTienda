@@ -114,20 +114,30 @@ export const searchShopping = async (req, res) => {
       }
     );
 
-    const count = Object.keys(results).length;
+    const rows = Array.isArray(results) ? results : Object.values(results);
+
+    const count = rows.length;
     if (count === 0) {
       return res.status(204).json({
         message: "No se encontraron compras.",
       });
     }
 
-    const cleanedResults = clearShoppingDetails(results);
+    /*
+  clearShoppingDetails debe asumir ahora que:
+  - PRODUCTS_LISTS ya es un array (o null)
+  - NO se debe hacer JSON.parse
+*/
+    const cleanedResults = clearShoppingDetails(rows);
 
     const shoppingsResults = await Promise.all(
-      Object.values(cleanedResults).map(async (shopping) => {
+      cleanedResults.map(async (shopping) => {
         const canCancel = !(await EightDaysHavePassed(shopping.FEC_COMPRA));
         return {
           ...shopping,
+          PRODUCTS_LISTS: Array.isArray(shopping.PRODUCTS_LISTS)
+            ? shopping.PRODUCTS_LISTS
+            : [],
           CAN_CANCEL: canCancel,
         };
       })
