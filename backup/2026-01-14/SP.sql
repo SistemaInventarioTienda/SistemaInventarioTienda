@@ -423,3 +423,110 @@ BEGIN
         OR DATE_FORMAT(cr.FEC_VENCIMIENTO, '%Y-%m-%d') LIKE CONCAT('%', termSearch, '%')
     LIMIT offset, pageSize;
 END;
+
+CREATE PROCEDURE `sp_searchProformas`(
+    IN p_field VARCHAR(50),
+    IN p_sortOrder VARCHAR(4),
+    IN p_limit INT,
+    IN p_offset INT,
+    IN p_expectedMatch VARCHAR(255)
+)
+BEGIN
+
+    SELECT 
+        p.ID_PROFORMA,
+        p.DSC_CODIGO_BARRAS,
+        p.FEC_CREACION,
+        p.FEC_LIMITE,
+        p.MON_TOTAL,
+        p.ESTADO,
+
+        e.ID_EMPRESA,
+        e.DSC_NOMBRE,
+        e.NUM_TELEFONO,
+        e.DSC_CORREO,
+        e.DSC_DIRECCION,
+        e.DSC_ESLOGAN,
+
+        -- Producto de referencia para ordenamiento
+        (
+            SELECT JSON_OBJECT(
+                'DSC_NOMBRE', prod.DSC_NOMBRE,
+                'DSC_DESCRIPTION', prod.DSC_DESCRIPTION
+            )
+            FROM tsit_productos_proforma pp2
+            JOIN tsim_producto prod ON pp2.ID_PRODUCTO = prod.ID_PRODUCT
+            WHERE pp2.ID_PROFORMA = p.ID_PROFORMA
+            ORDER BY 
+                CASE
+                    WHEN p_field = 'PRODUCTO' AND p_sortOrder = 'DESC' THEN prod.DSC_NOMBRE
+                END DESC,
+                CASE
+                    WHEN p_field = 'PRODUCTO' AND p_sortOrder = 'ASC' THEN prod.DSC_NOMBRE
+                END ASC
+            LIMIT 1
+        ) AS DETALLE_PRODUCTO,
+
+        -- Lista completa de productos (JSON real)
+        (
+            SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'DSC_NOMBRE', prod.DSC_NOMBRE,
+                    'PRECIO_UNITARIO', pp.PRECIO_UNITARIO,
+                    'IMPUESTO', pp.IMPUESTO,
+                    'DESCUENTO', pp.DESCUENTO,
+                    'CANTIDAD', pp.CANTIDAD
+                )
+            )
+            FROM tsit_productos_proforma pp
+            JOIN tsim_producto prod ON pp.ID_PRODUCTO = prod.ID_PRODUCT
+            WHERE pp.ID_PROFORMA = p.ID_PROFORMA
+        ) AS PRODUCTS_LISTS
+
+    FROM tsit_proforma p
+    JOIN tsim_empresa e ON p.ID_EMPRESA = e.ID_EMPRESA
+
+    WHERE
+        CAST(p.ESTADO AS CHAR) COLLATE utf8mb4_unicode_ci LIKE CONCAT('%', p_expectedMatch, '%')
+        OR CAST(p.MON_TOTAL AS CHAR) COLLATE utf8mb4_unicode_ci LIKE CONCAT('%', p_expectedMatch, '%')
+        OR CAST(p.FEC_LIMITE AS CHAR) COLLATE utf8mb4_unicode_ci LIKE CONCAT('%', p_expectedMatch, '%')
+        OR CAST(p.FEC_CREACION AS CHAR) COLLATE utf8mb4_unicode_ci LIKE CONCAT('%', p_expectedMatch, '%')
+        OR CAST(p.DSC_CODIGO_BARRAS AS CHAR) COLLATE utf8mb4_unicode_ci LIKE CONCAT('%', p_expectedMatch, '%')
+        OR EXISTS (
+            SELECT 1
+            FROM tsit_productos_proforma pp3
+            JOIN tsim_producto prodD ON pp3.ID_PRODUCTO = prodD.ID_PRODUCT
+            WHERE pp3.ID_PROFORMA = p.ID_PROFORMA
+              AND prodD.DSC_NOMBRE COLLATE utf8mb4_unicode_ci
+                  LIKE CONCAT('%', p_expectedMatch, '%')
+        )
+
+    ORDER BY
+        CASE
+            WHEN p_field = 'PRODUCTO' AND p_sortOrder = 'DESC' THEN
+                JSON_UNQUOTE(JSON_EXTRACT(DETALLE_PRODUCTO, '$.DSC_NOMBRE'))
+            WHEN p_field = 'ESTADO' AND p_sortOrder = 'DESC' THEN p.ESTADO
+            WHEN p_field = 'FEC_CREACION' AND p_sortOrder = 'DESC' THEN p.FEC_CREACION
+            WHEN p_field = 'FEC_LIMITE' AND p_sortOrder = 'DESC' THEN p.FEC_LIMITE
+            WHEN p_field = 'MON_TOTAL' AND p_sortOrder = 'DESC' THEN p.MON_TOTAL
+            WHEN p_field = 'DSC_CODIGO_BARRAS' AND p_sortOrder = 'DESC' THEN p.DSC_CODIGO_BARRAS
+        END DESC,
+        CASE
+            WHEN p_field = 'PRODUCTO' AND p_sortOrder = 'ASC' THEN
+                JSON_UNQUOTE(JSON_EXTRACT(DETALLE_PRODUCTO, '$.DSC_NOMBRE'))
+            WHEN p_field = 'ESTADO' AND p_sortOrder = 'ASC' THEN p.ESTADO
+            WHEN p_field = 'FEC_CREACION' AND p_sortOrder = 'ASC' THEN p.FEC_CREACION
+            WHEN p_field = 'FEC_LIMITE' AND p_sortOrder = 'ASC' THEN p.FEC_LIMITE
+            WHEN p_field = 'MON_TOTAL' AND p_sortOrder = 'ASC' THEN p.MON_TOTAL
+            WHEN p_field = 'DSC_CODIGO_BARRAS' AND p_sortOrder = 'ASC' THEN p.DSC_CODIGO_BARRAS
+        END ASC,
+        CASE
+            WHEN p_sortOrder = 'DESC' THEN p.FEC_CREACION
+        END DESC,
+        CASE
+            WHEN p_sortOrder = 'ASC' THEN p.FEC_CREACION
+        END ASC
+
+    LIMIT p_limit OFFSET p_offset;
+
+END

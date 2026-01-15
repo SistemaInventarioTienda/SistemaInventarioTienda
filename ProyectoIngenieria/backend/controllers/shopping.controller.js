@@ -40,7 +40,6 @@ export const getAllShoppings = async (req, res) => {
         type: QueryTypes.SELECT,
       }
     );
-    console.log(results);
     if (!results || results.length === 0) {
       return res.status(204).json({ message: "No se encontraron compras." });
     }
