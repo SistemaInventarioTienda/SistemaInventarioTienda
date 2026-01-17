@@ -1540,109 +1540,129 @@ function formatDate(dateString) {
 
 async function createProductPDF(currentDate, storeData, productData) {
   return new Promise((resolve, reject) => {
-    const title = "Informe de Productos";
-    const pageWidthPoints = 595.28;
-    const margin = 20;
-    let currentY = margin + 20;
+    /* ================= CONFIG ================= */
+    const doc = new PDFDocument({
+      size: "A4",
+      layout: "landscape",
+      margins: { top: 40, left: 40, right: 40, bottom: 40 },
+    });
 
-    const doc = new PDFDocument({ size: "A4" });
+    const pageWidth = doc.page.width;
+    const pageHeight = doc.page.height;
+    let y = doc.page.margins.top;
+
     const fileName = `Productos-${formatDateTime(currentDate)}.pdf`;
     const filePath = path.join(pdfDir, "Productos", fileName);
 
-    if (!fs.existsSync(path.join(pdfDir, "Productos"))) {
-      fs.mkdirSync(path.join(pdfDir, "Productos"), { recursive: true });
-    }
-
+    fs.mkdirSync(path.join(pdfDir, "Productos"), { recursive: true });
     const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
-    // Encabezado
-    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
-
-    doc.fontSize(10).text(title, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
-
+    /* ================= ENCABEZADO ================= */
     doc
-      .fontSize(8)
-      .text(`Fecha del Reporte: ${currentDate}`, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
-    currentY += 25;
+      .font("Helvetica-Bold")
+      .fontSize(14)
+      .text(storeData.DSC_NOMBRE, { align: "center" });
 
-    // Cabecera de tabla
-    const colX = {
-      nombre: margin,
-      descripcion: margin + 110,
-      codigo: margin + 230,
-      venta: margin + 340,
-      compra: margin + 400,
-      unidades: margin + 460,
-      estado: margin + 520,
+    doc.moveDown(0.3);
+    doc.fontSize(12).text("Informe de Productos", { align: "center" });
+
+    doc.moveDown(0.5);
+    doc
+      .font("Helvetica")
+      .fontSize(9)
+      .text(`Fecha del reporte: ${currentDate}`, { align: "center" });
+
+    y = doc.y + 20;
+
+    /* ================= COLUMNAS ================= */
+    const col = {
+      nombre: { x: 40, w: 220 },
+      codigo: { x: 270, w: 140 },
+      venta: { x: 420, w: 90 },
+      compra: { x: 520, w: 90 },
+      unidades: { x: 620, w: 80 },
+      estado: { x: 710, w: 100 },
     };
 
-    doc.fontSize(9).font("Helvetica-Bold");
-    doc.text("Nombre", colX.nombre, currentY);
-    doc.text("Descripción", colX.descripcion, currentY);
-    doc.text("Código", colX.codigo, currentY);
-    doc.text("Venta", colX.venta, currentY);
-    doc.text("Compra", colX.compra, currentY);
-    doc.text("Unidades", colX.unidades, currentY);
-    doc.text("Estado", colX.estado, currentY);
+    /* ================= CABECERA TABLA ================= */
+    const drawHeader = () => {
+      doc.font("Helvetica-Bold").fontSize(10);
+      doc.text("Nombre", col.nombre.x, y, { width: col.nombre.w });
+      doc.text("Código", col.codigo.x, y, { width: col.codigo.w });
+      doc.text("Precio Venta", col.venta.x, y, {
+        width: col.venta.w,
+        align: "right",
+      });
+      doc.text("Precio Compra", col.compra.x, y, {
+        width: col.compra.w,
+        align: "right",
+      });
+      doc.text("Unidades", col.unidades.x, y, {
+        width: col.unidades.w,
+        align: "right",
+      });
+      doc.text("Estado", col.estado.x, y, { width: col.estado.w });
 
-    currentY += 12;
+      y += 14;
+      doc
+        .moveTo(40, y)
+        .lineTo(pageWidth - 40, y)
+        .stroke();
+      y += 8;
+      doc.font("Helvetica");
+    };
 
-    doc
-      .strokeColor("#000")
-      .lineWidth(0.5)
-      .moveTo(margin, currentY)
-      .lineTo(pageWidthPoints - margin, currentY)
-      .stroke();
+    drawHeader();
 
-    currentY += 5;
-    doc.font("Helvetica");
-
-    // Contenido
+    /* ================= CONTENIDO ================= */
     const productosArray = Object.values(productData);
-    productosArray.forEach((p) => {
-      doc.fontSize(8);
-      doc.text(p.NOMBRE, colX.nombre, currentY, { width: 100 });
-      doc.text(p.DESCRIPCION, colX.descripcion, currentY, { width: 100 });
-      doc.text(p.COD_BARRAS, colX.codigo, currentY);
-      doc.text(p.MON_VENTA.toFixed(2), colX.venta, currentY, {
-        width: 50,
-        align: "right",
-      });
-      doc.text(p.MON_COMPRA.toFixed(2), colX.compra, currentY, {
-        width: 50,
-        align: "right",
-      });
-      doc.text(p.UNID_DISPONIBLE.toString(), colX.unidades, currentY, {
-        width: 40,
-        align: "right",
-      });
-      doc.text(p.ESTADO, colX.estado, currentY);
-      currentY += 12;
 
-      if (currentY > 800) {
+    for (const p of productosArray) {
+      const rowHeight = Math.max(
+        doc.heightOfString(p.NOMBRE || "-", { width: col.nombre.w }),
+        12
+      );
+
+      // Salto de página
+      if (y + rowHeight > pageHeight - 60) {
         doc.addPage();
-        currentY = margin;
+        y = doc.page.margins.top;
+        drawHeader();
       }
-    });
 
-    // Línea final
-    currentY += 20;
-    doc.fontSize(8).text("***Ultima linea***", margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
+      doc
+        .fontSize(9)
+        .text(p.NOMBRE || "-", col.nombre.x, y, { width: col.nombre.w })
+        .text(p.COD_BARRAS || "-", col.codigo.x, y, { width: col.codigo.w })
+        .text(Number(p.MON_VENTA || 0).toFixed(2), col.venta.x, y, {
+          width: col.venta.w,
+          align: "right",
+        })
+        .text(Number(p.MON_COMPRA || 0).toFixed(2), col.compra.x, y, {
+          width: col.compra.w,
+          align: "right",
+        })
+        .text(Number(p.UNID_DISPONIBLE || 0).toString(), col.unidades.x, y, {
+          width: col.unidades.w,
+          align: "right",
+        })
+        .text(p.ESTADO || "-", col.estado.x, y, { width: col.estado.w });
+
+      y += rowHeight + 6;
+
+      // Separador suave
+      doc
+        .strokeColor("#e0e0e0")
+        .moveTo(40, y)
+        .lineTo(pageWidth - 40, y)
+        .stroke();
+      doc.strokeColor("#000");
+
+      y += 6;
+    }
+
+    /* ================= FOOTER ================= */
 
     doc.end();
 
@@ -1650,19 +1670,13 @@ async function createProductPDF(currentDate, storeData, productData) {
       resolve({
         status: 200,
         data: {
-          message: "Informe de productos generado exitosamente",
+          message: "Informe de productos generado correctamente",
           downloadLink: `${downloadLink}Productos/${fileName}`,
         },
       });
     });
 
-    writeStream.on("error", (error) => {
-      console.error("Error al generar el informe de productos:", error);
-      reject({
-        status: 500,
-        data: { error: "Error al generar el informe de productos." },
-      });
-    });
+    writeStream.on("error", reject);
   });
 }
 
