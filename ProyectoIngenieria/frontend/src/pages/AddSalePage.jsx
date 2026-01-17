@@ -43,7 +43,7 @@ const AddSalePage = () => {
                 proforma.PRODUCTS_LISTS.forEach((prod) => {
                     saleForm.addProduct(
                         {
-                            id: prod.ID,
+                            id: prod.DSC_CODIGO_BARRAS,
                             name: prod.DSC_NOMBRE,
                             price: prod.PRECIO_UNITARIO,
                             quantity: prod.CANTIDAD || 1,
