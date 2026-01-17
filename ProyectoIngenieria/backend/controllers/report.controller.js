@@ -597,165 +597,156 @@ async function createShoppingPDF(
   MAX_FEC
 ) {
   return new Promise((resolve, reject) => {
-    const title = "Informe de Compras por Proveedor";
-    const pageWidthPoints = 595.28;
-    const pageHeightPoints = 841.89;
-    const margin = 20;
-    let currentY = margin + 20;
-    let totalGastadoPeriodo = 0;
-
     const doc = new PDFDocument({
       size: "A4",
+      layout: "landscape",
+      margin: 30,
     });
+
+    const pageWidth = doc.page.width;
+    const margin = doc.page.margins.left;
+    let y = margin;
+
     const fileName = `Compras-${formatDateTime(currentDate)}.pdf`;
     const filePath = path.join(pdfDir, "Compras", fileName);
+
     if (!fs.existsSync(path.join(pdfDir, "Compras"))) {
       fs.mkdirSync(path.join(pdfDir, "Compras"), { recursive: true });
     }
-    const writeStream = fs.createWriteStream(filePath);
 
+    const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
-    // Encabezado del informe
-    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
-    doc.fontSize(10).text(title, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
+    /* =========================
+       ENCABEZADO
+    ========================= */
     doc
-      .fontSize(8)
-      .text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
-    currentY += 12;
-    doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15; // Espacio después de la fecha del reporte
+      .fontSize(14)
+      .font("Helvetica-Bold")
+      .text(storeData.DSC_NOMBRE, { align: "center" });
 
-    // Convertir el objeto shoppingData a un array
-    const comprasArray = shoppingData;
+    doc
+      .moveDown(0.3)
+      .fontSize(11)
+      .font("Helvetica")
+      .text("Informe de Compras por Proveedor", { align: "center" });
 
-    // Agrupar compras por proveedor
-    const comprasPorProveedor = comprasArray.reduce((acc, compra) => {
-      const proveedorNombre = compra.proveedor.nombre;
+    doc
+      .fontSize(9)
+      .moveDown(0.3)
+      .text(`Periodo: ${MIN_FEC} al ${MAX_FEC}`, { align: "center" })
+      .text(`Generado: ${currentDate}`, { align: "center" });
 
-      if (!acc[proveedorNombre]) {
-        acc[proveedorNombre] = {
-          nombre: proveedorNombre,
+    y = doc.y + 15;
+
+    /* =========================
+       AGRUPAR COMPRAS
+    ========================= */
+    const comprasPorProveedor = shoppingData.reduce((acc, compra) => {
+      const nombre = compra.proveedor.nombre;
+      if (!acc[nombre]) {
+        acc[nombre] = {
+          nombre,
           telefono: compra.proveedor.telefono,
           compras: [],
         };
       }
-
-      acc[proveedorNombre].compras.push({
-        fecha: compra.fechaCompra,
-        total: compra.total,
-        productos: compra.productos,
-      });
-
+      acc[nombre].compras.push(compra);
       return acc;
     }, {});
 
-    // Tabla de compras por proveedor
-    const tableTop = currentY;
-    let rowY = tableTop;
-    const proveedorX = margin;
-    const telefonoX = proveedorX + 150;
-    const fechaX = telefonoX + 150;
-    const productoX = margin + 10;
-    const cantidadX = productoX + 150;
-    const montoX = pageWidthPoints - margin - 170;
+    /* =========================
+       COLUMNAS
+    ========================= */
+    const cols = {
+      proveedor: margin,
+      telefono: margin + 180,
+      fecha: margin + 300,
+      producto: margin + 400,
+      cantidad: margin + 620,
+      total: pageWidth - margin - 80,
+    };
 
-    // Cabecera de la tabla
-    doc
-      .fontSize(9)
-      .font("Helvetica-Bold")
-      .text("Proveedor", proveedorX, rowY)
-      .text("Teléfono", telefonoX, rowY)
-      .text("Fecha Compra", fechaX, rowY)
-      .text("Monto Total", montoX - 100, rowY, { align: "right" });
-    rowY += 12;
-    doc
-      .strokeColor("#000")
-      .lineWidth(0.5)
-      .moveTo(margin, rowY)
-      .lineTo(pageWidthPoints - margin, rowY)
-      .stroke();
-    rowY += 5;
-    doc.font("Helvetica");
-
-    // Filas de la tabla
-    for (const proveedor in comprasPorProveedor) {
-      const proveedorData = comprasPorProveedor[proveedor];
+    const drawHeader = () => {
       doc
-        .fontSize(9)
+        .rect(margin, y - 3, pageWidth - margin * 2, 18)
+        .fill("#eeeeee");
+
+      doc
+        .fillColor("#000")
         .font("Helvetica-Bold")
-        .text(proveedorData.nombre, proveedorX, rowY);
-      doc.text(proveedorData.telefono, telefonoX, rowY);
-      rowY += 10;
+        .fontSize(9)
+        .text("Proveedor", cols.proveedor, y)
+        .text("Teléfono", cols.telefono, y)
+        .text("Fecha", cols.fecha, y)
+        .text("Producto", cols.producto, y)
+        .text("Cant.", cols.cantidad, y)
+        .text("Total", cols.total, y, { align: "right" });
+
+      y += 20;
       doc.font("Helvetica");
+    };
 
-      proveedorData.compras.forEach((compra) => {
-        doc.fontSize(8).text(compra.fecha, fechaX, rowY);
+    drawHeader();
 
-        const compraStartY = rowY;
-        let lastProductY = rowY;
+    let totalPeriodo = 0;
 
-        compra.productos.forEach((producto) => {
-          doc.fontSize(8).text(`- ${producto.nombre}`, productoX, rowY);
-          doc.text(`(${producto.cantidad})`, cantidadX, rowY);
-          lastProductY = rowY;
-          rowY += 8;
-        });
+    /* =========================
+       CUERPO
+    ========================= */
+    for (const proveedor in comprasPorProveedor) {
+      const prov = comprasPorProveedor[proveedor];
 
-        // Dibujar el monto total después del último producto
-        doc.fontSize(8).text(compra.total.toFixed(2), montoX, lastProductY, {
-          align: "right",
-        });
-        totalGastadoPeriodo += compra.total;
+      for (const compra of prov.compras) {
+        for (const producto of compra.productos) {
+          if (y > doc.page.height - 40) {
+            doc.addPage();
+            y = margin;
+            drawHeader();
+          }
 
-        const lineY = rowY + 2;
+          doc
+            .fontSize(8)
+            .text(prov.nombre, cols.proveedor, y)
+            .text(prov.telefono, cols.telefono, y)
+            .text(compra.fechaCompra, cols.fecha, y)
+            .text(producto.nombre, cols.producto, y)
+            .text(producto.cantidad, cols.cantidad, y)
+            .text(
+              compra.total.toFixed(2),
+              cols.total,
+              y,
+              { align: "right" }
+            );
+
+          y += 14;
+        }
+
+        totalPeriodo += compra.total;
+
         doc
           .strokeColor("#ccc")
-          .lineWidth(0.5)
-          .lineJoin("miter")
-          .dash(5, { space: 5 })
-          .moveTo(margin, lineY)
-          .lineTo(pageWidthPoints - margin, lineY)
+          .moveTo(margin, y)
+          .lineTo(pageWidth - margin, y)
           .stroke();
-        doc.undash();
-        rowY += 8;
-      });
-      doc.moveDown();
+
+        y += 6;
+      }
     }
 
-    // Mostrar el monto total gastado en el periodo
-    currentY = rowY + 15;
+    /* =========================
+       TOTAL GENERAL
+    ========================= */
+    y += 10;
     doc
-      .fontSize(10)
       .font("Helvetica-Bold")
+      .fontSize(11)
       .text(
-        `Monto total del periodo: ${totalGastadoPeriodo.toFixed(2)}`,
+        `Total gastado en el periodo: ${totalPeriodo.toFixed(2)}`,
         margin,
-        currentY,
+        y,
         { align: "right" }
       );
-    doc.font("Helvetica");
-
-    // Línea final del documento
-    currentY += 15;
-    doc.fontSize(8).text("***Ultima linea***", margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
 
     doc.end();
 
@@ -763,19 +754,13 @@ async function createShoppingPDF(
       resolve({
         status: 200,
         data: {
-          message: "Informe de compras generado exitosamente",
+          message: "Informe generado correctamente",
           downloadLink: `${downloadLink}Compras/${fileName}`,
         },
       });
     });
 
-    writeStream.on("error", (error) => {
-      console.error("Error al generar el informe de compras:", error);
-      reject({
-        status: 500,
-        data: { error: "Error al generar el informe de compras." },
-      });
-    });
+    writeStream.on("error", reject);
   });
 }
 
