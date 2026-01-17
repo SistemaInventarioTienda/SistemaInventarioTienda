@@ -169,6 +169,8 @@ const Table = ({
   subcategoryActions,
   entityKey,
 }) => {
+  // Detectar si onSort es undefined o la función noop
+  const isSortable = typeof onSort === "function" && onSort.toString() !== '() => {}';
   const [expandedRows, setExpandedRows] = useState({});
 
   // Función para manejar el estado de las filas expandidas
@@ -192,16 +194,17 @@ const Table = ({
                 <th
                   key={index}
                   onClick={
-                    column.field === "actions"
+                    column.field === "actions" || !isSortable
                       ? null
                       : () => onSort(column.field)
                   }
                   style={{
-                    cursor: column.field === "actions" ? "default" : "pointer",
+                    cursor: column.field === "actions" || !isSortable ? "default" : "pointer",
                   }}
                 >
                   {column.label}
-                  {column.field !== "actions" && (
+                  {/* Solo mostrar flechas si la tabla es ordenable */}
+                  {column.field !== "actions" && isSortable && (
                     <>
                       {sortField === column.field ? (
                         sortOrder === "asc" ? (

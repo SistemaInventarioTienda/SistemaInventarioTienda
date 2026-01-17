@@ -87,7 +87,7 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
       </div>
       <div className="credits-content">
         <Table
-          columns={[
+          columns={[ 
             { label: "Fecha", field: "date" },
             { label: "Monto", field: "amount" },
             { label: "Acción", field: "action" },
@@ -96,9 +96,7 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
             id: payment.id,
             date: payment.date,
             amount: `₡${payment.amount.toLocaleString()}`,
-
-            action: 
-            (
+            action: (
               <div className="action-cell">
                 <ActionButton
                   onClick={() => handleEdit(payment)}
@@ -111,7 +109,9 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
               </div>
             ),
           }))}
-          //actions={{edit: handleEdit}}
+          onSort={undefined}
+          sortField={undefined}
+          sortOrder={undefined}
         />
       </div>
       <ModalComponent
