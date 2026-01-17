@@ -401,7 +401,6 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
       const rawRows = salesByClient;
       const normalizedRows = normalizeRows(rawRows);
       const report = buildSalesReport(normalizedRows);
-
       return await createSalePDF(
         currentDate,
         store[0],
@@ -748,231 +747,171 @@ async function createSalePDF(
   MAX_FEC
 ) {
   return new Promise((resolve, reject) => {
-    const title = "Informe de Ventas por Cliente";
-    const pageWidthPoints = 595.28;
-    const margin = 20;
-    let currentY = margin + 20;
-    let totalVentasPeriodo = 0;
+    const doc = new PDFDocument({
+      size: "A4",
+      layout: "landscape",
+      margin: 40,
+    });
 
-    const doc = new PDFDocument({ size: "A4" });
+    const pageWidth = doc.page.width;
+    const pageHeight = doc.page.height;
+    let y = doc.page.margins.top;
+    let totalPeriodo = 0;
+
     const fileName = `Ventas-${formatDateTime(currentDate)}.pdf`;
     const filePath = path.join(pdfDir, "Ventas", fileName);
 
-    if (!fs.existsSync(path.join(pdfDir, "Ventas"))) {
-      fs.mkdirSync(path.join(pdfDir, "Ventas"), { recursive: true });
-    }
+    fs.mkdirSync(path.join(pdfDir, "Ventas"), { recursive: true });
+    const stream = fs.createWriteStream(filePath);
+    doc.pipe(stream);
 
-    const writeStream = fs.createWriteStream(filePath);
-    doc.pipe(writeStream);
-
-    // Encabezado
-    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
-    doc.fontSize(10).text(title, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
+    /* ================= HEADER ================= */
     doc
-      .fontSize(8)
-      .text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
-    currentY += 12;
-    doc
-      .fontSize(8)
-      .text(`Fecha del Reporte: ${currentDate}`, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
-    currentY += 25;
+      .font("Helvetica-Bold")
+      .fontSize(14)
+      .text(storeData.DSC_NOMBRE, { align: "center" });
 
-    // Convertir ventas a array
-    const ventasArray = Array.isArray(salesData)
+    doc.moveDown(0.3);
+    doc.fontSize(12).text("Informe de Ventas por Cliente", { align: "center" });
+
+    doc
+      .font("Helvetica")
+      .fontSize(9)
+      .text(`Periodo: ${MIN_FEC} al ${MAX_FEC}`, { align: "center" })
+      .text(`Fecha del reporte: ${currentDate}`, { align: "center" });
+
+    y = doc.y + 20;
+
+    /* ================= DATA ================= */
+    const ventas = Array.isArray(salesData)
       ? salesData
       : Object.values(salesData);
 
-    // Agrupar por cliente
-    const ventasPorCliente = ventasArray.reduce((acc, venta) => {
-      const nombreCliente = venta.cliente?.nombre || "Cliente Anónimo";
-      const telefonoCliente = venta.cliente?.telefono || "N/A";
-
-      if (!acc[nombreCliente]) {
-        acc[nombreCliente] = {
-          nombre: nombreCliente,
-          telefono: telefonoCliente,
-          ventas: [],
-        };
-      }
-
-      acc[nombreCliente].ventas.push({
-        idVenta: venta.idVenta,
-        fecha: new Date(venta.fechaVenta).toLocaleDateString(),
-        metodoPago: venta.metodoPago,
-        subtotal: Number(venta.subtotal) || 0,
-        total_abono: Number(venta.totalAbonos) || 0,
-        productos: venta.productos.map((p) => ({
-          nombre: p.nombre,
-          cantidad: Number(p.cantidad) || 0,
-          montoUnitario: Number(p.montoUnitario) || 0,
-          descuento: Number(p.descuento) || 0,
-          impuesto: Number(p.impuesto) || 0,
-        })),
-      });
-
+    const porCliente = ventas.reduce((acc, v) => {
+      const nombre = v.cliente?.nombre || "Cliente Anónimo";
+      acc[nombre] ??= {
+        telefono: v.cliente?.telefono || "N/A",
+        ventas: [],
+      };
+      acc[nombre].ventas.push(v);
       return acc;
     }, {});
 
-    // Tabla
-    let rowY = currentY;
-    const clienteX = margin;
-    const telefonoX = clienteX + 180;
-    const fechaX = telefonoX + 120;
-    const productoX = margin + 10;
-    const montoX = pageWidthPoints - margin - 70;
+    for (const nombre in porCliente) {
+      const cliente = porCliente[nombre];
 
-    // Cabecera
-    doc
-      .fontSize(9)
-      .font("Helvetica-Bold")
-      .text("Cliente", clienteX, rowY)
-      .text("Teléfono", telefonoX, rowY)
-      .text("Fecha Venta", fechaX, rowY)
-      .text("Monto Total", montoX - 100, rowY, { align: "right" });
-    rowY += 12;
-    doc
-      .strokeColor("#000")
-      .lineWidth(0.5)
-      .moveTo(margin, rowY)
-      .lineTo(pageWidthPoints - margin, rowY)
-      .stroke();
-    rowY += 5;
-    doc.font("Helvetica");
+      /* ===== CLIENTE ===== */
+      doc.font("Helvetica-Bold").fontSize(10);
+      doc.text(`CLIENTE: ${nombre}`, 40, y);
+      doc.text(`TEL: ${cliente.telefono}`, pageWidth - 220, y);
+      y += 10;
 
-    // Filas
-    for (const cliente in ventasPorCliente) {
-      const clienteData = ventasPorCliente[cliente];
       doc
-        .fontSize(9)
-        .font("Helvetica-Bold")
-        .text(clienteData.nombre, clienteX, rowY);
-      doc.text(clienteData.telefono, telefonoX, rowY);
-      rowY += 10;
-      doc.font("Helvetica");
+        .moveTo(40, y)
+        .lineTo(pageWidth - 40, y)
+        .stroke();
+      y += 10;
 
-      clienteData.ventas.forEach((venta) => {
-        doc.fontSize(8).text(venta.fecha, fechaX, rowY);
+      for (const venta of cliente.ventas) {
+        const fecha = new Date(venta.fechaVenta).toLocaleDateString();
+        doc.font("Helvetica-Bold").fontSize(9).text(`Fecha: ${fecha}`, 40, y);
+        y += 10;
 
+        /* ===== TABLA PRODUCTOS ===== */
+        const col = {
+          prod: 40,
+          cant: 420,
+          pu: 500,
+          subt: 600,
+        };
+
+        doc.fontSize(8).font("Helvetica-Bold");
+        doc.text("Producto", col.prod, y);
+        doc.text("Cant", col.cant, y);
+        doc.text("PU", col.pu, y, { width: 60, align: "right" });
+        doc.text("Subtotal", col.subt, y, { width: 80, align: "right" });
+        y += 8;
+
+        doc
+          .moveTo(40, y)
+          .lineTo(pageWidth - 40, y)
+          .stroke();
+        y += 5;
+
+        doc.font("Helvetica");
         let totalVenta = 0;
-        let lastProductY = rowY;
 
-        venta.productos.forEach((producto) => {
-          const cantidad = producto.cantidad || 0;
-          const precioBase = producto.montoUnitario || 0;
-          const desc = producto.descuento || 0;
-          const imp = producto.impuesto || 0;
+        venta.productos.forEach((p) => {
+          let pu = p.montoUnitario || 0;
+          if (p.descuento) pu -= pu * (p.descuento / 100);
+          if (p.impuesto) pu += pu * (p.impuesto / 100);
 
-          // Calcular PU con desc e imp
-          let precioFinal = precioBase;
-          if (desc > 0) precioFinal -= precioFinal * (desc / 100);
-          if (imp > 0) precioFinal += precioFinal * (imp / 100);
+          const subt = pu * p.cantidad;
+          totalVenta += subt;
 
-          const subtotal = precioFinal * cantidad;
-          totalVenta += subtotal;
-
-          // Línea producto
-          let lineaProducto =
-            `- ${producto.nombre} (x${cantidad}) | ` +
-            `PU: ${precioBase.toFixed(2)} | ` +
-            `Desc: ${desc}% | Imp: ${imp}% | ` +
-            `Subt: ${subtotal.toFixed(2)}`;
-
-          doc.fontSize(8).text(lineaProducto, productoX, rowY);
-          lastProductY = rowY;
-          rowY += 10;
+          doc.text(p.nombre, col.prod, y, { width: 360 });
+          doc.text(p.cantidad, col.cant, y);
+          doc.text(pu.toFixed(2), col.pu, y, { width: 60, align: "right" });
+          doc.text(subt.toFixed(2), col.subt, y, {
+            width: 80,
+            align: "right",
+          });
+          y += 8;
         });
 
-        // Totales
-        if (venta.total_abono === 0) {
-          doc
-            .fontSize(8)
-            .font("Helvetica-Bold")
-            .text(totalVenta.toFixed(2), montoX - 175, lastProductY, {
-              align: "right",
-            });
-          totalVentasPeriodo += totalVenta;
-        } else {
-          doc
-            .fontSize(8)
-            .font("Helvetica-Bold")
-            .text(
-              `${venta.total_abono.toFixed(2)} / ${totalVenta.toFixed(2)}`,
-              montoX - 175,
-              lastProductY,
-              { align: "right" }
-            );
-          totalVentasPeriodo += venta.total_abono;
-        }
+        const montoFinal =
+          venta.totalAbonos && venta.totalAbonos > 0
+            ? venta.totalAbonos
+            : totalVenta;
 
-        // Separador
-        const lineY = rowY + 2;
+        y += 4;
         doc
-          .strokeColor("#ccc")
-          .lineWidth(0.5)
-          .lineJoin("miter")
-          .dash(5, { space: 5 })
-          .moveTo(margin, lineY)
-          .lineTo(pageWidthPoints - margin, lineY)
+          .moveTo(420, y)
+          .lineTo(pageWidth - 40, y)
           .stroke();
-        doc.undash();
-        rowY += 8;
-      });
-      doc.moveDown();
+        y += 6;
+
+        doc
+          .font("Helvetica-Bold")
+          .text("TOTAL VENTA:", 500, y)
+          .text(montoFinal.toFixed(2), col.subt, y, {
+            width: 80,
+            align: "right",
+          });
+
+        totalPeriodo += montoFinal;
+        y += 16;
+
+        if (y > pageHeight - 60) {
+          doc.addPage({ layout: "landscape" });
+          y = doc.page.margins.top;
+        }
+      }
+
+      y += 10;
     }
 
-    // Total periodo
-    currentY = rowY + 15;
+    /* ================= TOTAL GENERAL ================= */
     doc
-      .fontSize(10)
       .font("Helvetica-Bold")
-      .text(
-        `Monto total del periodo: ${totalVentasPeriodo.toFixed(2)}`,
-        margin,
-        currentY,
-        { align: "right" }
-      );
-    doc.font("Helvetica");
-
-    // Línea final
-    currentY += 15;
-    doc.fontSize(8).text("***Ultima linea***", margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
+      .fontSize(11)
+      .text(`TOTAL DEL PERIODO: ${totalPeriodo.toFixed(2)}`, 40, y, {
+        align: "right",
+      });
 
     doc.end();
 
-    writeStream.on("finish", () => {
+    stream.on("finish", () =>
       resolve({
         status: 200,
         data: {
-          message: "Informe de ventas por cliente generado exitosamente",
+          message: "Informe generado correctamente",
           downloadLink: `${downloadLink}Ventas/${fileName}`,
         },
-      });
-    });
+      })
+    );
 
-    writeStream.on("error", (error) => {
-      console.error("Error al generar el informe de ventas:", error);
-      reject({
-        status: 500,
-        data: { error: "Error al generar el informe de ventas." },
-      });
-    });
+    stream.on("error", reject);
   });
 }
 
@@ -984,179 +923,168 @@ async function createTransactionPDF(
   MAX_FEC
 ) {
   return new Promise((resolve, reject) => {
-    const title = "Informe de Transacciones SINPE";
-    const pageWidthPoints = 595.28; // A4 width in points
-    const pageHeightPoints = 841.89; // A4 height in points
-    const margin = 20;
-    let currentY = margin + 20;
-    let totalEgresos = 0;
+    /* ================= CONFIG ================= */
+    const doc = new PDFDocument({
+      size: "A4",
+      layout: "landscape",
+      margins: { top: 40, left: 40, right: 40, bottom: 40 },
+    });
 
-    const doc = new PDFDocument({ size: "A4" });
+    const pageWidth = doc.page.width;
+    const pageHeight = doc.page.height;
+    let y = doc.page.margins.top;
+
+    let totalMonto = 0;
+
+    /* ================= ARCHIVO ================= */
     const fileName = `Transacciones-${formatDateTime(currentDate)}.pdf`;
     const filePath = path.join(pdfDir, "Transacciones", fileName);
 
-    if (!fs.existsSync(path.join(pdfDir, "Transacciones"))) {
-      fs.mkdirSync(path.join(pdfDir, "Transacciones"), { recursive: true });
-    }
-
+    fs.mkdirSync(path.join(pdfDir, "Transacciones"), { recursive: true });
     const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
-    // Encabezado del informe
-    doc.fontSize(12).text(storeData.DSC_NOMBRE, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
-    doc.fontSize(10).text(title, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
+    /* ================= ENCABEZADO ================= */
     doc
-      .fontSize(8)
-      .text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
-    currentY += 12;
-    doc.fontSize(8).text(`Reporte generado: ${currentDate}`, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15;
-
-    // Tabla de transacciones
-    const tableTop = currentY;
-    let rowY = tableTop;
-
-    const fechaX = margin;
-    const descripcionX = fechaX + 120;
-    const metodoX = descripcionX + 130;
-    const montoX = pageWidthPoints - margin - 100;
-
-    // Cabecera de tabla
-    doc
-      .fontSize(9)
       .font("Helvetica-Bold")
-      .text("Fecha", fechaX, rowY)
-      .text("Descripción", descripcionX, rowY)
-      .text("Método Entrada", metodoX, rowY)
-      .text("Monto", montoX, rowY, { align: "right" });
+      .fontSize(14)
+      .text(storeData.DSC_NOMBRE, { align: "center" });
 
-    rowY += 12;
+    doc.moveDown(0.3);
     doc
-      .strokeColor("#000")
-      .lineWidth(0.5)
-      .moveTo(margin, rowY)
-      .lineTo(pageWidthPoints - margin, rowY)
-      .stroke();
-    rowY += 5;
-    doc.font("Helvetica");
+      .fontSize(12)
+      .text("Informe de Transacciones SINPE", { align: "center" });
 
-    // Convertir objeto a array si es necesario
+    doc.moveDown(0.5);
+    doc
+      .font("Helvetica")
+      .fontSize(9)
+      .text(`Periodo del informe: ${MIN_FEC} al ${MAX_FEC}`, {
+        align: "center",
+      })
+      .text(`Reporte generado: ${currentDate}`, { align: "center" });
+
+    y = doc.y + 20;
+
+    /* ================= COLUMNAS ================= */
+    const col = {
+      fecha: { x: 40, w: 120 },
+      descripcion: { x: 170, w: 420 },
+      metodo: { x: 600, w: 200 },
+      monto: { x: pageWidth - 140, w: 100 },
+    };
+
+    /* ================= CABECERA TABLA ================= */
+    const drawHeader = () => {
+      doc.font("Helvetica-Bold").fontSize(10);
+      doc.text("Fecha", col.fecha.x, y, { width: col.fecha.w });
+      doc.text("Descripción", col.descripcion.x, y, {
+        width: col.descripcion.w,
+      });
+      doc.text("Método Entrada", col.metodo.x, y, { width: col.metodo.w });
+      doc.text("Monto", col.monto.x, y, { width: col.monto.w, align: "right" });
+
+      y += 14;
+      doc
+        .moveTo(40, y)
+        .lineTo(pageWidth - 40, y)
+        .stroke();
+      y += 8;
+      doc.font("Helvetica");
+    };
+
+    drawHeader();
+
+    /* ================= DATOS ================= */
     const transactionsArray = toArrayList(transactionsData);
 
-    // Validar que transactionsData sea un array
-    if (!Array.isArray(transactionsArray)) {
-      console.error("transactionsData no es un array:", transactionsArray);
-      return reject({
-        status: 500,
-        data: { error: "Datos de transacciones inválidos." },
+    for (const t of transactionsArray) {
+      /* === calcular alturas === */
+      const hFecha = doc.heightOfString(formatDate(t.FEC_TRANSACCION), {
+        width: col.fecha.w,
       });
-    }
 
-    // Dibujar filas
-    transactionsArray.forEach((transaccion) => {
-      // Si se acaba el espacio, agregar nueva página
-      if (rowY > pageHeightPoints - 40) {
+      const hDesc = doc.heightOfString(t.DSC_TRANSACCION || "-", {
+        width: col.descripcion.w,
+      });
+
+      const hMetodo = doc.heightOfString(t.METODO_PAGO || "-", {
+        width: col.metodo.w,
+      });
+
+      const rowHeight = Math.max(hFecha, hDesc, hMetodo, 14);
+
+      /* === salto de página === */
+      if (y + rowHeight > pageHeight - 80) {
         doc.addPage();
-        rowY = margin + 20;
-
-        // Redibujar encabezado en nueva página
-        doc
-          .fontSize(9)
-          .font("Helvetica-Bold")
-          .text("Fecha", fechaX, rowY)
-          .text("Descripción", descripcionX, rowY)
-          .text("Método Entrada", metodoX, rowY)
-          .text("Monto", montoX, rowY, { align: "right" });
-        rowY += 12;
-
-        doc
-          .strokeColor("#000")
-          .lineWidth(0.5)
-          .moveTo(margin, rowY)
-          .lineTo(pageWidthPoints - margin, rowY)
-          .stroke();
-        rowY += 5;
-        doc.font("Helvetica");
+        y = doc.page.margins.top;
+        drawHeader();
       }
 
-      // Formatear fecha
-      const formattedDate = formatDate(transaccion.FEC_TRANSACCION);
+      /* === colores por método === */
+      if (t.METODO_PAGO === "Efectivo") doc.fillColor("green");
+      else if (t.METODO_PAGO === "Tarjeta") doc.fillColor("blue");
+      else doc.fillColor("black");
 
-      // Establecer color según método de pago
-      if (transaccion.METODO_PAGO === "Efectivo") {
-        doc.fillColor("green"); // Efectivo en verde
-      } else if (transaccion.METODO_PAGO === "Tarjeta") {
-        doc.fillColor("blue"); // Tarjeta en azul
-      } else {
-        doc.fillColor("black"); // Otros en negro
-      }
-
-      // Mostrar datos de la transacción
+      /* === fila === */
       doc
-        .fontSize(8)
-        .text(formattedDate || "--", fechaX, rowY)
-        .text(transaccion.DSC_TRANSACCION || "--", descripcionX, rowY)
-        .text(transaccion.METODO_PAGO || "--", metodoX, rowY)
-        .text(
-          parseFloat(transaccion.MONTO_PAGO || 0).toFixed(2),
-          montoX,
-          rowY,
-          { align: "right" }
-        );
+        .fontSize(9)
+        .text(formatDate(t.FEC_TRANSACCION), col.fecha.x, y, {
+          width: col.fecha.w,
+        })
+        .text(t.DSC_TRANSACCION || "-", col.descripcion.x, y, {
+          width: col.descripcion.w,
+        })
+        .text(t.METODO_PAGO || "-", col.metodo.x, y, {
+          width: col.metodo.w,
+        })
+        .text(Number(t.MONTO_PAGO || 0).toFixed(2), col.monto.x, y, {
+          width: col.monto.w,
+          align: "right",
+        });
 
-      // Restaurar color predeterminado
       doc.fillColor("black");
 
-      // Acumular totales (todas son salidas)
-      totalEgresos += parseFloat(transaccion.MONTO_PAGO || 0);
+      totalMonto += Number(t.MONTO_PAGO || 0);
 
-      rowY += 15;
-    });
+      y += rowHeight + 6;
 
-    // Totales
-    currentY = rowY + 15;
-    doc
-      .fontSize(10)
-      .font("Helvetica-Bold")
-      .text(
-        `Total Transferencias: ${transactionsArray.length}`,
-        margin,
-        currentY
-      )
-      .text(
-        `Monto Total Enviado: ${totalEgresos.toFixed(2)}`,
-        margin + 200,
-        currentY
-      )
-      .text(
-        `Promedio por Envío: ${(
-          totalEgresos / transactionsArray.length || 0
-        ).toFixed(2)}`,
-        margin + 400,
-        currentY,
-        { align: "right" }
-      );
-    doc.font("Helvetica");
+      /* separador suave */
+      doc
+        .strokeColor("#e0e0e0")
+        .moveTo(40, y)
+        .lineTo(pageWidth - 40, y)
+        .stroke();
+      doc.strokeColor("#000");
 
-    // Pie de página
-    currentY += 20;
-    doc.fontSize(8).text("*** Última línea ***", margin, currentY, {
+      y += 6;
+    }
+
+    /* ================= TOTALES ================= */
+    y += 15;
+    doc.font("Helvetica-Bold").fontSize(11);
+
+    doc.text(`Total Transferencias: ${transactionsArray.length}`, 40, y);
+
+    doc.text(
+      `Monto Total Enviado: ${totalMonto.toFixed(2)}`,
+      pageWidth / 2 - 120,
+      y
+    );
+
+    doc.text(
+      `Promedio por Envío: ${(
+        totalMonto / transactionsArray.length || 0
+      ).toFixed(2)}`,
+      pageWidth - 300,
+      y,
+      { width: 260, align: "right" }
+    );
+
+    /* ================= FOOTER ================= */
+    y += 30;
+    doc.font("Helvetica").fontSize(8).text("*** Última línea ***", {
       align: "center",
-      width: pageWidthPoints - 2 * margin,
     });
 
     doc.end();
@@ -1165,19 +1093,13 @@ async function createTransactionPDF(
       resolve({
         status: 200,
         data: {
-          message: `${title} generado exitosamente`,
+          message: "Informe de transacciones generado correctamente",
           downloadLink: `${downloadLink}Transacciones/${fileName}`,
         },
       });
     });
 
-    writeStream.on("error", (error) => {
-      console.error("Error al generar el informe de transacciones:", error);
-      reject({
-        status: 500,
-        data: { error: "Error al generar el informe de transacciones." },
-      });
-    });
+    writeStream.on("error", reject);
   });
 }
 
