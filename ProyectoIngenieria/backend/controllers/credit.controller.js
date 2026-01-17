@@ -155,9 +155,9 @@ export const getCreditById = async (req, res) => {
           attributes: [
             "ID_VENTA",
             "DSC_VENTA",
-            "PORCENT_IMPUESTO",
+            // "PORCENT_IMPUESTO",
             "MONT_SUBTOTAL",
-            "PORCENT_DESCUENTO",
+            // "PORCENT_DESCUENTO",
             "FEC_VENTA",
           ],
           include: [

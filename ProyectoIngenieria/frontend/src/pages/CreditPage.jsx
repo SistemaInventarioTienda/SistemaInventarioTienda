@@ -30,11 +30,14 @@ const CreditPage = () => {
         try {
           const creditId = creditInfo?.ID_CREDITO;
           if (!creditId) return;
-    
           // Llamar al endpoint para obtener los datos del crédito
           const response = await creditConfig.api.getCreditById(creditId);
- 
-          setCreditInfo(response); // Actualizar el estado con los datos nuevos
+          // Si la respuesta viene como { response: { ...datos } }, extraer correctamente
+          if (response && response.response) {
+            setCreditInfo(response.response);
+          } else {
+            setCreditInfo(response);
+          }
         } catch (error) {
           console.error("Error al obtener los datos del crédito:", error);
         }
