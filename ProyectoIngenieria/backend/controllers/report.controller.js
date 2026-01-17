@@ -160,200 +160,186 @@ function validateDate(dateString) {
 // Function to create a PDF SALE
 export async function createReceiptPDF(currentDate, storeData, saleData) {
   return new Promise((resolve, reject) => {
-    const pageWidthPoints = 227;
-    const pageHeightPoints = 623;
+    const pageWidth = 227;
+    const pageHeight = 623;
     const margin = 10;
-    let currentY = margin;
+    let y = margin;
 
     const doc = new PDFDocument({
-      size: [pageWidthPoints, pageHeightPoints],
+      size: [pageWidth, pageHeight],
+      margins: { top: margin, left: margin, right: margin, bottom: margin },
     });
+
     const consecutivo = generateConsecutive();
     const fileName = `${consecutivo}.pdf`;
-    const title = `${consecutivo}`;
     const filePath = path.join(pdfDir, "Recibos", fileName);
+
     if (!fs.existsSync(path.join(pdfDir, "Recibos"))) {
       fs.mkdirSync(path.join(pdfDir, "Recibos"), { recursive: true });
     }
-    const writeStream = fs.createWriteStream(filePath);
 
+    const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream);
 
-    // Store Information (Header)
-    doc.fontSize(10).text(storeData.DSC_NOMBRE, margin, currentY, {
+    /* ========= ENCABEZADO ========= */
+    doc.font("Helvetica-Bold").fontSize(10).text(storeData.DSC_NOMBRE, {
       align: "center",
-      width: pageWidthPoints - 2 * margin,
     });
-    currentY += 12; // Space after name
 
     doc
+      .font("Helvetica")
       .fontSize(8)
-      .text(`Teléfono: ${storeData.NUM_TELEFONO}`, margin, currentY, {
-        align: "center",
-        width: pageWidthPoints - 2 * margin,
-      });
-    currentY += 10; // Space after phone
+      .text(`Tel: ${storeData.NUM_TELEFONO}`, { align: "center" })
+      .text(storeData.DSC_CORREO, { align: "center" })
+      .text(storeData.DSC_DIRECCION, { align: "center" });
 
-    doc.fontSize(8).text(storeData.DSC_CORREO, margin, currentY, {
+    doc.moveDown(0.5);
+    doc.fontSize(7).text(storeData.DSC_ESLOGAN, {
       align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 10; // Space after email
-
-    doc.fontSize(8).text(storeData.DSC_DIRECCION, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 20; // Space after direction
-
-    doc.fontSize(8).text(storeData.DSC_ESLOGAN, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
       italic: true,
     });
-    currentY += 20; // Space after slogan
 
-    // Title
-    doc.fontSize(9).text(title, margin, currentY, {
-      align: "center",
-      width: pageWidthPoints - 2 * margin,
-    });
-    currentY += 15; // Space after title
+    doc.moveDown(1);
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .text(`RECIBO #${consecutivo}`, { align: "center" });
 
-    // Sale Details Table Header
-    currentY += 5;
-    doc.fontSize(7).text("Producto", margin, currentY, { width: 80 });
-    doc.text("Cant.", margin + 35, currentY, { width: 30, align: "right" });
-    doc.text("Precio U.", margin + 65, currentY, {
-      width: 45,
-      align: "right",
-    });
-    doc.text("Imp.", margin + 95, currentY, { width: 40, align: "right" });
-    doc.text("Total", pageWidthPoints - margin - 40, currentY, {
+    y = doc.y + 5;
+
+    /* ========= CABECERA TABLA ========= */
+    doc.fontSize(7).font("Helvetica-Bold");
+    doc.text("Producto", margin, y, { width: 90 });
+    doc.text("Cant", margin + 95, y, { width: 25, align: "right" });
+    doc.text("P/U", margin + 125, y, { width: 35, align: "right" });
+    doc.text("Total", pageWidth - margin - 40, y, {
       width: 40,
       align: "right",
     });
-    currentY += 8;
-    doc
-      .strokeColor("#000")
-      .lineWidth(0.5)
-      .moveTo(margin, currentY)
-      .lineTo(pageWidthPoints - margin, currentY)
-      .stroke();
-    currentY += 3;
 
-    // Sale Details Table Rows
-    let totalProducts = 0;
-    saleData.details.forEach((item) => {
-      const totalItem = item.CANTIDAD * item.MONT_UNITARIO;
-      doc
-        .fontSize(7)
-        .text(item.Product.DSC_NOMBRE, margin, currentY, { width: 80 });
-      doc.text(item.CANTIDAD.toString(), margin + 35, currentY, {
-        width: 30,
+    y += 10;
+    doc
+      .moveTo(margin, y)
+      .lineTo(pageWidth - margin, y)
+      .stroke();
+    y += 5;
+
+    /* ========= DETALLE PRODUCTOS ========= */
+    let subtotal = 0;
+    let totalDescuento = 0;
+    let totalIVA = 0;
+    let totalGeneral = 0;
+
+    doc.font("Helvetica").fontSize(7);
+
+    for (const item of saleData.details) {
+      const base = item.CANTIDAD * item.MONT_UNITARIO;
+      const descuento = base * (item.PORCENT_DESCUENTO / 100);
+      const baseDesc = base - descuento;
+      const iva = baseDesc * (item.PORCENT_IMPUESTO / 100);
+      const total = baseDesc + iva;
+
+      subtotal += base;
+      totalDescuento += descuento;
+      totalIVA += iva;
+      totalGeneral += total;
+
+      const productHeight = doc.heightOfString(item.Product.DSC_NOMBRE, {
+        width: 90,
+      });
+      const rowHeight = Math.max(productHeight, 10);
+
+      doc.text(item.Product.DSC_NOMBRE, margin, y, { width: 90 });
+      doc.text(item.CANTIDAD.toString(), margin + 95, y, {
+        width: 25,
         align: "right",
       });
-      doc.text(item.MONT_UNITARIO.toFixed(2), margin + 65, currentY, {
-        width: 45,
+      doc.text(item.MONT_UNITARIO.toFixed(2), margin + 125, y, {
+        width: 35,
         align: "right",
       });
-      doc.text(item.PORCENT_IMPUESTO.toFixed(2), margin + 95, currentY, {
+      doc.text(total.toFixed(2), pageWidth - margin - 40, y, {
         width: 40,
         align: "right",
       });
 
-      const discount = totalItem * (item.PORCENT_DESCUENTO / 100);
-      const tax = (totalItem - discount) * (item.PORCENT_IMPUESTO / 100);
-      const totalProd = totalItem - discount + tax;
-      doc.text(totalProd.toFixed(2), pageWidthPoints - margin - 40, currentY, {
-        width: 40,
-        align: "right",
-      });
-      currentY += 8;
-      if (currentY > pageHeightPoints - 50) {
-        doc.addPage({ size: [pageWidthPoints, pageHeightPoints] });
-        currentY = margin + 10;
-        // Optionally add header again on new page
-      }
-      totalProducts += totalProd;
-    });
+      y += rowHeight + 4;
+    }
 
-    // Separator before totals
-    currentY += 5;
+    /* ========= TOTALES ========= */
+    y += 4;
     doc
-      .strokeColor("#000")
-      .lineWidth(0.5)
-      .moveTo(margin, currentY)
-      .lineTo(pageWidthPoints - margin, currentY)
+      .moveTo(margin, y)
+      .lineTo(pageWidth - margin, y)
       .stroke();
-    currentY += 5;
+    y += 6;
+
+    doc.font("Helvetica-Bold").fontSize(8);
+
+    const labelW = 100;
+    const valueW = 40;
+
+    const drawTotalRow = (label, value) => {
+      doc.text(label, margin, y, { width: labelW });
+      doc.text(value, pageWidth - margin - valueW, y, {
+        width: valueW,
+        align: "right",
+      });
+      y += 10;
+    };
+
+    drawTotalRow("Subtotal:", subtotal.toFixed(2));
+    drawTotalRow("Descuento:", `-${totalDescuento.toFixed(2)}`);
+    drawTotalRow("IVA:", totalIVA.toFixed(2));
 
     doc
-      .fontSize(9)
-      .font("Helvetica-Bold")
-      .text("Total: ", margin, currentY, {
-        align: "right",
-        width: pageWidthPoints - margin - 50,
-      });
+      .moveTo(margin, y)
+      .lineTo(pageWidth - margin, y)
+      .stroke();
+    y += 6;
+
+    doc.fontSize(9);
+    drawTotalRow("TOTAL:", totalGeneral.toFixed(2));
+
+    /* ========= INFO CLIENTE ========= */
+    y += 8;
+    doc.font("Helvetica").fontSize(8);
+
+    doc.text(`Cliente: ${saleData.client?.DSC_NOMBRE || "Anónimo"}`, margin, y);
+    y += 10;
+
     doc.text(
-      totalProducts.toFixed(2),
-      pageWidthPoints - margin - 40,
-      currentY,
-      { align: "right", width: 40 }
+      `Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(
+        saleData.FEC_VENTA
+      ).toLocaleTimeString()}`,
+      margin,
+      y
     );
-    doc.font("Helvetica");
-    currentY += 12;
+    y += 10;
 
-    // Customer and Payment Information
-    doc
-      .fontSize(8)
-      .text(
-        `Cliente: ${saleData.client?.DSC_NOMBRE || "Anónimo"}`,
-        margin,
-        currentY,
-        { width: pageWidthPoints - 2 * margin }
-      );
-    currentY += 8;
-    doc
-      .fontSize(8)
-      .text(
-        `Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(
-          saleData.FEC_VENTA
-        ).toLocaleTimeString()}`,
-        margin,
-        currentY,
-        { width: pageWidthPoints - 2 * margin }
-      );
-    currentY += 8;
-    doc
-      .fontSize(8)
-      .text(`Método de Pago: ${saleData.METODO_PAGO}`, margin, currentY, {
-        width: pageWidthPoints - 2 * margin,
-      });
-    currentY += 8;
+    doc.text(`Pago: ${saleData.METODO_PAGO}`, margin, y);
+    y += 10;
+
+    doc.text(
+      `Estado: ${saleData.ESTADO_CREDITO === 0 ? "Cancelado" : "Pendiente"}`,
+      margin,
+      y
+    );
+    y += 10;
+
     if (saleData.DSC_VENTA) {
-      doc.fontSize(8).text(`Nota: ${saleData.DSC_VENTA}`, margin, currentY, {
-        width: pageWidthPoints - 2 * margin,
+      doc.text("Nota:", margin, y);
+      y += 8;
+      doc.text(saleData.DSC_VENTA, margin, y, {
+        width: pageWidth - margin * 2,
       });
-      currentY += 8;
-    }
-    if (saleData.ESTADO_CREDITO === 0) {
-      doc.fontSize(8).text("Estado: Cancelado", margin, currentY, {
-        width: pageWidthPoints - 2 * margin,
-      });
-      currentY += 8;
-    } else {
-      doc.fontSize(8).text("Estado: Pendiente", margin, currentY, {
-        width: pageWidthPoints - 2 * margin,
-      });
-      currentY += 8;
+      y += 12;
     }
 
-    // Footer (Optional)
-    currentY += 15;
-    doc.fontSize(6).text("Gracias por su compra!", margin, currentY, {
+    /* ========= FOOTER ========= */
+    doc.moveDown(1);
+    doc.fontSize(6).text("¡Gracias por su compra!", {
       align: "center",
-      width: pageWidthPoints - 2 * margin,
     });
 
     doc.end();
@@ -362,17 +348,14 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
       resolve({
         status: 200,
         data: {
-          message: "PDF generado exitosamente",
+          message: "Recibo generado correctamente",
           downloadLink: `${downloadLink}Recibos/${fileName}`,
           filename: fileName,
         },
       });
     });
 
-    writeStream.on("error", (error) => {
-      console.error("Error en writeStream:", error);
-      reject({ status: 500, data: { error: "Error al generar el PDF." } });
-    });
+    writeStream.on("error", reject);
   });
 }
 
@@ -668,9 +651,7 @@ async function createShoppingPDF(
     };
 
     const drawHeader = () => {
-      doc
-        .rect(margin, y - 3, pageWidth - margin * 2, 18)
-        .fill("#eeeeee");
+      doc.rect(margin, y - 3, pageWidth - margin * 2, 18).fill("#eeeeee");
 
       doc
         .fillColor("#000")
@@ -712,12 +693,7 @@ async function createShoppingPDF(
             .text(compra.fechaCompra, cols.fecha, y)
             .text(producto.nombre, cols.producto, y)
             .text(producto.cantidad, cols.cantidad, y)
-            .text(
-              compra.total.toFixed(2),
-              cols.total,
-              y,
-              { align: "right" }
-            );
+            .text(compra.total.toFixed(2), cols.total, y, { align: "right" });
 
           y += 14;
         }
