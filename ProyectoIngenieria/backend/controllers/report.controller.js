@@ -1577,38 +1577,43 @@ async function createProductPDF(currentDate, storeData, productData) {
 
     /* ================= COLUMNAS ================= */
     const col = {
-      nombre: { x: 40, w: 220 },
-      codigo: { x: 270, w: 140 },
-      venta: { x: 420, w: 90 },
-      compra: { x: 520, w: 90 },
-      unidades: { x: 620, w: 80 },
-      estado: { x: 710, w: 100 },
+      nombre: { x: 40, w: 240 },
+      codigo: { x: 290, w: 140 },
+      venta: { x: 440, w: 70 },
+      compra: { x: 520, w: 70 },
+      unidades: { x: 600, w: 60 }, // U. Sis
+      estado: { x: 670, w: 30 }, // A / I
+      fisico: { x: 710, w: 90 }, // U. Fis (línea)
     };
 
-    /* ================= CABECERA TABLA ================= */
+    /* ================= CABECERA ================= */
     const drawHeader = () => {
       doc.font("Helvetica-Bold").fontSize(10);
+
       doc.text("Nombre", col.nombre.x, y, { width: col.nombre.w });
       doc.text("Código", col.codigo.x, y, { width: col.codigo.w });
-      doc.text("Precio Venta", col.venta.x, y, {
-        width: col.venta.w,
-        align: "right",
-      });
-      doc.text("Precio Compra", col.compra.x, y, {
+      doc.text("Venta", col.venta.x, y, { width: col.venta.w, align: "right" });
+      doc.text("Compra", col.compra.x, y, {
         width: col.compra.w,
         align: "right",
       });
-      doc.text("Unidades", col.unidades.x, y, {
+      doc.text("U.Sis", col.unidades.x, y, {
         width: col.unidades.w,
         align: "right",
       });
-      doc.text("Estado", col.estado.x, y, { width: col.estado.w });
+      doc.text("E", col.estado.x, y, { width: col.estado.w, align: "center" });
+      doc.text("U.Fis", col.fisico.x, y, {
+        width: col.fisico.w,
+        align: "center",
+      });
 
       y += 14;
       doc
         .moveTo(40, y)
         .lineTo(pageWidth - 40, y)
+        .lineWidth(1)
         .stroke();
+
       y += 8;
       doc.font("Helvetica");
     };
@@ -1621,48 +1626,66 @@ async function createProductPDF(currentDate, storeData, productData) {
     for (const p of productosArray) {
       const rowHeight = Math.max(
         doc.heightOfString(p.NOMBRE || "-", { width: col.nombre.w }),
-        12
+        14
       );
 
-      // Salto de página
       if (y + rowHeight > pageHeight - 60) {
         doc.addPage();
         y = doc.page.margins.top;
         drawHeader();
       }
 
+      doc.fontSize(9);
+
+      doc.text(p.NOMBRE || "-", col.nombre.x, y, { width: col.nombre.w });
+      doc.text(p.COD_BARRAS || "-", col.codigo.x, y, { width: col.codigo.w });
+      doc.text(Number(p.MON_VENTA || 0).toFixed(2), col.venta.x, y, {
+        width: col.venta.w,
+        align: "right",
+      });
+      doc.text(Number(p.MON_COMPRA || 0).toFixed(2), col.compra.x, y, {
+        width: col.compra.w,
+        align: "right",
+      });
+      doc.text(Number(p.UNID_DISPONIBLE || 0).toString(), col.unidades.x, y, {
+        width: col.unidades.w,
+        align: "right",
+      });
+      doc.text(p.ESTADO === "Activo" ? "A" : "I", col.estado.x, y, {
+        width: col.estado.w,
+        align: "center",
+      });
+
+      /* Línea conteo físico */
+      const lineY = y + rowHeight - 4;
+
       doc
-        .fontSize(9)
-        .text(p.NOMBRE || "-", col.nombre.x, y, { width: col.nombre.w })
-        .text(p.COD_BARRAS || "-", col.codigo.x, y, { width: col.codigo.w })
-        .text(Number(p.MON_VENTA || 0).toFixed(2), col.venta.x, y, {
-          width: col.venta.w,
-          align: "right",
-        })
-        .text(Number(p.MON_COMPRA || 0).toFixed(2), col.compra.x, y, {
-          width: col.compra.w,
-          align: "right",
-        })
-        .text(Number(p.UNID_DISPONIBLE || 0).toString(), col.unidades.x, y, {
-          width: col.unidades.w,
-          align: "right",
-        })
-        .text(p.ESTADO || "-", col.estado.x, y, { width: col.estado.w });
+        .lineWidth(0.8)
+        .moveTo(col.fisico.x + 8, lineY)
+        .lineTo(col.fisico.x + col.fisico.w - 8, lineY)
+        .stroke();
 
       y += rowHeight + 6;
 
-      // Separador suave
       doc
         .strokeColor("#e0e0e0")
+        .lineWidth(0.5)
         .moveTo(40, y)
         .lineTo(pageWidth - 40, y)
         .stroke();
-      doc.strokeColor("#000");
 
-      y += 6;
+      doc.strokeColor("#000");
+      y += 4;
     }
 
-    /* ================= FOOTER ================= */
+    /* ================= LEYENDA ================= */
+    doc.moveDown(2);
+    doc.fontSize(8).font("Helvetica-Oblique");
+    doc.text(
+      "E = Estado | A = Activo | I = Inactivo | U. sis = Unidades Sistema | U. Fis = Unidades Físicas",
+      40,
+      doc.y
+    );
 
     doc.end();
 
