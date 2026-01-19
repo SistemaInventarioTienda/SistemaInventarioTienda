@@ -353,12 +353,15 @@ CREATE TABLE `tsit_detalleventa` (
 DROP TABLE IF EXISTS `tsit_notificaciones`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tsit_notificaciones` (
-  `IDENTIFICADOR_NOTIFICACION` int NOT NULL AUTO_INCREMENT,
-  `MENSAJE` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `VISTO` tinyint(1) NOT NULL,
-  PRIMARY KEY (`IDENTIFICADOR_NOTIFICACION`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE tsit_notificaciones (
+  ID_NOTIFICACION INT AUTO_INCREMENT PRIMARY KEY,
+  ID_PRODUCTO INT NOT NULL,
+  TIPO ENUM('STOCK_BAJO') NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  CANTIDAD INT NOT NULL,
+  VISTO TINYINT(1) DEFAULT 0,
+  FECHA DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_producto_tipo (ID_PRODUCTO, TIPO)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
