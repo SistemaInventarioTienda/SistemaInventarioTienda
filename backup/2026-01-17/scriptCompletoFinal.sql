@@ -123,6 +123,10 @@ CREATE TABLE `tsim_producto` (
   CONSTRAINT `logs_userUpdated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
   CONSTRAINT `subcategoria` FOREIGN KEY (`ID_SUBCATEGORIA`) REFERENCES `tsim_subcategoria` (`ID_SUBCATEGORIA`)
 ) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE `dbtiendasistemainventario`.`tsim_producto` 
+ADD COLUMN `DSC_CODIGO_PROD` VARCHAR(255) NULL AFTER `CREATED_BY_USER`;
+
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

@@ -74,6 +74,10 @@ const Product = db.define('Product', {
             key: 'ID_USUARIO'
         },
         allowNull: false,
+    },
+    DSC_CODIGO_PROD: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
     }
 }, {
     timestamps: false,

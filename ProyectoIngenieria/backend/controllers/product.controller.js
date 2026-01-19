@@ -113,7 +113,8 @@ export const searchProduct = async (req, res) => {
                     { DSC_CODIGO_BARRAS: expectedMatch },
                     { MON_VENTA: expectedMatch },
                     { MON_COMPRA: expectedMatch },
-                    { '$subcategory.DSC_NOMBRE$': expectedMatch }
+                    { '$subcategory.DSC_NOMBRE$': expectedMatch },
+                    { DSC_CODIGO_PROD: expectedMatch}
                 ]
             }
         });
@@ -155,7 +156,7 @@ export const registerProduct = [
     async (req, res) => {
         try {
             const {
-                DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIA = null
+                DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIA = null, DSC_CODIGO_PROD = ""
             } = req.body;
 
             const userFound = await User.findOne({
@@ -224,7 +225,8 @@ export const registerProduct = [
                 FEC_CREATED_AT: created_at,
                 ESTADO: 1,
                 ID_SUBCATEGORIA: SUBCATEGORIA,
-                CREATED_BY_USER: userFound.ID_USUARIO
+                CREATED_BY_USER: userFound.ID_USUARIO,
+                DSC_CODIGO_PROD: DSC_CODIGO_PROD
             })
 
             const productSaved = await newProduct.save();
@@ -248,7 +250,7 @@ export const updateProduct = [
     async (req, res) => {
 
         const {
-            DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIA = null, ESTADO = null,
+            DSC_NOMBRE = null, DSC_DESCRIPTION = null, DSC_CODIGO_BARRAS = null, MON_VENTA = null, MON_COMPRA = null, SUBCATEGORIA = null, ESTADO = null, DSC_CODIGO_PROD = null
         } = req.body;
 
         const product = await Product.findOne({
@@ -316,6 +318,7 @@ export const updateProduct = [
         product.ESTADO = ESTADO || product.ESTADO;
         product.FEC_UPDATE_AT = currentDate;
         product.UPDATED_BY_USER = user.ID_USUARIO;
+        product.DSC_CODIGO_PROD = DSC_CODIGO_PROD || product.DSC_CODIGO_PROD;
         await product.save();
 
         return res.status(200).json({ message: "Producto actualizado con éxito." });

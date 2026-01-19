@@ -38,6 +38,7 @@ export const productConfig = {
     // Configuración de campos del formulario
     fields: [
         { name: "DSC_CODIGO_BARRAS", label: "Código de Barras", type: "text", required: true },
+        { name: "DSC_CODIGO_PROD", label: "Código del Producto", type: "text", required: true },
         { name: "DSC_NOMBRE", label: "Nombre del Producto", type: "text", required: true },
         { name: "DSC_DESCRIPTION", label: "Descripción", type: "textarea", required: true },
         { name: "CATEGORIA", label: "Categoría del Producto", type: "select", required: true },
@@ -82,6 +83,7 @@ export const productConfig = {
             CANTIDAD: product.CANTIDAD,
             estado: product.ESTADO === "ACTIVO" ? 1 : 2,
             ID_SUBCATEGORIA: product.subcategory?.ID_SUBCATEGORIA || "",
+            DSC_CODIGO_PROD: product.DSC_CODIGO_PROD || "",
         }),
 
         toBackend: async (formData) => {
@@ -95,6 +97,7 @@ export const productConfig = {
             data.append("MON_COMPRA", parseFloat(formData.MON_COMPRA));
             data.append("ESTADO", formData.estado);
             data.append("SUBCATEGORIA", formData.SUBCATEGORIA);
+            data.append("DSC_CODIGO_PROD", formData.DSC_CODIGO_PROD);
 
             if (formData.foto instanceof File) {
                 data.append("PRODUCT_IMAGE", formData.foto);
