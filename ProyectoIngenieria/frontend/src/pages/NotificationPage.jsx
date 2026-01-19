@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import PageLayout from "../components/layout/PageLayout";
 import { Tab, Tabs, TabList, TabPanel } from "../components/common";
 import NotificationItem from "../components/features/notifications/NotificationItem";
+import { getProductById } from "../api/product";
 import { notificationConfig } from "../config/entities/notificationConfig.js";
 import { useNotifications } from "../context/NotificationContext.js";
 //import io from "socket.io-client";
@@ -16,6 +17,25 @@ import "./styles/NotificationPage.css";
 export default function NotificationPage() {
   const [activeTab, setActiveTab] = useState("all");
   const { notifications, markAsRead } = useNotifications();
+  const [productNames, setProductNames] = useState({});
+
+  useEffect(() => {
+    async function fetchNames() {
+      const ids = notifications.map(n => n.productoId).filter(Boolean);
+      const uniqueIds = [...new Set(ids)];
+      const names = {};
+      await Promise.all(uniqueIds.map(async (id) => {
+        try {
+          const prod = await getProductById(id);
+          names[id] = prod?.DSC_NOMBRE || `ID ${id}`;
+        } catch {
+          names[id] = `ID ${id}`;
+        }
+      }));
+      setProductNames(names);
+    }
+    if (notifications.length > 0) fetchNames();
+  }, [notifications]);
 
   // Filtra notificaciones según la pestaña activa
   const filteredNotifications = () => {
@@ -56,7 +76,7 @@ export default function NotificationPage() {
             {filteredNotifications().map((notification) => (
               <NotificationItem
                 key={notification.id}
-                notification={notification}
+                notification={{ ...notification, nombreProducto: productNames[notification.productoId] }}
                 onMarkAsRead={() => markAsRead(notification.id)}
               />
             ))}
@@ -69,7 +89,7 @@ export default function NotificationPage() {
             {filteredNotifications().map((notification) => (
               <NotificationItem
                 key={notification.id}
-                notification={notification}
+                notification={{ ...notification, nombreProducto: productNames[notification.productoId] }}
                 onMarkAsRead={() => markAsRead(notification.id)}
               />
             ))}
@@ -82,7 +102,7 @@ export default function NotificationPage() {
             {filteredNotifications().map((notification) => (
               <NotificationItem
                 key={notification.id}
-                notification={notification}
+                notification={{ ...notification, nombreProducto: productNames[notification.productoId] }}
                 onMarkAsRead={() => markAsRead(notification.id)}
               />
             ))}

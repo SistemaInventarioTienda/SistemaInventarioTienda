@@ -8,22 +8,20 @@ export const notificationConfig = {
 
     transformData: {
         toFrontend: (notification) => ({
-            id: notification.IDENTIFICADOR_NOTIFICACION,
-            mensaje: notification.MENSAJE.mensaje,
-            fecha: notification.MENSAJE.fecha,
-            productos: notification.MENSAJE.productos,
-            tipo: notification.MENSAJE.tipo,
+            id: notification.ID_NOTIFICACION,
+            productoId: notification.ID_PRODUCTO,
+            tipo: notification.TIPO,
+            cantidad: notification.CANTIDAD,
             visto: notification.VISTO,
+            fecha: notification.FECHA,
         }),
         toBackend: (formData) => ({
-            IDENTIFICADOR_NOTIFICACION: formData.id,
-            MENSAJE: JSON.stringify({
-                mensaje: formData.mensaje,
-                fecha: formData.fecha,
-                productos: formData.productos || [],
-                tipo: formData.tipo || "sin tipo", 
-            }),
+            ID_NOTIFICACION: formData.id,
+            ID_PRODUCTO: formData.productoId,
+            TIPO: formData.tipo,
+            CANTIDAD: formData.cantidad,
             VISTO: formData.visto,
+            FECHA: formData.fecha,
         }),
     }
 }

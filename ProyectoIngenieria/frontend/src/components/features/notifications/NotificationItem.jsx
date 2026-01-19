@@ -24,7 +24,8 @@ const getIconByType = (type) => {
 };
 
 const NotificationItem = ({ notification, onMarkAsRead }) => {
-  const { id, mensaje, fecha, productos, tipo, visto } = notification;
+  // Nuevo formato: { id, productoId, cantidad, tipo, visto, fecha, nombreProducto }
+  const { id, productoId, cantidad, tipo, visto, fecha, nombreProducto } = notification;
 
   const timeAgo = () => {
     const now = new Date();
@@ -45,7 +46,6 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
       onClick={() => {
         if (!visto) {
           onMarkAsRead(id);
- 
         }
       }}
       style={{ cursor: visto ? 'default' : 'pointer' }}
@@ -53,23 +53,16 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
       <div className={styles.icon}>{getIconByType(tipo)}</div>
       <div className={styles.content}>
         <strong>{tipo}</strong>
-        <p>{mensaje}</p>
-        {/* Mostrar productos si hay */}
-        {productos && productos.length > 0 && (
-          <ul className={styles.productsList}>
-            {productos.map((producto, index) => (
-              <li key={index} className={styles.productItem}>
-                {producto.nombre} - Stock: {producto.stock}
-              </li>
-            ))}
-          </ul>
-        )}
+        <p>
+          Producto: <b>{nombreProducto || `Sin nombre`}</b>
+          {typeof cantidad !== 'undefined' && (
+            <> &nbsp;|&nbsp; Cantidad: <b>{cantidad}</b></>
+          )}
+        </p>
         <small>{timeAgo()} atrás</small>
       </div>
-
       {/* Punto rojo si no está leído */}
       {!visto && <span className={styles.dot}></span>}
-
       {/* Check verde si ya está leído */}
       {visto && <span className={styles.checkIcon}>✔️</span>}
     </div>

@@ -1,14 +1,56 @@
 import { Server } from "socket.io";
 import { FRONTEND_URL } from "../config.js";
-import { getDateCR } from "../libs/date.js";
-import { differenceInDays } from "date-fns";
+import Config from "../models/config.model.js";
+import Notification from "../models/notification.model.js";
 import Product from "../models/product.model.js";
-import subcategory from "../models/subcategory.model.js";
-import notification from "../models/notification.model.js";
+import { Op } from "sequelize";
+
 let io;
 
-const UMBRAL_ESTABLECIDO=30;
+const getUmbral = async () => {
+  const cfg = await Config.findOne();
+  return cfg?.DSC_RANGO_STOCK ?? 32;
+};
 
+export const registrarNotificacionesStockBajo = async (productos) => {
+  for (const producto of productos) {
+    try {
+      await Notification.create({
+        ID_PRODUCTO: producto.ID_PRODUCT,
+        TIPO: "STOCK_BAJO",
+        CANTIDAD: producto.CANTIDAD,
+      });
+    } catch (error) {
+      if (error.original?.errno !== 1062) {
+        console.error("Error creando notificación:", error);
+      }
+    }
+  }
+};
+
+export const getProductosBajoStock = async (umbral) => {
+  return await Product.findAll({
+    where: {
+      CANTIDAD: {
+        [Op.lt]: umbral,
+      },
+    },
+    attributes: ["ID_PRODUCT", "DSC_NOMBRE", "CANTIDAD"],
+  });
+};
+
+const limpiarNotificacionesRecuperadas = async (productosBajoStock) => {
+  const idsConStockBajo = productosBajoStock.map((p) => p.ID_PRODUCTO);
+
+  await Notification.destroy({
+    where: {
+      TIPO: "STOCK_BAJO",
+      ID_PRODUCTO: {
+        [Op.notIn]: idsConStockBajo,
+      },
+    },
+  });
+};
 
 export const initSocket = (server) => {
   io = new Server(server, {
@@ -19,122 +61,37 @@ export const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
- 
-    setTimeout(() => {
-      socket.emit("receive-notification", "inicio notificaciones");
-    }, 1000);
+    console.log("Cliente conectado");
+
     const interval = setInterval(async () => {
-      const status = await getProductStatus();
+      try {
+        const umbral = await getUmbral();
+        const productos = await getProductosBajoStock(umbral);
 
-      const notificaciones = await notification.findAll({
-        order: [["IDENTIFICADOR_NOTIFICACION", "DESC"]],
-      });
-      
+        if (productos.length === 0) return;
 
-      if (status.alerta) {
-        const message=JSON.stringify({
-            tipo: "Alerta: Stock bajo",
-            mensaje: status.mensaje,
-            productos: status.productos,
-            fecha: status.fecha,
-          })
+        // Emitir en tiempo real
+        for (const producto of productos) {
+          socket.emit("receive-notification", {
+            tipo: "STOCK_BAJO",
+            producto: producto.DSC_NOMBRE,
+            cantidad: producto.CANTIDAD,
+          });
+        }
 
-            socket.emit("receive-notification", message);
-  
-            const esRepetido = mensajeEsRepetidoPeroReciente(message, notificaciones);
-  
-            if (!esRepetido) {
-              await notification.create({
-                MENSAJE: message,
-                VISTO: 0
-              });
-            }
-          
+        // Guardar en BD
+        await registrarNotificacionesStockBajo(productos);
+        await limpiarNotificacionesRecuperadas(productos);
+      } catch (error) {
+        console.error("Error en ciclo de notificaciones:", error);
       }
-    }, 300000);//1800000
+    }, 18000); // 5 minutos
 
     socket.on("disconnect", () => {
- 
       clearInterval(interval);
+      console.log("Cliente desconectado");
     });
   });
 };
-
-
-//REVISION DE PRODUCTOS
-
- const getProductStatus = async () => {
-    try {
- 
-        const { rows } = await Product.findAndCountAll({
-            attributes: {
-                exclude: ['UPDATED_BY_USER', 'CREATED_BY_USER', 'FEC_UPDATE_AT', 'FEC_CREATED_AT', 'ID_SUBCATEGORIA']
-            },
-            include: [
-                {
-                    model: subcategory,
-                    as: 'subcategory',
-                    attributes: ['DSC_NOMBRE', 'ID_SUBCATEGORIA']
-                }
-            ],
-        });
-
-        if (rows.length === 0) {
-            return res.status(204).json({
-                message: "No se encontraron productos.",
-            });
-        }
-
-        const productosBajoStock = rows.filter(producto => producto.CANTIDAD < UMBRAL_ESTABLECIDO);
-
-        if (productosBajoStock.length > 0) {
-            return {
-              alerta: true,
-              mensaje: `Hay ${productosBajoStock.length} productos con stock bajo.`,
-              productos: productosBajoStock.map(p => ({
-                nombre: p.DSC_NOMBRE,
-                stock: p.CANTIDAD,
-              })),
-              fecha: (await getDateCR()).toString(),
-            };
-          }
-      
-          return { alerta: false };
-  
-    } catch (error) {
-        return { message: error.message };
-    }
-}
-
-
-
-
-function mensajeEsRepetidoPeroReciente(mensajeNuevo, notificaciones) {
-  const nuevo = JSON.parse(mensajeNuevo);
-
-  if (notificaciones.length === 0) {
-    return false;
-  }
-
-  for (const noti of notificaciones) {
-    const msg = JSON.parse(noti.MENSAJE);
-
-    const igualContenido =
-      msg.tipo === nuevo.tipo &&
-      msg.mensaje === nuevo.mensaje &&
-      JSON.stringify(msg.productos) === JSON.stringify(nuevo.productos);
-
-    if (igualContenido) {
-      const dias = differenceInDays(
-        new Date(),
-        new Date(msg.fecha)
-      );
-      if (dias < 1) return true; 
-    }
-  }
-
-  return false; 
-}
-
 
 export const getIO = () => io;

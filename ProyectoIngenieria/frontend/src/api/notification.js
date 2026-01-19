@@ -4,7 +4,6 @@ export const getAllNotifications = async () => {
     try {
         // const response = await axios.get('/notification/getNotification');
         const response = await axios.get('http://localhost:4000/api/notification/getNotification');
-        console.log("Notificaciones", response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching notifications:', error.message);

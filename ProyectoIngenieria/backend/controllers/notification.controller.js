@@ -1,46 +1,29 @@
-import notification from "../models/notification.model.js";
-
+import Notification from "../models/notification.model.js";
 
 export const getAllNotifications = async (req, res) => {
-    try {
-      const notifications = await notification.findAll();
-  
-      const parsedNotifications = notifications.map(n => {
-        let mensajeParseado = null;
-  
-        try {
-          mensajeParseado = JSON.parse(n.MENSAJE);
-        } catch (e) {
-          mensajeParseado = n.MENSAJE;
-        }
-  
-        return {
-          ...n.toJSON(),
-          MENSAJE: mensajeParseado,
-        };
-      });
+  try {
+    const notifications = await Notification.findAll({
+      where: { TIPO: "STOCK_BAJO" },
+      order: [["FECHA", "DESC"]],
+    });
 
- 
-      return res.status(200).json(parsedNotifications);
-    } catch (error) {
-      return res.status(500).json({ message: error.message });
-    }
-  };
-
-
+    return res.status(200).json(notifications);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 export const updateNotification = async (req, res) => {
-    try {
+  try {
+    const noti = await Notification.findByPk(req.params.id);
 
-        const foundNotification = await notification.findOne({ where: { IDENTIFICADOR_NOTIFICACION: req.params.id } });
-        if (!foundNotification) return res.status(404).json({ message: "Transacción no encontrada." });
+    if (!noti)
+      return res.status(404).json({ message: "No encontrada" });
 
-        await foundNotification.update({
-            VISTO: 1,
-        })
+    await noti.update({ VISTO: 1 });
 
-        return res.status(200).json({message: "Notificacion Vista"})
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-}
+    return res.status(200).json({ message: "Notificación vista" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
