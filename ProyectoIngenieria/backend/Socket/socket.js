@@ -40,7 +40,7 @@ export const getProductosBajoStock = async (umbral) => {
 };
 
 const limpiarNotificacionesRecuperadas = async (productosBajoStock) => {
-  const idsConStockBajo = productosBajoStock.map((p) => p.ID_PRODUCTO);
+  const idsConStockBajo = productosBajoStock.map((p) => p.ID_PRODUCT);
 
   await Notification.destroy({
     where: {
