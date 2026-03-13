@@ -57,7 +57,7 @@ export const createReport = async (req, res) => {
         currentDate,
         TYPE,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
       return res.status(outputPDF.status).json(outputPDF.data);
     } catch (error) {
@@ -73,7 +73,7 @@ export const createReport = async (req, res) => {
         currentDate,
         TYPE,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
       return res.status(outputExcel.status).json(outputExcel.data);
     } catch (error) {
@@ -104,7 +104,7 @@ export const downloadReport = async (req, res) => {
     filePath = path.join(excelDir, fileName);
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
     res.setHeader("Content-Disposition", 'inline; filename="' + fileName + '"'); // Intentando visualización inline
   } else {
@@ -310,10 +310,10 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
 
     doc.text(
       `Fecha: ${new Date(saleData.FEC_VENTA).toLocaleDateString()} ${new Date(
-        saleData.FEC_VENTA
+        saleData.FEC_VENTA,
       ).toLocaleTimeString()}`,
       margin,
-      y
+      y,
     );
     y += 10;
 
@@ -323,7 +323,7 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     doc.text(
       `Estado: ${saleData.ESTADO_CREDITO === 0 ? "Cancelado" : "Pendiente"}`,
       margin,
-      y
+      y,
     );
     y += 10;
 
@@ -374,7 +374,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MAX_FEC: MAX_FEC,
           },
           type: QueryTypes.SELECT,
-        }
+        },
       );
 
       const normalizedRowsSupplier = normalizeRows(shoppingBySupplier);
@@ -384,7 +384,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
         store[0],
         reportSupplier,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
     case "VentasXCliente":
       const [salesByClient] = await db.query(
@@ -395,7 +395,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MAX_FEC: MAX_FEC,
           },
           type: QueryTypes.SELECT,
-        }
+        },
       );
 
       const rawRows = salesByClient;
@@ -406,7 +406,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
         store[0],
         report,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
 
     case "ReporteTransaccion":
@@ -418,14 +418,14 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MAX_FEC_TRANSACCION: MAX_FEC,
           },
           type: QueryTypes.SELECT,
-        }
+        },
       );
       return await createTransactionPDF(
         currentDate,
         store[0],
         TransactionReport,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
     case "ReporteProductos":
       const [products] = await db.query(
@@ -436,7 +436,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MAX_FEC: MAX_FEC,
           },
           type: QueryTypes.SELECT,
-        }
+        },
       );
       return await createProductPDF(currentDate, store[0], products);
     case "ProveedoresActivos":
@@ -462,7 +462,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
           console.error(
             "Error al parsear compras para proveedor:",
             supplier.proveedor_nombre,
-            error
+            error,
           );
         }
 
@@ -477,7 +477,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
           console.error(
             "Error al parsear teléfonos para proveedor:",
             supplier.proveedor_nombre,
-            error
+            error,
           );
         }
 
@@ -492,7 +492,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
           console.error(
             "Error al parsear correos para proveedor:",
             supplier.proveedor_nombre,
-            error
+            error,
           );
         }
 
@@ -512,7 +512,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
         {
           replacements: { MIN_FEC, MAX_FEC },
           type: db.QueryTypes.SELECT,
-        }
+        },
       );
 
       if (
@@ -560,7 +560,7 @@ async function switchPDF(store, currentDate, type, MIN_FEC, MAX_FEC) {
         store[0],
         client_Parsed,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
 
     default:
@@ -576,7 +576,7 @@ async function createShoppingPDF(
   storeData,
   shoppingData,
   MIN_FEC,
-  MAX_FEC
+  MAX_FEC,
 ) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -720,7 +720,7 @@ async function createShoppingPDF(
         `Total gastado en el periodo: ${totalPeriodo.toFixed(2)}`,
         margin,
         y,
-        { align: "right" }
+        { align: "right" },
       );
 
     doc.end();
@@ -744,7 +744,7 @@ async function createSalePDF(
   storeData,
   salesData,
   MIN_FEC,
-  MAX_FEC
+  MAX_FEC,
 ) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -908,7 +908,7 @@ async function createSalePDF(
           message: "Informe generado correctamente",
           downloadLink: `${downloadLink}Ventas/${fileName}`,
         },
-      })
+      }),
     );
 
     stream.on("error", reject);
@@ -920,7 +920,7 @@ async function createTransactionPDF(
   storeData,
   transactionsData,
   MIN_FEC,
-  MAX_FEC
+  MAX_FEC,
 ) {
   return new Promise((resolve, reject) => {
     /* ================= CONFIG ================= */
@@ -1069,7 +1069,7 @@ async function createTransactionPDF(
     doc.text(
       `Monto Total Enviado: ${totalMonto.toFixed(2)}`,
       pageWidth / 2 - 120,
-      y
+      y,
     );
 
     doc.text(
@@ -1078,7 +1078,7 @@ async function createTransactionPDF(
       ).toFixed(2)}`,
       pageWidth - 300,
       y,
-      { width: 260, align: "right" }
+      { width: 260, align: "right" },
     );
 
     /* ================= FOOTER ================= */
@@ -1108,7 +1108,7 @@ async function createShoppingEXCEL(
   storeData,
   shoppingData,
   MIN_FEC,
-  MAX_FEC
+  MAX_FEC,
 ) {
   return new Promise((resolve, reject) => {
     try {
@@ -1160,7 +1160,7 @@ async function createSaleEXCEL(
   storeData,
   salesData,
   MIN_FEC,
-  MAX_FEC
+  MAX_FEC,
 ) {
   return new Promise((resolve, reject) => {
     try {
@@ -1219,7 +1219,7 @@ async function createTransactionEXCEL(
   storeData,
   transactionsData,
   MIN_FEC,
-  MAX_FEC
+  MAX_FEC,
 ) {
   return new Promise((resolve, reject) => {
     try {
@@ -1301,7 +1301,7 @@ async function createTransactionEXCEL(
     } catch (error) {
       console.error(
         "Error al generar el informe de transacciones en Excel:",
-        error
+        error,
       );
       reject({
         status: 500,
@@ -1324,7 +1324,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MAX_FEC: MAX_FEC,
           },
           type: QueryTypes.SELECT,
-        }
+        },
       );
       const normalizedRowsSupplier = normalizeRows(shoppingBySupplier);
       const reportSupplier = buildShoppingReport(normalizedRowsSupplier);
@@ -1333,7 +1333,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
         store[0],
         reportSupplier,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
     case "VentasXCliente":
       const [salesByClient] = await db.query(
@@ -1344,7 +1344,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MAX_FEC: MAX_FEC,
           },
           type: QueryTypes.SELECT,
-        }
+        },
       );
 
       const rawRows = salesByClient;
@@ -1356,7 +1356,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
         store[0],
         report,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
     case "ReporteTransaccion":
       const [TransactionReport] = await db.query(
@@ -1367,14 +1367,14 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MAX_FEC_TRANSACCION: MAX_FEC,
           },
           type: QueryTypes.SELECT,
-        }
+        },
       );
       return await createTransactionEXCEL(
         currentDate,
         store[0],
         TransactionReport,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
     case "ReporteProductos":
       const [products] = await db.query(
@@ -1385,7 +1385,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
             MAX_FEC: MAX_FEC,
           },
           type: QueryTypes.SELECT,
-        }
+        },
       );
       return await createProductEXCEL(currentDate, products);
     case "ProveedoresActivos":
@@ -1411,7 +1411,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
           console.error(
             "Error al parsear compras para proveedor:",
             supplier.proveedor_nombre,
-            error
+            error,
           );
         }
 
@@ -1426,7 +1426,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
           console.error(
             "Error al parsear teléfonos para proveedor:",
             supplier.proveedor_nombre,
-            error
+            error,
           );
         }
 
@@ -1441,7 +1441,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
           console.error(
             "Error al parsear correos para proveedor:",
             supplier.proveedor_nombre,
-            error
+            error,
           );
         }
 
@@ -1460,7 +1460,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
         {
           replacements: { MIN_FEC: MIN_FEC, MAX_FEC: MAX_FEC },
           type: db.QueryTypes.SELECT,
-        }
+        },
       );
       if (
         !credit_Client ||
@@ -1506,7 +1506,7 @@ async function switchEXCEL(store, currentDate, type, MIN_FEC, MAX_FEC) {
         store[0],
         client_Parsed,
         MIN_FEC,
-        MAX_FEC
+        MAX_FEC,
       );
     default:
       return {
@@ -1626,7 +1626,7 @@ async function createProductPDF(currentDate, storeData, productData) {
     for (const p of productosArray) {
       const rowHeight = Math.max(
         doc.heightOfString(p.NOMBRE || "-", { width: col.nombre.w }),
-        14
+        14,
       );
 
       if (y + rowHeight > pageHeight - 60) {
@@ -1638,7 +1638,7 @@ async function createProductPDF(currentDate, storeData, productData) {
       doc.fontSize(9);
 
       doc.text(p.NOMBRE || "-", col.nombre.x, y, { width: col.nombre.w });
-      doc.text(p.COD_BARRAS || "-", col.codigo.x, y, { width: col.codigo.w });
+      doc.text(p.COD_PRODUCTO || "-", col.codigo.x, y, { width: col.codigo.w });
       doc.text(Number(p.MON_VENTA || 0).toFixed(2), col.venta.x, y, {
         width: col.venta.w,
         align: "right",
@@ -1684,7 +1684,7 @@ async function createProductPDF(currentDate, storeData, productData) {
     doc.text(
       "E = Estado | A = Activo | I = Inactivo | U. sis = Unidades Sistema | U. Fis = Unidades Físicas",
       40,
-      doc.y
+      doc.y,
     );
 
     doc.end();
@@ -1737,7 +1737,7 @@ async function createProductEXCEL(currentDate, productData) {
     } catch (error) {
       console.error(
         "Error al generar el informe de productos en Excel:",
-        error
+        error,
       );
       reject({
         status: 500,
@@ -1833,7 +1833,7 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
         .text(
           proveedor.proveedor_nombre || "Proveedor sin nombre",
           proveedorX,
-          rowY
+          rowY,
         )
         .text(contactoTexto, contactoX, rowY);
 
@@ -1857,7 +1857,7 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
             .text(
               new Date(compra.fecha_compra).toLocaleDateString(),
               fechaX,
-              rowY
+              rowY,
             );
 
           const totalCompra = compra.total_compra || 0;
@@ -1899,7 +1899,7 @@ async function createSupplierPDF(currentDate, storeData, suppliersData) {
         `Monto total en compras: ${totalComprasPeriodo.toFixed(2)}`,
         margin,
         currentY,
-        { align: "right" }
+        { align: "right" },
       );
 
     currentY += 15;
@@ -1934,7 +1934,7 @@ async function createSupplierEXCEL(currentDate, storeData, suppliersData) {
     try {
       const title = "Informe de proveedores y compras asociadas";
       const fileName = `Compras-Proveedores-${formatDateTime(
-        currentDate
+        currentDate,
       )}.xlsx`;
       const dirPath = path.join(excelDir, "Proveedor");
       const filePath = path.join(dirPath, fileName);
@@ -2040,7 +2040,7 @@ export async function createClientCreditPDF(
   storeData,
   clientsData,
   MIN_FEC,
-  MAX_FEC
+  MAX_FEC,
 ) {
   return new Promise((resolve, reject) => {
     try {
@@ -2064,7 +2064,7 @@ export async function createClientCreditPDF(
 
       // Configurar nombre de archivo y ruta
       const fileName = `Reporte-Creditos-Clientes-${formatDateTime(
-        currentDate
+        currentDate,
       )}.pdf`;
       const folderPath = path.join(pdfDir, "Cliente_Credito");
 
@@ -2085,7 +2085,7 @@ export async function createClientCreditPDF(
           storeData.DSC_NOMBRE || "Tienda Zaid & Shayder",
           margin,
           currentY,
-          { align: "center" }
+          { align: "center" },
         );
       currentY += 20;
 
@@ -2098,14 +2098,14 @@ export async function createClientCreditPDF(
         .text(
           `Fecha del reporte: ${formatDate(currentDate)}`,
           margin,
-          currentY
+          currentY,
         );
 
       if (MIN_FEC && MAX_FEC) {
         doc.text(
           `Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(MAX_FEC)}`,
           margin,
-          currentY + 12
+          currentY + 12,
         );
         currentY += 24;
       } else {
@@ -2152,12 +2152,12 @@ export async function createClientCreditPDF(
             col.key === "nombre"
               ? cliente.nombre
               : col.key === "cedula"
-              ? cliente.cedula || "N/A"
-              : col.key === "cantidad"
-              ? (cliente.cantidad_creditos || 0).toString()
-              : col.key === "abonado"
-              ? `${formatMoney(cliente.abonos_total_Pagado)}`
-              : `${formatMoney(cliente.saldo_total_Pendiente)}`;
+                ? cliente.cedula || "N/A"
+                : col.key === "cantidad"
+                  ? (cliente.cantidad_creditos || 0).toString()
+                  : col.key === "abonado"
+                    ? `${formatMoney(cliente.abonos_total_Pagado)}`
+                    : `${formatMoney(cliente.saldo_total_Pendiente)}`;
 
           doc.text(value, x, currentY, { width: col.width, align: col.align });
           x += col.width;
@@ -2252,7 +2252,7 @@ export async function createClientCreditPDF(
             .text(
               `Telefono: ${cliente.telefono || "N/A"}`,
               margin + 10,
-              currentY
+              currentY,
             );
           currentY += 15;
         }
@@ -2279,7 +2279,7 @@ export async function createClientCreditPDF(
         `Total abonado: ${formatMoney(totalAbonado)}`,
         margin,
         currentY,
-        { align: "right" }
+        { align: "right" },
       );
       currentY += 15;
 
@@ -2288,7 +2288,7 @@ export async function createClientCreditPDF(
         `Saldo pendiente total: ${formatMoney(totalSaldoPendiente)}`,
         margin,
         currentY,
-        { align: "right" }
+        { align: "right" },
       );
       currentY += 20;
 
@@ -2335,7 +2335,7 @@ async function createClientCreditEXCEL(
   storeData,
   clientsData,
   MIN_FEC,
-  MAX_FEC
+  MAX_FEC,
 ) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -2381,7 +2381,7 @@ async function createClientCreditEXCEL(
       XLSX.utils.sheet_add_aoa(
         worksheet,
         [[storeData.DSC_NOMBRE || "Tienda Zaid & Shayder"]],
-        { origin: { r: rowIndex, c: 0 } }
+        { origin: { r: rowIndex, c: 0 } },
       );
       worksheet["A" + (rowIndex + 1)].s = styles.header;
       rowIndex++;
@@ -2395,7 +2395,7 @@ async function createClientCreditEXCEL(
       XLSX.utils.sheet_add_aoa(
         worksheet,
         [[`Fecha del Reporte: ${formatDate(currentDate)}`]],
-        { origin: { r: rowIndex, c: 0 } }
+        { origin: { r: rowIndex, c: 0 } },
       );
       rowIndex++;
 
@@ -2405,11 +2405,11 @@ async function createClientCreditEXCEL(
           [
             [
               `Periodo analizado: ${formatDate(MIN_FEC)} al ${formatDate(
-                MAX_FEC
+                MAX_FEC,
               )}`,
             ],
           ],
-          { origin: { r: rowIndex, c: 0 } }
+          { origin: { r: rowIndex, c: 0 } },
         );
         rowIndex++;
       }
@@ -2456,7 +2456,7 @@ async function createClientCreditEXCEL(
               cliente.direccion || "N/A",
             ],
           ],
-          { origin: { r: rowIndex, c: 0 } }
+          { origin: { r: rowIndex, c: 0 } },
         );
 
         ["D", "E"].forEach((col) => {
@@ -2506,7 +2506,7 @@ async function createClientCreditEXCEL(
                   credito.saldo_restante || 0,
                 ],
               ],
-              { origin: { r: rowIndex, c: 0 } }
+              { origin: { r: rowIndex, c: 0 } },
             );
 
             ["E", "F", "G"].forEach((col) => {
@@ -2522,7 +2522,7 @@ async function createClientCreditEXCEL(
           XLSX.utils.sheet_add_aoa(
             worksheet,
             [["", "No tiene créditos registrados"]],
-            { origin: { r: rowIndex, c: 0 } }
+            { origin: { r: rowIndex, c: 0 } },
           );
           rowIndex++;
         }
@@ -2616,8 +2616,8 @@ export const createCashClosing = async (req, res) => {
     .slice(4)
     .filter((r) =>
       Object.values(r).every(
-        (value) => typeof value === "object" && value !== null
-      )
+        (value) => typeof value === "object" && value !== null,
+      ),
     )
     .flatMap((r) => Object.values(r));
 
@@ -2657,7 +2657,7 @@ async function createResumenPDF(currentDate, storeData, resumenData) {
       TOTAL,
     } = resumenData.totals;
     const movimientos = resumenData.cashData.filter(
-      (item) => typeof item === "object"
+      (item) => typeof item === "object",
     );
 
     const title = "Informe General de Transacciones";
@@ -2711,7 +2711,7 @@ async function createResumenPDF(currentDate, storeData, resumenData) {
     doc.text(
       `Total Transacciones: ${TOTAL_TRANSACCIONES.toFixed(2)}`,
       margin,
-      currentY
+      currentY,
     );
     currentY += 12;
     doc.text(`Total final: ${TOTAL.toFixed(2)}`, margin, currentY);
@@ -2792,7 +2792,7 @@ async function createResumenEXCEL(currentDate, storeData, resumenData) {
         TOTAL,
       } = resumenData.totals;
       const movimientos = resumenData.cashData.filter(
-        (item) => typeof item === "object"
+        (item) => typeof item === "object",
       );
 
       const fileName = `Resumen-${formatDateTime(currentDate)}.xlsx`;

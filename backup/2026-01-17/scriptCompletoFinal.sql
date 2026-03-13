@@ -4,593 +4,690 @@
 -- ------------------------------------------------------
 -- Server version	9.5.0
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */
+;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */
+;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */
+;
+/*!50503 SET NAMES utf8 */
+;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */
+;
+/*!40103 SET TIME_ZONE='+00:00' */
+;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */
+;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */
+;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */
+;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */
+;
 SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
+
+SET @@SESSION.SQL_LOG_BIN = 0;
 
 --
--- GTID state at the beginning of the backup 
+-- GTID state at the beginning of the backup
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'ac5f7eb6-f3cb-11f0-a0e2-047c165600d9:1-468';
+SET
+    @@GLOBAL.GTID_PURGED = /*!80000 '+'*/ 'ac5f7eb6-f3cb-11f0-a0e2-047c165600d9:1-468';
 
 --
 -- Table structure for table `tsim_categoria`
 --
 
 DROP TABLE IF EXISTS `tsim_categoria`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsim_categoria` (
-  `ID_CATEGORIA` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_CATEGORIA`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsim_categoria_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_CATEGORIA` int NOT NULL AUTO_INCREMENT,
+    `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_CATEGORIA`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsim_categoria_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 28 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsim_empresa`
 --
 
 DROP TABLE IF EXISTS `tsim_empresa`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsim_empresa` (
-  `ID_EMPRESA` int NOT NULL AUTO_INCREMENT,
-  `DSC_RANGO_STOCK` int NOT NULL,
-  `DSC_NOMBRE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `NUM_TELEFONO` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_CORREO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_DIRECCION` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_ESLOGAN` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`ID_EMPRESA`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_EMPRESA` int NOT NULL AUTO_INCREMENT,
+    `DSC_RANGO_STOCK` int NOT NULL,
+    `DSC_NOMBRE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `NUM_TELEFONO` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_CORREO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_DIRECCION` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_ESLOGAN` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    PRIMARY KEY (`ID_EMPRESA`)
+) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsim_estado`
 --
 
 DROP TABLE IF EXISTS `tsim_estado`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsim_estado` (
-  `ID_ESTADO` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Activo, inactivo, suspendido',
-  `DSC_PARA` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nombre de el modulo al que pertenece el estado',
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  PRIMARY KEY (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_ESTADO` int NOT NULL AUTO_INCREMENT,
+    `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Activo, inactivo, suspendido',
+    `DSC_PARA` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Nombre de el modulo al que pertenece el estado',
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    PRIMARY KEY (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 4 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsim_permiso`
 --
 
 DROP TABLE IF EXISTS `tsim_permiso`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsim_permiso` (
-  `ID_PERMISO` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_DESCRIPCION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`ID_PERMISO`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_PERMISO` int NOT NULL AUTO_INCREMENT,
+    `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_DESCRIPCION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    PRIMARY KEY (`ID_PERMISO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 11 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsim_producto`
 --
 
 DROP TABLE IF EXISTS `tsim_producto`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsim_producto` (
-  `ID_PRODUCT` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_DESCRIPTION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_CODIGO_BARRAS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `URL_IMAGEN` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `MON_VENTA` double DEFAULT NULL,
-  `MON_COMPRA` double DEFAULT NULL,
-  `CANTIDAD` int DEFAULT '0',
-  `FEC_CREATED_AT` datetime DEFAULT NULL,
-  `FEC_UPDATE_AT` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  `ID_SUBCATEGORIA` int NOT NULL,
-  `UPDATED_BY_USER` int DEFAULT NULL,
-  `CREATED_BY_USER` int NOT NULL,
-  PRIMARY KEY (`ID_PRODUCT`),
-  UNIQUE KEY `DSC_CODIGO_BARRAS` (`DSC_CODIGO_BARRAS`),
-  KEY `logs_userCreated` (`CREATED_BY_USER`),
-  KEY `logs_userUpdated` (`UPDATED_BY_USER`),
-  KEY `ID_SUBCATEGORIA` (`ID_SUBCATEGORIA`),
-  CONSTRAINT `logs_userCreated` FOREIGN KEY (`CREATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
-  CONSTRAINT `logs_userUpdated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
-  CONSTRAINT `subcategoria` FOREIGN KEY (`ID_SUBCATEGORIA`) REFERENCES `tsim_subcategoria` (`ID_SUBCATEGORIA`)
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-ALTER TABLE `dbtiendasistemainventario`.`tsim_producto` 
+    `ID_PRODUCT` int NOT NULL AUTO_INCREMENT,
+    `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_DESCRIPTION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_CODIGO_BARRAS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `URL_IMAGEN` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `MON_VENTA` double DEFAULT NULL,
+    `MON_COMPRA` double DEFAULT NULL,
+    `CANTIDAD` int DEFAULT '0',
+    `FEC_CREATED_AT` datetime DEFAULT NULL,
+    `FEC_UPDATE_AT` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    `ID_SUBCATEGORIA` int NOT NULL,
+    `UPDATED_BY_USER` int DEFAULT NULL,
+    `CREATED_BY_USER` int NOT NULL,
+    PRIMARY KEY (`ID_PRODUCT`),
+    UNIQUE KEY `DSC_CODIGO_BARRAS` (`DSC_CODIGO_BARRAS`),
+    KEY `logs_userCreated` (`CREATED_BY_USER`),
+    KEY `logs_userUpdated` (`UPDATED_BY_USER`),
+    KEY `ID_SUBCATEGORIA` (`ID_SUBCATEGORIA`),
+    CONSTRAINT `logs_userCreated` FOREIGN KEY (`CREATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
+    CONSTRAINT `logs_userUpdated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
+    CONSTRAINT `subcategoria` FOREIGN KEY (`ID_SUBCATEGORIA`) REFERENCES `tsim_subcategoria` (`ID_SUBCATEGORIA`)
+) ENGINE = InnoDB AUTO_INCREMENT = 84 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+ALTER TABLE `dbtiendasistemainventario`.`tsim_producto`
 ADD COLUMN `DSC_CODIGO_PROD` VARCHAR(255) NULL AFTER `CREATED_BY_USER`;
 
-
-/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsim_rol`
 --
 
 DROP TABLE IF EXISTS `tsim_rol`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsim_rol` (
-  `ID_ROL` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBRE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'SuperAdmin, Administrador, ventas, etc',
-  `DSC_DESCRIPCION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_ROL`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsim_rol_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_ROL` int NOT NULL AUTO_INCREMENT,
+    `DSC_NOMBRE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'SuperAdmin, Administrador, ventas, etc',
+    `DSC_DESCRIPCION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_ROL`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsim_rol_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsim_subcategoria`
 --
 
 DROP TABLE IF EXISTS `tsim_subcategoria`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsim_subcategoria` (
-  `ID_SUBCATEGORIA` int NOT NULL AUTO_INCREMENT,
-  `ID_CATEGORIA` int DEFAULT NULL,
-  `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `subcategoriamodificadoen` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_SUBCATEGORIA`),
-  KEY `ID_CATEGORIA` (`ID_CATEGORIA`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsim_subcategoria_ibfk_1` FOREIGN KEY (`ID_CATEGORIA`) REFERENCES `tsim_categoria` (`ID_CATEGORIA`),
-  CONSTRAINT `tsim_subcategoria_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_SUBCATEGORIA` int NOT NULL AUTO_INCREMENT,
+    `ID_CATEGORIA` int DEFAULT NULL,
+    `DSC_NOMBRE` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `subcategoriamodificadoen` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_SUBCATEGORIA`),
+    KEY `ID_CATEGORIA` (`ID_CATEGORIA`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsim_subcategoria_ibfk_1` FOREIGN KEY (`ID_CATEGORIA`) REFERENCES `tsim_categoria` (`ID_CATEGORIA`),
+    CONSTRAINT `tsim_subcategoria_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 25 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsim_tipoproveedor`
 --
 
 DROP TABLE IF EXISTS `tsim_tipoproveedor`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsim_tipoproveedor` (
-  `ID_TIPOPROVEEDOR` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBRE` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_TIPOPROVEEDOR`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsim_tipoproveedor_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_TIPOPROVEEDOR` int NOT NULL AUTO_INCREMENT,
+    `DSC_NOMBRE` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_TIPOPROVEEDOR`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsim_tipoproveedor_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 11 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_abono`
 --
 
 DROP TABLE IF EXISTS `tsit_abono`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_abono` (
-  `ID_ABONO` int NOT NULL AUTO_INCREMENT,
-  `ID_CREDITO` int NOT NULL,
-  `FEC_ABONO` datetime NOT NULL,
-  `MON_ABONADO` double NOT NULL,
-  PRIMARY KEY (`ID_ABONO`),
-  KEY `ID_CREDITO` (`ID_CREDITO`),
-  CONSTRAINT `tsit_abono_ibfk_1` FOREIGN KEY (`ID_CREDITO`) REFERENCES `tsit_credito` (`ID_CREDITO`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_ABONO` int NOT NULL AUTO_INCREMENT,
+    `ID_CREDITO` int NOT NULL,
+    `FEC_ABONO` datetime NOT NULL,
+    `MON_ABONADO` double NOT NULL,
+    PRIMARY KEY (`ID_ABONO`),
+    KEY `ID_CREDITO` (`ID_CREDITO`),
+    CONSTRAINT `tsit_abono_ibfk_1` FOREIGN KEY (`ID_CREDITO`) REFERENCES `tsit_credito` (`ID_CREDITO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 13 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_cliente`
 --
 
 DROP TABLE IF EXISTS `tsit_cliente`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_cliente` (
-  `ID_CLIENTE` int NOT NULL AUTO_INCREMENT,
-  `DSC_CEDULA` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `DSC_NOMBRE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_APELLIDOUNO` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_APELLIDODOS` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
-  `URL_FOTO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `DSC_DIRECCION` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`ID_CLIENTE`),
-  UNIQUE KEY `DSC_CEDULA` (`DSC_CEDULA`),
-  UNIQUE KEY `FOTOURL` (`URL_FOTO`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsit_cliente_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_CLIENTE` int NOT NULL AUTO_INCREMENT,
+    `DSC_CEDULA` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `DSC_NOMBRE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_APELLIDOUNO` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_APELLIDODOS` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+    `URL_FOTO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `DSC_DIRECCION` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    PRIMARY KEY (`ID_CLIENTE`),
+    UNIQUE KEY `DSC_CEDULA` (`DSC_CEDULA`),
+    UNIQUE KEY `FOTOURL` (`URL_FOTO`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsit_cliente_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 11 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_compras`
 --
 
 DROP TABLE IF EXISTS `tsit_compras`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_compras` (
-  `ID_COMPRA` int NOT NULL AUTO_INCREMENT,
-  `FEC_COMPRA` date NOT NULL,
-  `FEC_ENTRADA` date NOT NULL,
-  `FEC_CREATED_AT` date NOT NULL,
-  `FEC_UPDATE_AT` date DEFAULT NULL,
-  `ESTADO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `MON_TOTAL` double NOT NULL,
-  `DSC_METODO_PAGO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ID_PROVEEDOR` int NOT NULL,
-  `UPDATED_BY_USER` int DEFAULT NULL,
-  `CREATED_BY_USER` int NOT NULL,
-  PRIMARY KEY (`ID_COMPRA`),
-  KEY `fk_compras_proveedor` (`ID_PROVEEDOR`),
-  KEY `fk_compras_usuario_created` (`CREATED_BY_USER`),
-  KEY `fk_compras_usuario_updated` (`UPDATED_BY_USER`),
-  CONSTRAINT `fk_compras_proveedor` FOREIGN KEY (`ID_PROVEEDOR`) REFERENCES `tsit_proveedor` (`ID_PROVEEDOR`),
-  CONSTRAINT `fk_compras_usuario_created` FOREIGN KEY (`CREATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
-  CONSTRAINT `fk_compras_usuario_updated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_COMPRA` int NOT NULL AUTO_INCREMENT,
+    `FEC_COMPRA` date NOT NULL,
+    `FEC_ENTRADA` date NOT NULL,
+    `FEC_CREATED_AT` date NOT NULL,
+    `FEC_UPDATE_AT` date DEFAULT NULL,
+    `ESTADO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `MON_TOTAL` double NOT NULL,
+    `DSC_METODO_PAGO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `ID_PROVEEDOR` int NOT NULL,
+    `UPDATED_BY_USER` int DEFAULT NULL,
+    `CREATED_BY_USER` int NOT NULL,
+    PRIMARY KEY (`ID_COMPRA`),
+    KEY `fk_compras_proveedor` (`ID_PROVEEDOR`),
+    KEY `fk_compras_usuario_created` (`CREATED_BY_USER`),
+    KEY `fk_compras_usuario_updated` (`UPDATED_BY_USER`),
+    CONSTRAINT `fk_compras_proveedor` FOREIGN KEY (`ID_PROVEEDOR`) REFERENCES `tsit_proveedor` (`ID_PROVEEDOR`),
+    CONSTRAINT `fk_compras_usuario_created` FOREIGN KEY (`CREATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
+    CONSTRAINT `fk_compras_usuario_updated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 29 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_correoproveedor`
 --
 
 DROP TABLE IF EXISTS `tsit_correoproveedor`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_correoproveedor` (
-  `ID_CORREOPROVEEDOR` int NOT NULL AUTO_INCREMENT,
-  `ID_PROVEEDOR` int DEFAULT NULL,
-  `DSC_CORREO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_CORREOPROVEEDOR`),
-  KEY `ID_PROVEEDOR` (`ID_PROVEEDOR`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsit_correoproveedor_ibfk_1` FOREIGN KEY (`ID_PROVEEDOR`) REFERENCES `tsit_proveedor` (`ID_PROVEEDOR`),
-  CONSTRAINT `tsit_correoproveedor_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_CORREOPROVEEDOR` int NOT NULL AUTO_INCREMENT,
+    `ID_PROVEEDOR` int DEFAULT NULL,
+    `DSC_CORREO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_CORREOPROVEEDOR`),
+    KEY `ID_PROVEEDOR` (`ID_PROVEEDOR`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsit_correoproveedor_ibfk_1` FOREIGN KEY (`ID_PROVEEDOR`) REFERENCES `tsit_proveedor` (`ID_PROVEEDOR`),
+    CONSTRAINT `tsit_correoproveedor_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_credito`
 --
 
 DROP TABLE IF EXISTS `tsit_credito`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_credito` (
-  `ID_CREDITO` int NOT NULL AUTO_INCREMENT,
-  `ID_VENTA` int NOT NULL,
-  `FEC_ULTIMOPAGO` datetime NOT NULL,
-  `FEC_VENCIMIENTO` datetime NOT NULL,
-  `MON_PENDIENTE` double NOT NULL,
-  `ESTADO_CREDITO` tinyint(1) NOT NULL,
-  PRIMARY KEY (`ID_CREDITO`),
-  KEY `ID_VENTA` (`ID_VENTA`),
-  CONSTRAINT `tsit_credito_ibfk_1` FOREIGN KEY (`ID_VENTA`) REFERENCES `tsit_venta` (`ID_VENTA`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_CREDITO` int NOT NULL AUTO_INCREMENT,
+    `ID_VENTA` int NOT NULL,
+    `FEC_ULTIMOPAGO` datetime NOT NULL,
+    `FEC_VENCIMIENTO` datetime NOT NULL,
+    `MON_PENDIENTE` double NOT NULL,
+    `ESTADO_CREDITO` tinyint(1) NOT NULL,
+    PRIMARY KEY (`ID_CREDITO`),
+    KEY `ID_VENTA` (`ID_VENTA`),
+    CONSTRAINT `tsit_credito_ibfk_1` FOREIGN KEY (`ID_VENTA`) REFERENCES `tsit_venta` (`ID_VENTA`)
+) ENGINE = InnoDB AUTO_INCREMENT = 8 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_detalles_compras`
 --
 
 DROP TABLE IF EXISTS `tsit_detalles_compras`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_detalles_compras` (
-  `ID_DETALLE_COMPRA` int NOT NULL AUTO_INCREMENT,
-  `FEC_UPDATE_AT` date DEFAULT NULL,
-  `ESTADO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `MON_PRECIO_COMPRA` double NOT NULL,
-  `MON_CANTIDAD` int NOT NULL,
-  `ID_COMPRA` int NOT NULL,
-  `UPDATED_BY_USER` int DEFAULT NULL,
-  `DSC_CODIGO_BARRAS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`ID_DETALLE_COMPRA`),
-  KEY `fk_detalles_compras_compra` (`ID_COMPRA`),
-  KEY `fk_detalles_compras_usuario_updated` (`UPDATED_BY_USER`),
-  KEY `id_producto` (`DSC_CODIGO_BARRAS`),
-  CONSTRAINT `fk_detalles_compras_compra` FOREIGN KEY (`ID_COMPRA`) REFERENCES `tsit_compras` (`ID_COMPRA`),
-  CONSTRAINT `fk_detalles_compras_usuario_updated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
-  CONSTRAINT `id_producto` FOREIGN KEY (`DSC_CODIGO_BARRAS`) REFERENCES `tsim_producto` (`DSC_CODIGO_BARRAS`)
-) ENGINE=InnoDB AUTO_INCREMENT=149 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_DETALLE_COMPRA` int NOT NULL AUTO_INCREMENT,
+    `FEC_UPDATE_AT` date DEFAULT NULL,
+    `ESTADO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `MON_PRECIO_COMPRA` double NOT NULL,
+    `MON_CANTIDAD` int NOT NULL,
+    `ID_COMPRA` int NOT NULL,
+    `UPDATED_BY_USER` int DEFAULT NULL,
+    `DSC_CODIGO_BARRAS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    PRIMARY KEY (`ID_DETALLE_COMPRA`),
+    KEY `fk_detalles_compras_compra` (`ID_COMPRA`),
+    KEY `fk_detalles_compras_usuario_updated` (`UPDATED_BY_USER`),
+    KEY `id_producto` (`DSC_CODIGO_BARRAS`),
+    CONSTRAINT `fk_detalles_compras_compra` FOREIGN KEY (`ID_COMPRA`) REFERENCES `tsit_compras` (`ID_COMPRA`),
+    CONSTRAINT `fk_detalles_compras_usuario_updated` FOREIGN KEY (`UPDATED_BY_USER`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
+    CONSTRAINT `id_producto` FOREIGN KEY (`DSC_CODIGO_BARRAS`) REFERENCES `tsim_producto` (`DSC_CODIGO_BARRAS`)
+) ENGINE = InnoDB AUTO_INCREMENT = 149 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_detalleventa`
 --
 
 DROP TABLE IF EXISTS `tsit_detalleventa`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_detalleventa` (
-  `ID_DETALLEVENTA` int NOT NULL AUTO_INCREMENT,
-  `ID_VENTA` int NOT NULL,
-  `ID_PRODUCTO` int NOT NULL,
-  `MONT_UNITARIO` double NOT NULL,
-  `PORCENT_IMPUESTO` double NOT NULL,
-  `PORCENT_DESCUENTO` double NOT NULL,
-  `CANTIDAD` int NOT NULL,
-  PRIMARY KEY (`ID_DETALLEVENTA`),
-  KEY `ID_VENTA` (`ID_VENTA`),
-  KEY `ID_PRODUCTO` (`ID_PRODUCTO`),
-  CONSTRAINT `tsit_detalleventa_ibfk_1` FOREIGN KEY (`ID_VENTA`) REFERENCES `tsit_venta` (`ID_VENTA`),
-  CONSTRAINT `tsit_detalleventa_ibfk_2` FOREIGN KEY (`ID_PRODUCTO`) REFERENCES `tsim_producto` (`ID_PRODUCT`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_DETALLEVENTA` int NOT NULL AUTO_INCREMENT,
+    `ID_VENTA` int NOT NULL,
+    `ID_PRODUCTO` int NOT NULL,
+    `MONT_UNITARIO` double NOT NULL,
+    `PORCENT_IMPUESTO` double NOT NULL,
+    `PORCENT_DESCUENTO` double NOT NULL,
+    `CANTIDAD` int NOT NULL,
+    PRIMARY KEY (`ID_DETALLEVENTA`),
+    KEY `ID_VENTA` (`ID_VENTA`),
+    KEY `ID_PRODUCTO` (`ID_PRODUCTO`),
+    CONSTRAINT `tsit_detalleventa_ibfk_1` FOREIGN KEY (`ID_VENTA`) REFERENCES `tsit_venta` (`ID_VENTA`),
+    CONSTRAINT `tsit_detalleventa_ibfk_2` FOREIGN KEY (`ID_PRODUCTO`) REFERENCES `tsim_producto` (`ID_PRODUCT`)
+) ENGINE = InnoDB AUTO_INCREMENT = 14 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_notificaciones`
 --
 
 DROP TABLE IF EXISTS `tsit_notificaciones`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE tsit_notificaciones (
-  ID_NOTIFICACION INT AUTO_INCREMENT PRIMARY KEY,
-  ID_PRODUCTO INT NOT NULL,
-  TIPO ENUM('STOCK_BAJO') NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  CANTIDAD INT NOT NULL,
-  VISTO TINYINT(1) DEFAULT 0,
-  FECHA DATETIME DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY uk_producto_tipo (ID_PRODUCTO, TIPO)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    ID_NOTIFICACION INT AUTO_INCREMENT PRIMARY KEY,
+    ID_PRODUCTO INT NOT NULL,
+    TIPO ENUM('STOCK_BAJO') NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    CANTIDAD INT NOT NULL,
+    VISTO TINYINT(1) DEFAULT 0,
+    FECHA DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_producto_tipo (ID_PRODUCTO, TIPO)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_permisousuario`
 --
 
 DROP TABLE IF EXISTS `tsit_permisousuario`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_permisousuario` (
-  `ID_PERMISOUSUARIO` int NOT NULL AUTO_INCREMENT,
-  `ID_USUARIO` int DEFAULT NULL,
-  `ID_PERMISO` int DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_PERMISOUSUARIO`),
-  KEY `ID_USUARIO` (`ID_USUARIO`),
-  KEY `ID_PERMISO` (`ID_PERMISO`),
-  CONSTRAINT `tsit_permisousuario_ibfk_1` FOREIGN KEY (`ID_USUARIO`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
-  CONSTRAINT `tsit_permisousuario_ibfk_2` FOREIGN KEY (`ID_PERMISO`) REFERENCES `tsim_permiso` (`ID_PERMISO`)
-) ENGINE=InnoDB AUTO_INCREMENT=157 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_PERMISOUSUARIO` int NOT NULL AUTO_INCREMENT,
+    `ID_USUARIO` int DEFAULT NULL,
+    `ID_PERMISO` int DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_PERMISOUSUARIO`),
+    KEY `ID_USUARIO` (`ID_USUARIO`),
+    KEY `ID_PERMISO` (`ID_PERMISO`),
+    CONSTRAINT `tsit_permisousuario_ibfk_1` FOREIGN KEY (`ID_USUARIO`) REFERENCES `tsit_usuario` (`ID_USUARIO`),
+    CONSTRAINT `tsit_permisousuario_ibfk_2` FOREIGN KEY (`ID_PERMISO`) REFERENCES `tsim_permiso` (`ID_PERMISO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 157 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_productos_proforma`
 --
 
 DROP TABLE IF EXISTS `tsit_productos_proforma`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_productos_proforma` (
-  `ID_PRODUCTO_PROFORMA` int NOT NULL AUTO_INCREMENT,
-  `ID_PROFORMA` int NOT NULL,
-  `ID_PRODUCTO` int NOT NULL,
-  `PRECIO_UNITARIO` double NOT NULL,
-  `IMPUESTO` double NOT NULL,
-  `DESCUENTO` int NOT NULL,
-  `CANTIDAD` int NOT NULL,
-  PRIMARY KEY (`ID_PRODUCTO_PROFORMA`),
-  KEY `ID_PROFORMA` (`ID_PROFORMA`),
-  KEY `ID_PRODUCTO` (`ID_PRODUCTO`),
-  CONSTRAINT `tsit_productos_proforma_ibfk_1` FOREIGN KEY (`ID_PROFORMA`) REFERENCES `tsit_proforma` (`ID_PROFORMA`),
-  CONSTRAINT `tsit_productos_proforma_ibfk_2` FOREIGN KEY (`ID_PRODUCTO`) REFERENCES `tsim_producto` (`ID_PRODUCT`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_PRODUCTO_PROFORMA` int NOT NULL AUTO_INCREMENT,
+    `ID_PROFORMA` int NOT NULL,
+    `ID_PRODUCTO` int NOT NULL,
+    `PRECIO_UNITARIO` double NOT NULL,
+    `IMPUESTO` double NOT NULL,
+    `DESCUENTO` int NOT NULL,
+    `CANTIDAD` int NOT NULL,
+    PRIMARY KEY (`ID_PRODUCTO_PROFORMA`),
+    KEY `ID_PROFORMA` (`ID_PROFORMA`),
+    KEY `ID_PRODUCTO` (`ID_PRODUCTO`),
+    CONSTRAINT `tsit_productos_proforma_ibfk_1` FOREIGN KEY (`ID_PROFORMA`) REFERENCES `tsit_proforma` (`ID_PROFORMA`),
+    CONSTRAINT `tsit_productos_proforma_ibfk_2` FOREIGN KEY (`ID_PRODUCTO`) REFERENCES `tsim_producto` (`ID_PRODUCT`)
+) ENGINE = InnoDB AUTO_INCREMENT = 75 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_proforma`
 --
 
 DROP TABLE IF EXISTS `tsit_proforma`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_proforma` (
-  `ID_PROFORMA` int NOT NULL AUTO_INCREMENT,
-  `DSC_CODIGO_BARRAS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ID_EMPRESA` int NOT NULL,
-  `FEC_CREACION` date NOT NULL,
-  `FEC_LIMITE` date NOT NULL,
-  `MON_TOTAL` double NOT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_PROFORMA`),
-  UNIQUE KEY `DSC_CODIGO_BARRAS` (`DSC_CODIGO_BARRAS`),
-  KEY `ID_EMPRESA` (`ID_EMPRESA`),
-  CONSTRAINT `tsit_proforma_ibfk_1` FOREIGN KEY (`ID_EMPRESA`) REFERENCES `tsim_empresa` (`ID_EMPRESA`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_PROFORMA` int NOT NULL AUTO_INCREMENT,
+    `DSC_CODIGO_BARRAS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `ID_EMPRESA` int NOT NULL,
+    `FEC_CREACION` date NOT NULL,
+    `FEC_LIMITE` date NOT NULL,
+    `MON_TOTAL` double NOT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_PROFORMA`),
+    UNIQUE KEY `DSC_CODIGO_BARRAS` (`DSC_CODIGO_BARRAS`),
+    KEY `ID_EMPRESA` (`ID_EMPRESA`),
+    CONSTRAINT `tsit_proforma_ibfk_1` FOREIGN KEY (`ID_EMPRESA`) REFERENCES `tsim_empresa` (`ID_EMPRESA`)
+) ENGINE = InnoDB AUTO_INCREMENT = 6 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_proveedor`
 --
 
 DROP TABLE IF EXISTS `tsit_proveedor`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_proveedor` (
-  `ID_PROVEEDOR` int NOT NULL AUTO_INCREMENT,
-  `IDENTIFICADOR_PROVEEDOR` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_NOMBRE` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ID_TIPOPROVEEDOR` int DEFAULT NULL,
-  `DSC_VENTA` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `CTA_BANCARIA` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `DSC_DIRECCIONEXACTA` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
-  PRIMARY KEY (`ID_PROVEEDOR`),
-  UNIQUE KEY `CTA_BANCARIA` (`CTA_BANCARIA`),
-  UNIQUE KEY `IDENTIFICADOR_PROVEEDOR` (`IDENTIFICADOR_PROVEEDOR`),
-  KEY `ID_TIPOPROVEEDOR` (`ID_TIPOPROVEEDOR`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsit_proveedor_ibfk_1` FOREIGN KEY (`ID_TIPOPROVEEDOR`) REFERENCES `tsim_tipoproveedor` (`ID_TIPOPROVEEDOR`),
-  CONSTRAINT `tsit_proveedor_ibfk_3` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_PROVEEDOR` int NOT NULL AUTO_INCREMENT,
+    `IDENTIFICADOR_PROVEEDOR` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_NOMBRE` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `ID_TIPOPROVEEDOR` int DEFAULT NULL,
+    `DSC_VENTA` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `CTA_BANCARIA` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `DSC_DIRECCIONEXACTA` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+    PRIMARY KEY (`ID_PROVEEDOR`),
+    UNIQUE KEY `CTA_BANCARIA` (`CTA_BANCARIA`),
+    UNIQUE KEY `IDENTIFICADOR_PROVEEDOR` (`IDENTIFICADOR_PROVEEDOR`),
+    KEY `ID_TIPOPROVEEDOR` (`ID_TIPOPROVEEDOR`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsit_proveedor_ibfk_1` FOREIGN KEY (`ID_TIPOPROVEEDOR`) REFERENCES `tsim_tipoproveedor` (`ID_TIPOPROVEEDOR`),
+    CONSTRAINT `tsit_proveedor_ibfk_3` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 36 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_telefonocliente`
 --
 
 DROP TABLE IF EXISTS `tsit_telefonocliente`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_telefonocliente` (
-  `ID_TELEFONOCLIENTE` int NOT NULL AUTO_INCREMENT,
-  `ID_CLIENTE` int DEFAULT NULL,
-  `DSC_TELEFONO` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `FEC_MODIFICADOEN` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_TELEFONOCLIENTE`),
-  KEY `ID_CLIENTE` (`ID_CLIENTE`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsit_telefonocliente_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`),
-  CONSTRAINT `tsit_telefonocliente_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_TELEFONOCLIENTE` int NOT NULL AUTO_INCREMENT,
+    `ID_CLIENTE` int DEFAULT NULL,
+    `DSC_TELEFONO` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `FEC_MODIFICADOEN` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_TELEFONOCLIENTE`),
+    KEY `ID_CLIENTE` (`ID_CLIENTE`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsit_telefonocliente_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`),
+    CONSTRAINT `tsit_telefonocliente_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 13 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_telefonoproveedor`
 --
 
 DROP TABLE IF EXISTS `tsit_telefonoproveedor`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_telefonoproveedor` (
-  `ID_TELEFONOPROVEEDOR` int NOT NULL AUTO_INCREMENT,
-  `ID_PROVEEDOR` int DEFAULT NULL,
-  `DSC_TELEFONO` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_TELEFONOPROVEEDOR`),
-  KEY `ID_PROVEEDOR` (`ID_PROVEEDOR`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsit_telefonoproveedor_ibfk_1` FOREIGN KEY (`ID_PROVEEDOR`) REFERENCES `tsit_proveedor` (`ID_PROVEEDOR`),
-  CONSTRAINT `tsit_telefonoproveedor_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_TELEFONOPROVEEDOR` int NOT NULL AUTO_INCREMENT,
+    `ID_PROVEEDOR` int DEFAULT NULL,
+    `DSC_TELEFONO` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_TELEFONOPROVEEDOR`),
+    KEY `ID_PROVEEDOR` (`ID_PROVEEDOR`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsit_telefonoproveedor_ibfk_1` FOREIGN KEY (`ID_PROVEEDOR`) REFERENCES `tsit_proveedor` (`ID_PROVEEDOR`),
+    CONSTRAINT `tsit_telefonoproveedor_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 11 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_transacciones`
 --
 
 DROP TABLE IF EXISTS `tsit_transacciones`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_transacciones` (
-  `ID_TRANSACCION` int NOT NULL AUTO_INCREMENT,
-  `FEC_TRANSACCION` datetime NOT NULL,
-  `METODO_PAGO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `MONTO_PAGO` double NOT NULL,
-  `DSC_TRANSACCION` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `TIPO_TRANSACCION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ESTADO` int NOT NULL,
-  PRIMARY KEY (`ID_TRANSACCION`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsit_transacciones_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_TRANSACCION` int NOT NULL AUTO_INCREMENT,
+    `FEC_TRANSACCION` datetime NOT NULL,
+    `METODO_PAGO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `MONTO_PAGO` double NOT NULL,
+    `DSC_TRANSACCION` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `TIPO_TRANSACCION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `ESTADO` int NOT NULL,
+    PRIMARY KEY (`ID_TRANSACCION`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsit_transacciones_ibfk_1` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 5 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_usuario`
 --
 
 DROP TABLE IF EXISTS `tsit_usuario`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_usuario` (
-  `ID_USUARIO` int NOT NULL AUTO_INCREMENT,
-  `DSC_NOMBREUSUARIO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_CONTRASENIA` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_CORREO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_TELEFONO` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ID_ROL` int DEFAULT NULL,
-  `DSC_CEDULA` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_NOMBRE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_APELLIDOUNO` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `DSC_APELLIDODOS` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `FEC_CREADOEN` datetime DEFAULT NULL,
-  `ESTADO` int DEFAULT NULL,
-  PRIMARY KEY (`ID_USUARIO`),
-  KEY `ID_ROL` (`ID_ROL`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsit_usuario_ibfk_1` FOREIGN KEY (`ID_ROL`) REFERENCES `tsim_rol` (`ID_ROL`),
-  CONSTRAINT `tsit_usuario_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_USUARIO` int NOT NULL AUTO_INCREMENT,
+    `DSC_NOMBREUSUARIO` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_CONTRASENIA` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_CORREO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_TELEFONO` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `ID_ROL` int DEFAULT NULL,
+    `DSC_CEDULA` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_NOMBRE` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_APELLIDOUNO` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `DSC_APELLIDODOS` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `FEC_CREADOEN` datetime DEFAULT NULL,
+    `ESTADO` int DEFAULT NULL,
+    PRIMARY KEY (`ID_USUARIO`),
+    KEY `ID_ROL` (`ID_ROL`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsit_usuario_ibfk_1` FOREIGN KEY (`ID_ROL`) REFERENCES `tsim_rol` (`ID_ROL`),
+    CONSTRAINT `tsit_usuario_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 19 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Table structure for table `tsit_venta`
 --
 
 DROP TABLE IF EXISTS `tsit_venta`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */
+;
+/*!50503 SET character_set_client = utf8mb4 */
+;
 CREATE TABLE `tsit_venta` (
-  `ID_VENTA` int NOT NULL AUTO_INCREMENT,
-  `ID_CLIENTE` int DEFAULT NULL,
-  `FEC_VENTA` datetime NOT NULL,
-  `METODO_PAGO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `DSC_VENTA` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ESTADO_CREDITO` tinyint(1) NOT NULL,
-  `MONT_SUBTOTAL` double NOT NULL,
-  `ESTADO` int NOT NULL,
-  PRIMARY KEY (`ID_VENTA`),
-  KEY `ID_CLIENTE` (`ID_CLIENTE`),
-  KEY `ESTADO` (`ESTADO`),
-  CONSTRAINT `tsit_venta_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`),
-  CONSTRAINT `tsit_venta_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+    `ID_VENTA` int NOT NULL AUTO_INCREMENT,
+    `ID_CLIENTE` int DEFAULT NULL,
+    `FEC_VENTA` datetime NOT NULL,
+    `METODO_PAGO` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `DSC_VENTA` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    `ESTADO_CREDITO` tinyint(1) NOT NULL,
+    `MONT_SUBTOTAL` double NOT NULL,
+    `ESTADO` int NOT NULL,
+    PRIMARY KEY (`ID_VENTA`),
+    KEY `ID_CLIENTE` (`ID_CLIENTE`),
+    KEY `ESTADO` (`ESTADO`),
+    CONSTRAINT `tsit_venta_ibfk_1` FOREIGN KEY (`ID_CLIENTE`) REFERENCES `tsit_cliente` (`ID_CLIENTE`),
+    CONSTRAINT `tsit_venta_ibfk_2` FOREIGN KEY (`ESTADO`) REFERENCES `tsim_estado` (`ID_ESTADO`)
+) ENGINE = InnoDB AUTO_INCREMENT = 9 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */
+;
 
 --
 -- Dumping routines for database 'dbtiendasistemainventario'
 --
-/*!50003 DROP PROCEDURE IF EXISTS `getSaleReport` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+/*!50003 DROP PROCEDURE IF EXISTS `getSaleReport` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getSaleReport`(IN MIN_FEC DATE,
     IN MAX_FEC DATE)
 BEGIN
@@ -653,21 +750,36 @@ SELECT
         v.FEC_VENTA ASC,
         v.ID_VENTA ASC;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `getShoppingsReport` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `getShoppingsReport` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getShoppingsReport`(IN MIN_FEC DATE, IN MAX_FEC DATE)
 BEGIN
 SELECT
@@ -705,21 +817,36 @@ SELECT
         c.FEC_COMPRA ASC,
         c.ID_COMPRA ASC;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `getTransactionReport` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `getTransactionReport` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getTransactionReport`(IN MIN_FEC_TRANSACCION DATETIME, IN MAX_FEC_TRANSACCION DATETIME)
 BEGIN
 SELECT 
@@ -737,21 +864,36 @@ SELECT
     ORDER BY 
         FEC_TRANSACCION ASC;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_cash_closing` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_cash_closing` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_cash_closing`(IN MIN_FEC DATE, IN MAX_FEC DATE)
 BEGIN
 -- Ventas
@@ -843,22 +985,37 @@ BEGIN
 		t.ESTADO = 1
 		AND DATE(t.FEC_TRANSACCION) >= MIN_FEC AND DATE(t.FEC_TRANSACCION) <= MAX_FEC;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_getAllDataFromGrpahics` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllDataFromGrpahics`(IN MIN_FEC DATE, IN MAX_FEC DATE, IN LIMIT_PRODUCTS INT, IN CATEGORY VARCHAR(255), IN FEC_CURRENT DATE)
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_getAllDataFromGrpahics` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllDataFromGrpahics`(IN MIN_FEC DATE, IN MAX_FEC DATE, IN LIMIT_PRODUCTS INT, IN CATEGORY VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, IN FEC_CURRENT DATE)
 BEGIN
 -- Consulta 1: Productos más vendidos
     SELECT
@@ -962,21 +1119,36 @@ BEGIN
     ORDER BY 
         m.Mes ASC;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_getAllShoppings` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_getAllShoppings` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllShoppings`(IN p_field VARCHAR(50),
     IN p_sortOrder VARCHAR(4),
     IN p_limit INT,
@@ -1065,21 +1237,36 @@ SELECT
 
     LIMIT p_limit OFFSET p_offset;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_getClientCreditReport` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_getClientCreditReport` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getClientCreditReport`(IN MIN_FEC DATE,
     IN MAX_FEC DATE)
 BEGIN
@@ -1160,21 +1347,36 @@ SELECT
 
     ORDER BY cl.DSC_CEDULA;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_getSupplierReport` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_getSupplierReport` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getSupplierReport`()
 BEGIN
 SELECT
@@ -1234,21 +1436,36 @@ SELECT
     FROM tsit_proveedor p
     WHERE p.ESTADO = 1;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_products_report` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_products_report` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_products_report`(IN MIN_FEC DATE, IN MAX_FEC DATE)
 BEGIN
 SELECT
@@ -1269,21 +1486,36 @@ SELECT
 	ORDER BY
 		p.FEC_CREATED_AT DESC;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `Sp_SearchCredits` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `Sp_SearchCredits` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchCredits`(IN termSearch VARCHAR(255),
     IN page INT,
     IN pageSize INT)
@@ -1357,21 +1589,36 @@ DECLARE offset INT;
         OR DATE_FORMAT(cr.FEC_VENCIMIENTO, '%Y-%m-%d') LIKE CONCAT('%', termSearch, '%')
     LIMIT offset, pageSize;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_searchProformas` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_searchProformas` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_searchProformas`(IN p_field VARCHAR(50),
     IN p_sortOrder VARCHAR(4),
     IN p_limit INT,
@@ -1475,21 +1722,36 @@ SELECT
 
     LIMIT p_limit OFFSET p_offset;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `Sp_SearchSales` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `Sp_SearchSales` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `Sp_SearchSales`(IN termSearch VARCHAR(255),
     IN page INT,
     IN pageSize INT)
@@ -1544,21 +1806,36 @@ BEGIN
         OR p.DSC_NOMBRE LIKE CONCAT('%', termSearch, '%')
     LIMIT offset, pageSize;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_searchShoppings` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
+
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_searchShoppings` */
+;
+/*!50003 SET @saved_cs_client      = @@character_set_client */
+;
+/*!50003 SET @saved_cs_results     = @@character_set_results */
+;
+/*!50003 SET @saved_col_connection = @@collation_connection */
+;
+/*!50003 SET character_set_client  = utf8mb4 */
+;
+/*!50003 SET character_set_results = utf8mb4 */
+;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */
+;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */
+;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */
+;
+DELIMITER; ;
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_searchShoppings`(IN p_field VARCHAR(50),
     IN p_sortOrder VARCHAR(4),
     IN p_limit INT,
@@ -1658,20 +1935,33 @@ SELECT
 
     LIMIT p_limit OFFSET p_offset;
 END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+DELIMITER;
+/*!50003 SET sql_mode              = @saved_sql_mode */
+;
+/*!50003 SET character_set_client  = @saved_cs_client */
+;
+/*!50003 SET character_set_results = @saved_cs_results */
+;
+/*!50003 SET collation_connection  = @saved_col_connection */
+;
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */
+;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */
+;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */
+;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */
+;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */
+;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */
+;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */
+;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */
+;
 
 -- Dump completed on 2026-01-17 22:04:11
