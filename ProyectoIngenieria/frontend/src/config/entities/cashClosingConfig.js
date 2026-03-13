@@ -1,4 +1,5 @@
 import { createCashClosing, getAllCashClosingData } from "../../api/cashClosing";
+import { formatPrice } from "../../utils/formatters";
 
 export const cashClosingConfig = {
     entityName: "Cierre de caja",
@@ -10,7 +11,7 @@ export const cashClosingConfig = {
         { field: "TIPO", label: "Tipo" },
         { field: "DESCRIPCION", label: "Descripción" },
         { field: "HORA", label: "Hora" },
-        { field: "MONTO", label: "Monto" },
+        { field: "MONTO", label: "Monto", formatter: formatPrice },
     ],
 
     fields: [
@@ -51,12 +52,7 @@ export const cashClosingConfig = {
     },
 
     transformConfig: {
-        MONTO: (item) =>
-            new Intl.NumberFormat("es-CR", {
-                style: "currency",
-                currency: "CRC",
-                minimumFractionDigits: 2,
-            }).format(item.MONTO),
+        MONTO: (item) => formatPrice(item.MONTO),
     },
 
     actions: {

@@ -1,5 +1,6 @@
 import { User, CreditCard, Smartphone, CheckCircle, AlertTriangle } from "lucide-react";
 import PaymentProgressBar from "./PaymentProgressBar";
+import { formatPhoneNumber, formatPrice } from "../../../utils/formatters";
 
 const ClientInfoCard = ({ client, credit }) => {
     const totalAmount = credit.amount || 0;
@@ -28,7 +29,7 @@ const ClientInfoCard = ({ client, credit }) => {
                 <div className="credits-info-item">
                     <div className="credits-info-value">
                         <Smartphone className="credits-icon" />
-                        Teléfono: {client.phone}
+                        Teléfono: {formatPhoneNumber(client.phone)}
                     </div>
                 </div>
 
@@ -38,11 +39,11 @@ const ClientInfoCard = ({ client, credit }) => {
                     <div style={{ marginTop: "0.5rem" }}>
                         <div className="credits-info-value" style={{ color: "#22c55e" }}>
                             <CheckCircle className="credits-icon" />
-                            Pagado: ₡{paid.toLocaleString()}
+                            Pagado: {formatPrice(paid)}
                         </div>
                         <div className="credits-info-value" style={{ color: "#eab308" }}>
                             <AlertTriangle className="credits-icon" />
-                            Pendiente: ₡{pending.toLocaleString()}
+                            Pendiente: {formatPrice(pending)}
                         </div>
                     </div>
                 </div>

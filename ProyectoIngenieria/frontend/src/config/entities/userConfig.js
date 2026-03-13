@@ -8,6 +8,7 @@ import {
     searchUser,
     changePassword
 } from "../../api/user";
+import { formatPhoneNumber } from "../../utils/formatters";
 
 // Configuración principal de la entidad
 export const userConfig = {
@@ -71,7 +72,7 @@ export const userConfig = {
             nombre: user.DSC_NOMBRE,
             primerApellido: user.DSC_APELLIDOUNO,
             segundoApellido: user.DSC_APELLIDODOS,
-            telefono: user.DSC_TELEFONO,
+            telefono: formatPhoneNumber(user.DSC_TELEFONO),
             nombreUsuario: user.DSC_NOMBREUSUARIO,
             correo: user.DSC_CORREO,
             estado: user.ESTADO === "ACTIVO" ? 1 : 2,

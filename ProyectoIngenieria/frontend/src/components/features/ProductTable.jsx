@@ -4,6 +4,7 @@ import { Plus, Minus, Trash } from "lucide-react";
 import "./styles/productTable.css";
 import { getProductById } from "../../api/product";
 import { toast } from "sonner";
+import { formatPrice } from "../../utils/formatters";
 
 const ActionButton = ({ onClick, color, children }) => (
     <Button
@@ -142,7 +143,7 @@ const ProductTable = ({
                             return (
                                 <tr key={product.id}>
                                     <td>{getDisplayName(product)}</td>
-                                    <td>₡{price.toLocaleString()}</td>
+                                    <td>{formatPrice(price)}</td>
                                     <td>
                                         {isViewMode ? (
                                             quantity
@@ -192,7 +193,7 @@ const ProductTable = ({
                                         )}</td>
                                     )}
 
-                                    <td>₡{subtotal.toLocaleString()}</td>
+                                    <td>{formatPrice(subtotal)}</td>
 
                                     {!isViewMode && (
                                         <td>

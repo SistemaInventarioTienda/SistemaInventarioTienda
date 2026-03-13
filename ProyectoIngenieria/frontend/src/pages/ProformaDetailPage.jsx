@@ -8,6 +8,7 @@ import { Printer, ArrowLeft, ShoppingCart } from "lucide-react"
 import Barcode from "react-barcode"
 import html2pdf from "html2pdf.js"
 import { toast } from "sonner"
+import { formatPhoneNumber, formatPrice } from "../utils/formatters"
 
 export default function ProformaDetailPage() {
     const [proforma, setProforma] = useState(null)
@@ -188,7 +189,7 @@ export default function ProformaDetailPage() {
                                 <p className="company-slogan">{proforma.Config?.DSC_SLOGAN || ""}</p>
                                 <div className="company-contact">
                                     <p>{proforma.Config?.DSC_DIRECCION || ""}</p>
-                                    <p>{proforma.Config?.NUM_TELEFONO || ""}</p>
+                                    <p>{formatPhoneNumber(proforma.Config?.NUM_TELEFONO)}</p>
                                     <p>{proforma.Config?.DSC_CORREO || ""}</p>
                                 </div>
                             </div>
@@ -231,15 +232,15 @@ export default function ProformaDetailPage() {
                                 <div className="summary-box">
                                     <div className="summary-row">
                                         <span>Subtotal:</span>
-                                        <span>₡{subtotal.toLocaleString("es-CR")}</span>
+                                        <span>{formatPrice(subtotal)}</span>
                                     </div>
                                     <div className="summary-row">
                                         <span>Impuestos:</span>
-                                        <span>₡{totalImpuestos.toLocaleString("es-CR")}</span>
+                                        <span>{formatPrice(totalImpuestos)}</span>
                                     </div>
                                     <div className="summary-row total-row">
                                         <span><strong>Total:</strong></span>
-                                        <span className="total-amount">₡{total.toLocaleString("es-CR")}</span>
+                                        <span className="total-amount">{formatPrice(total)}</span>
                                     </div>
                                 </div>
                             </div>

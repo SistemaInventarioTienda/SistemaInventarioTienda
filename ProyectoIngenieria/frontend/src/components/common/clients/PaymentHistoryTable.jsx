@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Printer } from "lucide-react";
+import { formatPrice } from "../../../utils/formatters"
 import { Button } from "../Button";
 import { Table } from "../../common"; //
 import { SquarePen } from "lucide-react";
@@ -95,7 +96,7 @@ const PaymentHistoryTable = ({ payments, creditConfig, fetchCreditData, pendingA
           data={payments.map((payment, index) => ({
             id: payment.id,
             date: payment.date,
-            amount: `₡${payment.amount.toLocaleString()}`,
+            amount: formatPrice(payment.amount),
             action: (
               <div className="action-cell">
                 <ActionButton

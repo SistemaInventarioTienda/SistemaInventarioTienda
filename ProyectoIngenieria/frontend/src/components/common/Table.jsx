@@ -253,6 +253,8 @@ const Table = ({
                               expanded={expandedRows[rowId]}
                               toggleRow={() => toggleRow(rowId)}
                             />
+                          ) : column.formatter ? (
+                            column.formatter(row[column.field])
                           ) : (
                             row[column.field]
                           )}

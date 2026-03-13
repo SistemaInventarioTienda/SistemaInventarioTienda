@@ -1,3 +1,5 @@
+import { formatPrice } from "../../../utils/formatters"
+
 export default function ProformaTable({ items }) {
     return (
         <div className="proforma-table-container">
@@ -30,11 +32,11 @@ export default function ProformaTable({ items }) {
                         return (
                             <tr key={idx}>
                                 <td>{item.DSC_NOMBRE}</td>
-                                <td>₡{item.PRECIO_UNITARIO.toLocaleString("es-CR")}</td>
+                                <td>{formatPrice(item.PRECIO_UNITARIO)}</td>
                                 <td>{item.CANTIDAD}</td>
-                                <td>₡{subDesc.toLocaleString("es-CR")}</td>
-                                <td>{impPct}% (₡{imp.toLocaleString("es-CR")})</td>
-                                <td>₡{total.toLocaleString("es-CR")}</td>
+                                <td>{formatPrice(subDesc)}</td>
+                                <td>{impPct}% ({formatPrice(imp)})</td>
+                                <td>{formatPrice(total)}</td>
                             </tr>
                         )
                     })}

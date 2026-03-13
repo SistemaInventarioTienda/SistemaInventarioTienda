@@ -1,4 +1,5 @@
 import { Printer, Pencil, DollarSign, Calendar, Clock, Wallet, Coins } from "lucide-react";
+import { formatPrice } from "../../../utils/formatters";
 
 const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
 
@@ -45,13 +46,13 @@ const CreditDetailsCard = ({ credit, onRegisterPayment }) => {
                     <div className="credits-info-item">
                         <p className="credits-info-label">Monto Original</p>
                         <p className="credits-info-value">
-                            <Wallet className="credits-icon" />₡{credit.amount.toLocaleString()}
+                            <Wallet className="credits-icon" />{formatPrice(credit.amount)}
                         </p>
                     </div>
                     <div className="credits-info-item">
                         <p className="credits-info-label">Saldo Pendiente</p>
                         <p className="credits-info-value">
-                            <Coins className="credits-icon" />₡{credit.pendingAmount.toLocaleString()}
+                            <Coins className="credits-icon" />{formatPrice(credit.pendingAmount)}
                         </p>
                     </div>
                 </div>

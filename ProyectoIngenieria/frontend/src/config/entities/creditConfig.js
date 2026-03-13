@@ -1,5 +1,6 @@
 //import { updateCategory } from "../../api/category";
 import { getAllCredits, addPayment, modifyPayment, formatDate, searchCredits, getCreditById } from "../../api/credit"; //Falta importar los demas endpoints
+import { formatPrice } from "../../utils/formatters";
 
 export const creditConfig = {
 
@@ -11,7 +12,7 @@ export const creditConfig = {
 
     columns: [
         { field: "DSC_NOMBRE", label: "Nombre" },
-        { field: "MON_PENDIENTE", label: "Monto Pendiente" },
+        { field: "MON_PENDIENTE", label: "Monto Pendiente", formatter: formatPrice },
         { field: "FEC_ULTIMOPAGO", label: "Fecha último pago" },
         { field: "FEC_VENCIMIENTO", label: "Fecha vencimiento" },
         { field: "ESTADO_CREDITO", label: "Estado" },
@@ -69,7 +70,7 @@ export const creditConfig = {
           }
         },
         DSC_NOMBRE: (item) => item.sale?.Client?.DSC_NOMBRE || "Sin cliente",
-        MON_PENDIENTE: (item) => item.MON_PENDIENTE.toFixed(2),
+        MON_PENDIENTE: (item) => formatPrice(item.MON_PENDIENTE),
         FEC_ULTIMOPAGO: (item) => formatDate(item.FEC_ULTIMOPAGO),
         FEC_VENCIMIENTO: (item) => formatDate(item.FEC_VENCIMIENTO),
       },

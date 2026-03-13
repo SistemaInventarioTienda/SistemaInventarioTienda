@@ -14,6 +14,7 @@ import {
 import {
     getAllCategoriesWithoutPag
 } from "../../api/category";
+import { formatPrice } from "../../utils/formatters";
 
 // Configuración principal de la entidad
 export const productConfig = {
@@ -28,8 +29,8 @@ export const productConfig = {
     // Configuración de columnas para la tabla
     columns: [
         { field: "DSC_NOMBRE", label: "Nombre" },
-        { field: "MON_VENTA", label: "Precio Venta" },
-        { field: "MON_COMPRA", label: "Precio Compra" },
+        { field: "MON_VENTA", label: "Precio Venta", formatter: formatPrice },
+        { field: "MON_COMPRA", label: "Precio Compra", formatter: formatPrice },
         { field: "CANTIDAD", label: "Cantidad" },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" },

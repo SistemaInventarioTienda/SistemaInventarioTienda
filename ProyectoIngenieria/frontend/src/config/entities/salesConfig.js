@@ -5,6 +5,7 @@ import {
     registerSale,
     deleteSale,
 } from "../../api/sale";
+import { formatPrice } from "../../utils/formatters";
 
 export const salesConfig = {
     entityName: "Venta",
@@ -17,7 +18,7 @@ export const salesConfig = {
         { field: "FEC_VENTA", label: "Fecha de venta" },
         { field: "METODO_PAGO", label: "Método de pago" },
         { field: "DSC_SALETYPE", label: "Tipo de venta" },
-        { field: "MONT_SUBTOTAL", label: "Subtotal" },
+        { field: "MONT_SUBTOTAL", label: "Subtotal", formatter: formatPrice },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" },
     ],

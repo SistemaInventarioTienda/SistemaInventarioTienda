@@ -7,6 +7,7 @@ import {
     updateClient,
     deleteClient,
 } from "../../api/client";
+import { formatPhoneNumber } from "../../utils/formatters";
 
 // Configuración principal de la entidad
 export const clientConfig = {
@@ -24,7 +25,7 @@ export const clientConfig = {
         { field: "DSC_NOMBRE", label: "Nombre" },
         { field: "DSC_APELLIDOUNO", label: "Primer Apellido" },
         { field: "DSC_APELLIDODOS", label: "Segundo Apellido" },
-        { field: "DSC_TELEFONO", label: "Teléfono" },
+        { field: "DSC_TELEFONO", label: "Teléfono", formatter: formatPhoneNumber },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" }, // Columnas de acciones (editar, eliminar, etc.)
     ],
@@ -109,7 +110,7 @@ export const clientConfig = {
         ESTADO: (item) => (item.ESTADO === 1 ? "ACTIVO" : "INACTIVO"),
         DSC_TELEFONO: (item) =>
             item.TelefonoClientes?.length > 0
-                ? item.TelefonoClientes[0].DSC_TELEFONO
+                ? formatPhoneNumber(item.TelefonoClientes[0].DSC_TELEFONO)
                 : "Sin Información",
     },
 

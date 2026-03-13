@@ -1,4 +1,5 @@
 import { getConfig, updateConfig } from "../../api/settings";
+import { formatPhoneNumber } from "../../utils/formatters";
 
 //Configuracion princinal de la entidad 'settings'
 export const settingConfig = {
@@ -63,7 +64,7 @@ export const settingConfig = {
         // Campos para mostrar en el frontend
         rango: setting.DSC_RANGO_STOCK || 0,
         nombre: setting.DSC_NOMBRE || "",
-        telefono: setting.NUM_TELEFONO || "",
+        telefono: formatPhoneNumber(setting.NUM_TELEFONO),
         correo: setting.DSC_CORREO || "",
         direccion: setting.DSC_DIRECCION || "",
         eslogan: setting.DSC_ESLOGAN || "",

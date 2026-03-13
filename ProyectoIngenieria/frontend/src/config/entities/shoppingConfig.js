@@ -4,6 +4,7 @@ import {
     registerShopping,
     deleteShopping,
 } from "../../api/shopping";
+import { formatPrice } from "../../utils/formatters";
 
 export const shoppingConfig = {
     entityName: "Compra",
@@ -15,7 +16,7 @@ export const shoppingConfig = {
         { field: "PROVEEDOR", label: "Proveedor" },
         { field: "FEC_COMPRA", label: "Fecha de compra" },
         { field: "DSC_METODO_PAGO", label: "Método de pago" },
-        { field: "MON_TOTAL", label: "Total" },
+        { field: "MON_TOTAL", label: "Total", formatter: formatPrice },
         { field: "ESTADO", label: "Estado" },
         { field: "actions", label: "Acciones" },
     ],
