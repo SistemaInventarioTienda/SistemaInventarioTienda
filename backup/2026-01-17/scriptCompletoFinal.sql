@@ -1663,6 +1663,7 @@ SELECT
         (
             SELECT JSON_ARRAYAGG(
                 JSON_OBJECT(
+					'ID_PRODUCTO', pp.ID_PRODUCTO,
 					'DSC_CODIGO_BARRAS', prod.DSC_CODIGO_BARRAS,
                     'DSC_NOMBRE', prod.DSC_NOMBRE,
                     'PRECIO_UNITARIO', pp.PRECIO_UNITARIO,
