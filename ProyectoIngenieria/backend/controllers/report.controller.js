@@ -289,8 +289,12 @@ export async function createReceiptPDF(currentDate, storeData, saleData) {
     };
 
     drawTotalRow("Subtotal:", subtotal.toFixed(2));
-    drawTotalRow("Descuento:", `-${totalDescuento.toFixed(2)}`);
-    drawTotalRow("IVA:", totalIVA.toFixed(2));
+    if (totalDescuento > 0) {
+      drawTotalRow("Descuento:", `-${totalDescuento.toFixed(2)}`);
+    }
+    if (totalIVA > 0) {
+      drawTotalRow("IVA:", totalIVA.toFixed(2));
+    }
 
     doc
       .moveTo(margin, y)
