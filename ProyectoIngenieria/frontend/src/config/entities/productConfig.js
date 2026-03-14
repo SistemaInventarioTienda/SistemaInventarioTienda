@@ -88,7 +88,14 @@ export const productConfig = {
       type: "number",
       required: true,
     },
-    { name: "CANTIDAD", label: "Cantidad", type: "number", required: false },
+    {
+      name: "CANTIDAD",
+      label: "Cantidad",
+      type: "number",
+      required: false,
+      min: "0.01",
+      step: "0.01",
+    },
     {
       name: "estado",
       label: "Estado",

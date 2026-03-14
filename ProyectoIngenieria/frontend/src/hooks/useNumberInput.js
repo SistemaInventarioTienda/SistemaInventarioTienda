@@ -1,8 +1,8 @@
 // useNumberInput.js
 
-import { useState } from 'react';
+import { useState } from "react";
 
-const useNumberInput = ({ min , max , initialValue , onChange }) => {
+const useNumberInput = ({ min, max, initialValue, onChange }) => {
   const [value, setValue] = useState(initialValue);
 
   // Función para incrementar el valor
@@ -25,7 +25,7 @@ const useNumberInput = ({ min , max , initialValue , onChange }) => {
 
   // Función para manejar cambios manuales en el campo de texto
   const handleChange = (event) => {
-    const newValue = parseInt(event.target.value, 10);
+    const newValue = parseFloat(event.target.value);
     if (!isNaN(newValue) && newValue >= min && newValue <= max) {
       setValue(newValue);
       if (onChange) onChange(newValue); // Notifica al padre del cambio realizado

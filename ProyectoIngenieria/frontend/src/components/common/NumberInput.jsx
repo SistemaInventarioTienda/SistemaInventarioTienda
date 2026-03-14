@@ -3,16 +3,7 @@ import useNumberInput from "../../hooks/useNumberInput";
 import { Label } from "./Label";
 import "./styles/inputNumber.css";
 
-const NumberInput = ({
-  id,
-  min,
-  max,
-  initialValue,
-  onChange,
-  label,
-  mode
-}) => {
- 
+const NumberInput = ({ id, min, max, initialValue, onChange, label, mode }) => {
   const { value, handleIncrement, handleDecrement, handleChange } =
     useNumberInput({
       min,
@@ -23,8 +14,7 @@ const NumberInput = ({
 
   return (
     <div>
-
-      {label && (<Label htmlFor={id}>{label}</Label>)}
+      {label && <Label htmlFor={id}>{label}</Label>}
 
       <div className="container">
         <button onClick={handleDecrement} className="button">
@@ -37,6 +27,7 @@ const NumberInput = ({
           onChange={handleChange}
           min={min}
           max={max}
+          step="0.01"
           className="inputNumber"
         />
         <button onClick={handleIncrement} className="button">

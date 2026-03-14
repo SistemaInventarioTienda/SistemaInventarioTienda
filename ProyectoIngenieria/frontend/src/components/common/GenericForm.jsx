@@ -200,6 +200,7 @@ function GenericForm({
 
     return (
       <Input
+        type={field.type || "text"}
         name={field.name}
         value={fieldValue}
         onChange={handleChange}
@@ -207,6 +208,8 @@ function GenericForm({
         readOnly={isBlocked || mode === "view"}
         placeholder={`Ingrese ${field.label.toLowerCase()}`}
         className={isBlocked ? "readonly-input" : ""}
+        min={field.min}
+        step={field.step}
       />
     );
   };

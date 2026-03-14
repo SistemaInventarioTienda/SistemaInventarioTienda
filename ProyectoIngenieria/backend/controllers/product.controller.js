@@ -379,7 +379,7 @@ export const updateProduct = [
     product.ID_SUBCATEGORIA = SUBCATEGORIA || product.ID_SUBCATEGORIA;
     product.ESTADO = ESTADO || product.ESTADO;
     product.CANTIDAD =
-      CANTIDAD !== null ? parseInt(CANTIDAD) : product.CANTIDAD;
+      CANTIDAD !== null ? parseFloat(CANTIDAD) : product.CANTIDAD;
     product.FEC_UPDATE_AT = currentDate;
     product.UPDATED_BY_USER = user.ID_USUARIO;
     product.DSC_CODIGO_PROD = DSC_CODIGO_PROD || product.DSC_CODIGO_PROD;
