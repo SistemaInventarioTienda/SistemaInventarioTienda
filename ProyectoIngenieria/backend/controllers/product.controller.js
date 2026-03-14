@@ -310,6 +310,7 @@ export const updateProduct = [
       SUBCATEGORIA = null,
       ESTADO = null,
       DSC_CODIGO_PROD = null,
+      CANTIDAD = null,
     } = req.body;
 
     const product = await Product.findOne({
@@ -330,11 +331,9 @@ export const updateProduct = [
 
     if (!user) {
       await deleteFile(req.file);
-      return res
-        .status(404)
-        .json({
-          message: "El usuario no tiene permiso de modificar el producto.",
-        });
+      return res.status(404).json({
+        message: "El usuario no tiene permiso de modificar el producto.",
+      });
     }
 
     const salesAmount = parseFloat(MON_VENTA);
@@ -379,6 +378,8 @@ export const updateProduct = [
     product.MON_COMPRA = MON_COMPRA || product.MON_COMPRA;
     product.ID_SUBCATEGORIA = SUBCATEGORIA || product.ID_SUBCATEGORIA;
     product.ESTADO = ESTADO || product.ESTADO;
+    product.CANTIDAD =
+      CANTIDAD !== null ? parseInt(CANTIDAD) : product.CANTIDAD;
     product.FEC_UPDATE_AT = currentDate;
     product.UPDATED_BY_USER = user.ID_USUARIO;
     product.DSC_CODIGO_PROD = DSC_CODIGO_PROD || product.DSC_CODIGO_PROD;
@@ -404,11 +405,9 @@ export const deleteProduct = async (req, res) => {
     });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({
-          message: "El usuario no tiene permiso de eliminar el producto.",
-        });
+      return res.status(404).json({
+        message: "El usuario no tiene permiso de eliminar el producto.",
+      });
     }
 
     const currentDate = await getDateCR();
